@@ -177,6 +177,8 @@ MSQuantilesAlongRT <- function(spectra, MSLevel = 1) {
 #' is_a: QC:4000022 ! chromatogram metric
 #' is_a: QC:4000023 ! MS1 metric
 #' 
+#' The `log2` values are returned instead of the `log` values.
+#' 
 #' @param spectra `Spectra` object
 #' @param relativeTo `character`
 #' 
@@ -212,8 +214,8 @@ MSquantileTICratiotoQuantiles <- function(spectra, relativeTo = c("Q1", "previou
         ratioQuantileTIC <- c(changeQ2 / changeQ1, changeQ3 / changeQ2, 
                                                             changeQ4 / changeQ3)
     
-    ## take the log and return
-    logRatioQuantileTIC <- log(ratioQuantileTIC)
+    ## take the log2 and return
+    logRatioQuantileTIC <- log2(ratioQuantileTIC)
     
     return(logRatioQuantileTIC)
 }
@@ -279,6 +281,130 @@ medianPrecursorMZ <- function(spectra) {
     mz <- Spectra::precursorMz(spectra)
     medianMZ <- median(mz, na.rm = TRUE)
     return(medianMZ)
+}
+
+#' @name rtimeIQR
+#' 
+#' @title Interquartile RT period for peptide identifications (QC:4000072)
+#' 
+#' @description
+#' "The interquartile retention time period, in seconds, for all peptide 
+#' identifications over the complete run." [PSI:QC]
+#' id: QC:4000072
+#'
+#' @details
+#' Longer times indicate better chromatographic separation.
+#' is_a: QC:4000003 ! single value
+#' is_a: QC:4000009 ! ID based
+#' is_a: QC:4000022 ! chromatogram metric
+#' 
+#' @param spectra `Spectra` object
+#' 
+#' @return `numeric(1)`
+#' 
+#' @author 
+#' 
+#' @export
+#' 
+#' @examples 
+#' 
+rtimeIQR <- function(spectra) {
+    spectraRT <- rtime(spectra)
+    ## IQR???, what is the unit for rtime, always seconds??
+    iqr <- IQR(spectraRT)
+    return(iqr)
+    
+}
+
+#' @name rtimeIQRrate
+#' 
+#' @title Peptide identification rate of the interquartile RT period (QC:4000073)
+#' 
+#' @description
+#' The identification rate of peptides for the interquartile retention time 
+#' period, in peptides per second." [PSI:QC]
+#' id: QC:4000073
+#' 
+#' @details
+#' Higher rates indicate efficient sampling and identification.
+#' is_a: QC:4000003 ! single value
+#' is_a: QC:4000009 ! ID based
+#' is_a: QC:4000022 ! chromatogram metric
+#' 
+#' @param spectra `Spectra` object
+#' 
+#' @return `numeric(2)`
+#' 
+#' @author 
+#' 
+#' @export
+#' 
+#' @examples 
+#' 
+rtimeIQRrate <- function(spectra) {
+    spectraRT <- rtime(spectra)
+    quantileSpectraRT <- quantile(spectraRT)
+    
+    ## get the RT values of the 25% and 75% quantile
+    quantile25RT <- quantileSpectraRT[["25%"]]
+    quantile75RT <- quantileSpectraRT[["75%"]]
+    
+    ## get the number of eluted features between the 25% and 75% quantile
+    nFeatures <- spectraRT >= quantile25RT & spectraRT <= quantile75RT
+    nFeatures <- sum(nFeatures)
+    
+    ## divide the number of eluted features between the 25% and 75% quantile
+    ## by the IQR to get the elution rate per second 
+    rate <- nFeatures / rtimeIQR(spectra)
+    
+    return(rate)
+}
+
+#' @name medianTICrtimeIQR
+#' 
+#' @title Median of TIC values in the RT range in which the middle half of 
+#' peptides are identified (QC:4000130)
+#' 
+#' @description
+#' "Median of TIC values in the RT range in which half of peptides are 
+#' identified (RT values of Q1 to Q3 of identifications)" [PSI:QC]
+#' id: QC:4000130
+#' 
+#' @details
+#' is_a: QC:4000003 ! single value
+#' is_a: QC:4000009 ! ID based
+#' is_a: QC:4000001 ! QC metric
+#' 
+#' The function `medianTICrtimeIQR` uses the function `ionCount` as an 
+#' equivalent to the TIC.
+#' 
+#' @param spectra `Spectra` object
+#' 
+#' @return `numeric(1)`
+#'
+#' @author 
+#'
+#' @export
+#'
+#' @examples 
+#'
+medianTICrtimeIQR <- function(spectra) {
+    
+    ## get the Q1 to Q3 of identifications 
+    ## (half of peptides that are identitied)
+    ind <- rep(seq_len(4), length.out = length(spectra))
+    ind <- sort(ind)
+    spectraQ1ToQ3 <- spectra[ind %in% c(2, 3), ]
+    
+    ## how to define TIC? take the ionCount?? #######################
+    ## take the ionCount of the Q1 to Q3 of identifications and calculate the
+    ## TIC by adding up the individual intensities per intensity
+    ionCountQ1ToQ3 <- ionCount(spectraQ1ToQ3)
+    
+    ## take the median value of the ionCount within this interval and return
+    medianIonCountQ1ToQ3 <- median(ionCountQ1ToQ3)
+    
+    return(ionCountQ1ToQ3)
 }
 
 #' @name MZacquisitionRange
