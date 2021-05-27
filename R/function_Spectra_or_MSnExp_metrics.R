@@ -40,11 +40,15 @@
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics rtime
+#' 
 #' @examples 
 #' 
 rtimeDuration <- function(object) {
-    RT <- rtime(object = )
+    
+    RT <- ProtGenerics::rtime(object = object)
     rtDuration <- max(RT) - min(RT)
+    
     return(rtDuration)
 }
 
@@ -73,17 +77,19 @@ rtimeDuration <- function(object) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics tic ionCount rtime
+#' 
 #' @examples 
 #' 
 RToverTICquantile <- function(object) {
     
     if (is(object, "MSnExp"))
-        TIC <- tic(object)
+        TIC <- ProtGenerics::tic(object)
     if (is(object, "Spectra"))
-        TIC <- ionCount(object)
+        TIC <- ProtGenerics::ionCount(object)
     
     ticSum <- cumsum(TIC)
-    RT <- rtime(object)
+    RT <- ProtGenerics::rtime(object)
     
     ## create relative retention time ############ assume that rt always start at 0?????????
     RT <- RT / max(RT)
@@ -129,12 +135,14 @@ RToverTICquantile <- function(object) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics filterMsLevel
+#' 
 #' @examples 
 #' 
 MSQuantilesAlongRT <- function(object, MSLevel = 1L) {
     
     ## truncate objecg based on the MSLevel
-    object <- filterMsLevel(object = object, MSLevel)
+    object <- ProtGenerics::filterMsLevel(object = object, MSLevel)
     
     RT <- rtime(object) ########### is this sorted???
     ## create relative retention time ############ assume that rt always start at 0?????????
@@ -182,6 +190,8 @@ MSQuantilesAlongRT <- function(object, MSLevel = 1L) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics tic ionCount
+#' 
 #' @examples 
 #' 
 MSquantileTICratiotoQuantiles <- function(object, relativeTo = c("Q1", "previous")) {
@@ -190,9 +200,9 @@ MSquantileTICratiotoQuantiles <- function(object, relativeTo = c("Q1", "previous
     
     ## create cumulative sum of tic/ionCount
     if (is(object, "MSnExp"))
-        TIC <- tic(object)
+        TIC <- ProtGenerics::tic(object)
     if (is(object, "Spectra"))
-        TIC <- ionCount(object)
+        TIC <- ProtGenerics::ionCount(object)
     
     ticSum <- cumsum(TIC)
     
@@ -244,11 +254,13 @@ MSquantileTICratiotoQuantiles <- function(object, relativeTo = c("Q1", "previous
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics filterMsLevel
+#' 
 #' @examples 
 #' 
 numberSpectra <- function(object, MSLevel = 1L) {
     
-    object <- filterMsLevel(object = object, MSLevel)
+    object <- ProtGenerics::filterMsLevel(object = object, MSLevel)
     len <- length(object)
     return(len)
 }
@@ -277,6 +289,8 @@ numberSpectra <- function(object, MSLevel = 1L) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics precursorMz
+#' 
 #' @examples 
 #' 
 medianPrecursorMZ <- function(object) {
@@ -284,6 +298,7 @@ medianPrecursorMZ <- function(object) {
     ################ FDR correction???????????
     mz <- ProtGenerics::precursorMz(object)
     medianMZ <- median(mz, na.rm = TRUE)
+    
     return(medianMZ)
 }
 
@@ -310,12 +325,15 @@ medianPrecursorMZ <- function(object) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics rtime
+#' @importFrom stats IQR
+#' 
 #' @examples 
 #' 
 rtimeIQR <- function(object) {
-    RT <- rtime(object)
+    RT <- ProtGenerics::rtime(object)
     ## IQR???, what is the unit for rtime, always seconds??
-    iqr <- IQR(RT)
+    iqr <- stats::IQR(RT)
 
     return(iqr)
 }
@@ -343,12 +361,15 @@ rtimeIQR <- function(object) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics rtime
+#' @importFrom stats quantile
+#' 
 #' @examples 
 #' 
 rtimeIQRrate <- function(object) {
     
-    RT <- rtime(object) 
-    quantileRT <- quantile(RT)
+    RT <- ProtGenerics::?rtime(object) 
+    quantileRT <- stats::quantile(RT)
     
     ## get the RT values of the 25% and 75% quantile
     quantile25RT <- quantileRT[["25%"]]
@@ -389,13 +410,15 @@ rtimeIQRrate <- function(object) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics tic ionCount
+#' 
 #' @examples 
 #' 
 areaUnderTIC <- function(object) {
     if (is(object, "MSnExp"))
-        TIC <- tic(object)
+        TIC <- ProtGenerics::tic(object)
     if (is(object, "Spectra"))
-        TIC <- ionCount(object)
+        TIC <- ProtGenerics::ionCount(object)
     
     ## sum up the TIC (equivalent to the area) and return
     area <- sum(TIC, na.rm = TRUE)
@@ -427,17 +450,20 @@ areaUnderTIC <- function(object) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics tic ionCount rtime
+#' @importFrom stats quantile
+#' 
 #' @examples 
 #' 
 areaUnderTICRTquantiles <- function(object) {
     
     if (is(object, "MSnExp"))
-        TIC <- tic(object)
+        TIC <- ProtGenerics::tic(object)
     if (is(object, "Spectra"))
-        TIC <- ionCount(object)
+        TIC <- ProtGenerics::ionCount(object)
     
-    RT <- rtime(object)
-    quantileRT <- quantile(RT)
+    RT <- ProtGenerics::rtime(object)
+    quantileRT <- stats::quantile(RT)
     
     ## get the TICs for the 1st, 2nd, 3rd, and 4th quartile
     ticQ1 <- TIC[RT > quantileRT[["0%"]] & RT <= quantileRT[["25%"]]]
@@ -482,13 +508,17 @@ areaUnderTICRTquantiles <- function(object) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics precursorIntensity
+#' @importFrom stats quantile
+#' 
 #' @examples 
 #' 
 extentIdentifiedPrecursorIntensity <- function(object) {
     
     ## retrieve the precursorIntensity and calculate the 5% and 95% quantile
-    precInt <- precursorIntensity(object)
-    quantilePrecInt <- quantile(precInt, probs = c(0.05, 0.95), na.rm = TRUE)
+    precInt <- ProtGenerics::precursorIntensity(object)
+    quantilePrecInt <- stats::quantile(precInt, probs = c(0.05, 0.95), 
+                                                                na.rm = TRUE)
     
     ## calculate the ratio between the 95% and 5% quantile and return the value
     ratio <- quantilePrecInt[["95%"]] / quantilePrecInt[["5%"]]
@@ -521,12 +551,15 @@ extentIdentifiedPrecursorIntensity <- function(object) {
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #'
 #' @export
+#' 
+#' @importFrom ProtGenerics filterMsLevel tic ionCount
+#' @importFrom stats median
 #'
 #' @examples 
 #'
 medianTICrtimeIQR <- function(object, MSLevel = 1L) {
     
-    object <- filterMsLevel(object = object, MSLevel)
+    object <- ProtGenerics::filterMsLevel(object = object, MSLevel)
     
     ## get the Q1 to Q3 of identifications 
     ## (half of peptides that are identitied)
@@ -544,7 +577,7 @@ medianTICrtimeIQR <- function(object, MSLevel = 1L) {
         ticQ1ToQ3 <- ProtGenerics::ionCount(Q1ToQ3)
     
     ## take the median value of the TIC within this interval and return
-    medianTICQ1ToQ3 <- median(ticQ1ToQ3)
+    medianTICQ1ToQ3 <- stats::median(ticQ1ToQ3)
     
     return(medianTICQ1ToQ3)
 }
@@ -574,16 +607,19 @@ medianTICrtimeIQR <- function(object, MSLevel = 1L) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics filterMsLevel tic ionCount rtime
+#' @importFrom stats median
+#' 
 #' @examples 
 #' 
 medianTICofRTRange <- function(object, MSLevel = 1L) {
     
-    object <- filterMsLevel(object = object, MSLevel)
+    object <- ProtGenerics::filterMsLevel(object = object, MSLevel)
     
     if (is(object, "MSnExp"))
-        TIC <- tic(object)
+        TIC <- ProtGenerics::tic(object)
     if (is(object, "Spectra"))
-        TIC <- ionCount(object)
+        TIC <- ProtGenerics::ionCount(object)
     
     ## retrieve retention time
     RT <- ProtGenerics::rtime(object)
@@ -608,7 +644,7 @@ medianTICofRTRange <- function(object, MSLevel = 1L) {
     indMin <- which.min(rangeRT)
     ind <- seq(indMin, indMin - 1 + n_half)
     ticMin <- TIC[ind]
-    medianTICMin <- median(ticMin, na.rm = TRUE)
+    medianTICMin <- stats::median(ticMin, na.rm = TRUE)
     
     return(medianTICMin)
 }
@@ -636,12 +672,14 @@ medianTICofRTRange <- function(object, MSLevel = 1L) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics filterMsLevel mz
+#' 
 #' @examples 
 #' MZacquisitionRange(spectra)
 #' 
 MZacquisitionRange <- function(object, MSLevel = 1L) {
     
-    object <- filterMsLevel(object = object, MSLevel)
+    object <- ProtGenerics::filterMsLevel(object = object, MSLevel)
     
     mzList <- ProtGenerics::mz(object)
     MZ <- unlist(mzList)
@@ -670,10 +708,13 @@ MZacquisitionRange <- function(object, MSLevel = 1L) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics rtime
+#' 
 #' @examples 
 #' RTacquisitionRange(spectra)
 #' 
 RTacquisitionRange <- function(object) {
+    
     RT <- ProtGenerics::rtime(object)
     rtRange <- range(RT)
     
@@ -704,6 +745,8 @@ RTacquisitionRange <- function(object) {
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
+#' 
+#' @importFrom ProtGenerics precursorIntensity
 #' 
 #' @examples 
 #' 
@@ -757,12 +800,15 @@ precursorIntensityRange <- function(object) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics precursorIntensity
+#' @importFrom stats quantile
+#' 
 #' @examples
 #' precursorIntensityQuartiles(object)
 precursorIntensityQuartiles <- function(object) {
     
     int <- ProtGenerics::precursorIntensity(object)
-    quartiles <- quantile(int, probs = c(0.25, 0.50, 0.75))
+    quartiles <- stats::quantile(int, probs = c(0.25, 0.50, 0.75))
     
     return(quartiles)
 }
@@ -807,6 +853,8 @@ precursorIntensityQuartiles <- function(object) {
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
+#' 
+#' @importFrom ProtGenerics precursorIntensity
 #' 
 #' @examples
 #' precursorIntensityMean(object)
@@ -857,11 +905,14 @@ precursorIntensityMean <- function(object) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics precursorIntensity
+#' @importFrom stats sd
+#' 
 #' @examples
 #' precursorIntensitySD(object)
 precursorIntensitySD <- function(object) {
     int <- ProtGenerics::precursorIntensity(object)
-    mzSD <- sd(int, na.rm = TRUE)
+    mzSD <- stats::sd(int, na.rm = TRUE)
     
     return(mzSD)
 }
@@ -895,6 +946,8 @@ precursorIntensitySD <- function(object) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics tic ionCount
+#' 
 #' @examples 
 #' 
 MS1Signal10XChange <- function(object, change = c("jump", "fall")) {
@@ -903,9 +956,9 @@ MS1Signal10XChange <- function(object, change = c("jump", "fall")) {
     
     ########## does this make sense only for MSnExp?????
     if (is(object, "MSnExp")) 
-        TIC <- tic(object)
+        TIC <- ProtGenerics::tic(object)
     if (is(object, "Spectra"))
-        TIC <- ionCount(object)
+        TIC <- ProtGenerics::ionCount(object)
     
     precedingTIC <- TIC[seq_len(length(TIC) - 1)]
     followingTIC <- TIC[seq_len(length(TIC))[-1]]

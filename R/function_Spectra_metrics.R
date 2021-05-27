@@ -23,6 +23,8 @@
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics precursorCharge
+#' 
 #' @examples 
 #' 
 RatioCharge1over2 <- function(spectra) {
@@ -65,6 +67,8 @@ RatioCharge1over2 <- function(spectra) {
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
+#' 
+#' @importFrom ProtGenerics precursorCharge
 #' 
 #' @examples 
 #' 
@@ -110,6 +114,8 @@ RatioCharge3over2 <- function(spectra) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics precursorCharge
+#' 
 #' @examples 
 #' 
 RatioCharge4over2 <- function(spectra) {
@@ -154,6 +160,8 @@ RatioCharge4over2 <- function(spectra) {
 #' 
 #' @export
 #' 
+#' @importFrom ProtGenerics precursorCharge
+#' 
 #' @examples 
 #' 
 meanCharge <- function(spectra) {
@@ -187,6 +195,8 @@ meanCharge <- function(spectra) {
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
+#' 
+#' @importFrom ProtGenerics precursorCharge
 #' 
 #' @examples 
 #' 
