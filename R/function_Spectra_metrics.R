@@ -15,11 +15,11 @@
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000001 ! QC metric
 #' 
-#' @param spectra `Spectra` objects
+#' @param spectra `Spectra` object
 #' 
-#' @return
+#' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -58,11 +58,11 @@ RatioCharge1over2 <- function(spectra) {
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000001 ! QC metric
 #' 
-#' @param spectra `Spectra` objects
+#' @param spectra `Spectra` object
 #' 
-#' @return
+#' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -102,11 +102,11 @@ RatioCharge3over2 <- function(spectra) {
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000001 ! QC metric
 #' 
-#' @param spectra `Spectra` objects
+#' @param spectra `Spectra` object
 #' 
-#' @return
+#' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -148,9 +148,9 @@ RatioCharge4over2 <- function(spectra) {
 #' 
 #' @param spectra `Spectra` object
 #' 
-#' @return
+#' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -182,9 +182,9 @@ meanCharge <- function(spectra) {
 #' 
 #' @param spectra `Spectra` object
 #' 
-#' @return
+#' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 

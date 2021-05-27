@@ -36,7 +36,7 @@
 #' 
 #' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -67,9 +67,9 @@ rtimeDuration <- function(object) {
 #' 
 #' @param msnexp `MSnExp` object
 #' 
-#' @return numeric(4)
+#' @return `numeric(4)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -123,9 +123,9 @@ RToverTICquantile <- function(object) {
 #' @param object `MSnExp` or `Spectra` object
 #' @param MSLevel `numeric(1)`
 #' 
-#' @return
+#' @return `numeric(4)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -176,9 +176,9 @@ MSQuantilesAlongRT <- function(object, MSLevel = 1L) {
 #' @param msnexp `MSnExp` object
 #' @param relativeTo `character`
 #' 
-#' @return
+#' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -240,7 +240,7 @@ MSquantileTICratiotoQuantiles <- function(object, relativeTo = c("Q1", "previous
 #' 
 #' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -273,7 +273,7 @@ numberSpectra <- function(object, MSLevel = 1L) {
 #' 
 #' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -282,7 +282,7 @@ numberSpectra <- function(object, MSLevel = 1L) {
 medianPrecursorMZ <- function(object) {
     
     ################ FDR correction???????????
-    mz <- Spectra::precursorMz(object)
+    mz <- ProtGenerics::precursorMz(object)
     medianMZ <- median(mz, na.rm = TRUE)
     return(medianMZ)
 }
@@ -306,7 +306,7 @@ medianPrecursorMZ <- function(object) {
 #' 
 #' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -339,7 +339,7 @@ rtimeIQR <- function(object) {
 #' 
 #' @return `numeric(2)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -385,7 +385,7 @@ rtimeIQRrate <- function(object) {
 #' 
 #' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -423,7 +423,7 @@ areaUnderTIC <- function(object) {
 #' 
 #' @return `numeric(4)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -478,7 +478,7 @@ areaUnderTICRTquantiles <- function(object) {
 #' 
 #' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -518,7 +518,7 @@ extentIdentifiedPrecursorIntensity <- function(object) {
 #' 
 #' @return `numeric(1)`
 #'
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #'
 #' @export
 #'
@@ -570,7 +570,7 @@ medianTICrtimeIQR <- function(object, MSLevel = 1L) {
 #' @return
 #' `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -632,7 +632,7 @@ medianTICofRTRange <- function(object, MSLevel = 1L) {
 #' @return
 #' `numeric(2)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -666,7 +666,7 @@ MZacquisitionRange <- function(object, MSLevel = 1L) {
 #' @return
 #' `numeric(2)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -701,7 +701,7 @@ RTacquisitionRange <- function(object) {
 #' @return
 #' `numeric(2)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -753,7 +753,7 @@ precursorIntensityRange <- function(object) {
 #' 
 #' @return `numeric(3)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -804,7 +804,7 @@ precursorIntensityQuartiles <- function(object) {
 #' 
 #' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -853,7 +853,7 @@ precursorIntensityMean <- function(object) {
 #' 
 #' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
@@ -891,7 +891,7 @@ precursorIntensitySD <- function(object) {
 #' 
 #' @return `numeric(1)`
 #' 
-#' @author 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
 #' 
