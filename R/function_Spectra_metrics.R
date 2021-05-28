@@ -35,7 +35,7 @@ RatioCharge1over2 <- function(spectra) {
     ## get the number of precursor per charge
     chargeTable <- table(charge)
     
-    if (all(c(1, 2) %in% chargeTable))
+    if (all(c(1, 2) %in% names(chargeTable)))
         chargeRatio <- chargeTable[["1"]] / chargeTable[["2"]]
     else 
         chargeRatio <- NA
@@ -80,7 +80,7 @@ RatioCharge3over2 <- function(spectra) {
     ## get the number of precursor per charge
     chargeTable <- table(charge)
     
-    if (all(c(2, 3) %in% chargeTable))
+    if (all(c(2, 3) %in% names(chargeTable)))
         chargeRatio <- chargeTable[["3"]] / chargeTable[["2"]]
     else 
         chargeRatio <- NA
@@ -126,7 +126,7 @@ RatioCharge4over2 <- function(spectra) {
     ## get the number of precursor per charge
     chargeTable <- table(charge)
     
-    if (all(c(2, 4) %in% chargeTable))
+    if (all(c(2, 4) %in% names(chargeTable)))
         chargeRatio <- chargeTable[["4"]] / chargeTable[["2"]]
     else 
         chargeRatio <- NA
