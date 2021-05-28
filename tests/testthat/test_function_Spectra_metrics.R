@@ -10,82 +10,85 @@ sps_sciex@backend$precursorCharge <- as.integer(
 
 ## add some fake precursorMZ
 sps_sciex@backend$precursorMz <- rnorm(n = 1862, mean = 500, sd = 100)
+
+## add some fake precursorIntensity
+sps_sciex@backend$precursorIntensity <- rpois(n = 1862, lambda = 10000)
     
 
-## START unit test rtimeDuration ##
-test_that("rtimeDuration", {
-    expect_error(rtimeDuration(NULL), "unable to find an inherited method")
-    expect_error(rtimeDuration(NULL), "unable to find an inherited method")
-    expect_equal(rtimeDuration(sps_sciex), 259.482)
+## START unit test rtDuration ##
+test_that("rtDuration", {
+    expect_error(rtDuration(NULL), "unable to find an inherited method")
+    expect_error(rtDuration(NULL), "unable to find an inherited method")
+    expect_equal(rtDuration(sps_sciex), 259.482)
 })
-## END unit test rtimeDuration ##
+## END unit test rtDuration ##
 
-## START unit test RToverTICquantile ##
-test_that("RToverTICquantile", {
-    expect_error(RToverTICquantile(NULL), "unable to find an inherited method")
-    expect_error(RToverTICquantile(NULL), "unable to find an inherited method")
-    tmp <- RToverTICquantile(sps_sciex)
+## START unit test rtOverTICquantile ##
+test_that("rtOverTICquantile", {
+    expect_error(rtOverTICquantile(NULL), "unable to find an inherited method")
+    expect_error(rtOverTICquantile(NULL), "unable to find an inherited method")
+    tmp <- rtOverTICquantile(sps_sciex)
     expect_equal(as.numeric(tmp),
         c(0.001058682, 0.250272370, 0.500517792, 0.749731480, 1.000000000))
     expect_equal(names(tmp), c("0%", "25%", "50%", "75%", "100%"))
 })
-## END unit test RToverTICquantile ##
+## END unit test rtOverTICquantile ##
 
-## START unit test RToverMSQuarters ##
-test_that("RToverMSQuarters", {
-    expect_error(RToverMSQuarters(NULL), "unable to find an inherited method")
-    expect_error(RToverMSQuarters(NULL), "unable to find an inherited method")
-    expect_equal(RToverMSQuarters(sps_sciex, MSLevel = 1L), 
+## START unit test rtOverMSQuarters ##
+test_that("rtOverMSQuarters", {
+    expect_error(rtOverMSQuarters(NULL), "unable to find an inherited method")
+    expect_error(rtOverMSQuarters(NULL), "unable to find an inherited method")
+    expect_equal(rtOverMSQuarters(sps_sciex, MSLevel = 1L), 
         c(0.2502724, 0.5005370, 0.7507863, 1.0000000))
-    expect_error(RToverMSQuarters(sps_sciex, MSLevel = 2L), 
+    expect_error(rtOverMSQuarters(sps_sciex, MSLevel = 2L), 
         "Spectra object does not contain any spectra")
 })
-## END unit test RToverMSQuarters ##
+## END unit test rtOverMSQuarters ##
 
-## START unit test TICquantileToQuantileLogRatio ##
-test_that("TICquantileToQuantileLogRatio", {
-    expect_error(TICquantileToQuantileLogRatio(NULL), 
+## START unit test ticQuantileToQuantileLogRatio ##
+test_that("ticQuantileToQuantileLogRatio", {
+    expect_error(ticQuantileToQuantileLogRatio(NULL), 
         "unable to find an inherited method")
-    expect_error(TICquantileToQuantileLogRatio(NULL), 
+    expect_error(ticQuantileToQuantileLogRatio(NULL), 
         "unable to find an inherited method")
     expect_equal(
-        TICquantileToQuantileLogRatio(sps_sciex, relativeTo = "previous", 
+        ticQuantileToQuantileLogRatio(sps_sciex, relativeTo = "previous", 
                                                                 MSLevel = 1L), 
         c(-0.05853477, -0.58202994, 0.15361253))
     expect_equal(
-        TICquantileToQuantileLogRatio(sps_sciex, relativeTo = "Q1", 
+        ticQuantileToQuantileLogRatio(sps_sciex, relativeTo = "Q1", 
                                                                 MSLevel = 1L), 
         c(-0.05853477, -0.64056471, -0.48695218))
-    expect_error(TICquantiletoQuantileLogRatio(sps_sciex, MSLevel = 2L), 
+    expect_error(ticQuantiletoQuantileLogRatio(sps_sciex, MSLevel = 2L), 
                  "Spectra object does not contain any spectra")
 })
-## END unit test TICquantiletoQuantileLogRatio ##
+## END unit test ticQuantiletoQuantileLogRatio ##
 
-## START unit test TICquantileToQuantileLogRatio ##
-test_that("TICquantileToQuantileLogRatio", {
-    expect_error(TICquantileToQuantileLogRatio(NULL), 
+## START unit test ticQuantileToQuantileLogRatio ##
+test_that("ticQuantileToQuantileLogRatio", {
+    expect_error(ticQuantileToQuantileLogRatio(NULL), 
                  "unable to find an inherited method")
-    expect_error(TICquantileToQuantileLogRatio(1:10), 
+    expect_error(ticQuantileToQuantileLogRatio(1:10), 
                  "unable to find an inherited method")
     expect_equal(
-        TICquantileToQuantileLogRatio(sps_sciex, relativeTo = "previous", 
+        ticQuantileToQuantileLogRatio(sps_sciex, relativeTo = "previous", 
                                       MSLevel = 1L), 
         c(-0.05853477, -0.58202994, 0.15361253))
     expect_equal(
-        TICquantileToQuantileLogRatio(sps_sciex, relativeTo = "Q1", 
+        ticQuantileToQuantileLogRatio(sps_sciex, relativeTo = "Q1", 
                                       MSLevel = 1L), 
         c(-0.05853477, -0.64056471, -0.48695218))
-    expect_error(TICquantiletoQuantileLogRatio(sps_sciex, MSLevel = 2L), 
+    expect_error(ticQuantiletoQuantileLogRatio(sps_sciex, MSLevel = 2L), 
                  "Spectra object does not contain any spectra")
 })
-## END unit test TICquantiletoQuantileLogRatio ##
+## END unit test ticQuantiletoQuantileLogRatio ##
 
 ## START unit test numberSpectra ##
 test_that("numberSpectra", {
     expect_error(numberSpectra(NULL), "unable to find an inherited method")
     expect_error(numberSpectra(1:10), "unable to find an inherited method")
-    expect_equal(numberSpectra(sps_sciex, MSLevel = 1), 1862)
-    expect_equal(numberSpectra(sps_sciex, MSLevel = 2), 0)
+    expect_equal(numberSpectra(sps_sciex, MSLevel = 1L), 1862)
+    expect_equal(numberSpectra(sps_sciex, MSLevel = 2L), 0)
 })
 ## END unit test numberSpectra ##
 
@@ -93,40 +96,164 @@ test_that("numberSpectra", {
 test_that("medianPrecursorMZ", {
     expect_error(medianPrecursorMZ(NULL), "unable to find an inherited method")
     expect_error(medianPrecursorMZ(1:10), "unable to find an inherited method")
-    expect_equal(medianPrecursorMZ(sps_sciex, MSLevel = 1), 501.6874)
-    expect_error(medianPrecursorMZ(sps_sciex, MSLevel = 2), 
+    expect_equal(medianPrecursorMZ(sps_sciex, MSLevel = 1L), 501.6874)
+    expect_error(medianPrecursorMZ(sps_sciex, MSLevel = 2L), 
         "Spectra object does not contain any spectra")
 })
 ## END unit test medianPrecursorMZ ##
 
-## START unit test rtimeIQR ##
-test_that("rtimeIQR", {
-    expect_error(rtimeIQR(NULL), "unable to find an inherited method")
-    expect_error(rtimeIQR(1:10), "unable to find an inherited method")
-    expect_equal(rtimeIQR(sps_sciex, MSLevel = 1), 129.875)
-    expect_error(rtimeIQR(sps_sciex, MSLevel = 2), 
+## START unit test rtIQR ##
+test_that("rtIQR", {
+    expect_error(rtIQR(NULL), "unable to find an inherited method")
+    expect_error(rtIQR(1:10), "unable to find an inherited method")
+    expect_equal(rtIQR(sps_sciex, MSLevel = 1L), 129.875)
+    expect_error(rtIQR(sps_sciex, MSLevel = 2L), 
         "Spectra object does not contain any spectra")
 })
-## END unit test rtimeIQR ##
+## END unit test rtIQR ##
 
-## START unit test rtimeIQRrate ##
-test_that("rtimeIQRrate", {
-    expect_error(rtimeIQRrate(NULL), "unable to find an inherited method")
-    expect_error(rtimeIQRrate(1:10), "unable to find an inherited method")
-    expect_equal(rtimeIQRrate(sps_sciex, MSLevel = 1), 7.160731)
-    expect_error(rtimeIQRrate(sps_sciex, MSLevel = 2), 
+## START unit test rtIQRrate ##
+test_that("rtIQRrate", {
+    expect_error(rtIQRrate(NULL), "unable to find an inherited method")
+    expect_error(rtIQRrate(1:10), "unable to find an inherited method")
+    expect_equal(rtIQRrate(sps_sciex, MSLevel = 1L), 7.160731)
+    expect_error(rtIQRrate(sps_sciex, MSLevel = 2L), 
         "Spectra object does not contain any spectra")
 })
-## END unit test rtimeIQRrate ##
+## END unit test rtIQRrate ##
 
+## START unit test areaUnderTIC ##
+test_that("areaUnderTIC", {
+    expect_error(areaUnderTIC(NULL), "unable to find an inherited method")
+    expect_error(areaUnderTIC(1:10), "unable to find an inherited method")
+    expect_equal(areaUnderTIC(sps_sciex, MSLevel = 1L), 1273927561)
+    expect_error(areaUnderTIC(sps_sciex, MSLevel = 2L), 
+                 "Spectra object does not contain any spectra")
+})
+## END unit test areaUnderTIC ##
 
+## START unit test areaUnderTICRTquantiles ##
+test_that("areaUnderTICRTquantiles", {
+    expect_error(areaUnderTICRTquantiles(NULL), "unable to find an inherited method")
+    expect_error(areaUnderTICRTquantiles(1:10), "unable to find an inherited method")
+    tmp <- areaUnderTICRTquantiles(sps_sciex, MSLevel = 1L)
+    expect_equal(as.numeric(tmp), c(383935723, 368643879, 245834029, 274788917))
+    expect_equal(names(tmp), c("25%", "50%", "75%", "100%"))
+    expect_error(areaUnderTICRTquantiles(sps_sciex, MSLevel = 2L), 
+        "Spectra object does not contain any spectra")
+})
+## END unit test areaUnderTIC ##
 
+## START unit test extentIdentifiedPrecursorIntensity ##
+test_that("extentIdentifiedPrecursorIntensity", {
+    expect_error(extentIdentifiedPrecursorIntensity(NULL), "unable to find an inherited method")
+    expect_error(extentIdentifiedPrecursorIntensity(1:10), "unable to find an inherited method")
+    expect_equal(extentIdentifiedPrecursorIntensity(sps_sciex, MSLevel = 1L), 
+        1.033752)
+    expect_error(extentIdentifiedPrecursorIntensity(sps_sciex, MSLevel = 2), 
+        "Spectra object does not contain any spectra")
+})
+## END unit test extentIdentifiedPrecursorIntensity ##
 
+## START unit test medianTICRTIQR ##
+test_that("medianTICRTIQR", {
+    expect_error(medianTICRTIQR(NULL), "unable to find an inherited method")
+    expect_error(medianTICRTIQR(1:10), "unable to find an inherited method")
+    expect_equal(medianTICRTIQR(sps_sciex, MSLevel = 1L), 718615)
+    expect_error(medianTICRTIQR(sps_sciex, MSLevel = 2L), 
+        "Spectra object does not contain any spectra")
+})
+## END unit test medianTICRTIQR ##
 
+## START unit test medianTICofRTRange ##
+test_that("medianTICofRTRange", {
+    expect_error(medianTICofRTRange(NULL), "unable to find an inherited method")
+    expect_error(medianTICofRTRange(1:10), "unable to find an inherited method")
+    expect_equal(medianTICofRTRange(sps_sciex, MSLevel = 1L), 
+                 804944)
+    expect_error(medianTICofRTRange(sps_sciex, MSLevel = 2L), 
+                 "Spectra object does not contain any spectra")
+})
+## END unit test medianTICofRTRange ##
 
+## START unit test mzAcquisitionRange ##
+test_that("mzAcquisitionRange", {
+    expect_error(mzAcquisitionRange(NULL), "unable to find an inherited method")
+    expect_error(mzAcquisitionRange(1:10), "unable to find an inherited method")
+    expect_equal(mzAcquisitionRange(sps_sciex, MSLevel = 1L), 
+                 c(105, 134))
+    expect_error(mzAcquisitionRange(sps_sciex, MSLevel = 2L), 
+                 "Spectra object does not contain any spectra")
+})
+## END unit test mzAcquisitionRange ##
 
+## START unit test rtAcquisitionRange ##
+test_that("rtAcquisitionRange", {
+    expect_error(rtAcquisitionRange(NULL), "unable to find an inherited method")
+    expect_error(rtAcquisitionRange(1:10), "unable to find an inherited method")
+    expect_equal(rtAcquisitionRange(sps_sciex, MSLevel = 1L), 
+        c(0.275, 259.757))
+    expect_error(rtAcquisitionRange(sps_sciex, MSLevel = 2L), 
+        "Spectra object does not contain any spectra")
+})
+## END unit test rtAcquisitionRange ##
 
+## START unit test precursorIntensityRange ##
+test_that("precursorIntensityRange", {
+    expect_error(precursorIntensityRange(NULL), "unable to find an inherited method")
+    expect_error(precursorIntensityRange(1:10), "unable to find an inherited method")
+    expect_equal(precursorIntensityRange(sps_sciex, MSLevel = 1L), 
+                 c(9631, 10332))
+    expect_error(precursorIntensityRange(sps_sciex, MSLevel = 2L), 
+                 "Spectra object does not contain any spectra")
+})
+## END unit test precursorIntensityRange ##
 
+## START unit test precursorIntensityQuartiles ##
+test_that("precursorIntensityQuartiles", {
+    expect_error(precursorIntensityQuartiles(NULL), "unable to find an inherited method")
+    expect_error(precursorIntensityQuartiles(1:10), "unable to find an inherited method")
+    tmp <- precursorIntensityQuartiles(sps_sciex, MSLevel = 1L)
+    expect_equal(as.numeric(tmp), c(9934, 10000, 10066))
+    expect_equal(names(tmp), c("25%", "50%", "75%"))
+    expect_error(precursorIntensityQuartiles(sps_sciex, MSLevel = 2L), 
+                 "Spectra object does not contain any spectra")
+})
+## END unit test precursorIntensityRange ##
+
+## START unit test precursorIntensityMean ##
+test_that("precursorIntensityMean", {
+    expect_error(precursorIntensityMean(NULL), "unable to find an inherited method")
+    expect_error(precursorIntensityMean(1:10), "unable to find an inherited method")
+    expect_equal(precursorIntensityMean(sps_sciex, MSLevel = 1L), 10000.1412)
+    expect_error(precursorIntensityMean(sps_sciex, MSLevel = 2L), 
+                 "Spectra object does not contain any spectra")
+})
+## END unit test precursorIntensityMean ##
+
+## START unit test precursorIntensitySD ##
+test_that("precursorIntensitySD", {
+    expect_error(precursorIntensitySD(NULL), "unable to find an inherited method")
+    expect_error(precursorIntensitySD(1:10), "unable to find an inherited method")
+    expect_equal(precursorIntensitySD(sps_sciex, MSLevel = 1L), 100.7748429, 
+        tolerance = 1e-06)
+    expect_error(precursorIntensitySD(sps_sciex, MSLevel = 2L), 
+        "Spectra object does not contain any spectra")
+})
+## END unit test precursorIntensitySD ##
+
+## START unit test msSignal10XChange ##
+test_that("msSignal10XChange", {
+    expect_error(msSignal10XChange(NULL), "unable to find an inherited method")
+    expect_error(msSignal10XChange(1:10), "unable to find an inherited method")
+    expect_equal(msSignal10XChange(sps_sciex, change = "jump", MSLevel = 1L), 0)
+    expect_equal(msSignal10XChange(sps_sciex, change = "fall", MSLevel = 1L), 0)
+    expect_error(msSignal10XChange(sps_sciex, change = "jump", MSLevel = 2L), 
+        "Spectra object does not contain any spectra")
+    expect_error(msSignal10XChange(sps_sciex, change = "fall", MSLevel = 2L), 
+        "Spectra object does not contain any spectra")
+})
+## END unit test msSignal10XChange ##
 
 ## START unit test RatioCharge1over2 ##
 test_that("RatioCharge1over2", {
