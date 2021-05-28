@@ -152,7 +152,7 @@ RToverMSQuarters <- function(spectra, MSLevel = 1L) {
     return(rtimeGroup)
 }
 
-#' @name MSquantileTICratioToQuantiles
+#' @name TICquantileToQuantileLogRatio
 #' 
 #' @title MS1 quantile TIC change ratio to Quantile 1 (QC:4000057) or to 
 #' previous quantile (QC:4000058)
@@ -175,6 +175,7 @@ RToverMSQuarters <- function(spectra, MSLevel = 1L) {
 #' 
 #' @param spectra `Spectra` object
 #' @param relativeTo `character`
+#' @param MSLevel `numeric`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -182,13 +183,20 @@ RToverMSQuarters <- function(spectra, MSLevel = 1L) {
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics tic ionCount
+#' @importFrom ProtGenerics filterMsLevel tic ionCount
 #' 
 #' @examples 
 #' 
-MSquantileTICratiotoQuantiles <- function(spectra, relativeTo = c("Q1", "previous")) {
+TICquantileToQuantileLogRatio <- function(spectra, 
+                              relativeTo = c("Q1", "previous"), MSLevel = 1L) {
   
     relativeTo <- match.arg(relativeTo)
+    
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    
+    if (length(spectra) == 0) {
+        stop("Spectra object does not contain any spectra") 
+    }
     
     ## order spectra according to increasing retention time
     RT <- ProtGenerics::rtime(spectra)
@@ -201,6 +209,7 @@ MSquantileTICratiotoQuantiles <- function(spectra, relativeTo = c("Q1", "previou
     #if (is(object, "Spectra"))
     TIC <- ProtGenerics::ionCount(spectra)
     
+    ############# does this make sense?
     ticSum <- cumsum(TIC)
     
     quantileTICSum <- quantile(ticSum)
@@ -258,6 +267,7 @@ numberSpectra <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
     len <- length(spectra)
+    
     return(len)
 }
 
@@ -289,9 +299,15 @@ numberSpectra <- function(spectra, MSLevel = 1L) {
 #' 
 #' @examples 
 #' 
-medianPrecursorMZ <- function(spectra) {
+medianPrecursorMZ <- function(spectra, MSLevel = 1L) {
   
-    ################ FDR correction???????????
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    
+    if (length(spectra) == 0) {
+      stop("Spectra object does not contain any spectra") 
+    }
+    
+    ################ FDR correction??????????? 
     mz <- ProtGenerics::precursorMz(spectra)
     medianMZ <- median(mz, na.rm = TRUE)
     
@@ -314,6 +330,7 @@ medianPrecursorMZ <- function(spectra) {
 #' is_a: QC:4000022 ! chromatogram metric
 #' 
 #' @param spectra `Spectra` object
+#' @param MSLevel `numeric`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -321,13 +338,19 @@ medianPrecursorMZ <- function(spectra) {
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics rtime
+#' @importFrom ProtGenerics filterMsLevel rtime
 #' @importFrom stats IQR
 #' 
 #' @examples 
 #' 
-rtimeIQR <- function(spectra) {
+rtimeIQR <- function(spectra, MSLevel = 1L) {
   
+    spectra <- ProtGenerics::filterMsLevel(spectra, MSLevel)
+    
+    if (length(spectra) == 0) {
+      stop("Spectra object does not contain any spectra") 
+    }
+    
     ## get the retention time
     RT <- ProtGenerics::rtime(spectra)
     
@@ -353,6 +376,7 @@ rtimeIQR <- function(spectra) {
 #' is_a: QC:4000022 ! chromatogram metric
 #' 
 #' @param spectra `Spectra` object
+#' @param MSLevel `numeric`
 #' 
 #' @return `numeric(2)`
 #' 
@@ -365,8 +389,14 @@ rtimeIQR <- function(spectra) {
 #' 
 #' @examples 
 #' 
-rtimeIQRrate <- function(object) {
+rtimeIQRrate <- function(spectra, MSLevel = 1L) {
   
+    spectra <- ProtGenerics::filterMsLevel(spectra, MSLevel)
+    
+    if (length(spectra) == 0) {
+      stop("Spectra object does not contain any spectra") 
+    }
+    
     ## order spectra according to increasing retention time
     RT <- ProtGenerics::rtime(spectra)
     spectra <- spectra[order(RT)]
