@@ -23,7 +23,7 @@
 #' @importFrom ProtGenerics rtime
 #' 
 #' @examples 
-#' 
+#' rtimeDuration(spectra)
 rtimeDuration <- function(spectra) {
   
     RT <- ProtGenerics::rtime(object = spectra)
@@ -67,17 +67,18 @@ RToverTICquantile <- function(spectra) {
     spectra <- spectra[order(RT)]
     RT <- RT[order(RT)]
     
+    ## create relative retention time ############ assume that rt always start at 0?????????
+    RT <- RT / max(RT)
+    
+    ## obtain ionCount (TIC) and calculate quantiles of cummulatively summed
+    ## TICs
     # if (is(object, "MSnExp"))
     #     TIC <- ProtGenerics::tic(object)
     # if (is(object, "Spectra"))
     TIC <- ProtGenerics::ionCount(spectra)
     
     ticSum <- cumsum(TIC)
-    
-    ## create relative retention time ############ assume that rt always start at 0?????????
-    RT <- RT / max(RT)
-    
-    quantileTICSum <- quantile(ticSum)
+    quantileTICSum <- stats::quantile(ticSum)
     
     ############### my understanding -->  #############################
     ## at which observed RT event (present in object) does the 
@@ -95,7 +96,7 @@ RToverTICquantile <- function(spectra) {
     return(quantileRT)
 }
 
-#' @name MSQuantilesAlongRT
+#' @name RToverMSQuarters
 #' 
 #' @title MS1/MS2 quantiles RT fraction (QC:4000055/QC:4000056)
 #' 
@@ -122,10 +123,14 @@ RToverTICquantile <- function(spectra) {
 #' 
 #' @examples 
 #' 
-MSQuantilesAlongRT <- function(spectra, MSLevel = 1L) {
+RToverMSQuarters <- function(spectra, MSLevel = 1L) {
   
-    ## truncate objecg based on the MSLevel
+    ## truncate spectra based on the MSLevel
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    
+    if (length(spectra) == 0) {
+        stop("Spectra object does not contain any spectra")
+    }
     
     ## order spectra according to increasing retention time
     RT <- ProtGenerics::rtime(spectra)
