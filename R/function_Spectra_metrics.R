@@ -221,13 +221,19 @@ ticQuantileToQuantileLogRatio <- function(spectra,
     changeQ4 <- quantileTICSum[["100%"]] - quantileTICSum[["75%"]]
     
     ## calculate the ratio between Q2/Q3/Q4 to Q1 TIC changes
-    if (relativeTo == "Q1") 
-      ratioQuantileTIC <- c(changeQ2, changeQ3, changeQ4) / changeQ1
+    if (relativeTo == "Q1") {
+        ratioQuantileTIC <- c(changeQ2, changeQ3, changeQ4) / changeQ1
+        names(ratioQuantileTIC) <- c("Q2/Q1", "Q3/Q1", "Q4/Q1")
+    }
+      
     
     ## calculate the ratio between Q2/Q3/Q4 to previous quantile TIC changes
-    if (relativeTo == "previous")
-      ratioQuantileTIC <- c(changeQ2 / changeQ1, changeQ3 / changeQ2, 
+    if (relativeTo == "previous") {
+        ratioQuantileTIC <- c(changeQ2 / changeQ1, changeQ3 / changeQ2, 
                             changeQ4 / changeQ3)
+        names(ratioQuantileTIC) <- c("Q2/Q1", "Q3/Q2", "Q4/Q3")
+    }
+      
     
     ## take the log2 and return
     logRatioQuantileTIC <- log2(ratioQuantileTIC)
@@ -842,6 +848,7 @@ precursorIntensityRange <- function(spectra, MSLevel = 1) {
   
     int <- ProtGenerics::precursorIntensity(spectra)
     rangeInt <- range(int)
+    names(rangeInt) <- c("min", "max")
     
     return(rangeInt)
 }
