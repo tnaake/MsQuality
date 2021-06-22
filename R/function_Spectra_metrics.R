@@ -49,6 +49,7 @@ rtDuration <- function(spectra) {
 #' is_a: QC:4000022 ! chromatogram metric
 #' 
 #' @param spectra `Spectra` object
+#' @param MSLevel `numeric(1)`
 #' 
 #' @return `numeric(4)`
 #' 
@@ -60,8 +61,11 @@ rtDuration <- function(spectra) {
 #' 
 #' @examples 
 #' 
-rtOverTICquantile <- function(spectra) {
-  
+rtOverTICquantile <- function(spectra, MSLevel = 1L) {
+    
+    ## truncate spectra based on the MSLevel
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    
     ## order spectra according to increasing retention time
     RT <- ProtGenerics::rtime(spectra)
     spectra <- spectra[order(RT)]
