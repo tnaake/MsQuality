@@ -168,7 +168,7 @@ calculateMetricsFromSpectra <- function(spectra,
         ## in case there are no further parameters for the function metrics[i]:
         if (nrow(params_i) == 0) {
             metric_i_j <- do.call(metrics[i], args = sp_l)
-            names(metric_i_j) <- metrics[i]
+            names_metric <- metrics[i]
             
             ## in case there are further parameters for the function metrics[i]:
         } else {
@@ -179,11 +179,18 @@ calculateMetricsFromSpectra <- function(spectra,
             })
             
             ## iterate trough the parameter combinations and return the names
-            names_metric_i_j <- apply(params_i, 1, function(j) {
+            names_metric <- apply(params_i, 1, function(j) {
                 paste(c(metrics[i], paste0(names(j), j)), collapse = "_")
             })
-            names(metric_i_j) <- names_metric_i_j
         }
+        
+        if (is(metric_i_j, "matrix")) {
+            names_metric <- paste(names_metric, rownames(metric_i_j), sep = "_")
+            metric_i_j <- as.vector(metric_i_j)
+            
+        } 
+        names(metric_i_j) <- names_metric
+        
         
         return(metric_i_j)
     })
