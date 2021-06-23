@@ -1,101 +1,3 @@
-#' @name calculateMetricFromMSE
-#' 
-#' @title Calculate QC metrics from a MsExperiment object
-#' 
-#' @description
-#' The function `calculateMetricsFromMSE` calculates quality metrics from a
-#' `MsExperiment`. Each spectra in the `mse` object should refer to one
-#' mzML file/to one sample.
-#' 
-#' @details
-#' The metrics are defined by the argument `metrics`. Further arguments 
-#' passed to the quality metric functions can be specified by the `params`
-#' argument. `params` can contain named entries which are matched against 
-#' the formal arguments of the quality metric functions. 
-#' 
-#' @param mse `MsExperiment` object
-#' @param metrics `character` specifying the quality metrics to be calculated
-#' on `mse`
-#' @param params `list` containing parameters passed to the quality metrics
-#' functions defined in `metrics`
-#' 
-#' @return `data.frame` containing in the columns the metrics for the 
-#' different spectra (in rows)
-#' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
-#' 
-#' @export
-#' 
-#' @importFrom MsExperiment sampleData
-#' @importFrom ProtGenerics spectra
-#' 
-#' @examples 
-#' library(msdata)
-#' library(MsExperiment)
-#' library(S4Vectors)
-#' mse <- MsExperiment()
-#' sd <- DataFrame(sample_id = c("QC1", "QC2"),
-#'     sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
-#' sampleData(mse) <- sd
-#' 
-#' ## define file names containing spectra data for the samples and
-#' ## add them, along with other arbitrary files to the experiment
-#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
-#' experimentFiles(mse) <- MsExperimentFiles(
-#'     mzML_files = fls,
-#'     annotations = "internal_standards.txt")
-#' ## link samples to data files: first sample to first file in "mzML_files",
-#' ## second sample to second file in "mzML_files"
-#' mse <- linkSampleData(mse, with = "experimentFiles.mzML_files",
-#'     sampleIndex = c(1, 2), withIndex = c(1, 2))
-#' mse <- linkSampleData(mse, with = "experimentFiles.annotations",
-#'                       sampleIndex = c(1, 2), withIndex = c(1, 1))
-#'
-#' library(Spectra)
-#' ## import the data and add it to the mse object
-#' spectra(mse) <- Spectra(fls, backend = MsBackendMzR())
-#' 
-#' ## define the quality metrics to be calculated
-#' metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
-#' 
-#' ## additional parameters passed to the quality metrics functions
-#' ## (MSLevel is an argument of areaUnderTIC and msSignal10XChange,
-#' ## relativeTo is an argument of msSignal10XChange)
-#' params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"), 
-#'     change = c("jump", "fall"))
-#'     
-#' ## calculate the metrics
-#' calculateMetricsFromMsExperiment(mse = mse, metrics = metrics, 
-#'     params = params_l)
-calculateMetricsFromMsExperiment(mse, metrics = qualityMetrics(mse),
-    params = list()) {
-    
-    ## match metrics against the possible quality metrics defined in 
-    ## qualityMetrics(mse), throw an error if there are metrics that 
-    ## are not defined in qualityMetrics(mse)
-    metrics <- match.arg(metrics, choices = qualityMetrics(mse), 
-        several.ok = TRUE)
-    
-    if(!is(mse, "MsExperiment")) stop("mse is not of class 'MsExperiment'")
-    
-    ## get first the number of spectra in the mse object, one spectra should 
-    ## refer to one mzML file/sample 
-    sD <- MsExperiment::sampleData(mse)
-    nsample <- nrow(sD)
-    
-    ## iterate through the different spectra in mse and calculate the 
-    ## quality metrics using the calculateMetricsFromSpectra
-    ## the lapply loop returns list containing named numeric vectors
-    mse_metrics <- lapply(seq_len(nsample), function(i) {
-        spectra_i <- ProtGenerics::spectra(mse[, i])
-        calculateMetricsFromSpectra(spectra = spectra_i, metrics = metrics, 
-            params = params)
-    })
-    df <- do.call("rbind", mse_metrics)
-    rownames(df) <- rownames(sD)
-    return(df)
-}
-
 #' @name calculateMetricsFromSpectra
 #' 
 #' @title Calculate QC metrics from a Spectra object
@@ -176,7 +78,7 @@ calculateMetricsFromSpectra <- function(spectra,
             metric_i_j <- apply(params_i, 1, function(j) {
                 args_l <- append(sp_l, as.list(j))
                 do.call(metrics[i], args = args_l)
-            })
+            }, simplify = FALSE)
             
             ## iterate trough the parameter combinations and return the names
             names_metric <- apply(params_i, 1, function(j) {
@@ -184,17 +86,121 @@ calculateMetricsFromSpectra <- function(spectra,
             })
         }
         
-        if (is(metric_i_j, "matrix")) {
-            names_metric <- paste(names_metric, rownames(metric_i_j), sep = "_")
-            metric_i_j <- as.vector(metric_i_j)
+        if (is(metric_i_j, "list")) {
+            names_metric <- lapply(seq_along(names_metric), function(j) {
+                if (length(names(metric_i_j[[j]])) > 0) {
+                    paste(names_metric[j], names(metric_i_j[[j]]), sep = "_")
+                } else {
+                    paste(names_metric[j])
+                }
+            })
+            names_metric <- unlist(names_metric)
+            metric_i_j <- unlist(metric_i_j)
             
         } 
         names(metric_i_j) <- names_metric
-        
-        
+
         return(metric_i_j)
     })
     metrics_vals <- unlist(metrics_vals)
-    
+
     return(metrics_vals)
+}
+
+#' @name calculateMetricFromMSE
+#' 
+#' @title Calculate QC metrics from a MsExperiment object
+#' 
+#' @description
+#' The function `calculateMetricsFromMSE` calculates quality metrics from a
+#' `MsExperiment`. Each spectra in the `mse` object should refer to one
+#' mzML file/to one sample.
+#' 
+#' @details
+#' The metrics are defined by the argument `metrics`. Further arguments 
+#' passed to the quality metric functions can be specified by the `params`
+#' argument. `params` can contain named entries which are matched against 
+#' the formal arguments of the quality metric functions. 
+#' 
+#' @param mse `MsExperiment` object
+#' @param metrics `character` specifying the quality metrics to be calculated
+#' on `mse`
+#' @param params `list` containing parameters passed to the quality metrics
+#' functions defined in `metrics`
+#' 
+#' @return `data.frame` containing in the columns the metrics for the 
+#' different spectra (in rows)
+#' 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' 
+#' @export
+#' 
+#' @importFrom MsExperiment sampleData
+#' @importFrom ProtGenerics spectra
+#' 
+#' @examples 
+#' library(msdata)
+#' library(MsExperiment)
+#' library(S4Vectors)
+#' mse <- MsExperiment()
+#' sd <- DataFrame(sample_id = c("QC1", "QC2"),
+#'     sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
+#' sampleData(mse) <- sd
+#' 
+#' ## define file names containing spectra data for the samples and
+#' ## add them, along with other arbitrary files to the experiment
+#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+#' experimentFiles(mse) <- MsExperimentFiles(
+#'     mzML_files = fls,
+#'     annotations = "internal_standards.txt")
+#' ## link samples to data files: first sample to first file in "mzML_files",
+#' ## second sample to second file in "mzML_files"
+#' mse <- linkSampleData(mse, with = "experimentFiles.mzML_files",
+#'     sampleIndex = c(1, 2), withIndex = c(1, 2))
+#' mse <- linkSampleData(mse, with = "experimentFiles.annotations",
+#'                       sampleIndex = c(1, 2), withIndex = c(1, 1))
+#'
+#' library(Spectra)
+#' ## import the data and add it to the mse object
+#' spectra(mse) <- Spectra(fls, backend = MsBackendMzR())
+#' 
+#' ## define the quality metrics to be calculated
+#' metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
+#' 
+#' ## additional parameters passed to the quality metrics functions
+#' ## (MSLevel is an argument of areaUnderTIC and msSignal10XChange,
+#' ## relativeTo is an argument of msSignal10XChange)
+#' params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"), 
+#'     change = c("jump", "fall"))
+#'     
+#' ## calculate the metrics
+#' calculateMetricsFromMsExperiment(mse = mse, metrics = metrics, 
+#'     params = params_l)
+calculateMetricsFromMsExperiment <- function(mse, metrics = qualityMetrics(mse),
+                                             params = list()) {
+    
+    ## match metrics against the possible quality metrics defined in 
+    ## qualityMetrics(mse), throw an error if there are metrics that 
+    ## are not defined in qualityMetrics(mse)
+    metrics <- match.arg(metrics, choices = qualityMetrics(mse), 
+                         several.ok = TRUE)
+    
+    if(!is(mse, "MsExperiment")) stop("mse is not of class 'MsExperiment'")
+    
+    ## get first the number of spectra in the mse object, one spectra should 
+    ## refer to one mzML file/sample 
+    sD <- MsExperiment::sampleData(mse)
+    nsample <- nrow(sD)
+    
+    ## iterate through the different spectra in mse and calculate the 
+    ## quality metrics using the calculateMetricsFromSpectra
+    ## the lapply loop returns list containing named numeric vectors
+    mse_metrics <- lapply(seq_len(nsample), function(i) {
+        spectra_i <- ProtGenerics::spectra(mse[, i])
+        calculateMetricsFromSpectra(spectra = spectra_i, metrics = metrics, 
+                                    params = params)
+    })
+    df <- do.call("rbind", mse_metrics)
+    rownames(df) <- rownames(sD)
+    return(df)
 }
