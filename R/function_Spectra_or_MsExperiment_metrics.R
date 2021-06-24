@@ -26,7 +26,7 @@
 #' qualityMetrics(spectra)
 qualityMetrics <- function(object) {
     if (is(object, "Spectra"))
-        metrics <- c(
+        .metrics <- c(
             "rtDuration", "rtOverTICquantile", "rtOverMSQuarters",
             "ticQuantileToQuantileLogRatio", "numberSpectra", 
             "medianPrecursorMZ", "rtIQR", "rtIQRrate", "areaUnderTIC", 
@@ -39,7 +39,7 @@ qualityMetrics <- function(object) {
             "medianCharge"
         )
     if (is(object, "MsExperiment"))
-        metrics <-  c(
+        .metrics <-  c(
             "rtDuration", "rtOverTICquantile", "rtOverMSQuarters",
             "ticQuantileToQuantileLogRatio", "numberSpectra", 
             "medianPrecursorMZ", "rtIQR", "rtIQRrate", "areaUnderTIC", 
@@ -51,6 +51,6 @@ qualityMetrics <- function(object) {
             "RatioCharge3over2", "RatioCharge4over2", "meanCharge", 
             "medianCharge"
         )
-    return(metrics)
+    return(.metrics)
 }
 
