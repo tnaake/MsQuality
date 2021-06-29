@@ -261,7 +261,7 @@ calculateMetrics <- function(object,
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(object), throw an error if there are metrics that 
     ## are not defined in qualityMetrics(spectra)
-    metrics <- match.arg(metrics, choices = qualityMetrics(oject), 
+    metrics <- match.arg(metrics, choices = qualityMetrics(object), 
         several.ok = TRUE)
     
     if (is(object, "Spectra")) {
