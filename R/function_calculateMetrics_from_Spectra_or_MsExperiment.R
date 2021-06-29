@@ -3,6 +3,8 @@
 #' @title Calculate QC metrics from a Spectra object
 #' 
 #' @description
+#' The function `calculateMetricsFromSpectra` calculates quality metrics from a
+#' `Spectra`. 
 #' 
 #' @details
 #' The metrics are defined by the argument `metrics`. Further arguments 
@@ -107,7 +109,7 @@ calculateMetricsFromSpectra <- function(spectra,
     return(metrics_vals)
 }
 
-#' @name calculateMetricFromMSE
+#' @name calculateMetricsFromMSE
 #' 
 #' @title Calculate QC metrics from a MsExperiment object
 #' 
@@ -204,3 +206,75 @@ calculateMetricsFromMsExperiment <- function(mse, metrics = qualityMetrics(mse),
     rownames(df) <- rownames(sD)
     return(df)
 }
+
+#' @name calculateMetrics
+#' 
+#' @title Calculate QC metrics from a Spectra or MsExperiment object
+#' 
+#' @description
+#' Calculate QC metrics from a `Spectra` or `MsExperiment` object. 
+#' `calculateMetrics` is a wrapper for the functions
+#' `calculateMetricsFromSpectra` and `calculateMetricsFromMSE`
+#' 
+#' @details
+#' The metrics are defined by the argument `metrics`. Further arguments 
+#' passed to the quality metric functions can be specified by the `params`
+#' argument. `params` can contain named entries which are matched against 
+#' the formal arguments of the quality metric functions. 
+#' 
+#' @param object `Spectra` or `MsExperiment` object
+#' @param metrics `character` specifying the quality metrics to be calculated
+#' on `mse`
+#' @param params `list` containing parameters passed to the quality metrics
+#' functions defined in `metrics`
+#' 
+#' @return named `numeric` vector (if `object` is a `Spectra` object) or 
+#' `data.frame` containing in the columns the metrics for the 
+#' different spectra (in rows, if `object` is a `MsExperiment` object)
+#' 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' 
+#' @export
+#' 
+#' 
+#' @examples
+#' library(msdata)
+#' library(Spectra)
+#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+#' spectra <- Spectra(fls, backend = MsBackendMzR())
+#' 
+#' ## define the quality metrics to be calculated
+#' metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
+#' 
+#' ## additional parameters passed to the quality metrics functions
+#' ## (MSLevel is an argument of areaUnderTIC and msSignal10XChange,
+#' ## relativeTo is an argument of msSignal10XChange)
+#' params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"), 
+#'     change = c("jump", "fall"))
+#'     
+#' ## calculate the metrics
+#' calculateMetrics(object = spectra, metrics = metrics, 
+#'     params = params_l)
+calculateMetrics <- function(object, 
+        metrics = qualityMetrics(object), params = list()) {
+    
+    ## match metrics against the possible quality metrics defined in 
+    ## qualityMetrics(object), throw an error if there are metrics that 
+    ## are not defined in qualityMetrics(spectra)
+    metrics <- match.arg(metrics, choices = qualityMetrics(oject), 
+        several.ok = TRUE)
+    
+    if (is(object, "Spectra")) {
+        metrics_vals <- calculateMetricsFromSpectra(spectra = object, 
+            metrics = metrics, params = params)
+    }
+    
+    if (is(object, "MsExperiment")) {
+        metrics_vals <- calculateMetricsFromMSE(spectra = object,
+            metrics = metrics, params = params)
+    }
+    
+    return(metrics_vals)
+    
+}
+
