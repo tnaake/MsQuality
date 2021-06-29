@@ -314,3 +314,4 @@ test_that("RatioCharge4over2", {
     expect_equal(RatioCharge4over2(sps_sciex_foo), NA)
 })
 ## END unit test RatioCharge4over2 ##
+

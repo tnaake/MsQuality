@@ -41,27 +41,31 @@ metrics <- c("rtDuration", "rtOverTICquantile", "ticQuantileToQuantileLogRatio",
 params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"), 
     change = c("jump", "fall"))
 
-## calculate the metrics
+## calculate the metrics from MsExperiment
 metrics_mse <- calculateMetricsFromMsExperiment(mse = mse, 
     metrics = metrics, params = params_l)
 
-## calculate the metrics
-metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
-    params = params_l)
+## calculate the metrics from Spectra
+metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra, 
+    metrics = metrics, params = params_l)
 
-
+## calculate the metrics by the wrapper function
+metrics_spectra_wrapper <- calculateMetrics(object = spectra, 
+    metrics = metrics, params = params_l)
+metrics_mse_wrapper <- calculateMetrics(object = mse, 
+    metrics = metrics, params = params_l)
 
 ## START unit test calculateMetricsFromMsExperiment ## 
 colnames_metrics_mse <- c("rtDuration",  "rtOverTICquantile_MSLevel1_0%",                                  
-                          "rtOverTICquantile_MSLevel1_25%", "rtOverTICquantile_MSLevel1_50%",                               
-                          "rtOverTICquantile_MSLevel1_75%", "rtOverTICquantile_MSLevel1_100%",                             
-                          "ticQuantileToQuantileLogRatio_MSLevel1_relativeToQ1_Q2/Q1", 
-                          "ticQuantileToQuantileLogRatio_MSLevel1_relativeToQ1_Q3/Q1",
-                          "ticQuantileToQuantileLogRatio_MSLevel1_relativeToQ1_Q4/Q1", 
-                          "ticQuantileToQuantileLogRatio_MSLevel1_relativeToprevious_Q2/Q1",
-                          "ticQuantileToQuantileLogRatio_MSLevel1_relativeToprevious_Q3/Q2", 
-                          "ticQuantileToQuantileLogRatio_MSLevel1_relativeToprevious_Q4/Q3",
-                          "numberSpectra_MSLevel1")
+    "rtOverTICquantile_MSLevel1_25%", "rtOverTICquantile_MSLevel1_50%",                               
+    "rtOverTICquantile_MSLevel1_75%", "rtOverTICquantile_MSLevel1_100%",                             
+    "ticQuantileToQuantileLogRatio_MSLevel1_relativeToQ1_Q2/Q1", 
+    "ticQuantileToQuantileLogRatio_MSLevel1_relativeToQ1_Q3/Q1",
+    "ticQuantileToQuantileLogRatio_MSLevel1_relativeToQ1_Q4/Q1", 
+    "ticQuantileToQuantileLogRatio_MSLevel1_relativeToprevious_Q2/Q1",
+    "ticQuantileToQuantileLogRatio_MSLevel1_relativeToprevious_Q3/Q2", 
+    "ticQuantileToQuantileLogRatio_MSLevel1_relativeToprevious_Q4/Q3",
+    "numberSpectra_MSLevel1")
 test_that("calculateMetricsFromMsExperiment", {
     expect_equal(dim(metrics_mse), c(2, 14))
     expect_equal(rownames(metrics_mse), NULL)
@@ -95,3 +99,24 @@ test_that("calculateMetricsFromSpectra", {
 })
 ## END unit test calculateMetricsFromSpectra ##
 
+## START unit test calculateMetrics ##
+test_that("calculateMetrics", {
+    expect_equal(length(metrics_spectra_wrapper), 14)
+    expect_equal(colnames(metrics_spectra_wrapper), colnames_metrics_spe)
+    expect_true(is.numeric(metrics_spectra_wrapper))
+    expect_true(all(is.numeric(metrics_spectra_wrapper) == metrics_spectra_vals))
+    expect_equal(dim(metrics_mse_wrapper), c(2, 14))
+    expect_equal(rownames(metrics_mse_wrapper), NULL)
+    expect_equal(colnames(metrics_mse_wrapper), colnames_metrics_mse)
+    expect_true(is.numeric(metrics_mse_wrapper))
+    expect_error(calculateMetrics(NULL, metrics = metrics),
+        "object 'metrics_vals' not found")
+    expect_error(calculateMetrics("foo", metrics = metrics),
+        "object 'metrics_vals' not found")
+    expect_error(calculateMetrics(spectra, metrics = "foo"),
+        "should be one of ")
+    expect_error(calculateMetrics(mse, metrics = "foo"),
+        "should be one of ")
+    
+})
+## END unit test calculateMetrics ## 
