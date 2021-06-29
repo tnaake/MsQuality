@@ -274,7 +274,7 @@ calculateMetrics <- function(object,
     }
     
     if (is(object, "MsExperiment")) {
-        metrics_vals <- calculateMetricsFromMSE(spectra = object,
+        metrics_vals <- calculateMetricsFromMsExperiment(mse = object,
             metrics = metrics, params = params)
     }
     
