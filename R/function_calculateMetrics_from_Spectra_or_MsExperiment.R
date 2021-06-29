@@ -63,6 +63,7 @@ calculateMetricsFromSpectra <- function(spectra,
     ## spectra object
     ## lapply is the outer loop going iterating through the functions `metrics`
     metrics_vals <- lapply(seq_along(metrics), function(i) {
+        
         formalArgs_i <- methods::formalArgs(metrics[i])
         ## how to deal with different arguments for some of the functions?
         ## use all parameter combinations from params that fit to the function
@@ -99,7 +100,10 @@ calculateMetricsFromSpectra <- function(spectra,
             names_metric <- unlist(names_metric)
             metric_i_j <- unlist(metric_i_j)
             
-        } 
+        }
+        if (is(metric_i_j, "vector") & length(metric_i_j) > 1) {
+            names_metric <- paste(names_metric, names(metric_i_j), sep = "_")
+        }
         names(metric_i_j) <- names_metric
 
         return(metric_i_j)

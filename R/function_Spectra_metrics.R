@@ -152,6 +152,7 @@ rtOverMSQuarters <- function(spectra, MSLevel = 1L) {
     ## get the last retention time event that falls within the partition group
     rtimeGroup <- lapply(seq_len(4), function(x) max(RT[ind == x]))
     rtimeGroup <- unlist(rtimeGroup)
+    names(rtimeGroup) <- c("Q1", "Q2", "Q3", "Q4")
     
     return(rtimeGroup)
 }
@@ -768,6 +769,7 @@ mzAcquisitionRange <- function(spectra, MSLevel = 1L) {
     mzList <- ProtGenerics::mz(spectra)
     MZ <- unlist(mzList)
     mzRange <- range(MZ)
+    names(mzRange) <- c("min", "max")
     
     return(mzRange)
 }
@@ -807,6 +809,7 @@ rtAcquisitionRange <- function(spectra, MSLevel = 1L) {
     
     RT <- ProtGenerics::rtime(spectra)
     rtRange <- range(RT)
+    names(rtRange) <- c("min", "max")
     
     return(rtRange)
 }
