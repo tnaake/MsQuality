@@ -128,7 +128,7 @@ calculateMetricsFromSpectra <- function(spectra,
 #' argument. `params` can contain named entries which are matched against 
 #' the formal arguments of the quality metric functions. 
 #' 
-#' @param mse `MsExperiment` object
+#' @param msexp `MsExperiment` object
 #' @param metrics `character` specifying the quality metrics to be calculated
 #' on `mse`
 #' @param params `list` containing parameters passed to the quality metrics
@@ -180,29 +180,29 @@ calculateMetricsFromSpectra <- function(spectra,
 #'     change = c("jump", "fall"))
 #'     
 #' ## calculate the metrics
-#' calculateMetricsFromMsExperiment(mse = mse, metrics = metrics, 
+#' calculateMetricsFromMsExperiment(msexp = mse, metrics = metrics, 
 #'     params = params_l)
-calculateMetricsFromMsExperiment <- function(mse, metrics = qualityMetrics(mse),
-                                             params = list()) {
+calculateMetricsFromMsExperiment <- function(msexp, 
+    metrics = qualityMetrics(msexp), params = list()) {
     
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(mse), throw an error if there are metrics that 
     ## are not defined in qualityMetrics(mse)
-    metrics <- match.arg(metrics, choices = qualityMetrics(mse), 
+    metrics <- match.arg(metrics, choices = qualityMetrics(msexp), 
                          several.ok = TRUE)
     
-    if(!is(mse, "MsExperiment")) stop("mse is not of class 'MsExperiment'")
+    if(!is(msexp, "MsExperiment")) stop("mse is not of class 'MsExperiment'")
     
     ## get first the number of spectra in the mse object, one spectra should 
     ## refer to one mzML file/sample 
-    sD <- MsExperiment::sampleData(mse)
+    sD <- MsExperiment::sampleData(msexp)
     nsample <- nrow(sD)
     
     ## iterate through the different spectra in mse and calculate the 
     ## quality metrics using the calculateMetricsFromSpectra
     ## the lapply loop returns list containing named numeric vectors
     mse_metrics <- lapply(seq_len(nsample), function(i) {
-        spectra_i <- ProtGenerics::spectra(mse[, i])
+        spectra_i <- ProtGenerics::spectra(msexp[, i])
         calculateMetricsFromSpectra(spectra = spectra_i, metrics = metrics, 
                                     params = params)
     })
@@ -274,7 +274,7 @@ calculateMetrics <- function(object,
     }
     
     if (is(object, "MsExperiment")) {
-        metrics_vals <- calculateMetricsFromMsExperiment(mse = object,
+        metrics_vals <- calculateMetricsFromMsExperiment(msexp = object,
             metrics = metrics, params = params)
     }
     

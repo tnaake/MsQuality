@@ -1,0 +1,318 @@
+---
+title: "msQC: Calculation of QC metrics from mass spectrometry data"
+author:
+ - name: Thomas Naake and Johannes Rainer
+   mail: thomas.naake@embl.de, thomasnaake@googlemail.com, wolfgang.huber@embl.de
+   affiliation: European Molecular Biology Laboratory, Meyerhofstrasse 1, 69117 Heidelberg/ EURAC Research, Viale Druso 1, 39100 BOlzano
+package: msQC
+      
+output:  
+    BiocStyle::html_document:
+        toc_float: true
+bibliography: msQC-citations.bib
+vignette: >
+    %\VignetteIndexEntry{QC for metabolomics and proteomics data}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteKeywords{Mass Spectrometry, MS, Metabolomics, Proteomics, Visualization, QC}
+    %\VignettePackage{msQC-vignette}
+    %\VignetteEncoding{UTF-8}
+---
+
+```{r style, echo = FALSE, results = 'asis'}
+BiocStyle::markdown()
+```
+
+```{r env, include=FALSE, echo=FALSE, cache=FALSE}
+library("knitr")
+opts_chunk$set(stop_on_error = 1L)
+suppressPackageStartupMessages(library("msQC"))
+suppressPackageStartupMessages(library("Spectra"))
+```
+
+# Introduction {#sec-intro}
+
+Data quality assessment is an integral part of preparatory data analysis 
+to ensure sound biological information retrieval. 
+
+We present here the `msQC` package, which provides functionality to calculate
+quality metrics for mass spectrometry-derived, spectral data at the per-sample
+level. `msQC` relies on the [`mzQC`](https://github.com/HUPO-PSI/mzQC) 
+framework of quality metrics defined by the Human Proteome 
+Organization-Proteomics Standards Intitiative (HUPO-PSI). These metrics 
+quantify the quality of spectral raw files using controlled vocabulary. 
+The package is especially addressed towards users that acquire 
+mass spectrometry data on a clinical/large scale: while it is easier to control 
+for high-quality data acquisition in small-scale experiments, typically run
+in one or few batches, clinical data sets are often acquired over longer 
+time frames and are prone to higher technical variation that is often
+unnoticed. `msQC` tries to address this problem by calculating metrics that
+can be stored along the spectral data sets (raw files or feature-extracted 
+data sets). `msQC`, thus, facilitates the tracking of shifts in data quality
+and quantifies the quality using multiple metrics. It should be thus easier
+to identify samples that are of low quality (high-number of missing values,
+termination of chromatographic runs, low instrument sensitivity, etc.).
+
+We would like to note here that these metrics only give an indication of 
+data quality, and, before removing indicated low-quality samples from the
+analysis more advanced analytics, e.g. using the implemented functionality
+and visualizations in the `MatrixQCvis` package, should be scrutinized. 
+Also, data quality 
+should always be regarded in the context of the sample type and experimental 
+settings, i.e. quality metrics should always be compared with regard to the
+sample type, experimental setup, instrumentation, etc..
+
+The `msQC` package allows to calculate low-level quality metrics that require
+minimum information on mass spectrometry data: retention time, m/z values, 
+and associated intensities.
+The list included in the `mzQC` framework is excessive, also including 
+metrics that rely more high-level information, that might not be readily
+accessible from .raw or .mzML files, e.g. pump pressure mean, or rely
+on alignment results, e.g. retention time mean shift, signal-to-noise ratio,
+precursor errors (ppm). 
+
+The `msQC` package is built upon the `Spectra` and the `MsExperiment` package.
+Metrics will be calculated based on the information stored in a 
+`Spectra` object, thus, the spectral data of each sample should be stored
+in one `Spectra` object. The `MsExperiment` serves as a container to 
+stores the mass spectral data of multiple samples. `msQC` enables the user
+to calculate quality metrics both on `Spectra` and `msExperiment` objects. 
+
+In this vignette, we will (i) create some exemplary `Spectra` and 
+`MsExperiment` objects, (ii) calculate the quality metrics on these
+data sets, and (iii) visualize some of the metrics.
+
+# Questions and bugs {-}
+
+`msQC` is currently under active development. If you discover any bugs, typos or develop ideas of improving `msQC` feel free to raise an issue via
+[GitHub](https://github.com/tnaake/msQC) or send a mail to the developer.
+
+# Prepare the environment and load the data {#sec-prepare}
+To install `msQC` enter the following to the `R` console
+
+```{r install_devtools, eval = FALSE}
+if (!requireNamespace("devtools", quietly = TRUE))
+    install.packages("devtools")
+devtools::install_github("tnaake/msQC")
+```
+
+```{r install, eval=FALSE, echo = FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("msQC")
+```
+
+Before starting with the analysis, load the `msQC` package. 
+
+```{r load_MatrixQCvis, eval=TRUE}
+library(msQC)
+```
+
+
+There are several options available to create a `Spectra` object. One way, as
+outlined in the vignette of the `Spectra` package is by specifying 
+the location of mass spectrometry raw files in `mzML`, `mzXML` or 
+`CDF` format and using the `MsBackendMzR` backend. As a way of example, here 
+we will load the example files from the `sciex` data set of the `msdata` 
+package and create a `Spectra` object from the two `mzML` files.
+
+```{r}
+fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+sps_sciex <- Spectra(fls, backend = MsBackendMzR())
+```
+
+Another common approach is the creation of `Spectra` objects from a 
+`DataFrame`s using the `MsBackendDataFrame` backend. Here, we will convert
+the data set of @Lee2019, containing metabolite level information measured by
+reverse phase liquid chromatography (RPLC) coupled to mass spectrometry and 
+hydrophilic interaction liquid chromatography (HILIC) coupled to mass 
+spectrometry, to `Spectra` objects. We will create per sample one 
+`Spectra` object. This data set contains samples in columns and 
+the feature-extracted information on metabolites in the rows.
+
+First, we will load the information on the metabolite levels and the 
+associated metadata (information on molecular weight, retention time, etc.).
+
+```{r}
+meta <- openxlsx::read.xlsx("~/GitHub/msQC/data/STables - rev1.xlsx", 
+    sheet = "Methods", startRow = 4)
+vals <- openxlsx::read.xlsx("~/GitHub/msQC/data/STables - rev1.xlsx", 
+    sheet = "Raw data", startRow = 4)
+```
+
+We will create separate lists for the RPLC- and HILIC-derived levels. 
+```{r}
+## filter for RPLC
+vals_rplc <- vals[grep(vals$Metabolite, pattern = "_rp$"), ]
+meta_rplc <- meta[grep(meta$Method, pattern = "RPLC-"), ]
+
+## to link the meta data with the data frame containing the intensity values,
+## harmonise the names of the metabolites
+names_vals_rplc <- tolower(make.names(vals_rplc$Metabolite))
+names_vals_rplc <- stringr::str_remove(names_vals_rplc, "_rp$")
+vals_rplc$Metabolite <- gsub(names_vals_rplc, pattern = "[.]", 
+    replacement = "_")
+
+## harmonise the metabolite names of the meta data
+names_meta_rplc <- tolower(make.names(meta_rplc$Standard.Compound))
+meta_rplc$Standard.Compound <- gsub(names_meta_rplc, pattern = "[.]", 
+    replacement = "_")
+
+## add the meta data to the data frame containing the intensity values
+rplc <- inner_join(meta_rplc, vals_rplc, 
+    by = c("Standard.Compound" = "Metabolite"))
+```
+
+```{r}
+## filter for HILIC
+vals_hilic <- vals[grep(vals$Metabolite, pattern = "_hn$"), ]
+meta_hilic <- meta[grep(meta$Method, pattern = "HILIC-"), ]
+
+## to link the meta data with the data frame containing the intensity values,
+## harmonise the names of the metabolites
+names_vals_hilic <- tolower(make.names(vals_hilic$Metabolite))
+names_vals_hilic <- stringr::str_remove(names_vals_hilic, "_hn$")
+vals_hilic$Metabolite <- gsub(names_vals_hilic, pattern = "[.]", 
+    replacement = "_")
+
+## harmonise the metabolite names of the meta data
+names_meta_hilic <- tolower(make.names(meta_hilic$Standard.Compound))
+meta_hilic$Standard.Compound <- gsub(names_meta_hilic, pattern = "[.]", 
+    replacement = "_")
+
+## add the meta data to the data frame containing the intensity values
+hilic <- inner_join(meta_hilic, vals_hilic, 
+    by = c("Standard.Compound" = "Metabolite"))
+```
+
+
+```{r}
+## create for the LC-separated features a list of spectra objects, define a 
+## helper function
+create_Spectra <- function(data) {
+    sps_l <- list()  
+    begin <- which(colnames(data) == "Sample-1")
+    end <- which(colnames(data) == "Sample-638")
+    
+    for (i in begin:end) {
+        data_i <- data[, i]
+        inds_notna <- !is.na(data_i)
+    rplc_i <- rplc[inds_notna, ]
+    m_i <- rplc_i[, i]
+    spd <- DataFrame(
+        msLevel = c(rep(1L, length(m_i))),
+        polarity = c(rep(1L, length(m_i))),
+        id = rplc_i[, "CAS.Number"],
+        name = rplc_i[, "Standard.Compound"])
+
+    spd$mz <- lapply(seq_len(length(m_i)), function(x)
+        as.vector(rplc_i[x, "Precursor.Ion.(g/mol)"]))
+    spd$intensity <- lapply(seq_len(length(m_i)), function(x) as.vector(m_i[x]))
+    sps <- Spectra::Spectra(spd)
+    sps$rtime <- rplc_i[, "RT.(min)"]
+    sps$precursorIntensity <- as.vector(m_i)
+    
+    ## use the molecular weight as a proxy for precursor m/z 
+    sps$precursorMz <- rplc_i[, "Precursor.Ion.(g/mol)"]
+    sps$dataOrigin <- colnames(rplc)[i]
+    sps_l[[i-9]] <- sps
+    names(sps_l)[i-9] <- colnames(rplc)[i]
+}
+}
+
+for (i in which(colnames(rplc) == "Sample-1"):which(colnames(rplc) == "Sample-638")) {
+    inds_notna <- !is.na(rplc[, i])
+    rplc_i <- rplc[inds_notna, ]
+    m_i <- rplc_i[, i]
+    spd <- DataFrame(
+        msLevel = c(rep(1L, length(m_i))),
+        polarity = c(rep(1L, length(m_i))),
+        id = rplc_i[, "CAS.Number"],
+        name = rplc_i[, "Standard.Compound"])
+
+    spd$mz <- lapply(seq_len(length(m_i)), function(x)
+        as.vector(rplc_i[x, "Precursor.Ion.(g/mol)"]))
+    spd$intensity <- lapply(seq_len(length(m_i)), function(x) as.vector(m_i[x]))
+    sps <- Spectra::Spectra(spd)
+    sps$rtime <- rplc_i[, "RT.(min)"]
+    sps$precursorIntensity <- as.vector(m_i)
+    
+    ## use the molecular weight as a proxy for precursor m/z 
+    sps$precursorMz <- rplc_i[, "Precursor.Ion.(g/mol)"]
+    sps$dataOrigin <- colnames(rplc)[i]
+    sps_l[[i-9]] <- sps
+    names(sps_l)[i-9] <- colnames(rplc)[i]
+}
+
+create_Spectra <- function()
+```
+
+The functions in `msQC` might also accept a collection of `Spectra` objects
+stored in an `MsExperiment` file. 
+```{r}
+library(MsExperiment)
+
+## take only a subset of the first 100 samples to create the 
+## MsExperiment object
+sps_subset <- sps_l[1:50]
+sps_all <- Reduce(c, sps_subset)
+
+## create an empty MsExperiment object and fill it with data
+msexp <- MsExperiment()
+sampleData(msexp) <- DataFrame(samples = names(sps_subset))
+rownames(sampleData(msexp)) <- names(sps_subset)
+spectra(msexp) <- sps_all
+
+## link the spectra to the samples
+msexp <- linkSampleData(msexp, "sampleData.samples = spectra.dataOrigin")
+```
+
+# Calculating the quality metrics on `Spectra` and `MsExperiment` objects
+
+The most important function to assess the data quality and to calculate the 
+metrics is the `calculateMetrics` function. The function takes
+a `Spectra` or `MsExperiment` object as input, a character vector of metrics
+to be calculated, and, optionally a list of parameters passed to the 
+quality metrics functions. 
+
+When passing a `Spectra` object to the function, a named vector is 
+returned by `calculateMetrics` with the metrics specified by the argument
+`metrics`. By default, `qualityMetrics(object)` is taken 
+```{r calculateMetrics}
+sps_sample_1 <- sps_l[[1]]
+calculateMetrics(object = sps_sample_1, params = list())
+```
+
+Alternatively, an `MsExperiment` object might be passed to 
+`calculateMetrics`. The function will iterate over the samples (referring
+to rows in `sampleData(msexp))`) and calculate the quality metrics on the
+corresponding `Spectra`s.
+```{r}
+calculateMetrics(object = msexp, params = list())
+```
+
+# Visualizing the results
+
+```{r}
+g <- ggplot(ticQuantileToQuantileQ1LogRatio_l) + 
+    geom_point(aes(x = name, y = value, col = person, fill = person, shape = rowname)) + 
+    scale_colour_brewer(palette="Set1") +
+    facet_grid(~ type, scales = "free_x", space = "free_x") +
+    scale_shape_manual(values=c(0, 1, 2, 3, 4)) + theme_bw() +
+    guides(shape = guide_legend(override.aes = list(size = 5))) +
+    guides(colour = guide_legend(override.aes = list(size= 5))) +
+    theme(axis.text.x = element_text(angle = 90, size = 10), panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+
+```
+
+# Appendix {-}
+
+## Session information {-}
+
+All software and respective versions to build this vignette are listed here:
+
+```{r session,eval=TRUE, echo=FALSE}
+sessionInfo()
+```
+
+## References
+
