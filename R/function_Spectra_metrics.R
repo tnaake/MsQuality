@@ -82,7 +82,7 @@ rtOverTICquantile <- function(spectra, MSLevel = 1L) {
     TIC <- ProtGenerics::ionCount(spectra)
     
     ticSum <- cumsum(TIC)
-    quantileTICSum <- stats::quantile(ticSum)
+    quantileTICSum <- stats::quantile(ticSum, na.rm = TRUE)
     
     ############### my understanding -->  #############################
     ## at which observed RT event (present in object) does the 
@@ -142,7 +142,7 @@ rtOverMSQuarters <- function(spectra, MSLevel = 1L) {
     RT <- RT[order(RT)]
     
     ## create relative retention time ############ assume that rt always start at 0?????????
-    RT <- RT / max(RT)   
+    RT <- RT / max(RT, na.rm = TRUE)   
     
     ## partition the spectra (rows) into four parts 
     ## (they are not necessarily equal)
@@ -150,7 +150,8 @@ rtOverMSQuarters <- function(spectra, MSLevel = 1L) {
     ind <- sort(ind)
     
     ## get the last retention time event that falls within the partition group
-    rtimeGroup <- lapply(seq_len(4), function(x) max(RT[ind == x]))
+    rtimeGroup <- lapply(seq_len(4), 
+        function(x) max(RT[ind == x], na.rm = TRUE))
     rtimeGroup <- unlist(rtimeGroup)
     names(rtimeGroup) <- c("Q1", "Q2", "Q3", "Q4")
     
@@ -191,7 +192,10 @@ rtOverMSQuarters <- function(spectra, MSLevel = 1L) {
 #' @importFrom ProtGenerics filterMsLevel tic ionCount
 #' 
 #' @examples 
-#' 
+#' ticQuantileToQuantileLogRatio(spectra = spectra, relativeTo = "Q1",
+#'     MSLevel = 1L)
+#' ticQuantileToQuantileLogRatio(spectra, relativeTo = "previous",
+#'     MSLevel = 1L)
 ticQuantileToQuantileLogRatio <- function(spectra, 
                               relativeTo = c("Q1", "previous"), MSLevel = 1L) {
   
@@ -217,7 +221,7 @@ ticQuantileToQuantileLogRatio <- function(spectra,
     ############# does this make sense?
     ticSum <- cumsum(TIC)
     
-    quantileTICSum <- quantile(ticSum)
+    quantileTICSum <- quantile(ticSum, na.rm = TRUE)
     
     ## calculate the changes in TIC per quantile
     changeQ1 <- quantileTICSum[["25%"]] - quantileTICSum[["0%"]]
@@ -366,7 +370,7 @@ rtIQR <- function(spectra, MSLevel = 1L) {
     RT <- ProtGenerics::rtime(spectra)
     
     ## IQR???, what is the unit for rtime, always seconds??
-    iqr <- stats::IQR(RT)
+    iqr <- stats::IQR(RT, na.rm = TRUE)
     
     return(iqr)
 }
@@ -413,7 +417,7 @@ rtIQRrate <- function(spectra, MSLevel = 1L) {
     spectra <- spectra[order(RT)]
     RT <- RT[order(RT)]
     
-    quantileRT <- stats::quantile(RT)
+    quantileRT <- stats::quantile(RT, na.rm = TRUE)
     
     ## get the RT values of the 25% and 75% quantile
     quantile25RT <- quantileRT[["25%"]]
@@ -519,7 +523,7 @@ areaUnderTICRTquantiles <- function(spectra, MSLevel = 1L) {
     spectra <- spectra[order(RT)]
     RT <- RT[order(RT)]
     
-    quantileRT <- stats::quantile(RT)
+    quantileRT <- stats::quantile(RT, na.rm = TRUE)
     
     # if (is(object, "MSnExp"))
     #     TIC <- ProtGenerics::tic(object)
@@ -585,7 +589,7 @@ extentIdentifiedPrecursorIntensity <- function(spectra, MSLevel = 1L) {
     ## retrieve the precursorIntensity and calculate the 5% and 95% quantile
     precInt <- ProtGenerics::precursorIntensity(spectra)
     quantilePrecInt <- stats::quantile(precInt, probs = c(0.05, 0.95), 
-                                       na.rm = TRUE)
+                                                              na.rm = TRUE)
     
     ## calculate the ratio between the 95% and 5% quantile and return the value
     ratio <- quantilePrecInt[["95%"]] / quantilePrecInt[["5%"]]
@@ -915,7 +919,8 @@ precursorIntensityQuartiles <- function(spectra, MSLevel = 1L) {
     }
   
     int <- ProtGenerics::precursorIntensity(spectra)
-    quartiles <- stats::quantile(int, probs = c(0.25, 0.50, 0.75))
+    quartiles <- stats::quantile(int, probs = c(0.25, 0.50, 0.75), 
+                                                                na.rm = TRUE)
     
     return(quartiles)
 }
