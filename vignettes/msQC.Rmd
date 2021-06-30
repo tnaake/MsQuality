@@ -104,21 +104,62 @@ BiocManager::install("msQC")
 Before starting with the analysis, load the `msQC` package. 
 
 ```{r load_MatrixQCvis, eval=TRUE}
-library(msQC)
+library("msQC")
 ```
 
+# Create `Spectra` and `MsExperiment` objects 
+
+Load the `MsExperiment` and `Spectra` packages.
+
+```{r load_MsExperiment_Spectra}
+library("MsExperiment")
+library("Spectra")
+```
+
+
+## Create `Spectra` and `MsExperiment` objects from mzML files
 
 There are several options available to create a `Spectra` object. One way, as
 outlined in the vignette of the `Spectra` package is by specifying 
 the location of mass spectrometry raw files in `mzML`, `mzXML` or 
 `CDF` format and using the `MsBackendMzR` backend. As a way of example, here 
 we will load the example files from the `sciex` data set of the `msdata` 
-package and create a `Spectra` object from the two `mzML` files.
+package and create a `Spectra` object from the two `mzML` files. The 
+example is taken from the `Spectra` vignette.
 
-```{r}
+```{r spectra_sciex, eval = FALSE, echo = TRUE}
 fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
 sps_sciex <- Spectra(fls, backend = MsBackendMzR())
 ```
+
+The data set consists of a single sample measured in two different 
+injections to the same LC-MS setup. An empty instance of an
+`MsExperiment` object is created and populated with information on the samples
+by assigning data on the samples (`sampleData`), information on the 
+`mzML` files (`MsExperimentFiles`) and spectral information (`spectra`). 
+In a last step, using `linkSampleData`, the relationships between the samples
+and the spectral information are defined.
+
+```{r msexp_sciex, eval = FALSE, echo = TRUE}
+lmse <- MsExperiment()
+sd <- DataFrame(sample_id = c("QC1", "QC2"),
+                sample_name = c("QC Pool", "QC Pool"),
+                injection_idx = c(1, 3))
+sampleData(lmse) <- sd
+
+## add mzML files to the experiment
+experimentFiles(lmse) <- MsExperimentFiles(mzML_files = fls)
+
+## add the Spectra object to the experiment
+spectra(lmse) <- sps_sciex
+
+## use linkSampleData to establish and define relationships between sample 
+## annotations and MS data
+lmse <- linkSampleData(lmse, with = "experimentFiles.mzML_file",
+                        sampleIndex = c(1, 2), withIndex = c(1, 2))
+```
+
+## Create `Spectra` and `MsExperiment` objects from (feature-extracted) intensity tables
 
 Another common approach is the creation of `Spectra` objects from a 
 `DataFrame`s using the `MsBackendDataFrame` backend. Here, we will convert
@@ -126,21 +167,28 @@ the data set of @Lee2019, containing metabolite level information measured by
 reverse phase liquid chromatography (RPLC) coupled to mass spectrometry and 
 hydrophilic interaction liquid chromatography (HILIC) coupled to mass 
 spectrometry, to `Spectra` objects. We will create per sample one 
-`Spectra` object. This data set contains samples in columns and 
+`Spectra` object. Th data set of @Lee2019 contains samples in columns and 
 the feature-extracted information on metabolites in the rows.
 
 First, we will load the information on the metabolite levels and the 
 associated metadata (information on molecular weight, retention time, etc.).
 
-```{r}
+```{r load_Lee2019, eval = TRUE, echo = TRUE}
 meta <- openxlsx::read.xlsx("~/GitHub/msQC/data/STables - rev1.xlsx", 
     sheet = "Methods", startRow = 4)
+## print number of metabolites per measurement (meta data)
+table(meta$Method)
+
 vals <- openxlsx::read.xlsx("~/GitHub/msQC/data/STables - rev1.xlsx", 
     sheet = "Raw data", startRow = 4)
+## print number of metabolites per measurement (intensity data)
+table(grepl(vals$Metabolite, pattern = "_rp$"))
+table(grepl(vals$Metabolite, pattern = "_hn$"))
 ```
 
-We will create separate lists for the RPLC- and HILIC-derived levels. 
-```{r}
+We will create separate lists of `Spectra` objects for the RPLC- and 
+HILIC-derived levels.
+```{r data_wrangling_rplc, echo = TRUE, eval = TRUE}
 ## filter for RPLC
 vals_rplc <- vals[grep(vals$Metabolite, pattern = "_rp$"), ]
 meta_rplc <- meta[grep(meta$Method, pattern = "RPLC-"), ]
@@ -160,9 +208,13 @@ meta_rplc$Standard.Compound <- gsub(names_meta_rplc, pattern = "[.]",
 ## add the meta data to the data frame containing the intensity values
 rplc <- inner_join(meta_rplc, vals_rplc, 
     by = c("Standard.Compound" = "Metabolite"))
+
+## how many metabolites are remaining after intersecting the metabolite names
+dim(rplc)
 ```
 
-```{r}
+Do the same data wrangling steps for the HILIC-derived intensity values.
+```{r data_wrangling_hilic, eval = TRUE, echo = TRUE}
 ## filter for HILIC
 vals_hilic <- vals[grep(vals$Metabolite, pattern = "_hn$"), ]
 meta_hilic <- meta[grep(meta$Method, pattern = "HILIC-"), ]
@@ -182,88 +234,106 @@ meta_hilic$Standard.Compound <- gsub(names_meta_hilic, pattern = "[.]",
 ## add the meta data to the data frame containing the intensity values
 hilic <- inner_join(meta_hilic, vals_hilic, 
     by = c("Standard.Compound" = "Metabolite"))
+
+## how many metabolites are remaining after intersecting the metabolite names
+dim(hilic)
 ```
 
-
-```{r}
-## create for the LC-separated features a list of spectra objects, define a 
-## helper function
+We then create for the LC-separated features a list of `Spectra` objects. 
+Since the `rplc` and `hilic` objects have the same structure, we will define 
+a helper function that we apply on these objects to create the list. 
+```{r list_spectra, eval = TRUE, echo = TRUE}
 create_Spectra <- function(data) {
-    sps_l <- list()  
+    sps_l <- list()
     begin <- which(colnames(data) == "Sample-1")
     end <- which(colnames(data) == "Sample-638")
     
     for (i in begin:end) {
-        data_i <- data[, i]
-        inds_notna <- !is.na(data_i)
-    rplc_i <- rplc[inds_notna, ]
-    m_i <- rplc_i[, i]
-    spd <- DataFrame(
-        msLevel = c(rep(1L, length(m_i))),
-        polarity = c(rep(1L, length(m_i))),
-        id = rplc_i[, "CAS.Number"],
-        name = rplc_i[, "Standard.Compound"])
 
-    spd$mz <- lapply(seq_len(length(m_i)), function(x)
-        as.vector(rplc_i[x, "Precursor.Ion.(g/mol)"]))
-    spd$intensity <- lapply(seq_len(length(m_i)), function(x) as.vector(m_i[x]))
-    sps <- Spectra::Spectra(spd)
-    sps$rtime <- rplc_i[, "RT.(min)"]
-    sps$precursorIntensity <- as.vector(m_i)
-    
-    ## use the molecular weight as a proxy for precursor m/z 
-    sps$precursorMz <- rplc_i[, "Precursor.Ion.(g/mol)"]
-    sps$dataOrigin <- colnames(rplc)[i]
-    sps_l[[i-9]] <- sps
-    names(sps_l)[i-9] <- colnames(rplc)[i]
-}
-}
+        data_i <- data[!is.na(data[, i]), ]
+        int_i <- data_i[, i]
+        
+        if (length(int_i) > 0) {
+            spd <- DataFrame(
+                msLevel = c(rep(1L, length(int_i))), 
+                polarity = c(rep(1L, length(int_i))),
+                id = data_i[, "CAS.Number"], 
+                name = data_i[, "Standard.Compound"])
 
-for (i in which(colnames(rplc) == "Sample-1"):which(colnames(rplc) == "Sample-638")) {
-    inds_notna <- !is.na(rplc[, i])
-    rplc_i <- rplc[inds_notna, ]
-    m_i <- rplc_i[, i]
-    spd <- DataFrame(
-        msLevel = c(rep(1L, length(m_i))),
-        polarity = c(rep(1L, length(m_i))),
-        id = rplc_i[, "CAS.Number"],
-        name = rplc_i[, "Standard.Compound"])
-
-    spd$mz <- lapply(seq_len(length(m_i)), function(x)
-        as.vector(rplc_i[x, "Precursor.Ion.(g/mol)"]))
-    spd$intensity <- lapply(seq_len(length(m_i)), function(x) as.vector(m_i[x]))
-    sps <- Spectra::Spectra(spd)
-    sps$rtime <- rplc_i[, "RT.(min)"]
-    sps$precursorIntensity <- as.vector(m_i)
-    
-    ## use the molecular weight as a proxy for precursor m/z 
-    sps$precursorMz <- rplc_i[, "Precursor.Ion.(g/mol)"]
-    sps$dataOrigin <- colnames(rplc)[i]
-    sps_l[[i-9]] <- sps
-    names(sps_l)[i-9] <- colnames(rplc)[i]
+            spd$mz <- lapply(seq_len(length(int_i)), 
+                function(x) as.vector(data_i[x, "Precursor.Ion.(g/mol)"]))
+            spd$intensity <- lapply(seq_len(length(int_i)), 
+                function(x) as.vector(int_i[x]))
+            sps <- Spectra::Spectra(spd)
+            sps$rtime <- data_i[, "RT.(min)"]
+            sps$precursorIntensity <- as.vector(int_i)
+        
+            ## use the molecular weight as a proxy for precursor m/z 
+            sps$precursorMz <- data_i[, "Precursor.Ion.(g/mol)"]  
+            sps$dataOrigin <- colnames(data)[i]
+        } else {
+            sps <- NA
+        }
+        
+        sps_l[[i - 9]] <- sps
+        names(sps_l)[i - 9] <- colnames(data)[i]
+    }
+    return(sps_l)
 }
 
-create_Spectra <- function()
+## apply the function on the RPLC- and HILIC-derived intensity values 
+sps_l_rplc <- create_Spectra(data = rplc)
+sps_l_hilic <- create_Spectra(data = hilic)
+
+## show the first list entries of sps_l_rplc and sps_l_hilic
+sps_l_rplc[[1]]
+sps_l_hilic[[1]]
+```
+
+Some of the samples only contained missing values for the probed metabolites.
+In the following the paired samples are removed from the list of `Spectra` 
+objects if one of the samples only contains missing values. 
+
+```{r remove_NA, warning = FALSE, message = TRUE}
+inds_remove <- lapply(seq_along(sps_l_rplc), 
+      function(x) is.na(sps_l_rplc[[x]]) | is.na(sps_l_hilic[[x]]))
+inds_remove <- unlist(inds_remove)
+## print the number of removed entries
+table(inds_remove)
+sps_l_rplc <- sps_l_rplc[!inds_remove]
+sps_l_hilic <- sps_l_hilic[!inds_remove]
 ```
 
 The functions in `msQC` might also accept a collection of `Spectra` objects
-stored in an `MsExperiment` file. 
-```{r}
-library(MsExperiment)
+stored in an `MsExperiment`. We will convert the list of `Spectra` 
+objects to an `MsExperiment` object.
 
+```{r}
 ## take only a subset of the first 100 samples to create the 
 ## MsExperiment object
-sps_subset <- sps_l[1:50]
-sps_all <- Reduce(c, sps_subset)
+sps_subset_rplc <- sps_l_rplc[1:50]
+sps_c_rplc <- Reduce(c, sps_subset_rplc)
+sps_subset_hilic <- sps_l_hilic[1:50]
+sps_c_hilic <- Reduce(c, sps_subset_hilic)
 
 ## create an empty MsExperiment object and fill it with data
-msexp <- MsExperiment()
-sampleData(msexp) <- DataFrame(samples = names(sps_subset))
-rownames(sampleData(msexp)) <- names(sps_subset)
-spectra(msexp) <- sps_all
+msexp_rplc <- msexp_hilic <- MsExperiment()
+sampleData(msexp_rplc) <- DataFrame(samples = names(sps_subset_rplc))
+sampleData(msexp_hilic) <- DataFrame(samples = names(sps_subset_hilic))
+rownames(sampleData(msexp_rplc)) <- names(sps_subset_rplc)
+rownames(sampleData(msexp_hilic)) <- names(sps_subset_hilic)
+spectra(msexp_rplc) <- sps_c_rplc
+spectra(msexp_hilic) <- sps_c_hilic
 
 ## link the spectra to the samples
-msexp <- linkSampleData(msexp, "sampleData.samples = spectra.dataOrigin")
+msexp_rplc <- linkSampleData(object = msexp_rplc, 
+    with = "sampleData.samples = spectra.dataOrigin")
+msexp_hilic <- linkSampleData(object = msexp_hilic, 
+    with = "sampleData.samples = spectra.dataOrigin")
+
+## show the msexp_rplc and msexp_hilic objects
+msexp_rplc
+msexp_hilic
 ```
 
 # Calculating the quality metrics on `Spectra` and `MsExperiment` objects
@@ -276,10 +346,43 @@ quality metrics functions.
 
 When passing a `Spectra` object to the function, a named vector is 
 returned by `calculateMetrics` with the metrics specified by the argument
-`metrics`. By default, `qualityMetrics(object)` is taken 
+`metrics`. By default, `qualityMetrics(object)` is taken to specify
+the calculation of quality metrics. `calculateMetrics` also accepts a list
+of parameters passed to the individual quality metrics functions. For 
+each quality metrics functions, the relevant parameters are selected based on 
+the accepted arguments. 
+
+If there are several arguments passed to a 
+quality metrics functions passed to a grid of the combination between the 
+different parameters is run with the quality metrics functions. 
+For example, the function `ticQuantileToQuantileLogRatio` function has the 
+arguments `relativeTo` and `MSLevel`. `relativeTo` specifies to which 
+quantile the log TIC quantile is relatively related to (either to the 1st 
+quantile or the respective previous one). One `Spectra` object may also contain
+more than one MSLevel, e.g. if it also contains information on MS$^2$ or 
+MS$^3$ features. If the user specifies `params = list(relativeTo = c("Q1", "previous"), MSLevel = c(1L, 2L))`, `ticQUantileToQuantileLogRatio` is run 
+with the paramter combinations `relativeTo = "Q1", MSLevel = 1L`, 
+`relativeTo = "previous", MSLevel = 1L`, `relativeTo = "Q1", MSLevel = 2L`, 
+and `relativeTo = "previous", MSLevel = 2L`. The different results based on 
+these parameter combinations is returned and the combination is indicated in 
+the names of the returned vector. 
+
+Here, we would like to calculate the metrics of all the included quality 
+metrics functions (`qualityMetrics(object)`) and additionally pass the 
+parameter `relativeTo = "Q1"` and `relativeTo = "previous"`.
+
 ```{r calculateMetrics}
-sps_sample_1 <- sps_l[[1]]
-calculateMetrics(object = sps_sample_1, params = list())
+sps_rplc_sample_1 <- sps_l_rplc[[1]]
+metrics_rplc_sps <- calculateMetrics(object = sps_rplc_sample_1,
+    metrics = qualityMetrics(object),
+    params = list(relativeTo = c("Q1", "previous")))
+metrics_sps
+
+sps_hilic_sample_1 <- sps_l_hilic[[1]]
+metrics_hilic_sps <- calculateMetrics(object = sps_hilic_sample_1,
+    metrics = qualityMetrics(object),
+    params = list(relativeTo = c("Q1", "previous")))
+metrics_sps
 ```
 
 Alternatively, an `MsExperiment` object might be passed to 
@@ -287,22 +390,83 @@ Alternatively, an `MsExperiment` object might be passed to
 to rows in `sampleData(msexp))`) and calculate the quality metrics on the
 corresponding `Spectra`s.
 ```{r}
-calculateMetrics(object = msexp, params = list())
+## for RPLC-derived MsExperiment
+metrics_rplc_msexp <- calculateMetrics(object = msexp_rplc, 
+    metrics = qualityMetrics(msexp_rplc), 
+    params = list(relativeTo = c("Q1", "previous")))
+
+## for HILIC-derived MsExperiment
+metrics_hilic_msexp <- calculateMetrics(object = msexp_hilic, 
+    metrics = qualityMetrics(msexp_hilic), 
+    params = list(relativeTo = c("Q1", "previous")))
+```
+
+When passing an `MsExperiment` object to `calculateMetrics` a `data.frame`
+object is returned with the samples (derived from the rownames of 
+`sampleData(msexp)`) in the rows and the metrics in columns. 
+
+We will show here the objects `metrics_rplc_msexp` and `metrics_hilic_msexp`
+```{r paged_table_metrics, eval = TRUE, echo = FALSE}
+print("metrics_rplc_msexp")
+rmarkdown::paged_table(metrics_rplc_msexp)
+print("metrics_hilic_msexp")
+rmarkdown::paged_table(metrics_hilic_msexp)
 ```
 
 # Visualizing the results
 
-```{r}
-g <- ggplot(ticQuantileToQuantileQ1LogRatio_l) + 
-    geom_point(aes(x = name, y = value, col = person, fill = person, shape = rowname)) + 
-    scale_colour_brewer(palette="Set1") +
-    facet_grid(~ type, scales = "free_x", space = "free_x") +
-    scale_shape_manual(values=c(0, 1, 2, 3, 4)) + theme_bw() +
-    guides(shape = guide_legend(override.aes = list(size = 5))) +
-    guides(colour = guide_legend(override.aes = list(size= 5))) +
-    theme(axis.text.x = element_text(angle = 90, size = 10), panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+The quality metrics can be most easily compared when graphically visualized.
 
+Since we will use here `ggplot2`, we will convert the two `data.frame`s into
+the long format and combine the two `data.frame` into one (`metrics_l`).
+
+```{r}
+library("reshape2")
+metrics_rplc_l <- melt(metrics_rplc_msexp)
+metrics_hilic_l <- melt(metrics_hilic_msexp)
+
+## add information on the separation technology
+metrics_rplc_l <- cbind(metrics_rplc_l, method = "RPCL")
+metrics_hilic_l <- cbind(metrics_hilic_l, method = "HILIC")
+
+## combine metrics_rplc_l and metrics_hilic_l
+metrics_l <- rbind(metrics_rplc_l, metrics_hilic_l)
 ```
+
+As a way of example, we will plot here the number of features. A high number
+of missing features might indicate low data quality, however, also different
+sample types might exhibit contrasting number of detected features.
+As a general rule, only samples of the same type should be compared to
+adjust for sample type-specific effects.
+
+```{r}
+library("ggplot2")
+ggplot(subset(metrics_l, Var2 == "numberSpectra")) +
+  geom_point(aes(x = Var1, y = value, col = method)) +
+  theme_bw() + xlab("Samples") + ylab("number of features") +
+  guides(shape = guide_legend(override.aes = list(size = 5))) +
+  guides(colour = guide_legend(override.aes = list(size= 5))) +
+  theme(axis.text.x = element_text(angle = 90, size = 10), 
+      panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+```
+
+Similarly, we are able to display the area under the TIC for the retention
+time quantiles. This plot gives information on the perceived signal (TIC) for
+the differnt retention time quantiles and could indicate drifts or
+interruptions of sensitivity during the run.
+
+```{r}
+ggplot(subset(metrics_l, grepl(Var2, pattern = "areaUnderTICRTquantiles"))) +
+    geom_point(aes(x = Var1, y = value, col = Var2)) +
+    scale_colour_brewer(palette="Set1") +
+    facet_grid(~ method, scales = "free_x", space = "free_x") +
+    scale_shape_manual(values=c(0, 1, 2, 3)) + theme_bw() +
+    guides(col = guide_legend(override.aes = list(size = 3),
+        title = "metric")) +
+    theme(axis.text.x = element_text(angle = 90, size = 10), 
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+```
+
 
 # Appendix {-}
 
