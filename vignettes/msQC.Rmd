@@ -128,6 +128,7 @@ package and create a `Spectra` object from the two `mzML` files. The
 example is taken from the `Spectra` vignette.
 
 ```{r spectra_sciex, eval = FALSE, echo = TRUE}
+## this example is taken from the Spectra vignette
 fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
 sps_sciex <- Spectra(fls, backend = MsBackendMzR())
 ```
@@ -141,6 +142,7 @@ In a last step, using `linkSampleData`, the relationships between the samples
 and the spectral information are defined.
 
 ```{r msexp_sciex, eval = FALSE, echo = TRUE}
+## this example is taken from the Spectra vignette
 lmse <- MsExperiment()
 sd <- DataFrame(sample_id = c("QC1", "QC2"),
                 sample_name = c("QC Pool", "QC Pool"),
