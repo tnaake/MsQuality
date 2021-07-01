@@ -20,13 +20,13 @@ dda_file <- system.file("TripleTOF-SWATH", "PestMix1_DDA.mzML",
                         package = "msdata")
 dda_data <- readMSData(dda_file, mode = "onDisk")
 
-dda_data %>% filterMsLevel(1L) %>% precursorMz()
-dda_data %>% filterMsLevel(2L) %>% precursorIntensity()
-estimatePrecursorIntensity(dda_data) ## for SciEx data
+## dda_data |> filterMsLevel(1L) |> precursorMz()
+## dda_data |> filterMsLevel(2L) |> precursorIntensity()
+## xcms::estimatePrecursorIntensity(dda_data) ## for SciEx data
 
-bpis <- chromatogram(dda_data)
-plot(bpis, col = 1)
-tic(dda_data)
+## bpis <- chromatogram(dda_data)
+## plot(bpis, col = 1)
+## tic(dda_data)
 
 ## Spectra
 
