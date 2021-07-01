@@ -206,6 +206,7 @@ meta_rplc$Standard.Compound <- gsub(names_meta_rplc, pattern = "[.]",
     replacement = "_")
 
 ## add the meta data to the data frame containing the intensity values
+library("dplyr")
 rplc <- inner_join(meta_rplc, vals_rplc, 
     by = c("Standard.Compound" = "Metabolite"))
 
@@ -292,11 +293,12 @@ sps_l_hilic[[1]]
 
 Some of the samples only contained missing values for the probed metabolites.
 In the following the paired samples are removed from the list of `Spectra` 
-objects if one of the samples only contains missing values. 
+objects if one of the samples only contains missing values (the respective list
+entry contains NA). 
 
 ```{r remove_NA, warning = FALSE, message = TRUE}
 inds_remove <- lapply(seq_along(sps_l_rplc), 
-      function(x) is.na(sps_l_rplc[[x]]) | is.na(sps_l_hilic[[x]]))
+      function(x) !is(sps_l_rplc[[x]], "Spectra") | !is(sps_l_hilic[[x]], "Spectra"))
 inds_remove <- unlist(inds_remove)
 ## print the number of removed entries
 table(inds_remove)
@@ -374,15 +376,15 @@ parameter `relativeTo = "Q1"` and `relativeTo = "previous"`.
 ```{r calculateMetrics}
 sps_rplc_sample_1 <- sps_l_rplc[[1]]
 metrics_rplc_sps <- calculateMetrics(object = sps_rplc_sample_1,
-    metrics = qualityMetrics(object),
+    metrics = qualityMetrics(sps_rplc_sample_1),
     params = list(relativeTo = c("Q1", "previous")))
-metrics_sps
+metrics_rplc_sps
 
 sps_hilic_sample_1 <- sps_l_hilic[[1]]
 metrics_hilic_sps <- calculateMetrics(object = sps_hilic_sample_1,
-    metrics = qualityMetrics(object),
+    metrics = qualityMetrics(sps_hilic_sample_1),
     params = list(relativeTo = c("Q1", "previous")))
-metrics_sps
+metrics_hilic_sps
 ```
 
 Alternatively, an `MsExperiment` object might be passed to 
@@ -408,9 +410,9 @@ object is returned with the samples (derived from the rownames of
 We will show here the objects `metrics_rplc_msexp` and `metrics_hilic_msexp`
 ```{r paged_table_metrics, eval = TRUE, echo = FALSE}
 print("metrics_rplc_msexp")
-rmarkdown::paged_table(metrics_rplc_msexp)
+rmarkdown::paged_table(as.data.frame(metrics_rplc_msexp))
 print("metrics_hilic_msexp")
-rmarkdown::paged_table(metrics_hilic_msexp)
+rmarkdown::paged_table(as.data.frame(metrics_hilic_msexp))
 ```
 
 # Visualizing the results
@@ -421,13 +423,22 @@ Since we will use here `ggplot2`, we will convert the two `data.frame`s into
 the long format and combine the two `data.frame` into one (`metrics_l`).
 
 ```{r}
-library("reshape2")
-metrics_rplc_l <- melt(metrics_rplc_msexp)
-metrics_hilic_l <- melt(metrics_hilic_msexp)
+library("tibble")
+library("tidyr")
+metrics_rplc_l <- metrics_rplc_msexp %>% 
+    as.data.frame() %>% 
+    rownames_to_column(., var = "sample") %>%
+    as_tibble() %>% 
+    pivot_longer(., cols = 2:ncol(.), names_to = "metric")
+metrics_hilic_l <- metrics_hilic_msexp %>% 
+    as.data.frame() %>%
+    rownames_to_column(., var = "sample") %>%
+    as_tibble() %>% 
+    pivot_longer(., cols = 2:ncol(.), names_to = "metric")
 
 ## add information on the separation technology
-metrics_rplc_l <- cbind(metrics_rplc_l, method = "RPCL")
-metrics_hilic_l <- cbind(metrics_hilic_l, method = "HILIC")
+metrics_rplc_l <- add_column(metrics_rplc_l, method = "RPCL")
+metrics_hilic_l <- add_column(metrics_hilic_l, method = "HILIC")
 
 ## combine metrics_rplc_l and metrics_hilic_l
 metrics_l <- rbind(metrics_rplc_l, metrics_hilic_l)
@@ -441,8 +452,8 @@ adjust for sample type-specific effects.
 
 ```{r}
 library("ggplot2")
-ggplot(subset(metrics_l, Var2 == "numberSpectra")) +
-  geom_point(aes(x = Var1, y = value, col = method)) +
+ggplot(subset(metrics_l, metric == "numberSpectra")) +
+  geom_point(aes(x = sample, y = value, col = method)) +
   theme_bw() + xlab("Samples") + ylab("number of features") +
   guides(shape = guide_legend(override.aes = list(size = 5))) +
   guides(colour = guide_legend(override.aes = list(size= 5))) +
@@ -456,8 +467,8 @@ the differnt retention time quantiles and could indicate drifts or
 interruptions of sensitivity during the run.
 
 ```{r}
-ggplot(subset(metrics_l, grepl(Var2, pattern = "areaUnderTICRTquantiles"))) +
-    geom_point(aes(x = Var1, y = value, col = Var2)) +
+ggplot(subset(metrics_l, grepl(metric, pattern = "areaUnderTICRTquantiles"))) +
+    geom_point(aes(x = sample, y = value, col = metric)) +
     scale_colour_brewer(palette="Set1") +
     facet_grid(~ method, scales = "free_x", space = "free_x") +
     scale_shape_manual(values=c(0, 1, 2, 3)) + theme_bw() +
