@@ -2,7 +2,7 @@
 title: "msQC: Calculation of QC metrics from mass spectrometry data"
 author:
  - name: Thomas Naake and Johannes Rainer
-   mail: thomas.naake@embl.de, thomasnaake@googlemail.com, wolfgang.huber@embl.de
+   mail: thomas.naake@embl.de, thomasnaake@googlemail.com, johannes.rainer@eurac.edu
    affiliation: European Molecular Biology Laboratory, Meyerhofstrasse 1, 69117 Heidelberg/ EURAC Research, Viale Druso 1, 39100 BOlzano
 package: msQC
       
@@ -168,21 +168,28 @@ Another common approach is the creation of `Spectra` objects from a
 the data set of @Lee2019, containing metabolite level information measured by
 reverse phase liquid chromatography (RPLC) coupled to mass spectrometry and 
 hydrophilic interaction liquid chromatography (HILIC) coupled to mass 
-spectrometry, to `Spectra` objects. We will create per sample one 
-`Spectra` object. Th data set of @Lee2019 contains samples in columns and 
+spectrometry (file `STables - rev1.xlsx` in the Supplementary Information), 
+to `Spectra` objects. The sheets `Methods` and `Raw data` are stored 
+as txt files in `msQC`. 
+
+We will create per sample one `Spectra` object. The data set of 
+@Lee2019 contains samples in columns and 
 the feature-extracted information on metabolites in the rows.
 
 First, we will load the information on the metabolite levels and the 
 associated metadata (information on molecular weight, retention time, etc.).
 
 ```{r load_Lee2019, eval = TRUE, echo = TRUE}
-meta <- openxlsx::read.xlsx("~/GitHub/msQC/data/STables - rev1.xlsx", 
-    sheet = "Methods", startRow = 4)
+path_Lee2019 <- system.file("data/", package = "msQC")
+path_to_meta <- paste(path_Lee2019, 
+                        "Lee_et_al_2019_Stables_rev1_Methods.txt", sep = "/")
+meta <- read.table(path_to_meta, sep = "\t", dec = ".", header = TRUE)
 ## print number of metabolites per measurement (meta data)
 table(meta$Method)
 
-vals <- openxlsx::read.xlsx("~/GitHub/msQC/data/STables - rev1.xlsx", 
-    sheet = "Raw data", startRow = 4)
+path_to_vals <- paste(path_Lee2019,
+                        "Lee_et_al_2019_Stables_rev1_Raw_data.txt", sep = "/")
+vals <- read.table(path_to_vals, sep = "\t", dec = ".", header = TRUE)
 ## print number of metabolites per measurement (intensity data)
 table(grepl(vals$Metabolite, pattern = "_rp$"))
 table(grepl(vals$Metabolite, pattern = "_hn$"))
@@ -248,8 +255,8 @@ a helper function that we apply on these objects to create the list.
 ```{r list_spectra, eval = TRUE, echo = TRUE}
 create_Spectra <- function(data) {
     sps_l <- list()
-    begin <- which(colnames(data) == "Sample-1")
-    end <- which(colnames(data) == "Sample-638")
+    begin <- which(colnames(data) == "Sample.1")
+    end <- which(colnames(data) == "Sample.638")
     
     for (i in begin:end) {
 
@@ -264,15 +271,15 @@ create_Spectra <- function(data) {
                 name = data_i[, "Standard.Compound"])
 
             spd$mz <- lapply(seq_len(length(int_i)), 
-                function(x) as.vector(data_i[x, "Precursor.Ion.(g/mol)"]))
+                function(x) as.vector(data_i[x, "Precursor.Ion..g.mol."]))
             spd$intensity <- lapply(seq_len(length(int_i)), 
                 function(x) as.vector(int_i[x]))
             sps <- Spectra::Spectra(spd)
-            sps$rtime <- data_i[, "RT.(min)"]
+            sps$rtime <- data_i[, "RT..min."]
             sps$precursorIntensity <- as.vector(int_i)
         
             ## use the molecular weight as a proxy for precursor m/z 
-            sps$precursorMz <- data_i[, "Precursor.Ion.(g/mol)"]  
+            sps$precursorMz <- data_i[, "Precursor.Ion..g.mol."]  
             sps$dataOrigin <- colnames(data)[i]
         } else {
             sps <- NA
@@ -397,7 +404,7 @@ corresponding `Spectra`s.
 ## for RPLC-derived MsExperiment
 metrics_rplc_msexp <- calculateMetrics(object = msexp_rplc, 
     metrics = qualityMetrics(msexp_rplc), 
-    params = list(relativeTo = c("Q1", "previous")))
+    params = list(relativeTo = c("Q1", "previous"), MSLevel = 1L))
 
 ## for HILIC-derived MsExperiment
 metrics_hilic_msexp <- calculateMetrics(object = msexp_hilic, 
