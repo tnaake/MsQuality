@@ -583,11 +583,10 @@ rtIQRrate <- function(spectra, MSLevel = 1L) {
     
     ## divide the number of eluted features between the 25% and 75% quantile
     ## by the IQR to get the elution rate per second 
-    rate <- nFeatures / rtIQR(spectra)
+    rate <- nFeatures / rtIQR(spectra, MSLevel = MSLevel)
     
     return(rate)
 }
-
 
 #' @name areaUnderTIC
 #' 

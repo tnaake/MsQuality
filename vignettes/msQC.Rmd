@@ -386,7 +386,7 @@ parameter `relativeTo = "Q1"` and `relativeTo = "previous"`.
 sps_rplc_sample_1 <- sps_l_rplc[[1]]
 metrics_rplc_sps <- calculateMetrics(object = sps_rplc_sample_1,
     metrics = qualityMetrics(sps_rplc_sample_1),
-    params = list(relativeTo = c("Q1", "previous")))
+    params = list(relativeTo = c("Q1", "previous"), MSLevel = 1L))
 metrics_rplc_sps
 
 sps_hilic_sample_1 <- sps_l_hilic[[1]]
