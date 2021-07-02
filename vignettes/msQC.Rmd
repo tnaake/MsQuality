@@ -164,188 +164,26 @@ lmse <- linkSampleData(lmse, with = "experimentFiles.mzML_file",
 ## Create `Spectra` and `MsExperiment` objects from (feature-extracted) intensity tables
 
 Another common approach is the creation of `Spectra` objects from a 
-`DataFrame`s using the `MsBackendDataFrame` backend. Here, we will convert
-the data set of @Lee2019, containing metabolite level information measured by
-reverse phase liquid chromatography (RPLC) coupled to mass spectrometry and 
-hydrophilic interaction liquid chromatography (HILIC) coupled to mass 
-spectrometry (file `STables - rev1.xlsx` in the Supplementary Information), 
-to `Spectra` objects. The sheets `Methods` and `Raw data` are stored 
-as txt files in `msQC`. 
+`DataFrame`s using the `MsBackendDataFrame` backend. 
 
-We will create per sample one `Spectra` object. The data set of 
-@Lee2019 contains samples in columns and 
-the feature-extracted information on metabolites in the rows.
+We will use here the data set of @Lee2019, that contains metabolite level 
+information measured by reverse phase liquid chromatography (RPLC) coupled 
+to mass spectrometry and hydrophilic interaction liquid chromatography (HILIC) 
+coupled to mass spectrometry 
+(derived from the file `STables - rev1.xlsx` in the Supplementary Information).
 
-First, we will load the information on the metabolite levels and the 
-associated metadata (information on molecular weight, retention time, etc.).
+In a separate step (see documentation for `Lee2019_meta_vals` and
+`Lee2019`), we have created a list containing `Spectra` objects for
+each samples (objects `sps_l_rplc` and `sps_l_hilic`) and `MsExperiment`
+objects containing the data of all samples (objects `msexp_rplc` and
+`msexp_hilic`). We will load here these objects:
 
 ```{r load_Lee2019, eval = TRUE, echo = TRUE}
-path_Lee2019 <- system.file("data/", package = "msQC")
-path_to_meta <- paste(path_Lee2019, 
-                        "Lee_et_al_2019_Stables_rev1_Methods.txt", sep = "/")
-meta <- read.table(path_to_meta, sep = "\t", dec = ".", header = TRUE)
-## print number of metabolites per measurement (meta data)
-table(meta$Method)
-
-path_to_vals <- paste(path_Lee2019,
-                        "Lee_et_al_2019_Stables_rev1_Raw_data.txt", sep = "/")
-vals <- read.table(path_to_vals, sep = "\t", dec = ".", header = TRUE)
-## print number of metabolites per measurement (intensity data)
-table(grepl(vals$Metabolite, pattern = "_rp$"))
-table(grepl(vals$Metabolite, pattern = "_hn$"))
+data("Lee2019", package = "msQC")
 ```
 
-We will create separate lists of `Spectra` objects for the RPLC- and 
-HILIC-derived levels.
-```{r data_wrangling_rplc, echo = TRUE, eval = TRUE}
-## filter for RPLC
-vals_rplc <- vals[grep(vals$Metabolite, pattern = "_rp$"), ]
-meta_rplc <- meta[grep(meta$Method, pattern = "RPLC-"), ]
-
-## to link the meta data with the data frame containing the intensity values,
-## harmonise the names of the metabolites
-names_vals_rplc <- tolower(make.names(vals_rplc$Metabolite))
-names_vals_rplc <- stringr::str_remove(names_vals_rplc, "_rp$")
-vals_rplc$Metabolite <- gsub(names_vals_rplc, pattern = "[.]", 
-    replacement = "_")
-
-## harmonise the metabolite names of the meta data
-names_meta_rplc <- tolower(make.names(meta_rplc$Standard.Compound))
-meta_rplc$Standard.Compound <- gsub(names_meta_rplc, pattern = "[.]", 
-    replacement = "_")
-
-## add the meta data to the data frame containing the intensity values
-library("dplyr")
-rplc <- inner_join(meta_rplc, vals_rplc, 
-    by = c("Standard.Compound" = "Metabolite"))
-
-## how many metabolites are remaining after intersecting the metabolite names
-dim(rplc)
-```
-
-Do the same data wrangling steps for the HILIC-derived intensity values.
-```{r data_wrangling_hilic, eval = TRUE, echo = TRUE}
-## filter for HILIC
-vals_hilic <- vals[grep(vals$Metabolite, pattern = "_hn$"), ]
-meta_hilic <- meta[grep(meta$Method, pattern = "HILIC-"), ]
-
-## to link the meta data with the data frame containing the intensity values,
-## harmonise the names of the metabolites
-names_vals_hilic <- tolower(make.names(vals_hilic$Metabolite))
-names_vals_hilic <- stringr::str_remove(names_vals_hilic, "_hn$")
-vals_hilic$Metabolite <- gsub(names_vals_hilic, pattern = "[.]", 
-    replacement = "_")
-
-## harmonise the metabolite names of the meta data
-names_meta_hilic <- tolower(make.names(meta_hilic$Standard.Compound))
-meta_hilic$Standard.Compound <- gsub(names_meta_hilic, pattern = "[.]", 
-    replacement = "_")
-
-## add the meta data to the data frame containing the intensity values
-hilic <- inner_join(meta_hilic, vals_hilic, 
-    by = c("Standard.Compound" = "Metabolite"))
-
-## how many metabolites are remaining after intersecting the metabolite names
-dim(hilic)
-```
-
-We then create for the LC-separated features a list of `Spectra` objects. 
-Since the `rplc` and `hilic` objects have the same structure, we will define 
-a helper function that we apply on these objects to create the list. 
-```{r list_spectra, eval = TRUE, echo = TRUE}
-create_Spectra <- function(data) {
-    sps_l <- list()
-    begin <- which(colnames(data) == "Sample.1")
-    end <- which(colnames(data) == "Sample.638")
-    
-    for (i in begin:end) {
-
-        data_i <- data[!is.na(data[, i]), ]
-        int_i <- data_i[, i]
-        
-        if (length(int_i) > 0) {
-            spd <- DataFrame(
-                msLevel = c(rep(1L, length(int_i))), 
-                polarity = c(rep(1L, length(int_i))),
-                id = data_i[, "CAS.Number"], 
-                name = data_i[, "Standard.Compound"])
-
-            spd$mz <- lapply(seq_len(length(int_i)), 
-                function(x) as.vector(data_i[x, "Precursor.Ion..g.mol."]))
-            spd$intensity <- lapply(seq_len(length(int_i)), 
-                function(x) as.vector(int_i[x]))
-            sps <- Spectra::Spectra(spd)
-            sps$rtime <- data_i[, "RT..min."]
-            sps$precursorIntensity <- as.vector(int_i)
-        
-            ## use the molecular weight as a proxy for precursor m/z 
-            sps$precursorMz <- data_i[, "Precursor.Ion..g.mol."]  
-            sps$dataOrigin <- colnames(data)[i]
-        } else {
-            sps <- NA
-        }
-        
-        sps_l[[i - 9]] <- sps
-        names(sps_l)[i - 9] <- colnames(data)[i]
-    }
-    return(sps_l)
-}
-
-## apply the function on the RPLC- and HILIC-derived intensity values 
-sps_l_rplc <- create_Spectra(data = rplc)
-sps_l_hilic <- create_Spectra(data = hilic)
-
-## show the first list entries of sps_l_rplc and sps_l_hilic
-sps_l_rplc[[1]]
-sps_l_hilic[[1]]
-```
-
-Some of the samples only contained missing values for the probed metabolites.
-In the following the paired samples are removed from the list of `Spectra` 
-objects if one of the samples only contains missing values (the respective list
-entry contains NA). 
-
-```{r remove_NA, warning = FALSE, message = TRUE}
-inds_remove <- lapply(seq_along(sps_l_rplc), 
-      function(x) !is(sps_l_rplc[[x]], "Spectra") | !is(sps_l_hilic[[x]], "Spectra"))
-inds_remove <- unlist(inds_remove)
-## print the number of removed entries
-table(inds_remove)
-sps_l_rplc <- sps_l_rplc[!inds_remove]
-sps_l_hilic <- sps_l_hilic[!inds_remove]
-```
-
-The functions in `msQC` might also accept a collection of `Spectra` objects
-stored in an `MsExperiment`. We will convert the list of `Spectra` 
-objects to an `MsExperiment` object.
-
-```{r}
-## take only a subset of the first 100 samples to create the 
-## MsExperiment object
-sps_subset_rplc <- sps_l_rplc[1:50]
-sps_c_rplc <- Reduce(c, sps_subset_rplc)
-sps_subset_hilic <- sps_l_hilic[1:50]
-sps_c_hilic <- Reduce(c, sps_subset_hilic)
-
-## create an empty MsExperiment object and fill it with data
-msexp_rplc <- msexp_hilic <- MsExperiment()
-sampleData(msexp_rplc) <- DataFrame(samples = names(sps_subset_rplc))
-sampleData(msexp_hilic) <- DataFrame(samples = names(sps_subset_hilic))
-rownames(sampleData(msexp_rplc)) <- names(sps_subset_rplc)
-rownames(sampleData(msexp_hilic)) <- names(sps_subset_hilic)
-spectra(msexp_rplc) <- sps_c_rplc
-spectra(msexp_hilic) <- sps_c_hilic
-
-## link the spectra to the samples
-msexp_rplc <- linkSampleData(object = msexp_rplc, 
-    with = "sampleData.samples = spectra.dataOrigin")
-msexp_hilic <- linkSampleData(object = msexp_hilic, 
-    with = "sampleData.samples = spectra.dataOrigin")
-
-## show the msexp_rplc and msexp_hilic objects
-msexp_rplc
-msexp_hilic
-```
+The final data set contains 541 paired samples (i.e. 541 samples derived 
+from RPLC and 541 samples derived from HILIC).
 
 # Calculating the quality metrics on `Spectra` and `MsExperiment` objects
 
@@ -371,8 +209,10 @@ arguments `relativeTo` and `MSLevel`. `relativeTo` specifies to which
 quantile the log TIC quantile is relatively related to (either to the 1st 
 quantile or the respective previous one). One `Spectra` object may also contain
 more than one MSLevel, e.g. if it also contains information on MS$^2$ or 
-MS$^3$ features. If the user specifies `params = list(relativeTo = c("Q1", "previous"), MSLevel = c(1L, 2L))`, `ticQUantileToQuantileLogRatio` is run 
-with the paramter combinations `relativeTo = "Q1", MSLevel = 1L`, 
+MS$^3$ features. If the user specifies 
+`params = list(relativeTo = c("Q1", "previous"), MSLevel = c(1L, 2L))`, 
+`ticQUantileToQuantileLogRatio` is run 
+with the parameter combinations `relativeTo = "Q1", MSLevel = 1L`, 
 `relativeTo = "previous", MSLevel = 1L`, `relativeTo = "Q1", MSLevel = 2L`, 
 and `relativeTo = "previous", MSLevel = 2L`. The different results based on 
 these parameter combinations is returned and the combination is indicated in 
@@ -400,15 +240,24 @@ Alternatively, an `MsExperiment` object might be passed to
 `calculateMetrics`. The function will iterate over the samples (referring
 to rows in `sampleData(msexp))`) and calculate the quality metrics on the
 corresponding `Spectra`s.
+
+There are in total 541 samples respectively in the objects 
+`msexp_rplc` and `msexp_hilic`. To improve the visualization and 
+interpretability, we will only calculate the metrics from the first 50 of 
+these samples.
 ```{r}
+## subset the MsExperiment objects
+msexp_rplc_subset <- msexp_rplc[, 1:50]
+msexp_hilic_subset <- msexp_hilic[, 1:50]
+
 ## for RPLC-derived MsExperiment
-metrics_rplc_msexp <- calculateMetrics(object = msexp_rplc, 
-    metrics = qualityMetrics(msexp_rplc), 
+metrics_rplc_msexp <- calculateMetrics(object = msexp_rplc_subset,
+    metrics = qualityMetrics(msexp_rplc_subset),
     params = list(relativeTo = c("Q1", "previous"), MSLevel = 1L))
 
 ## for HILIC-derived MsExperiment
-metrics_hilic_msexp <- calculateMetrics(object = msexp_hilic, 
-    metrics = qualityMetrics(msexp_hilic), 
+metrics_hilic_msexp <- calculateMetrics(object = msexp_hilic_subset,
+    metrics = qualityMetrics(msexp_hilic_subset),
     params = list(relativeTo = c("Q1", "previous")))
 ```
 
