@@ -24,7 +24,9 @@
 #' 
 #' @export
 #' 
-#' @importFrom methods formalArgs
+#' @importFrom methods is
+#' @importFrom Spectra Spectra
+#' @importFrom MsExperiment MsExperiment
 #' 
 #' @examples
 #' library(msdata)
@@ -54,6 +56,7 @@ calculateMetricsFromSpectra <- function(spectra,
         several.ok = TRUE)
     
     if(!is(spectra, "Spectra")) stop("spectra is not of class 'Spectra'")
+    if (any(duplicated(names(params)))) stop("params contains duplicated names")
     
     ## prepare the argument for the metric functions by writing spectra to a 
     ## list
@@ -64,11 +67,31 @@ calculateMetricsFromSpectra <- function(spectra,
     ## lapply is the outer loop going iterating through the functions `metrics`
     metrics_vals <- lapply(seq_along(metrics), function(i) {
         
-        formalArgs_i <- methods::formalArgs(metrics[i])
-        ## how to deal with different arguments for some of the functions?
-        ## use all parameter combinations from params that fit to the function
-        params_i <- params[names(params) %in% formalArgs_i]
-        params_i <- expand.grid(params_i, stringsAsFactors = FALSE)
+        ##formalArgs_i <- methods::formalArgs(metrics[i])
+        formals_i <- formals(metrics[i])
+        
+        ## how to deal with different arguments for some of the functions? (1-4)
+        ## use all parameter combinations from params that fit to the function:
+        ## 1) check if parameters in params are in formals of the metric 
+        ## function, update the list entry for these paramters
+        params_i <- params[names(params) %in% names(formals_i)]
+        inds <- match(names(formals_i), names(params_i))
+        inds <- inds[!is.na(inds)]
+        formals_i[names(formals_i) %in% names(params_i)] <- params_i[inds]
+        ## 2) when there are calls/language types in formals_i, i.e. if there
+        ## are several options for the arguments defined, take only the first 
+        ## option, e.g. if we have function(a = c(1:3)) ..., we will only 
+        ## continue with a = 1, NB: this is not the case if we have specified
+        ## the arguments within params
+        formals_i <- lapply(formals_i, function(x) 
+            if (is.call(x)) {eval(x)[1]} else {x})
+        ## 3) remove the type of arguments that are refObject, this will be 
+        ## for instance the spectra argument
+        inds_remove <- unlist(lapply(formals_i, function(x) is(x, "refObject")))
+        formals_i <- formals_i[!inds_remove]
+        ## 4) use all parameter combinations defined in formals_i and create a 
+        ## grid
+        params_i <- expand.grid(formals_i, stringsAsFactors = FALSE)
         
         ## in case there are no further parameters for the function metrics[i]:
         if (nrow(params_i) == 0) {
@@ -101,9 +124,9 @@ calculateMetricsFromSpectra <- function(spectra,
             metric_i_j <- unlist(metric_i_j)
             
         }
-        if (is(metric_i_j, "vector") & length(metric_i_j) > 1) {
-            names_metric <- paste(names_metric, names(metric_i_j), sep = "_")
-        }
+        # if (is(metric_i_j, "vector") & length(metric_i_j) > 1) {
+        #     names_metric <- paste(names_metric, names(metric_i_j), sep = "_")
+        # }
         names(metric_i_j) <- names_metric
 
         return(metric_i_j)
@@ -141,8 +164,10 @@ calculateMetricsFromSpectra <- function(spectra,
 #' 
 #' @export
 #' 
-#' @importFrom MsExperiment sampleData
+#' @importFrom Spectra Spectra
+#' @importFrom MsExperiment MsExperiment sampleData
 #' @importFrom ProtGenerics spectra
+#' @importFrom methods is
 #' 
 #' @examples 
 #' library(msdata)
@@ -240,6 +265,9 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #' 
 #' @export
 #' 
+#' @importFrom methods is
+#' @importFrom Spectra Spectra
+#' @importFrom MsExperiment MsExperiment
 #' 
 #' @examples
 #' library(msdata)
