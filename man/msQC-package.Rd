@@ -6,30 +6,24 @@
 \packageTitle{msQC}
 }
 \description{
-\packageDescription{msQC}
+msQC enables to calculate quality metrics of mass spectrometry
+data. It is build upon Spectra and MsExperiment objects.
 }
-\details{
 
+\details{
 The DESCRIPTION file:
 \packageDESCRIPTION{msQC}
 \packageIndices{msQC}
-~~ An overview of how to use the package, including the most important functions ~~
 }
+
 \author{
 \packageAuthor{msQC}
-
 Maintainer: \packageMaintainer{msQC}
 }
-\references{
-~~ Literature or other references for background information ~~
-}
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R ~~
-~~ documentation directory ~~
-\keyword{ package }
-\seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
-}
+
+\keyword{ package, QC, proteomics, metabolomics, mass spectrometry }
+
 \examples{
-~~ simple examples of the most important functions ~~
+\dontrun{calculateMetrics(object = spectra)}
+\dontrun{calculateMetrics(object = mse)}
 }

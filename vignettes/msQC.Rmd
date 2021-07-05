@@ -2,7 +2,7 @@
 title: "msQC: Calculation of QC metrics from mass spectrometry data"
 author:
  - name: Thomas Naake and Johannes Rainer
-   mail: thomas.naake@embl.de, thomasnaake@googlemail.com, wolfgang.huber@embl.de
+   mail: thomas.naake@embl.de, thomasnaake@googlemail.com, johannes.rainer@eurac.edu
    affiliation: European Molecular Biology Laboratory, Meyerhofstrasse 1, 69117 Heidelberg/ EURAC Research, Viale Druso 1, 39100 BOlzano
 package: msQC
       
@@ -122,6 +122,7 @@ object from the two provided `mzML` files. The example is taken from the
 `Spectra` vignette.
 
 ```{r spectra_sciex, eval = FALSE, echo = TRUE}
+## this example is taken from the Spectra vignette
 fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
 sps_sciex <- Spectra(fls, backend = MsBackendMzR())
 ```
@@ -135,6 +136,7 @@ In a last step, using `linkSampleData`, the relationships between the samples
 and the spectral information are defined.
 
 ```{r msexp_sciex, eval = FALSE, echo = TRUE}
+## this example is taken from the Spectra vignette
 lmse <- MsExperiment()
 sd <- DataFrame(sample_id = c("QC1", "QC2"),
                 sample_name = c("QC Pool", "QC Pool"),
@@ -156,181 +158,26 @@ lmse <- linkSampleData(lmse, with = "experimentFiles.mzML_file",
 ## Create `Spectra` and `MsExperiment` objects from (feature-extracted) intensity tables
 
 Another common approach is the creation of `Spectra` objects from a 
-`DataFrame`s using the `MsBackendDataFrame` backend. Here, we will convert
-the data set of @Lee2019, containing metabolite level information measured by
-reverse phase liquid chromatography (RPLC) coupled to mass spectrometry and 
-hydrophilic interaction liquid chromatography (HILIC) coupled to mass 
-spectrometry, to `Spectra` objects. We will create per sample one 
-`Spectra` object. Th data set of @Lee2019 contains samples in columns and 
-the feature-extracted information on metabolites in the rows.
+`DataFrame`s using the `MsBackendDataFrame` backend. 
 
-First, we will load the information on the metabolite levels and the 
-associated metadata (information on molecular weight, retention time, etc.).
+We will use here the data set of @Lee2019, that contains metabolite level 
+information measured by reverse phase liquid chromatography (RPLC) coupled 
+to mass spectrometry and hydrophilic interaction liquid chromatography (HILIC) 
+coupled to mass spectrometry 
+(derived from the file `STables - rev1.xlsx` in the Supplementary Information).
+
+In a separate step (see documentation for `Lee2019_meta_vals` and
+`Lee2019`), we have created a list containing `Spectra` objects for
+each samples (objects `sps_l_rplc` and `sps_l_hilic`) and `MsExperiment`
+objects containing the data of all samples (objects `msexp_rplc` and
+`msexp_hilic`). We will load here these objects:
 
 ```{r load_Lee2019, eval = TRUE, echo = TRUE}
-meta <- openxlsx::read.xlsx("~/GitHub/msQC/data/STables - rev1.xlsx", 
-    sheet = "Methods", startRow = 4)
-## print number of metabolites per measurement (meta data)
-table(meta$Method)
-
-vals <- openxlsx::read.xlsx("~/GitHub/msQC/data/STables - rev1.xlsx", 
-    sheet = "Raw data", startRow = 4)
-## print number of metabolites per measurement (intensity data)
-table(grepl(vals$Metabolite, pattern = "_rp$"))
-table(grepl(vals$Metabolite, pattern = "_hn$"))
+data("Lee2019", package = "msQC")
 ```
 
-We will create separate lists of `Spectra` objects for the RPLC- and 
-HILIC-derived levels.
-```{r data_wrangling_rplc, echo = TRUE, eval = TRUE}
-## filter for RPLC
-vals_rplc <- vals[grep(vals$Metabolite, pattern = "_rp$"), ]
-meta_rplc <- meta[grep(meta$Method, pattern = "RPLC-"), ]
-
-## to link the meta data with the data frame containing the intensity values,
-## harmonise the names of the metabolites
-names_vals_rplc <- tolower(make.names(vals_rplc$Metabolite))
-names_vals_rplc <- stringr::str_remove(names_vals_rplc, "_rp$")
-vals_rplc$Metabolite <- gsub(names_vals_rplc, pattern = "[.]", 
-    replacement = "_")
-
-## harmonise the metabolite names of the meta data
-names_meta_rplc <- tolower(make.names(meta_rplc$Standard.Compound))
-meta_rplc$Standard.Compound <- gsub(names_meta_rplc, pattern = "[.]", 
-    replacement = "_")
-
-## add the meta data to the data frame containing the intensity values
-library("dplyr")
-rplc <- inner_join(meta_rplc, vals_rplc, 
-    by = c("Standard.Compound" = "Metabolite"))
-
-## how many metabolites are remaining after intersecting the metabolite names
-dim(rplc)
-```
-
-Do the same data wrangling steps for the HILIC-derived intensity values.
-```{r data_wrangling_hilic, eval = TRUE, echo = TRUE}
-## filter for HILIC
-vals_hilic <- vals[grep(vals$Metabolite, pattern = "_hn$"), ]
-meta_hilic <- meta[grep(meta$Method, pattern = "HILIC-"), ]
-
-## to link the meta data with the data frame containing the intensity values,
-## harmonise the names of the metabolites
-names_vals_hilic <- tolower(make.names(vals_hilic$Metabolite))
-names_vals_hilic <- stringr::str_remove(names_vals_hilic, "_hn$")
-vals_hilic$Metabolite <- gsub(names_vals_hilic, pattern = "[.]", 
-    replacement = "_")
-
-## harmonise the metabolite names of the meta data
-names_meta_hilic <- tolower(make.names(meta_hilic$Standard.Compound))
-meta_hilic$Standard.Compound <- gsub(names_meta_hilic, pattern = "[.]", 
-    replacement = "_")
-
-## add the meta data to the data frame containing the intensity values
-hilic <- inner_join(meta_hilic, vals_hilic, 
-    by = c("Standard.Compound" = "Metabolite"))
-
-## how many metabolites are remaining after intersecting the metabolite names
-dim(hilic)
-```
-
-We then create for the LC-separated features a list of `Spectra` objects. 
-Since the `rplc` and `hilic` objects have the same structure, we will define 
-a helper function that we apply on these objects to create the list. 
-```{r list_spectra, eval = TRUE, echo = TRUE}
-create_Spectra <- function(data) {
-    sps_l <- list()
-    begin <- which(colnames(data) == "Sample-1")
-    end <- which(colnames(data) == "Sample-638")
-    
-    for (i in begin:end) {
-
-        data_i <- data[!is.na(data[, i]), ]
-        int_i <- data_i[, i]
-        
-        if (length(int_i) > 0) {
-            spd <- DataFrame(
-                msLevel = c(rep(1L, length(int_i))), 
-                polarity = c(rep(1L, length(int_i))),
-                id = data_i[, "CAS.Number"], 
-                name = data_i[, "Standard.Compound"])
-
-            spd$mz <- lapply(seq_len(length(int_i)), 
-                function(x) as.vector(data_i[x, "Precursor.Ion.(g/mol)"]))
-            spd$intensity <- lapply(seq_len(length(int_i)), 
-                function(x) as.vector(int_i[x]))
-            sps <- Spectra::Spectra(spd)
-            sps$rtime <- data_i[, "RT.(min)"]
-            sps$precursorIntensity <- as.vector(int_i)
-        
-            ## use the molecular weight as a proxy for precursor m/z 
-            sps$precursorMz <- data_i[, "Precursor.Ion.(g/mol)"]  
-            sps$dataOrigin <- colnames(data)[i]
-        } else {
-            sps <- NA
-        }
-        
-        sps_l[[i - 9]] <- sps
-        names(sps_l)[i - 9] <- colnames(data)[i]
-    }
-    return(sps_l)
-}
-
-## apply the function on the RPLC- and HILIC-derived intensity values 
-sps_l_rplc <- create_Spectra(data = rplc)
-sps_l_hilic <- create_Spectra(data = hilic)
-
-## show the first list entries of sps_l_rplc and sps_l_hilic
-sps_l_rplc[[1]]
-sps_l_hilic[[1]]
-```
-
-Some of the samples only contained missing values for the probed metabolites.
-In the following the paired samples are removed from the list of `Spectra` 
-objects if one of the samples only contains missing values (the respective list
-entry contains NA). 
-
-```{r remove_NA, warning = FALSE, message = TRUE}
-inds_remove <- lapply(seq_along(sps_l_rplc), 
-      function(x) !is(sps_l_rplc[[x]], "Spectra") | !is(sps_l_hilic[[x]], "Spectra"))
-inds_remove <- unlist(inds_remove)
-## print the number of removed entries
-table(inds_remove)
-sps_l_rplc <- sps_l_rplc[!inds_remove]
-sps_l_hilic <- sps_l_hilic[!inds_remove]
-```
-
-The functions in `msQC` might also accept a collection of `Spectra` objects
-stored in an `MsExperiment`. We will convert the list of `Spectra` 
-objects to an `MsExperiment` object.
-
-```{r}
-## take only a subset of the first 100 samples to create the 
-## MsExperiment object
-sps_subset_rplc <- sps_l_rplc[1:50]
-sps_c_rplc <- Reduce(c, sps_subset_rplc)
-sps_subset_hilic <- sps_l_hilic[1:50]
-sps_c_hilic <- Reduce(c, sps_subset_hilic)
-
-## create an empty MsExperiment object and fill it with data
-msexp_rplc <- msexp_hilic <- MsExperiment()
-sampleData(msexp_rplc) <- DataFrame(samples = names(sps_subset_rplc))
-sampleData(msexp_hilic) <- DataFrame(samples = names(sps_subset_hilic))
-rownames(sampleData(msexp_rplc)) <- names(sps_subset_rplc)
-rownames(sampleData(msexp_hilic)) <- names(sps_subset_hilic)
-spectra(msexp_rplc) <- sps_c_rplc
-spectra(msexp_hilic) <- sps_c_hilic
-
-## link the spectra to the samples
-msexp_rplc <- linkSampleData(object = msexp_rplc, 
-    with = "sampleData.samples = spectra.dataOrigin")
-msexp_hilic <- linkSampleData(object = msexp_hilic, 
-    with = "sampleData.samples = spectra.dataOrigin")
-
-## show the msexp_rplc and msexp_hilic objects
-msexp_rplc
-msexp_hilic
-```
+The final data set contains 541 paired samples (i.e. 541 samples derived 
+from RPLC and 541 samples derived from HILIC).
 
 # Calculating the quality metrics on `Spectra` and `MsExperiment` objects
 
@@ -339,6 +186,137 @@ metrics is the `calculateMetrics` function. The function takes
 a `Spectra` or `MsExperiment` object as input, a character vector of metrics
 to be calculated, and, optionally a list of parameters passed to the 
 quality metrics functions. 
+
+Currently, the following metrics are included:
+```{r}
+qualityMetrics(msexp_rplc)
+```
+
+The following list gives a brief explanation for these metrics. Further 
+information may be found at the 
+[HUPO-PSI mzQC project page](https://github.com/HUPO-PSI/mzQC)  or in the 
+respective help file for the quality metric (accessible by e.g. entering
+`?rtDuration` to the R console). Currently, all quality metrics can be 
+calculated for both `Spectra` and `MsExperiment` objects. 
+
+- *rtDuration*, **RT duration** (QC:4000053), 
+  "The retention time duration of the MS run in seconds, similar to the 
+  highest scan time minus the lowest scan time." [PSI:QC];
+- *rtOverTICquantile*, **RT over TIC quantile** (QC:4000054), 
+  "The interval when the respective quantile of the TIC accumulates divided by 
+  retention time duration. The number of quantiles observed is given by the 
+  size of the tuple." [PSI:QC];
+- *rtOverMSQuarters*, **MS1 quantiles RT fraction** (QC:4000055), 
+  "The interval used for acquisition of the first, second, third, and fourth 
+  quarter of all MS1 events divided by RT-Duration." [PSI:QC];
+- *rtOverMSQuarters*, **MS1/MS2 quantiles RT fraction** (QC:4000055), 
+  "The interval used for acquisition of the first, second, third, and fourth 
+  quarter of all MS2 events divided by RT-Duration." [PSI:QC];
+- *ticQuantileToQuantileLogRatio*,
+  **MS1 quantile TIC change ratio to Quantile 1** (QC:4000057),
+  "The log ratio for the second to n-th quantile of TIC changes over first 
+  quantile of TIC changes." [PSI:QC];
+- *ticQuantileToQuantileLogRatio*, 
+  **MS1 quantile TIC change ratio to previous quantile** (QC:4000058),
+  "The log ratio for the second to n-th quantile of TIC over the previous 
+  quantile of TIC." [PSI:QC];
+- *numberSpectra*, **Number of MS1 spectra** (QC:4000059), 
+  "The number of MS1 events in the run." [PSI:QC];
+- *numberSpectra*, **Number of MS2 spectra** (QC:4000060), 
+  "The number of MS2 events in the run." [PSI:QC];
+- *medianPrecursorMZ*, **Precursor median m/z for IDs** (QC:4000065), 
+  "Median m/z value for all identified peptides (unique ions) after 
+  FDR." [PSI:QC];
+- *rtIQR*, **Interquartile RT period for peptide identifications** (QC:4000072),
+  "The interquartile retention time period, in seconds, for all peptide 
+  identifications over the complete run." [PSI:QC];
+- *rtIQRrate*, **Peptide identification rate of the interquartile RT period**
+  (QC:4000073), 
+  "The identification rate of peptides for the interquartile retention time 
+  period, in peptides per second." [PSI:QC];
+- *areaUnderTIC*, **Area under TIC** (QC:4000077),
+  "The area under the total ion chromatogram." [PSI:QC];
+- *areaUnderTICRTquantiles*, **Area under TIC RT quantiles** (QC:4000078),
+  "The area under the total ion chromatogram of the retention time quantiles. 
+  Number of quantiles are given by the n-tuple." [PSI:QC];
+- *extentIdentifiedPrecursorIntensity*, 
+  **Extent of identified precursor intensity** (QC:4000125),
+  "Ratio of 95th over 5th percentile of precursor intensity for identified 
+  peptides" [PSI:QC];
+- *medianTICRTIQR*, **Median of TIC values in the RT range in which the middle 
+  half of peptides are identified** (QC:4000130),
+  "Median of TIC values in the RT range in which half of peptides are 
+  identified (RT values of Q1 to Q3 of identifications)" [PSI:QC];
+- *medianTICofRTRange*, **Median of TIC values in the shortest RT range in 
+  which half of the peptides are identified** (QC:4000132),
+  "Median of TIC values in the shortest RT range in which half of the 
+  peptides are identified"  [PSI:QC] 
+- *mzAcquisitionRange*, **m/z acquisition range** (QC:4000138),
+  "Upper and lower limit of m/z values at which spectra are recorded." [PSI:QC];
+- *rtAcquisitionRange*, **Retention time acquisition range** (QC:4000139),
+  "Upper and lower limit of time at which spectra are recorded." [PSI:QC];
+- *precursorIntensityRange*, **Precursor intensity range** (QC:4000144),
+  "Minimum and maximum precursor intensity recorded." [PSI:QC];
+- *precursorIntensityQuartiles*, **Precursor intensity distribution 
+  Q1, Q2, Q3** (QC:4000167), 
+  "From the distribution of precursor intensities, the quartiles Q1, Q2, Q3" 
+  [PSI:QC];
+- *precursorIntensityQuartiles*, **Identified precursor intensity distribution 
+  Q1, Q2, Q3** (QC:4000228), 
+  "From the distribution of identified precursor intensities, the quartiles 
+  Q1, Q2, Q3" [PSI:QC];
+- *precursorIntensityQuartiles*, **Unidentified precursor intensity 
+  distribution Q1, Q2, Q3** (QC:4000233), 
+  "From the distribution of unidentified precursor intensities, the quartiles 
+  Q1, Q2, Q3" [PSI:QC];
+- *precursorIntensityMean*, **Precursor intensity distribution mean** 
+  (QC:4000168), "From the distribution of precursor intensities, the mean." 
+  [PSI:QC];
+- *precursorIntensityMean*, **Identified precursor intensity distribution 
+  mean** (QC:4000229), "From the distribution of identified precursor 
+  intensities, the mean" [PSI:QC];
+- *precursorIntensityMean*, **Unidentified precursor intensity distribution 
+  mean** (QC:4000234), "From the distribution of unidentified precursor 
+  intensities, the mean" [PSI:QC];
+- *precursorIntensitySD*, **Precursor intensity distribution sigma**
+  (QC:4000169), "From the distribution of precursor intensities, the sigma 
+  value." [PSI:QC];
+- *precursorIntensitySD*, **Identified precursor intensity distribution sigma**
+  (QC:4000230), "From the distribution of identified precursor intensities, 
+  the sigma value" [PSI:QC];
+- *precursorIntensitySD*, **Unidentified precursor intensity distribution 
+  sigma** (QC:400235), "From the distribution of unidentified precursor 
+  intensities, the sigma value" [PSI:QC];
+- *msSignal10XChange*, **MS1 signal jump (10x) count** (QC:4000172),
+  "The count of MS1 signal jump (spectra sum) by a factor of ten or more (10x)
+  between two subsequent scans" [PSI:QC];
+- *msSignal10XChange*, **MS1 signal fall (10x) count** (QC:4000173),
+  "The count of MS1 signal decline (spectra sum) by a factor of ten or more 
+  (10x) between two subsequent scans" [PSI:QC];
+- *RatioCharge1over2*, **Charged peptides ratio 1+ over 2+** (QC:4000174),
+  "Ratio of 1+ peptide count over 2+ peptide count in identified spectra" 
+  [PSI:QC];
+- *RatioCharge1over2*, **Charged spectra ratio 1+ over 2+** (QC:4000179),
+  "Ratio of 1+ spectra count over 2+ spectra count in all MS2" [PSI:QC];
+- *RatioCharge3over2*, **Charged peptides ratio 3+ over 2+** (QC:4000175),
+  "Ratio of 3+ peptide count over 2+ peptide count in identified spectra" 
+  [PSI:QC];
+- *RatioCharge3over2*, **Charged spectra ratio 3+ over 2+** (QC:4000180),
+  "Ratio of 3+ peptide count over 2+ peptide count in all MS2" [PSI:QC];
+- **RatioCharge4over2**, **Charged peptides ratio 4+ over 2+** (QC:4000176),
+  "Ratio of 4+ peptide count  over 2+ peptide count in identified 
+  spectra" [PSI:QC];
+- **RatioCharge4over2**, **Charged spectra ratio 4+ over 2+** (QC:4000181),
+  "Ratio of 4+ peptide count over 2+ peptide count in all MS2" [PSI:QC];
+- *meanCharge*, **Mean charge in identified spectra** (QC:4000177),
+  "Mean charge in identified spectra" [PSI:QC];
+- *meanCharge*, **Mean precursor charge in all MS2** (QC:4000182),
+  "Mean precursor charge in all MS2" [PSI:QC];
+- *medianCharge*, **Median charge in identified spectra** (QC:4000178),
+  "Median charge in identified spectra" [PSI:QC];
+- *medianCharge*, **Median precursor charge in all MS2** (QC:4000183),
+  "Median precursor charge in all MS2" [PSI:QC].
+
 
 When passing a `Spectra` object to the function, a named vector is 
 returned by `calculateMetrics` with the metrics specified by the argument
@@ -356,8 +334,10 @@ arguments `relativeTo` and `MSLevel`. `relativeTo` specifies to which
 quantile the log TIC quantile is relatively related to (either to the 1st 
 quantile or the respective previous one). One `Spectra` object may also contain
 more than one MSLevel, e.g. if it also contains information on MS$^2$ or 
-MS$^3$ features. If the user specifies `params = list(relativeTo = c("Q1", "previous"), MSLevel = c(1L, 2L))`, `ticQUantileToQuantileLogRatio` is run 
-with the paramter combinations `relativeTo = "Q1", MSLevel = 1L`, 
+MS$^3$ features. If the user specifies 
+`params = list(relativeTo = c("Q1", "previous"), MSLevel = c(1L, 2L))`, 
+`ticQUantileToQuantileLogRatio` is run 
+with the parameter combinations `relativeTo = "Q1", MSLevel = 1L`, 
 `relativeTo = "previous", MSLevel = 1L`, `relativeTo = "Q1", MSLevel = 2L`, 
 and `relativeTo = "previous", MSLevel = 2L`. The different results based on 
 these parameter combinations is returned and the combination is indicated in 
@@ -371,7 +351,7 @@ parameter `relativeTo = "Q1"` and `relativeTo = "previous"`.
 sps_rplc_sample_1 <- sps_l_rplc[[1]]
 metrics_rplc_sps <- calculateMetrics(object = sps_rplc_sample_1,
     metrics = qualityMetrics(sps_rplc_sample_1),
-    params = list(relativeTo = c("Q1", "previous")))
+    params = list(relativeTo = c("Q1", "previous"), MSLevel = 1L))
 metrics_rplc_sps
 
 sps_hilic_sample_1 <- sps_l_hilic[[1]]
@@ -385,15 +365,24 @@ Alternatively, an `MsExperiment` object might be passed to
 `calculateMetrics`. The function will iterate over the samples (referring
 to rows in `sampleData(msexp))`) and calculate the quality metrics on the
 corresponding `Spectra`s.
+
+There are in total 541 samples respectively in the objects 
+`msexp_rplc` and `msexp_hilic`. To improve the visualization and 
+interpretability, we will only calculate the metrics from the first 50 of 
+these samples.
 ```{r}
+## subset the MsExperiment objects
+msexp_rplc_subset <- msexp_rplc[, 1:50]
+msexp_hilic_subset <- msexp_hilic[, 1:50]
+
 ## for RPLC-derived MsExperiment
-metrics_rplc_msexp <- calculateMetrics(object = msexp_rplc, 
-    metrics = qualityMetrics(msexp_rplc), 
-    params = list(relativeTo = c("Q1", "previous")))
+metrics_rplc_msexp <- calculateMetrics(object = msexp_rplc_subset,
+    metrics = qualityMetrics(msexp_rplc_subset),
+    params = list(relativeTo = c("Q1", "previous"), MSLevel = 1L))
 
 ## for HILIC-derived MsExperiment
-metrics_hilic_msexp <- calculateMetrics(object = msexp_hilic, 
-    metrics = qualityMetrics(msexp_hilic), 
+metrics_hilic_msexp <- calculateMetrics(object = msexp_hilic_subset,
+    metrics = qualityMetrics(msexp_hilic_subset),
     params = list(relativeTo = c("Q1", "previous")))
 ```
 

@@ -22,8 +22,28 @@
 #' 
 #' @importFrom ProtGenerics rtime
 #' 
-#' @examples 
-#' rtDuration(spectra)
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
+#' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$rtime <- c(9.44, 9.44, 15.84)
+#' sps <- Spectra(spd)
+#' rtDuration(spectra = sps)
 rtDuration <- function(spectra) {
   
     RT <- ProtGenerics::rtime(object = spectra)
@@ -37,7 +57,7 @@ rtDuration <- function(spectra) {
 #' @title RT over TIC quantile (QC:4000054)
 #' 
 #' @description 
-#' The interval when the respective quantile of the TIC accumulates divided by 
+#' "The interval when the respective quantile of the TIC accumulates divided by 
 #' retention time duration. The number of quantiles observed is given by the 
 #' size of the tuple." [PSI:QC]
 #' id: QC:4000054
@@ -59,8 +79,28 @@ rtDuration <- function(spectra) {
 #' 
 #' @importFrom ProtGenerics tic ionCount rtime
 #' 
-#' @examples 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
 #' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$rtime <- c(9.44, 9.44, 15.84)
+#' sps <- Spectra(spd)
+#' rtOverTICquantile(spectra = sps, MSLevel = 2L)
 rtOverTICquantile <- function(spectra, MSLevel = 1L) {
     
     ## truncate spectra based on the MSLevel
@@ -76,9 +116,6 @@ rtOverTICquantile <- function(spectra, MSLevel = 1L) {
     
     ## obtain ionCount (TIC) and calculate quantiles of cummulatively summed
     ## TICs
-    # if (is(object, "MSnExp"))
-    #     TIC <- ProtGenerics::tic(object)
-    # if (is(object, "Spectra"))
     TIC <- ProtGenerics::ionCount(spectra)
     
     ticSum <- cumsum(TIC)
@@ -107,6 +144,11 @@ rtOverTICquantile <- function(spectra, MSLevel = 1L) {
 #' @description
 #' "The interval used for acquisition of the first, second, third, and fourth 
 #' quarter of all MS1 events divided by RT-Duration." [PSI:QC]
+#' id: QC:4000055
+#'
+#' "The interval used for acquisition of the first, second, third, and fourth 
+#' quarter of all MS2 events divided by RT-Duration." [PSI:QC]
+#' id: QC:4000056
 #' 
 #' @details
 #' is_a: QC:4000004 ! n-tuple
@@ -125,8 +167,28 @@ rtOverTICquantile <- function(spectra, MSLevel = 1L) {
 #' 
 #' @importFrom ProtGenerics filterMsLevel
 #' 
-#' @examples 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
 #' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$rtime <- c(9.44, 9.44, 15.84)
+#' sps <- Spectra(spd)
+#' rtOverMSQuarters(spectra = sps, MSLevel = 2L)
 rtOverMSQuarters <- function(spectra, MSLevel = 1L) {
   
     ## truncate spectra based on the MSLevel
@@ -167,7 +229,8 @@ rtOverMSQuarters <- function(spectra, MSLevel = 1L) {
 #' "The log ratio for the second to n-th quantile of TIC changes over first 
 #' quantile of TIC changes." [PSI:QC]
 #' id: QC:4000057
-#' def: "The log ratio for the second to n-th quantile of TIC over the previous 
+#' 
+#' "The log ratio for the second to n-th quantile of TIC over the previous 
 #' quantile of TIC. For the boundary elements min/max are used." [PSI:QC]
 #' id: QC:4000058
 #' 
@@ -191,11 +254,30 @@ rtOverMSQuarters <- function(spectra, MSLevel = 1L) {
 #' 
 #' @importFrom ProtGenerics filterMsLevel tic ionCount
 #' 
-#' @examples 
-#' ticQuantileToQuantileLogRatio(spectra = spectra, relativeTo = "Q1",
-#'     MSLevel = 1L)
-#' ticQuantileToQuantileLogRatio(spectra, relativeTo = "previous",
-#'     MSLevel = 1L)
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
+#' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' sps <- Spectra(spd)
+#' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "Q1",
+#'     MSLevel = 2L)
+#' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "previous",
+#'     MSLevel = 2L)
 ticQuantileToQuantileLogRatio <- function(spectra, 
                               relativeTo = c("Q1", "previous"), MSLevel = 1L) {
   
@@ -213,9 +295,6 @@ ticQuantileToQuantileLogRatio <- function(spectra,
     RT <- RT[order(RT)]
     
     ## create cumulative sum of tic/ionCount
-    #if (is(object, "MSnExp"))
-    #    TIC <- ProtGenerics::tic(object)
-    #if (is(object, "Spectra"))
     TIC <- ProtGenerics::ionCount(spectra)
     
     ############# does this make sense?
@@ -276,8 +355,28 @@ ticQuantileToQuantileLogRatio <- function(spectra,
 #' 
 #' @importFrom ProtGenerics filterMsLevel
 #' 
-#' @examples 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
 #' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' sps <- Spectra(spd)
+#' numberSpectra(spectra = sps, MSLevel = 1L)
+#' numberSpectra(spectra = sps, MSLevel = 2L)
 numberSpectra <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -303,6 +402,7 @@ numberSpectra <- function(spectra, MSLevel = 1L) {
 #' is_a: QC:4000025 ! ion source metric
 #' 
 #' @param spectra `Spectra` object
+#' @param MSLevel `numeric`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -312,8 +412,28 @@ numberSpectra <- function(spectra, MSLevel = 1L) {
 #' 
 #' @importFrom ProtGenerics precursorMz
 #' 
-#' @examples 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
 #' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$precursorMz <- c(170.16, 170.16, 195.0876)
+#' sps <- Spectra(spd)
+#' medianPrecursorMZ(spectra = sps, MSLevel = 2L)
 medianPrecursorMZ <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -356,8 +476,28 @@ medianPrecursorMZ <- function(spectra, MSLevel = 1L) {
 #' @importFrom ProtGenerics filterMsLevel rtime
 #' @importFrom stats IQR
 #' 
-#' @examples 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
 #' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$rtime <- c(9.44, 9.44, 15.84)
+#' sps <- Spectra(spd)
+#' rtIQR(spectra = sps, MSLevel = 2L)
 rtIQR <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -380,7 +520,7 @@ rtIQR <- function(spectra, MSLevel = 1L) {
 #' @title Peptide identification rate of the interquartile RT period (QC:4000073)
 #' 
 #' @description
-#' The identification rate of peptides for the interquartile retention time 
+#' "The identification rate of peptides for the interquartile retention time 
 #' period, in peptides per second." [PSI:QC]
 #' id: QC:4000073
 #' 
@@ -402,8 +542,28 @@ rtIQR <- function(spectra, MSLevel = 1L) {
 #' @importFrom ProtGenerics rtime
 #' @importFrom stats quantile
 #' 
-#' @examples 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
 #' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$rtime <- c(9.44, 9.44, 15.84)
+#' sps <- Spectra(spd)
+#' rtIQRrate(spectra = sps, MSLevel = 2L)
 rtIQRrate <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -429,11 +589,10 @@ rtIQRrate <- function(spectra, MSLevel = 1L) {
     
     ## divide the number of eluted features between the 25% and 75% quantile
     ## by the IQR to get the elution rate per second 
-    rate <- nFeatures / rtIQR(spectra)
+    rate <- nFeatures / rtIQR(spectra, MSLevel = MSLevel)
     
     return(rate)
 }
-
 
 #' @name areaUnderTIC
 #' 
@@ -451,6 +610,7 @@ rtIQRrate <- function(spectra, MSLevel = 1L) {
 #' The sum of the TIC is returned as an equivalent to the area.
 #' 
 #' @param spectra `Spectra` object
+#' @param MSLevel `numeric`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -461,7 +621,26 @@ rtIQRrate <- function(spectra, MSLevel = 1L) {
 #' @importFrom ProtGenerics tic ionCount
 #' 
 #' @examples 
+#' library(S4Vectors)
+#' library(Spectra)
 #' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' sps <- Spectra(spd)
+#' areaUnderTIC(spectra = sps, MSLevel = 2L)
 areaUnderTIC <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -469,9 +648,7 @@ areaUnderTIC <- function(spectra, MSLevel = 1L) {
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
     }
-    # if (is(object, "MSnExp"))
-    #     TIC <- ProtGenerics::tic(object)
-    # if (is(object, "Spectra"))
+
     TIC <- ProtGenerics::ionCount(spectra)
     
     ## sum up the TIC (equivalent to the area) and return
@@ -508,8 +685,28 @@ areaUnderTIC <- function(spectra, MSLevel = 1L) {
 #' @importFrom ProtGenerics tic ionCount rtime
 #' @importFrom stats quantile
 #' 
-#' @examples 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
 #' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$rtime <- c(9.44, 9.44, 15.84)
+#' sps <- Spectra(spd)
+#' areaUnderTICRTquantiles(spectra = sps, MSLevel = 2L)
 areaUnderTICRTquantiles <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -525,9 +722,6 @@ areaUnderTICRTquantiles <- function(spectra, MSLevel = 1L) {
     
     quantileRT <- stats::quantile(RT, na.rm = TRUE)
     
-    # if (is(object, "MSnExp"))
-    #     TIC <- ProtGenerics::tic(object)
-    # if (is(object, "Spectra"))
     TIC <- ProtGenerics::ionCount(spectra)
     
     ## get the TICs for the 1st, 2nd, 3rd, and 4th quartile
@@ -576,8 +770,28 @@ areaUnderTICRTquantiles <- function(spectra, MSLevel = 1L) {
 #' @importFrom ProtGenerics filterMsLevel precursorIntensity
 #' @importFrom stats quantile
 #' 
-#' @examples 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
 #' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$precursorIntensity <- c(100, 100, 100)
+#' sps <- Spectra(spd)
+#' extentIdentifiedPrecursorIntensity(spectra = sps, MSLevel = 2L)
 extentIdentifiedPrecursorIntensity <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -616,6 +830,7 @@ extentIdentifiedPrecursorIntensity <- function(spectra, MSLevel = 1L) {
 #' equivalent to the TIC.
 #' 
 #' @param spectra `Spectra` object
+#' @param MSLevel `numeric`
 #' 
 #' @return `numeric(1)`
 #'
@@ -626,8 +841,28 @@ extentIdentifiedPrecursorIntensity <- function(spectra, MSLevel = 1L) {
 #' @importFrom ProtGenerics filterMsLevel tic ionCount
 #' @importFrom stats median
 #'
-#' @examples 
-#'
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
+#' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$rtime <- c(9.44, 9.44, 15.84)
+#' sps <- Spectra(spd)
+#' medianTICRTIQR(spectra = sps, MSLevel = 2L)
 medianTICRTIQR <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -647,12 +882,9 @@ medianTICRTIQR <- function(spectra, MSLevel = 1L) {
     Q1ToQ3 <- spectra[ind %in% c(2, 3), ]
     
     # ## take the TIC of the Q1 to Q3 of identifications
-    # if (is(object, "MSnExp"))
-    #     ticQ1ToQ3 <- ProtGenerics::tic(Q1ToQ3)
     
     ## how to define TIC? take the ionCount?? #######################
     ## take the ionCount of the Q1 to Q3 of identifications
-    # if (is(spectra, "Spectra"))
     ticQ1ToQ3 <- ProtGenerics::ionCount(Q1ToQ3)
     
     ## take the median value of the TIC within this interval and return
@@ -689,8 +921,28 @@ medianTICRTIQR <- function(spectra, MSLevel = 1L) {
 #' @importFrom ProtGenerics filterMsLevel tic ionCount rtime
 #' @importFrom stats median
 #' 
-#' @examples 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
 #' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$rtime <- c(9.44, 9.44, 15.84)
+#' sps <- Spectra(spd)
+#' medianTICofRTRange(spectra = sps, MSLevel = 2L)
 medianTICofRTRange <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -704,9 +956,6 @@ medianTICofRTRange <- function(spectra, MSLevel = 1L) {
     spectra <- spectra[order(RT)]
     RT <- RT[order(RT)]
     
-    # if (is(object, "MSnExp"))
-    #     TIC <- ProtGenerics::tic(object)
-    # if (is(object, "Spectra"))
     TIC <- ProtGenerics::ionCount(spectra)
     
     ## retrieve number of features in object and calculate the number for half
@@ -759,9 +1008,27 @@ medianTICofRTRange <- function(spectra, MSLevel = 1L) {
 #' 
 #' @importFrom ProtGenerics filterMsLevel mz
 #' 
-#' @examples 
-#' mzAcquisitionRange(spectra)
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
 #' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' sps <- Spectra(spd)
+#' mzAcquisitionRange(spectra = sps, MSLevel = 2L)
 mzAcquisitionRange <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -790,6 +1057,7 @@ mzAcquisitionRange <- function(spectra, MSLevel = 1L) {
 #' is_a: QC:4000004 ! n-tuple
 #' 
 #' @param spectra `Spectra` object
+#' @param MSLevel `numeric`
 #' 
 #' @return
 #' `numeric(2)`
@@ -798,11 +1066,30 @@ mzAcquisitionRange <- function(spectra, MSLevel = 1L) {
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics rtime
+#' @importFrom ProtGenerics rtime filterMsLevel
 #' 
 #' @examples 
-#' rtAcquisitionRange(spectra)
+#' library(S4Vectors)
+#' library(Spectra)
 #' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$rtime <- c(9.44, 9.44, 15.84)
+#' sps <- Spectra(spd)
+#' rtAcquisitionRange(spectra = sps, MSLevel = 2L)
 rtAcquisitionRange <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -844,11 +1131,30 @@ rtAcquisitionRange <- function(spectra, MSLevel = 1L) {
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics precursorIntensity
+#' @importFrom ProtGenerics precursorIntensity filterMsLevel
 #' 
-#' @examples 
-#' 
-#' 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
+#'
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$precursorIntensity <- c(100.0, 100.0, 100.0)
+#' sps <- Spectra(spd)
+#' precursorIntensityRange(spectra = sps, MSLevel = 2L)
 precursorIntensityRange <- function(spectra, MSLevel = 1) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -897,7 +1203,8 @@ precursorIntensityRange <- function(spectra, MSLevel = 1) {
 #' The intensity distribution of the unidentified precursors informs about the 
 #' dynamic range of the acquisition in relation to identifiability.
 #' 
-#' @param object `MSnExp` or `Spectra` object
+#' @param spectra `Spectra` object
+#' @param MSLevel `numeric`
 #' 
 #' @return `numeric(3)`
 #' 
@@ -905,11 +1212,31 @@ precursorIntensityRange <- function(spectra, MSLevel = 1) {
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics precursorIntensity
+#' @importFrom ProtGenerics precursorIntensity filterMsLevel
 #' @importFrom stats quantile
 #' 
 #' @examples
-#' precursorIntensityQuartiles(spectra)
+#' library(S4Vectors)
+#' library(Spectra)
+#'
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$precursorIntensity <- c(100.0, 100.0, 100.0)
+#' sps <- Spectra(spd)
+#' precursorIntensityQuartiles(spectra = sps, MSLevel = 2L)
 precursorIntensityQuartiles <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -967,10 +1294,30 @@ precursorIntensityQuartiles <- function(spectra, MSLevel = 1L) {
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics precursorIntensity
+#' @importFrom ProtGenerics precursorIntensity filterMsLevel
 #' 
 #' @examples
-#' precursorIntensityMean(spectra)
+#' library(S4Vectors)
+#' library(Spectra)
+#'
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$precursorIntensity <- c(100.0, 100.0, 100.0)     
+#' sps <- Spectra(spd)
+#' precursorIntensityMean(spectra = sps, MSLevel = 2L)
 precursorIntensityMean <- function(spectra, MSLevel = 1L) {
     
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -1026,11 +1373,31 @@ precursorIntensityMean <- function(spectra, MSLevel = 1L) {
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics precursorIntensity
+#' @importFrom ProtGenerics precursorIntensity filterMsLevel
 #' @importFrom stats sd
 #' 
 #' @examples
-#' precursorIntensitySD(spectra)
+#' library(S4Vectors)
+#' library(Spectra)
+#'
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$precursorIntensity <- c(100.0, 100.0, 100.0)
+#' sps <- Spectra(spd)
+#' precursorIntensitySD(spectra = sps, MSLevel = 2L)
 precursorIntensitySD <- function(spectra, MSLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
@@ -1047,7 +1414,7 @@ precursorIntensitySD <- function(spectra, MSLevel = 1L) {
 
 #' @name msSignal10XChange
 #' 
-#' @title MS1 signal jump/fall (10x) count (QC:4000172/QC:400173)
+#' @title MS1 signal jump/fall (10x) count (QC:4000172/QC:4000173)
 #' 
 #' @description 
 #' "The count of MS1 signal jump (spectra sum) by a factor of ten or more (10x)
@@ -1075,10 +1442,30 @@ precursorIntensitySD <- function(spectra, MSLevel = 1L) {
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics tic ionCount
+#' @importFrom ProtGenerics tic ionCount filterMsLevel
 #' 
-#' @examples 
-#' 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
+#'
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' sps <- Spectra(spd)
+#' msSignal10XChange(spectra = sps, change = "jump", MSLevel = 2L)
+#' msSignal10XChange(spectra = sps, change = "fall", MSLevel = 2L)
 msSignal10XChange <- function(spectra, change = c("jump", "fall"), 
                                                           MSLevel = 1L) {
 
@@ -1094,11 +1481,7 @@ msSignal10XChange <- function(spectra, change = c("jump", "fall"),
     RT <- ProtGenerics::rtime(spectra)
     spectra <- spectra[order(RT)]
     RT <- RT[order(RT)]
-    
-    ########## does this make sense only for MSnExp?????
-    # if (is(object, "MSnExp")) 
-    #     TIC <- ProtGenerics::tic(object)
-    # if (is(object, "Spectra"))
+
     TIC <- ProtGenerics::ionCount(spectra)
     
     precedingTIC <- TIC[seq_len(length(TIC) - 1)]
@@ -1119,7 +1502,7 @@ msSignal10XChange <- function(spectra, change = c("jump", "fall"),
 #' @name RatioCharge1over2
 #' 
 #' @title Charged peptides ratio 1+ over 2+ (QC:4000174) or 
-#' Charged spectra ratio +1 over +2 (QC:4000179)
+#' Charged spectra ratio 1+ over 2+ (QC:4000179)
 #' 
 #' @description 
 #' "Ratio of 1+ peptide count over 2+ peptide count in identified spectra" [PSI:QC]
@@ -1134,6 +1517,7 @@ msSignal10XChange <- function(spectra, change = c("jump", "fall"),
 #' is_a: QC:4000001 ! QC metric
 #' 
 #' @param spectra `Spectra` object
+#' @param MSLevel `numeric`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -1141,13 +1525,39 @@ msSignal10XChange <- function(spectra, change = c("jump", "fall"),
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics precursorCharge
+#' @importFrom ProtGenerics precursorCharge filterMsLevel
 #' 
-#' @examples 
-#' 
-RatioCharge1over2 <- function(spectra) {
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
+#'
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$precursorCharge <- c(1L, 1L, 1L)
+#' sps <- Spectra(spd)
+#' RatioCharge1over2(spectra = sps, MSLevel = 2L)
+RatioCharge1over2 <- function(spectra, MSLevel = 1L) {
+  
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    
+    if (length(spectra) == 0) {
+        stop("Spectra object does not contain any spectra") 
+    }
+    
     ## is there a way to get charge of actual entries, not only of precursor?
-    ############# is count == number or intensity? #############################
     charge <- ProtGenerics::precursorCharge(spectra)
     
     ## get the number of precursor per charge
@@ -1164,7 +1574,7 @@ RatioCharge1over2 <- function(spectra) {
 #' @name RatioCharge3over2
 #' 
 #' @title Charged peptides ratio 3+ over 2+ (QC:4000175) or 
-#' charged spectra ratio +3 over +2 (QC:4000180)
+#' charged spectra ratio 3+ over 2+ (QC:4000180)
 #' 
 #' @description 
 #' "Ratio of 3+ peptide count over 2+ peptide count in identified spectra" [PSI:QC]
@@ -1179,6 +1589,7 @@ RatioCharge1over2 <- function(spectra) {
 #' is_a: QC:4000001 ! QC metric
 #' 
 #' @param spectra `Spectra` object
+#' @param MSLevel `numeric`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -1186,13 +1597,39 @@ RatioCharge1over2 <- function(spectra) {
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics precursorCharge
+#' @importFrom ProtGenerics precursorCharge filterMsLevel
 #' 
-#' @examples 
-#' 
-RatioCharge3over2 <- function(spectra) {
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
+#'
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$precursorCharge <- c(1L, 1L, 1L)
+#' sps <- Spectra(spd)
+#' RatioCharge3over2(spectra = sps, MSLevel = 2L)
+RatioCharge3over2 <- function(spectra, MSLevel = 1L) {
+  
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    
+    if (length(spectra) == 0) {
+        stop("Spectra object does not contain any spectra") 
+    }
+    
     ## is there a way to get charge of actual entries, not only of precursor?
-    ############# is count == number or intensity? #############################
     charge <- ProtGenerics::precursorCharge(spectra)
     
     ## get the number of precursor per charge
@@ -1225,6 +1662,7 @@ RatioCharge3over2 <- function(spectra) {
 #' is_a: QC:4000001 ! QC metric
 #' 
 #' @param spectra `Spectra` object
+#' @param MSLevel `numeric`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -1232,13 +1670,39 @@ RatioCharge3over2 <- function(spectra) {
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics precursorCharge
+#' @importFrom ProtGenerics precursorCharge filterMsLevel
 #' 
-#' @examples 
-#' 
-RatioCharge4over2 <- function(spectra) {
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
+#'
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$precursorCharge <- c(1L, 1L, 1L)
+#' sps <- Spectra(spd)
+#' RatioCharge4over2(spectra = sps, MSLevel = 2L)
+RatioCharge4over2 <- function(spectra, MSLevel = 1L) {
+  
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    
+    if (length(spectra) == 0) {
+        stop("Spectra object does not contain any spectra") 
+    }
+    
     ## is there a way to get charge of actual entries, not only of precursor?
-    ############# is count == number or intensity? #############################
     charge <- ProtGenerics::precursorCharge(spectra)
     
     ## get the number of precursor per charge
@@ -1271,6 +1735,7 @@ RatioCharge4over2 <- function(spectra) {
 #' is_a: QC:4000001 ! QC metric
 #' 
 #' @param spectra `Spectra` object
+#' @param MSLevel `numeric`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -1278,11 +1743,37 @@ RatioCharge4over2 <- function(spectra) {
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics precursorCharge
+#' @importFrom ProtGenerics precursorCharge filterMsLevel
 #' 
-#' @examples 
-#' 
-meanCharge <- function(spectra) {
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
+#'
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$precursorCharge <- c(1L, 1L, 1L)
+#' sps <- Spectra(spd)
+#' meanCharge(spectra = sps, MSLevel = 2L)
+meanCharge <- function(spectra, MSLevel = 1L) {
+    
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    
+    if (length(spectra) == 0) {
+        stop("Spectra object does not contain any spectra") 
+    }
     
     charge <- ProtGenerics::precursorCharge(spectra)
     chargeMean <- mean(charge, na.rm = TRUE)
@@ -1307,6 +1798,7 @@ meanCharge <- function(spectra) {
 #' is_a: QC:4000001 ! QC metric
 #' 
 #' @param spectra `Spectra` object
+#' @param MSLevel `numeric`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -1314,11 +1806,38 @@ meanCharge <- function(spectra) {
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics precursorCharge
+#' @importFrom ProtGenerics precursorCharge filterMsLevel
 #' 
-#' @examples 
-#' 
-medianCharge <- function(spectra) {
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
+#'
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' sps <- Spectra(spd)
+#' spd$precursorCharge <- c(1L, 1L, 1L)
+#' medianCharge(spectra = sps, MSLevel = 2L)
+medianCharge <- function(spectra, MSLevel = 1L) {
+  
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    
+    if (length(spectra) == 0) {
+        stop("Spectra object does not contain any spectra") 
+    }
+    
     charge <- ProtGenerics::precursorCharge(spectra)
     chargeMedian <- median(charge, na.rm = TRUE)
     return(chargeMedian)
