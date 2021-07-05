@@ -15,7 +15,7 @@ rtOverTICquantile(spectra, MSLevel = 1L)
 `numeric(4)`
 }
 \description{
-The interval when the respective quantile of the TIC accumulates divided by 
+"The interval when the respective quantile of the TIC accumulates divided by 
 retention time duration. The number of quantiles observed is given by the 
 size of the tuple." [PSI:QC]
 id: QC:4000054

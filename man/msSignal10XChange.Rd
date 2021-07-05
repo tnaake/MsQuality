@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{msSignal10XChange}
 \alias{msSignal10XChange}
-\title{MS1 signal jump/fall (10x) count (QC:4000172/QC:400173)}
+\title{MS1 signal jump/fall (10x) count (QC:4000172/QC:4000173)}
 \usage{
 msSignal10XChange(spectra, change = c("jump", "fall"), MSLevel = 1L)
 }

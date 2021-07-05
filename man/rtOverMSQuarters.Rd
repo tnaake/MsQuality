@@ -17,6 +17,11 @@ rtOverMSQuarters(spectra, MSLevel = 1L)
 \description{
 "The interval used for acquisition of the first, second, third, and fourth 
 quarter of all MS1 events divided by RT-Duration." [PSI:QC]
+id: QC:4000055
+
+"The interval used for acquisition of the first, second, third, and fourth 
+quarter of all MS2 events divided by RT-Duration." [PSI:QC]
+id: QC:4000056
 }
 \details{
 is_a: QC:4000004 ! n-tuple

@@ -15,7 +15,7 @@ rtIQRrate(spectra, MSLevel = 1L)
 `numeric(2)`
 }
 \description{
-The identification rate of peptides for the interquartile retention time 
+"The identification rate of peptides for the interquartile retention time 
 period, in peptides per second." [PSI:QC]
 id: QC:4000073
 }

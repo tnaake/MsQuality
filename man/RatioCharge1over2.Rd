@@ -3,7 +3,7 @@
 \name{RatioCharge1over2}
 \alias{RatioCharge1over2}
 \title{Charged peptides ratio 1+ over 2+ (QC:4000174) or 
-Charged spectra ratio +1 over +2 (QC:4000179)}
+Charged spectra ratio 1+ over 2+ (QC:4000179)}
 \usage{
 RatioCharge1over2(spectra, MSLevel = 1L)
 }

@@ -25,7 +25,8 @@ ticQuantileToQuantileLogRatio(
 "The log ratio for the second to n-th quantile of TIC changes over first 
 quantile of TIC changes." [PSI:QC]
 id: QC:4000057
-def: "The log ratio for the second to n-th quantile of TIC over the previous 
+
+"The log ratio for the second to n-th quantile of TIC over the previous 
 quantile of TIC. For the boundary elements min/max are used." [PSI:QC]
 id: QC:4000058
 }
