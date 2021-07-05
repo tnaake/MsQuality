@@ -193,6 +193,137 @@ a `Spectra` or `MsExperiment` object as input, a character vector of metrics
 to be calculated, and, optionally a list of parameters passed to the 
 quality metrics functions. 
 
+Currently, the following metrics are included:
+```{r}
+qualityMetrics(msexp_rplc)
+```
+
+The following list gives a brief explanation for these metrics. Further 
+information may be found at the 
+[HUPO-PSI project page[(https://github.com/HUPO-PSI/mzQC)  or in the 
+respective help file for the quality metric (accessible by e.g. entering
+`?rtDuration` to the R console). Currently, all quality metrics can be 
+calculated for both `Spectra` and `MsExperiment` objects. 
+
+- *rtDuration*, **RT duration** (QC:4000053), 
+  "The retention time duration of the MS run in seconds, similar to the 
+  highest scan time minus the lowest scan time." [PSI:QC];
+- *rtOverTICquantile*, **RT over TIC quantile** (QC:4000054), 
+  "The interval when the respective quantile of the TIC accumulates divided by 
+  retention time duration. The number of quantiles observed is given by the 
+  size of the tuple." [PSI:QC];
+- *rtOverMSQuarters*, **MS1 quantiles RT fraction** (QC:4000055), 
+  "The interval used for acquisition of the first, second, third, and fourth 
+  quarter of all MS1 events divided by RT-Duration." [PSI:QC];
+- *rtOverMSQuarters*, **MS1/MS2 quantiles RT fraction** (QC:4000055), 
+  "The interval used for acquisition of the first, second, third, and fourth 
+  quarter of all MS2 events divided by RT-Duration." [PSI:QC];
+- *ticQuantileToQuantileLogRatio*,
+  **MS1 quantile TIC change ratio to Quantile 1** (QC:4000057),
+  "The log ratio for the second to n-th quantile of TIC changes over first 
+  quantile of TIC changes." [PSI:QC];
+- *ticQuantileToQuantileLogRatio*, 
+  **MS1 quantile TIC change ratio to previous quantile** (QC:4000058),
+  "The log ratio for the second to n-th quantile of TIC over the previous 
+  quantile of TIC." [PSI:QC];
+- *numberSpectra*, **Number of MS1 spectra** (QC:4000059), 
+  "The number of MS1 events in the run." [PSI:QC];
+- *numberSpectra*, **Number of MS2 spectra** (QC:4000060), 
+  "The number of MS2 events in the run." [PSI:QC];
+- *medianPrecursorMZ*, **Precursor median m/z for IDs** (QC:4000065), 
+  "Median m/z value for all identified peptides (unique ions) after 
+  FDR." [PSI:QC];
+- *rtIQR*, **Interquartile RT period for peptide identifications** (QC:4000072),
+  "The interquartile retention time period, in seconds, for all peptide 
+  identifications over the complete run." [PSI:QC];
+- *rtIQRrate*, **Peptide identification rate of the interquartile RT period**
+  (QC:4000073), 
+  "The identification rate of peptides for the interquartile retention time 
+  period, in peptides per second." [PSI:QC];
+- *areaUnderTIC*, **Area under TIC** (QC:4000077),
+  "The area under the total ion chromatogram." [PSI:QC];
+- *areaUnderTICRTquantiles*, **Area under TIC RT quantiles** (QC:4000078),
+  "The area under the total ion chromatogram of the retention time quantiles. 
+  Number of quantiles are given by the n-tuple." [PSI:QC];
+- *extentIdentifiedPrecursorIntensity*, 
+  **Extent of identified precursor intensity** (QC:4000125),
+  "Ratio of 95th over 5th percentile of precursor intensity for identified 
+  peptides" [PSI:QC];
+- *medianTICRTIQR*, **Median of TIC values in the RT range in which the middle 
+  half of peptides are identified** (QC:4000130),
+  "Median of TIC values in the RT range in which half of peptides are 
+  identified (RT values of Q1 to Q3 of identifications)" [PSI:QC];
+- *medianTICofRTRange*, **Median of TIC values in the shortest RT range in 
+  which half of the peptides are identified** (QC:4000132),
+  "Median of TIC values in the shortest RT range in which half of the 
+  peptides are identified"  [PSI:QC] 
+- *mzAcquisitionRange*, **m/z acquisition range** (QC:4000138),
+  "Upper and lower limit of m/z values at which spectra are recorded." [PSI:QC];
+- *rtAcquisitionRange*, **Retention time acquisition range** (QC:4000139),
+  "Upper and lower limit of time at which spectra are recorded." [PSI:QC];
+- *precursorIntensityRange*, **Precursor intensity range** (QC:4000144),
+  "Minimum and maximum precursor intensity recorded." [PSI:QC];
+- *precursorIntensityQuartiles*, **Precursor intensity distribution 
+  Q1, Q2, Q3** (QC:4000167), 
+  "From the distribution of precursor intensities, the quartiles Q1, Q2, Q3" 
+  [PSI:QC];
+- *precursorIntensityQuartiles*, **Identified precursor intensity distribution 
+  Q1, Q2, Q3** (QC:4000228), 
+  "From the distribution of identified precursor intensities, the quartiles 
+  Q1, Q2, Q3" [PSI:QC];
+- *precursorIntensityQuartiles*, **Unidentified precursor intensity 
+  distribution Q1, Q2, Q3** (QC:4000233), 
+  "From the distribution of unidentified precursor intensities, the quartiles 
+  Q1, Q2, Q3" [PSI:QC];
+- *precursorIntensityMean*, **Precursor intensity distribution mean** 
+  (QC:4000168), "From the distribution of precursor intensities, the mean." 
+  [PSI:QC];
+- *precursorIntensityMean*, **Identified precursor intensity distribution 
+  mean** (QC:4000229), "From the distribution of identified precursor 
+  intensities, the mean" [PSI:QC];
+- *precursorIntensityMean*, **Unidentified precursor intensity distribution 
+  mean** (QC:4000234), "From the distribution of unidentified precursor 
+  intensities, the mean" [PSI:QC];
+- *precursorIntensitySD*, **Precursor intensity distribution sigma**
+  (QC:4000169), "From the distribution of precursor intensities, the sigma 
+  value." [PSI:QC];
+- *precursorIntensitySD*, **Identified precursor intensity distribution sigma**
+  (QC:4000230), "From the distribution of identified precursor intensities, 
+  the sigma value" [PSI:QC];
+- *precursorIntensitySD*, **Unidentified precursor intensity distribution 
+  sigma** (QC:400235), "From the distribution of unidentified precursor 
+  intensities, the sigma value" [PSI:QC];
+- *msSignal10XChange*, **MS1 signal jump (10x) count** (QC:4000172),
+  "The count of MS1 signal jump (spectra sum) by a factor of ten or more (10x)
+  between two subsequent scans" [PSI:QC];
+- *msSignal10XChange*, **MS1 signal fall (10x) count** (QC:4000173),
+  "The count of MS1 signal decline (spectra sum) by a factor of ten or more 
+  (10x) between two subsequent scans" [PSI:QC];
+- *RatioCharge1over2*, **Charged peptides ratio 1+ over 2+** (QC:4000174),
+  "Ratio of 1+ peptide count over 2+ peptide count in identified spectra" 
+  [PSI:QC];
+- *RatioCharge1over2*, **Charged spectra ratio 1+ over 2+** (QC:4000179),
+  "Ratio of 1+ spectra count over 2+ spectra count in all MS2" [PSI:QC];
+- *RatioCharge3over2*, **Charged peptides ratio 3+ over 2+** (QC:4000175),
+  "Ratio of 3+ peptide count over 2+ peptide count in identified spectra" 
+  [PSI:QC];
+- *RatioCharge3over2*, **Charged spectra ratio 3+ over 2+** (QC:4000180),
+  "Ratio of 3+ peptide count over 2+ peptide count in all MS2" [PSI:QC];
+- **RatioCharge4over2**, **Charged peptides ratio 4+ over 2+** (QC:4000176),
+  "Ratio of 4+ peptide count  over 2+ peptide count in identified 
+  spectra" [PSI:QC];
+- **RatioCharge4over2**, **Charged spectra ratio 4+ over 2+** (QC:4000181),
+  "Ratio of 4+ peptide count over 2+ peptide count in all MS2" [PSI:QC];
+- *meanCharge*, **Mean charge in identified spectra** (QC:4000177),
+  "Mean charge in identified spectra" [PSI:QC];
+- *meanCharge*, **Mean precursor charge in all MS2** (QC:4000182),
+  "Mean precursor charge in all MS2" [PSI:QC];
+- *medianCharge*, **Median charge in identified spectra** (QC:4000178),
+  "Median charge in identified spectra" [PSI:QC];
+- *medianCharge*, **Median precursor charge in all MS2** (QC:4000183),
+  "Median precursor charge in all MS2" [PSI:QC].
+
+
 When passing a `Spectra` object to the function, a named vector is 
 returned by `calculateMetrics` with the metrics specified by the argument
 `metrics`. By default, `qualityMetrics(object)` is taken to specify
