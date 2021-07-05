@@ -200,7 +200,7 @@ qualityMetrics(msexp_rplc)
 
 The following list gives a brief explanation for these metrics. Further 
 information may be found at the 
-[HUPO-PSI project page[(https://github.com/HUPO-PSI/mzQC)  or in the 
+[HUPO-PSI mzQC project page](https://github.com/HUPO-PSI/mzQC)  or in the 
 respective help file for the quality metric (accessible by e.g. entering
 `?rtDuration` to the R console). Currently, all quality metrics can be 
 calculated for both `Spectra` and `MsExperiment` objects. 
