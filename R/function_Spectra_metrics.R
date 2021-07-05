@@ -57,7 +57,7 @@ rtDuration <- function(spectra) {
 #' @title RT over TIC quantile (QC:4000054)
 #' 
 #' @description 
-#' The interval when the respective quantile of the TIC accumulates divided by 
+#' "The interval when the respective quantile of the TIC accumulates divided by 
 #' retention time duration. The number of quantiles observed is given by the 
 #' size of the tuple." [PSI:QC]
 #' id: QC:4000054
@@ -144,6 +144,11 @@ rtOverTICquantile <- function(spectra, MSLevel = 1L) {
 #' @description
 #' "The interval used for acquisition of the first, second, third, and fourth 
 #' quarter of all MS1 events divided by RT-Duration." [PSI:QC]
+#' id: QC:4000055
+#'
+#' "The interval used for acquisition of the first, second, third, and fourth 
+#' quarter of all MS2 events divided by RT-Duration." [PSI:QC]
+#' id: QC:4000056
 #' 
 #' @details
 #' is_a: QC:4000004 ! n-tuple
@@ -224,7 +229,8 @@ rtOverMSQuarters <- function(spectra, MSLevel = 1L) {
 #' "The log ratio for the second to n-th quantile of TIC changes over first 
 #' quantile of TIC changes." [PSI:QC]
 #' id: QC:4000057
-#' def: "The log ratio for the second to n-th quantile of TIC over the previous 
+#' 
+#' "The log ratio for the second to n-th quantile of TIC over the previous 
 #' quantile of TIC. For the boundary elements min/max are used." [PSI:QC]
 #' id: QC:4000058
 #' 
@@ -514,7 +520,7 @@ rtIQR <- function(spectra, MSLevel = 1L) {
 #' @title Peptide identification rate of the interquartile RT period (QC:4000073)
 #' 
 #' @description
-#' The identification rate of peptides for the interquartile retention time 
+#' "The identification rate of peptides for the interquartile retention time 
 #' period, in peptides per second." [PSI:QC]
 #' id: QC:4000073
 #' 
@@ -1408,7 +1414,7 @@ precursorIntensitySD <- function(spectra, MSLevel = 1L) {
 
 #' @name msSignal10XChange
 #' 
-#' @title MS1 signal jump/fall (10x) count (QC:4000172/QC:400173)
+#' @title MS1 signal jump/fall (10x) count (QC:4000172/QC:4000173)
 #' 
 #' @description 
 #' "The count of MS1 signal jump (spectra sum) by a factor of ten or more (10x)
@@ -1496,7 +1502,7 @@ msSignal10XChange <- function(spectra, change = c("jump", "fall"),
 #' @name RatioCharge1over2
 #' 
 #' @title Charged peptides ratio 1+ over 2+ (QC:4000174) or 
-#' Charged spectra ratio +1 over +2 (QC:4000179)
+#' Charged spectra ratio 1+ over 2+ (QC:4000179)
 #' 
 #' @description 
 #' "Ratio of 1+ peptide count over 2+ peptide count in identified spectra" [PSI:QC]
@@ -1568,7 +1574,7 @@ RatioCharge1over2 <- function(spectra, MSLevel = 1L) {
 #' @name RatioCharge3over2
 #' 
 #' @title Charged peptides ratio 3+ over 2+ (QC:4000175) or 
-#' charged spectra ratio +3 over +2 (QC:4000180)
+#' charged spectra ratio 3+ over 2+ (QC:4000180)
 #' 
 #' @description 
 #' "Ratio of 3+ peptide count over 2+ peptide count in identified spectra" [PSI:QC]
