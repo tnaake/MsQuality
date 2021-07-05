@@ -39,7 +39,7 @@ quality metrics for mass spectrometry-derived, spectral data at the per-sample
 level. `msQC` relies on the [`mzQC`](https://github.com/HUPO-PSI/mzQC) 
 framework of quality metrics defined by the Human Proteome 
 Organization-Proteomics Standards Intitiative (HUPO-PSI). These metrics 
-quantify the quality of spectral raw files using controlled vocabulary. 
+quantify the quality of spectral raw files using a controlled vocabulary. 
 The package is especially addressed towards users that acquire 
 mass spectrometry data on a clinical/large scale: while it is easier to control 
 for high-quality data acquisition in small-scale experiments, typically run
@@ -65,7 +65,7 @@ The `msQC` package allows to calculate low-level quality metrics that require
 minimum information on mass spectrometry data: retention time, m/z values, 
 and associated intensities.
 The list included in the `mzQC` framework is excessive, also including 
-metrics that rely more high-level information, that might not be readily
+metrics that rely on more high-level information, that might not be readily
 accessible from .raw or .mzML files, e.g. pump pressure mean, or rely
 on alignment results, e.g. retention time mean shift, signal-to-noise ratio,
 precursor errors (ppm). 
@@ -74,44 +74,38 @@ The `msQC` package is built upon the `Spectra` and the `MsExperiment` package.
 Metrics will be calculated based on the information stored in a 
 `Spectra` object, thus, the spectral data of each sample should be stored
 in one `Spectra` object. The `MsExperiment` serves as a container to 
-stores the mass spectral data of multiple samples. `msQC` enables the user
-to calculate quality metrics both on `Spectra` and `msExperiment` objects. 
+store the mass spectral data of multiple samples. `msQC` enables the user
+to calculate quality metrics both on `Spectra` and `MsExperiment` objects. 
 
 In this vignette, we will (i) create some exemplary `Spectra` and 
 `MsExperiment` objects, (ii) calculate the quality metrics on these
 data sets, and (iii) visualize some of the metrics.
+
+# Installation
+
+To install this package, start `R` and enter:
+
+```{r, eval = FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("msQC")
+```
+
+This will install this package and all eventually missing dependencies.
 
 # Questions and bugs {-}
 
 `msQC` is currently under active development. If you discover any bugs, typos or develop ideas of improving `msQC` feel free to raise an issue via
 [GitHub](https://github.com/tnaake/msQC) or send a mail to the developer.
 
-# Prepare the environment and load the data {#sec-prepare}
-To install `msQC` enter the following to the `R` console
-
-```{r install_devtools, eval = FALSE}
-if (!requireNamespace("devtools", quietly = TRUE))
-    install.packages("devtools")
-devtools::install_github("tnaake/msQC")
-```
-
-```{r install, eval=FALSE, echo = FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("msQC")
-```
-
-Before starting with the analysis, load the `msQC` package. 
-
-```{r load_MatrixQCvis, eval=TRUE}
-library("msQC")
-```
 
 # Create `Spectra` and `MsExperiment` objects 
 
 Load the `MsExperiment` and `Spectra` packages.
 
 ```{r load_MsExperiment_Spectra}
+library("msQC")
 library("MsExperiment")
 library("Spectra")
 ```
@@ -120,12 +114,12 @@ library("Spectra")
 ## Create `Spectra` and `MsExperiment` objects from mzML files
 
 There are several options available to create a `Spectra` object. One way, as
-outlined in the vignette of the `Spectra` package is by specifying 
-the location of mass spectrometry raw files in `mzML`, `mzXML` or 
-`CDF` format and using the `MsBackendMzR` backend. As a way of example, here 
-we will load the example files from the `sciex` data set of the `msdata` 
-package and create a `Spectra` object from the two `mzML` files. The 
-example is taken from the `Spectra` vignette.
+outlined in the vignette of the `r BiocStyle::Biocpkg("Spectra")` package is 
+by specifying the location of mass spectrometry raw files in `mzML`, `mzXML` or 
+`CDF` format and using the `MsBackendMzR` backend. Here we load the example 
+files from the `sciex` data set of the `msdata` package and create a `Spectra` 
+object from the two provided `mzML` files. The example is taken from the 
+`Spectra` vignette.
 
 ```{r spectra_sciex, eval = FALSE, echo = TRUE}
 ## this example is taken from the Spectra vignette
@@ -414,15 +408,15 @@ the long format and combine the two `data.frame` into one (`metrics_l`).
 ```{r}
 library("tibble")
 library("tidyr")
-metrics_rplc_l <- metrics_rplc_msexp %>% 
-    as.data.frame() %>% 
-    rownames_to_column(., var = "sample") %>%
-    as_tibble() %>% 
+metrics_rplc_l <- metrics_rplc_msexp |> 
+    as.data.frame() |> 
+    rownames_to_column(., var = "sample") |>
+    as_tibble() |> 
     pivot_longer(., cols = 2:ncol(.), names_to = "metric")
-metrics_hilic_l <- metrics_hilic_msexp %>% 
-    as.data.frame() %>%
-    rownames_to_column(., var = "sample") %>%
-    as_tibble() %>% 
+metrics_hilic_l <- metrics_hilic_msexp |> 
+    as.data.frame() |>
+    rownames_to_column(., var = "sample") |>
+    as_tibble() |> 
     pivot_longer(., cols = 2:ncol(.), names_to = "metric")
 
 ## add information on the separation technology
