@@ -410,14 +410,14 @@ library("tibble")
 library("tidyr")
 metrics_rplc_l <- metrics_rplc_msexp |> 
     as.data.frame() |> 
-    rownames_to_column(., var = "sample") |>
+    rownames_to_column(var = "sample") |>
     as_tibble() |> 
-    pivot_longer(., cols = 2:ncol(.), names_to = "metric")
+    pivot_longer(cols = 2:(ncol(metrics_rplc_msexp) + 1), names_to = "metric")
 metrics_hilic_l <- metrics_hilic_msexp |> 
     as.data.frame() |>
-    rownames_to_column(., var = "sample") |>
+    rownames_to_column(var = "sample") |>
     as_tibble() |> 
-    pivot_longer(., cols = 2:ncol(.), names_to = "metric")
+    pivot_longer(cols = 2:(ncol(metrics_hilic_msexp) + 1), names_to = "metric")
 
 ## add information on the separation technology
 metrics_rplc_l <- add_column(metrics_rplc_l, method = "RPCL")
@@ -435,13 +435,13 @@ adjust for sample type-specific effects.
 
 ```{r}
 library("ggplot2")
-ggplot(subset(metrics_l, metric == "numberSpectra")) +
-  geom_point(aes(x = sample, y = value, col = method)) +
-  theme_bw() + xlab("Samples") + ylab("number of features") +
-  guides(shape = guide_legend(override.aes = list(size = 5))) +
-  guides(colour = guide_legend(override.aes = list(size= 5))) +
-  theme(axis.text.x = element_text(angle = 90, size = 10), 
-      panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+ggplot(subset(metrics_l, metric == "numberSpectra_MSLevel1")) +
+    geom_point(aes(x = sample, y = value, col = method)) +
+    theme_bw() + xlab("Samples") + ylab("number of features") +
+    guides(shape = guide_legend(override.aes = list(size = 5))) +
+    guides(colour = guide_legend(override.aes = list(size= 5))) +
+    theme(axis.text.x = element_text(angle = 90, size = 10), 
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 ```
 
 Similarly, we are able to display the area under the TIC for the retention
