@@ -20,7 +20,7 @@
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics rtime
+#' @importMethodsFrom Spectra rtime
 #' 
 #' @examples
 #' library(S4Vectors)
@@ -46,10 +46,8 @@
 #' rtDuration(spectra = sps)
 rtDuration <- function(spectra) {
   
-    RT <- ProtGenerics::rtime(object = spectra)
-    rtDuration <- max(RT) - min(RT)
-    
-    return(rtDuration)
+    RT <- rtime(object = spectra)
+    max(RT) - min(RT)
 }
 
 #' @name rtOverTICquantile
@@ -69,15 +67,25 @@ rtDuration <- function(spectra) {
 #' is_a: QC:4000022 ! chromatogram metric
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric(1)`
+#'
+#' @param probs `numeric` defining the quantiles. See [stats::quantile()] for
+#'     details. Defaults to `probs = seq(0, 1, 0.25)`.
 #' 
-#' @return `numeric(4)`
+#' @param msLevel `numeric(1)`
+#'
+#' @param ... additional arguments passed to [stats::quantile()].
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @return `numeric` of length equal to length `probs` with the relative
+#'    duration (duration divided by the total run time) after which the TIC
+#'    exceeds the respective quantile of the TIC.
+#' 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}, Johannes Rainer
 #' 
 #' @export
 #' 
-#' @importFrom ProtGenerics tic ionCount rtime
+#' @importMethodsFrom Spectra ionCount filterMsLevel
+#'
+#' @importFrom stats quantile
 #' 
 #' @examples
 #' library(S4Vectors)
@@ -100,41 +108,38 @@ rtDuration <- function(spectra) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' rtOverTICquantile(spectra = sps, MSLevel = 2L)
-rtOverTICquantile <- function(spectra, MSLevel = 1L) {
+#' rtOverTICquantile(spectra = sps, msLevel = 2L)
+rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),
+                              msLevel = 1L, ...) {
     
-    ## truncate spectra based on the MSLevel
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    ## truncate spectra based on the MS level
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     ## order spectra according to increasing retention time
-    RT <- ProtGenerics::rtime(spectra)
-    spectra <- spectra[order(RT)]
-    RT <- RT[order(RT)]
-    
-    ## create relative retention time ############ assume that rt always start at 0?????????
-    RT <- RT / max(RT)
-    
-    ## obtain ionCount (TIC) and calculate quantiles of cummulatively summed
-    ## TICs
-    TIC <- ProtGenerics::ionCount(spectra)
-    
-    ticSum <- cumsum(TIC)
-    quantileTICSum <- stats::quantile(ticSum, na.rm = TRUE)
-    
-    ############### my understanding -->  #############################
-    ## at which observed RT event (present in object) does the 
-    ## (theoretical) quantile value exceed the measured cumulative intensity, 
-    ## return the maximum index
-    indMax <- lapply(seq_along(quantileTICSum), 
-                     function(x) max(which(ticSum <= quantileTICSum[[x]])))
-    indMax <- unlist(indMax)
-    
-    ## return the relative retention time when quantile exceeds cumulated 
-    ## (measured) intensites
-    quantileRT <- RT[indMax]
-    names(quantileRT) <- names(quantileTICSum)
-    
-    return(quantileRT)
+    spectra <- .rt_order_spectra(spectra)
+    RT <- rtime(spectra)
+    rtmin <- min(RT)
+    rtd <- rtDuration(spectra)
+
+    ## My undestanding:
+    ## what is the relative duration of the LC run after which the cumulative
+    ## TIC exceeds (for the first time) the respective quantile of the
+    ## cumulative TIC. The "accumulates" puzzled me a little but I guess you
+    ## were right with the assumption they mean the "sum of the TICs of all
+    ## previous spectra".
+    TIC <- cumsum(ionCount(spectra))
+    tq <- quantile(TIC, probs = probs, ...)
+    idxs <- unlist(lapply(tq, function(z) which.max(TIC >= z)))
+    res <- (RT[idxs] - rtmin) / rtd
+    names(res) <- names(idxs)
+    res
+}
+
+.rt_order_spectra <- function(x) {
+    RT <- rtime(x)
+    if (is.unsorted(RT))
+        x <- x[order(RT)]
+    x
 }
 
 #' @name rtOverMSQuarters
@@ -151,21 +156,25 @@ rtOverTICquantile <- function(spectra, MSLevel = 1L) {
 #' id: QC:4000056
 #' 
 #' @details
+#' 
 #' is_a: QC:4000004 ! n-tuple
 #' is_a: QC:4000010 ! ID free
 #' is_a: QC:4000021 ! retention time metric
 #' is_a: QC:4000023 ! MS1 metric
+#'
+#' @note
+#'
+#' RT-Duration considers the total runtime (including MS1 and MS2 scans).
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric(1)`
+#'
+#' @param msLevel `numeric(1)`
 #' 
 #' @return `numeric(4)`
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}, Johannes Rainer
 #' 
 #' @export
-#' 
-#' @importFrom ProtGenerics filterMsLevel
 #' 
 #' @examples
 #' library(S4Vectors)
@@ -188,36 +197,30 @@ rtOverTICquantile <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' rtOverMSQuarters(spectra = sps, MSLevel = 2L)
-rtOverMSQuarters <- function(spectra, MSLevel = 1L) {
-  
+#' rtOverMSQuarters(spectra = sps, msLevel = 2L)
+rtOverMSQuarters <- function(spectra, msLevel = 1L) {
+
+    ## I would assume that with RT duration they mean the run time of the whole
+    ## run, including MS1 and MS2
+    rtd <- rtDuration(spectra)
+    
     ## truncate spectra based on the MSLevel
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra")
     }
     
     ## order spectra according to increasing retention time
-    RT <- ProtGenerics::rtime(spectra)
-    spectra <- spectra[order(RT)]
-    RT <- RT[order(RT)]
-    
-    ## create relative retention time ############ assume that rt always start at 0?????????
-    RT <- RT / max(RT, na.rm = TRUE)   
+    spectra <- .rt_order_spectra(spectra)
+    RT <- rtime(spectra)
+    rtmin <- min(RT)
     
     ## partition the spectra (rows) into four parts 
     ## (they are not necessarily equal)
-    ind <- rep(seq_len(4), length.out = length(spectra))
-    ind <- sort(ind)
-    
-    ## get the last retention time event that falls within the partition group
-    rtimeGroup <- lapply(seq_len(4), 
-        function(x) max(RT[ind == x], na.rm = TRUE))
-    rtimeGroup <- unlist(rtimeGroup)
-    names(rtimeGroup) <- c("Q1", "Q2", "Q3", "Q4")
-    
-    return(rtimeGroup)
+    ind <- sort(rep(seq_len(4), length.out = length(spectra)))
+    idx <- which(c(diff(ind), 1) == 1)
+    (RT[idx] - rtmin) / rtd
 }
 
 #' @name ticQuantileToQuantileLogRatio
