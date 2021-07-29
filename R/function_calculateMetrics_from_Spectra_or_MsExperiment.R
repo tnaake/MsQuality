@@ -131,9 +131,7 @@ calculateMetricsFromSpectra <- function(spectra,
 
         return(metric_i_j)
     })
-    metrics_vals <- unlist(metrics_vals)
-
-    return(metrics_vals)
+    unlist(metrics_vals)
 }
 
 #' @name calculateMetricsFromMSE
@@ -233,7 +231,7 @@ calculateMetricsFromMsExperiment <- function(msexp,
     })
     df <- do.call("rbind", mse_metrics)
     rownames(df) <- rownames(sD)
-    return(df)
+    df
 }
 
 #' @name calculateMetrics
@@ -306,7 +304,7 @@ calculateMetrics <- function(object,
             metrics = metrics, params = params)
     }
     
-    return(metrics_vals)
+    metrics_vals
     
 }
 
