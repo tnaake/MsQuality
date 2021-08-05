@@ -6,7 +6,8 @@ Date: 2021-06-30
 Authors@R: c(person(given = "Thomas", family = "Naake", 
 		email = "thomasnaake@googlemail.com", role = c("aut", "cre")),
 	person(given = "Johannes", family = "Rainer",
-		email = "johannes.rainer@eurac.edu", role = "aut"))
+		email = "johannes.rainer@eurac.edu", role = "aut"),
+		comment = c(ORCID = "0000-0002-6977-7147"))
 VignetteBuilder: knitr
 Description: msQC enables to calculate quality metrics of mass spectrometry
 	data. It is build upon Spectra and MsExperiment objects.

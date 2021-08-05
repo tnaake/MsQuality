@@ -137,7 +137,7 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),
 
 .rt_order_spectra <- function(x) {
     RT <- rtime(x)
-    if (is.unsorted(RT))
+    if (!any(is.na(RT)) && is.unsorted(RT))
         x <- x[order(RT)]
     x
 }
@@ -236,26 +236,37 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L) {
 #' "The log ratio for the second to n-th quantile of TIC over the previous 
 #' quantile of TIC. For the boundary elements min/max are used." [PSI:QC]
 #' id: QC:4000058
+#'
+#' @note
+#'
+#' This function interprets the *quantiles* from the [PSI:QC] definition as
+#' *quartiles*, i.e. the 0, 25, 50, 75 and 100% quantiles are used.
 #' 
 #' @details
 #' is_a: QC:4000004 ! n-tuple
 #' is_a: QC:4000010 ! ID free
 #' is_a: QC:4000022 ! chromatogram metric
 #' is_a: QC:4000023 ! MS1 metric
-#' 
+#'
 #' The `log2` values are returned instead of the `log` values.
+#'
+#' *TIC changes* are interpreted as the cumulative sum (`cumsum`) of the
+#' spectras' TIC (with spectra ordered by retention time). Quartiles are then
+#' calculated on these. For *QC:4000057* the log2 ratio between the 25, 50, 75
+#' and 100% quartile to the 0% quartile is calculated. For *QC:4000058* 
+#' ratios between the 25/0, 50/25, 75/50 and 100/75% quartiles are calculated.
 #' 
 #' @param spectra `Spectra` object
+#' 
 #' @param relativeTo `character`
-#' @param MSLevel `numeric`
+#'
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
-#' 
-#' @importFrom ProtGenerics filterMsLevel tic ionCount
 #' 
 #' @examples
 #' library(S4Vectors)
@@ -282,54 +293,37 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L) {
 #' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "previous",
 #'     MSLevel = 2L)
 ticQuantileToQuantileLogRatio <- function(spectra, 
-                              relativeTo = c("Q1", "previous"), MSLevel = 1L) {
+                                          relativeTo = c("Q1", "previous"),
+                                          msLevel = 1L) {
   
     relativeTo <- match.arg(relativeTo)
     
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
     }
     
     ## order spectra according to increasing retention time
-    RT <- ProtGenerics::rtime(spectra)
-    spectra <- spectra[order(RT)]
-    RT <- RT[order(RT)]
+    spectra <- .rt_order_spectra(spectra)
     
     ## create cumulative sum of tic/ionCount
-    TIC <- ProtGenerics::ionCount(spectra)
+    TIC <- cumsum(ionCount(spectra))
     
-    ############# does this make sense?
-    ticSum <- cumsum(TIC)
-    
-    quantileTICSum <- quantile(ticSum, na.rm = TRUE)
-    
-    ## calculate the changes in TIC per quantile
-    changeQ1 <- quantileTICSum[["25%"]] - quantileTICSum[["0%"]]
-    changeQ2 <- quantileTICSum[["50%"]] - quantileTICSum[["25%"]]
-    changeQ3 <- quantileTICSum[["75%"]] - quantileTICSum[["50%"]]
-    changeQ4 <- quantileTICSum[["100%"]] - quantileTICSum[["75%"]]
-    
-    ## calculate the ratio between Q2/Q3/Q4 to Q1 TIC changes
+    quantileTICSum <- quantile(TIC, na.rm = TRUE)
+
     if (relativeTo == "Q1") {
-        ratioQuantileTIC <- c(changeQ2, changeQ3, changeQ4) / changeQ1
-        names(ratioQuantileTIC) <- c("Q2/Q1", "Q3/Q1", "Q4/Q1")
+        ## Not sure what they mean by "TIC changes", thus calculating here
+        ## only ratio between TIC.
+        ratioQuantileTIC <- quantileTICSum[c("25%", "50%", "75%", "100%")] /
+            quantileTICSum["0%"]
+        names(ratioQuantileTIC) <- c("Q1/Q0", "Q2/Q0", "Q3/Q0", "Q4/Q0")
+    } else {
+        ratioQuantileTIC <- quantileTICSum[c("25%", "50%", "75%", "100%")] /
+            quantileTICSum[c("0%", "25%", "50%", "75%")]
+        names(ratioQuantileTIC) <- c("Q1/Q0", "Q2/Q1", "Q3/Q2", "Q4/Q3")
     }
-      
-    
-    ## calculate the ratio between Q2/Q3/Q4 to previous quantile TIC changes
-    if (relativeTo == "previous") {
-        ratioQuantileTIC <- c(changeQ2 / changeQ1, changeQ3 / changeQ2, 
-                            changeQ4 / changeQ3)
-        names(ratioQuantileTIC) <- c("Q2/Q1", "Q3/Q2", "Q4/Q3")
-    }
-      
-    
-    ## take the log2 and return
-    logRatioQuantileTIC <- log2(ratioQuantileTIC)
-    
-    return(logRatioQuantileTIC)
+    log2(ratioQuantileTIC)
 }
 
 #' @name numberSpectra
