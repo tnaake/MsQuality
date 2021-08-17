@@ -70,6 +70,22 @@ rtDuration <- function(spectra) {
 #' size of the tuple." [PSI:QC]
 #' id: QC:4000054
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is ordered according to the retention time,
+#' 
+#' (2) the cumulative sum of the ion count is calculated (TIC),
+#' 
+#' (3) the quantiles are calculated according to the `probs` argument, e.g.
+#' when `probs` is set to `c(0, 0.25, 0.5, 0.75, 1)` the 0%, 25%, 50%, 75% and
+#' 100% quantile is calculated,
+#' 
+#' (4) the relative duration (retention time duration divided by the total 
+#' run time taking into account the minimum retention time) is calculated,
+#' 
+#' (5) the relative duration of the LC run after which the cumulative
+## TIC exceeds (for the first time) the respective quantile of the
+## cumulative TIC is calculated and returned.
+#' 
 #' @details
 #' is_a: QC:4000004 ! n-tuple
 #' is_a: QC:4000010 ! ID free
@@ -91,7 +107,7 @@ rtDuration <- function(spectra) {
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}, Johannes Rainer
 #' 
-#' @export
+#' @export 
 #' 
 #' @importMethodsFrom Spectra ionCount filterMsLevel
 #'
@@ -131,12 +147,10 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),
     rtmin <- min(RT)
     rtd <- rtDuration(spectra)
 
-    ## My undestanding:
     ## what is the relative duration of the LC run after which the cumulative
     ## TIC exceeds (for the first time) the respective quantile of the
-    ## cumulative TIC. The "accumulates" puzzled me a little but I guess you
-    ## were right with the assumption they mean the "sum of the TICs of all
-    ## previous spectra".
+    ## cumulative TIC? The "accumulates" is interpretet as the 
+    ## "sum of the TICs of all previous spectra".
     TIC <- cumsum(ionCount(spectra))
     tq <- quantile(TIC, probs = probs, ...)
     idxs <- unlist(lapply(tq, function(z) which.max(TIC >= z)))
