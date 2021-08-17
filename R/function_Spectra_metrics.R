@@ -142,7 +142,7 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     ## order spectra according to increasing retention time
-    spectra <- .rt_order_spectra(spectra)
+    spectra <- (spectra)
     RT <- rtime(spectra)
     rtmin <- min(RT)
     rtd <- rtDuration(spectra)
@@ -281,8 +281,8 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L) {
 #' (2) quartiles are then calculated on these, 
 #' 
 #' (3) for *QC:4000057* the log2 ratio between the 25, 50, 75
-#' and 100% quartile to the 0% quartile is calculated. For *QC:4000058* 
-#' ratios between the 25/0, 50/25, 75/50 and 100/75% quartiles are calculated.
+#' and 100% quantile to the 0% quantile is calculated. For *QC:4000058* 
+#' ratios between the 25/0, 50/25, 75/50 and 100/75% quantiles are calculated.
 #' 
 #' @note 
 #' This function interprets the *quantiles* from the [PSI:QC] definition as
@@ -708,6 +708,11 @@ rtIQRrate <- function(spectra, msLevel = 1L) {
 #' "The area under the total ion chromatogram." [PSI:QC]
 #' id: QC:4000077
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the sum of the ion counts are obtained and returned.
+#' 
 #' @details
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000010 ! ID free
@@ -770,12 +775,29 @@ areaUnderTIC <- function(spectra, msLevel = 1L) {
 #' Number of quantiles are given by the n-tuple." [PSI:QC]
 #' id: QC:4000078
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the `Spectra` object is ordered according to the retention time,
+#' 
+#' (3) the 0%, 25%, 50%, 75%, and 100% quantiles of the retention time values
+#' are obtained,
+#' 
+#' (4) the ion count of the intervals between the 0%/25%, 25%/50%, 50%/75%, and
+#' 75%/100% are obtained 
+#' 
+#' (5) the ion counts of the intervals are summed (TIC) and the values returned
+#' 
 #' @details
 #' is_a: QC:4000004 ! n-tuple
 #' is_a: QC:4000010 ! ID free
 #' is_a: QC:4000022 ! chromatogram metric
 #' 
 #' The sum of the TIC is returned as an equivalent to the area.
+#' 
+#' @note
+#' This function interprets the *quantiles* from the [PSI:QC] definition as
+#' *quartiles*, i.e. the 0, 25, 50, 75 and 100% quantiles are used.
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
@@ -820,9 +842,8 @@ areaUnderTICRTquantiles <- function(spectra, msLevel = 1L) {
     }
 
     ## order spectra according to increasing retention time
+    spectra <- .rt_order_spectra(spectra)
     RT <- ProtGenerics::rtime(spectra)
-    spectra <- spectra[order(RT)]
-    RT <- RT[order(RT)]
     
     quantileRT <- stats::quantile(RT, na.rm = TRUE)
     
@@ -856,11 +877,27 @@ areaUnderTICRTquantiles <- function(spectra, msLevel = 1L) {
 #' peptides" [PSI:QC]
 #' id: QC:4000125
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the intensities of the precursor ions are obtained,
+#' 
+#' (3) the 5% and 95% quantile of these intensities are obtained 
+#' (`NA` values are removed),
+#' 
+#' (4) the ratio between the 95% and the 5% intensity quantile is calculated
+#' and returned.
+#' 
 #' @details
 #' Can be used to approximate the dynamic range of signal
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000001 ! QC metric
+#' 
+#' @note 
+#' The `Spectra` object might contain features that were not identified. If
+#' the calculation needs to be done according to *QC:4000125*, the 
+#' `Spectra` object should be prepared accordingly. 
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
@@ -925,6 +962,20 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L) {
 #' identified (RT values of Q1 to Q3 of identifications)" [PSI:QC]
 #' id: QC:4000130
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the `Spectra` object is ordered according to the retention time,
+#' 
+#' (3) the features between the 1st and 3rd quartile are obtained 
+#' (half of the features that are present in `spectra`),
+#' 
+#' (4) the ion count of the features within the 1st and 3rd quartile is 
+#' obtained,
+#' 
+#' (5) the median value of the ion count is calculated (`NA` values are 
+#' removed) and the median value is returned.
+#' 
 #' @details
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000009 ! ID based
@@ -932,6 +983,11 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L) {
 #' 
 #' The function `medianTICrtIQR` uses the function `ionCount` as an 
 #' equivalent to the TIC.
+#' 
+#' @note 
+#' The `Spectra` object might contain features that were not identified. If
+#' the calculation needs to be done according to *QC:4000130*, the 
+#' `Spectra` object should be prepared accordingly. 
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
@@ -975,9 +1031,7 @@ medianTICRTIQR <- function(spectra, msLevel = 1L) {
         stop("Spectra object does not contain any spectra") 
     } 
     ## order spectra according to increasing retention time
-    RT <- ProtGenerics::rtime(spectra)
-    spectra <- spectra[order(RT)]
-    RT <- RT[order(RT)]
+    spectra <- .rt_order_spectra(spectra)
     
     ## get the Q1 to Q3 of identifications 
     ## (half of peptides that are identitied)
@@ -991,10 +1045,8 @@ medianTICRTIQR <- function(spectra, msLevel = 1L) {
     ## take the ionCount of the Q1 to Q3 of identifications
     ticQ1ToQ3 <- ProtGenerics::ionCount(Q1ToQ3)
     
-    ## take the median value of the TIC within this interval and return
-    medianTICQ1ToQ3 <- stats::median(ticQ1ToQ3)
-    
-    return(medianTICQ1ToQ3)
+    ## take the median value of the TIC within this interval and return it
+    stats::median(ticQ1ToQ3, na.rm = TRUE)
 }
 
 #' @name medianTICofRTRange
@@ -1007,11 +1059,37 @@ medianTICRTIQR <- function(spectra, msLevel = 1L) {
 #' peptides are identified"  [PSI:QC] 
 #' id: QC:4000132
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the `Spectra` object is ordered according to the retention time,
+#' 
+#' (3) the number of features in `spectra` is obtained and the number for 
+#' half of the features is calculated,
+#' 
+#' (4) iterate through the features (always by taking the neighbouring
+#' half of features) and calculate the retention time range of the
+#' set of features,
+#' 
+#' (5) retrieve the set of features with the minimum retention time 
+#' range,
+#' 
+#' (6) calculate from the set of (5) the median TIC (`NA` values are removed)
+#' and return it.
+#' 
 #' @details
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000001 ! QC metric
-
+#' 
+#' The function `medianTICofRTRange` uses the function `ionCount` as an 
+#' equivalent to the TIC.
+#' 
+#' @note 
+#' The `Spectra` object might contain features that were not identified. If
+#' the calculation needs to be done according to *QC:4000132*, the 
+#' `Spectra` object should be prepared accordingly. 
+#' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
 #' 
@@ -1056,9 +1134,8 @@ medianTICofRTRange <- function(spectra, msLevel = 1L) {
     } 
     
     ## order spectra according to increasing retention time
+    spectra <- .rt_order_spectra(spectra)
     RT <- ProtGenerics::rtime(spectra)
-    spectra <- spectra[order(RT)]
-    RT <- RT[order(RT)]
     
     TIC <- ProtGenerics::ionCount(spectra)
     
@@ -1082,9 +1159,7 @@ medianTICofRTRange <- function(spectra, msLevel = 1L) {
     indMin <- which.min(rangeRT)
     ind <- seq(indMin, indMin - 1 + n_half)
     ticMin <- TIC[ind]
-    medianTICMin <- stats::median(ticMin, na.rm = TRUE)
-    
-    return(medianTICMin)
+    stats::median(ticMin, na.rm = TRUE)
 }
 
 #' @name mzAcquisitionRange
@@ -1095,6 +1170,13 @@ medianTICofRTRange <- function(spectra, msLevel = 1L) {
 #' "Upper and lower limit of m/z values at which spectra are recorded." [PSI:QC]
 #' id: QC:4000138
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the m/z values of the peaks within `spectra` are obtained,
+#' 
+#' (3) the minimum and maximum m/z values are obtained and returned. 
+#'
 #' @details
 #' is_a: QC:4000010 ! ID free
 #' is_a: QC:4000001 ! QC metric
@@ -1140,7 +1222,7 @@ mzAcquisitionRange <- function(spectra, msLevel = 1L) {
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
     } 
-    
+
     mzList <- ProtGenerics::mz(spectra)
     MZ <- unlist(mzList)
     mzRange <- range(MZ)
@@ -1156,6 +1238,13 @@ mzAcquisitionRange <- function(spectra, msLevel = 1L) {
 #' @description 
 #' "Upper and lower limit of time at which spectra are recorded." [PSI:QC]
 #' id: QC:4000139
+#' 
+#' #' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the retention time values of the features within `spectra` are obtained,
+#' 
+#' (3) the minimum and maximum retention time values are obtained and returned. 
 #' 
 #' @details
 #' is_a: QC:4000004 ! n-tuple
@@ -1216,6 +1305,14 @@ rtAcquisitionRange <- function(spectra, msLevel = 1L) {
 #' @description 
 #' "Minimum and maximum precursor intensity recorded." [PSI:QC]
 #' id: QC:4000144
+#' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the intensity of the precursor ions within `spectra` are obtained,
+#' 
+#' (3) the minimum and maximum precursor intensity values are obtained and 
+#' returned. 
 #' 
 #' @details
 #' is_a: QC:4000010 ! ID free
@@ -1293,6 +1390,14 @@ precursorIntensityRange <- function(spectra, msLevel = 1) {
 #' quartiles Q1, Q2, Q3" [PSI:QC]
 #' id: QC:4000233
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the intensity of the precursor ions within `spectra` are obtained,
+#' 
+#' (3) the 25%, 50%, and 75% quantile of the  precursor intensity values are 
+#' obtained (`NA` values are removed) and returned.
+#' 
 #' @details
 #' is_a: QC:4000010 ! ID free
 #' is_a: QC:4000001 ! QC metric
@@ -1306,6 +1411,11 @@ precursorIntensityRange <- function(spectra, msLevel = 1) {
 #' 
 #' The intensity distribution of the unidentified precursors informs about the 
 #' dynamic range of the acquisition in relation to identifiability.
+#' 
+#' @note 
+#' The `Spectra` object might contain features that were (not) identified. If
+#' the calculation needs to be done according to *QC:4000228*/*QC:4000233*, the 
+#' `Spectra` object should be prepared accordingly. 
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
@@ -1375,6 +1485,14 @@ precursorIntensityQuartiles <- function(spectra, msLevel = 1L) {
 #' [PSI:QC]
 #' id: QC:4000234
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the intensity of the precursor ions within `spectra` are obtained,
+#' 
+#' (3) the mean of the precursor intensity values is obtained 
+#' (`NA` values are removed) and returned. 
+#' 
 #' @details
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000010 ! ID free
@@ -1388,6 +1506,12 @@ precursorIntensityQuartiles <- function(spectra, msLevel = 1L) {
 #' 
 #' The intensity distribution of the unidentified precursors informs about the 
 #' dynamic range of the acquisition in relation to identifiability.
+#' 
+#' @note 
+#' The `Spectra` object might contain features that were (not) identified. If
+#' the calculation needs to be done according to *QC:4000229*/*QC:4000234*, the 
+#' `Spectra` object should be prepared accordingly. 
+#' 
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
@@ -1431,9 +1555,7 @@ precursorIntensityMean <- function(spectra, msLevel = 1L) {
     }
   
     int <- ProtGenerics::precursorIntensity(spectra)
-    intMean <- mean(int, na.rm = TRUE)
-    
-    return(intMean)
+    mean(int, na.rm = TRUE)
 }
 
 #' @name precursorIntensitySD
@@ -1454,6 +1576,14 @@ precursorIntensityMean <- function(spectra, msLevel = 1L) {
 #' sigma value" [PSI:QC]
 #' id: QC:4000235
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the intensity of the precursor ions within `spectra` are obtained,
+#' 
+#' (3) the standard deviation of precursor intensity values is obtained 
+#' (`NA` values are removed) and returned. 
+#' 
 #' @details
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000010 ! ID free
@@ -1468,6 +1598,11 @@ precursorIntensityMean <- function(spectra, msLevel = 1L) {
 #' The intensity distribution of the unidentified precursors informs about the 
 #' dynamic range of the acquisition in relation to identifiability.
 #' 
+#' @note 
+#' The `Spectra` object might contain features that were (not) identified. If
+#' the calculation needs to be done according to *QC:4000230*/*QC:4000235*, the 
+#' `Spectra` object should be prepared accordingly. 
+#'
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
 #' 
@@ -1529,12 +1664,31 @@ precursorIntensitySD <- function(spectra, msLevel = 1L) {
 #' (10x) between two subsequent scans" [PSI:QC]
 #' id: QC:4000173
 #' 
+#' #' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the intensity of the precursor ions within `spectra` are obtained,
+#' 
+#' (3) the intensity values of the features are obtained via the ion count,
+#' 
+#' (4) the signal jumps/declines of the intensity values with the two 
+#' subsequent intensity values is calculated,
+#' 
+#' (5) in the case of *QC:4000172*, the signal jumps by a factor of ten or more
+#' are counted and returned;
+#' in the case of *QC:4000173*, the signal declines by a factor of ten or more
+#' are counted and returned.
+#' 
 #' @details
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000010 ! ID free
 #' is_a: QC:4000001 ! QC metric
+#' 
 #' An unusual high count of signal jumps or falls can indicate ESI stability 
 #' issues.
+#' 
+#' The function `msSignal10XChange` uses the function `ionCount` as an 
+#' equivalent to the TIC.
 #' 
 #' @param spectra `Spectra` object
 #' @param change `character`, one of `"jump"` or `"fall"`
@@ -1582,9 +1736,8 @@ msSignal10XChange <- function(spectra, change = c("jump", "fall"),
     }
     
     ## order spectra according to increasing retention time
+    spectra <- .rt_order_spectra(spectra)
     RT <- ProtGenerics::rtime(spectra)
-    spectra <- spectra[order(RT)]
-    RT <- RT[order(RT)]
 
     TIC <- ProtGenerics::ionCount(spectra)
     
@@ -1615,10 +1768,26 @@ msSignal10XChange <- function(spectra, change = c("jump", "fall"),
 #' "Ratio of 1+ spectra count over 2+ spectra count in all MS2" [PSI:QC]
 #' id: QC:4000179
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the precursor charge is obtained,
+#' 
+#' (3) the number of precursors with charge 1+ is divided by the number of 
+#' precursors with charge 2+ and the ratio is returned.
+#' 
 #' @details
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000001 ! QC metric
+#' 
+#' `NA` is returned if there are no features with precursor charge of 1+ or 
+#' 2+.
+#' 
+#' @note 
+#' The `Spectra` object might contain features that were not identified. If
+#' the calculation needs to be done according to *QC:4000174*, the 
+#' `Spectra` object should be prepared accordingly. 
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
@@ -1687,10 +1856,26 @@ RatioCharge1over2 <- function(spectra, msLevel = 1L) {
 #' "Ratio of 3+ peptide count over 2+ peptide count in all MS2" [PSI:QC]
 #' id: QC:4000180
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the precursor charge is obtained,
+#' 
+#' (3) the number of precursors with charge 3+ is divided by the number of 
+#' precursors with charge 2+ and the ratio is returned.
+#' 
 #' @details
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000001 ! QC metric
+#' 
+#' `NA` is returned if there are no features with precursor charge of 2+ or 
+#' 3+.
+#' 
+#' @note 
+#' The `Spectra` object might contain features that were not identified. If
+#' the calculation needs to be done according to *QC:4000175*, the 
+#' `Spectra` object should be prepared accordingly. 
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
@@ -1760,6 +1945,22 @@ RatioCharge3over2 <- function(spectra, msLevel = 1L) {
 #' "Ratio of 4+ peptide count over 2+ peptide count in all MS2" [PSI:QC]
 #' id: QC:4000181
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the precursor charge is obtained,
+#' 
+#' (3) the number of precursors with charge 4+ is divided by the number of 
+#' precursors with charge 2+ and the ratio is returned.
+#' 
+#' @note 
+#' The `Spectra` object might contain features that were not identified. If
+#' the calculation needs to be done according to *QC:4000176*, the 
+#' `Spectra` object should be prepared accordingly.
+#' 
+#' `NA` is returned if there are no features with precursor charge of 2+ or 
+#' 3+.
+#' 
 #' @details
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000009 ! ID based
@@ -1824,7 +2025,14 @@ RatioCharge4over2 <- function(spectra, msLevel = 1L) {
 #' @name meanCharge
 #' 
 #' @title Mean charge in identified spectra (QC:4000177) or mean precursor 
-#' charge in all MS2 (QC:4000182) 
+#' charge in all MS2 (QC:4000182)
+#' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the precursor charge is obtained,
+#' 
+#' (3) the mean of the precursor charge values is calculated and returned.
 #' 
 #' @description 
 #' "Mean charge in identified spectra" [PSI:QC]
@@ -1837,6 +2045,11 @@ RatioCharge4over2 <- function(spectra, msLevel = 1L) {
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000001 ! QC metric
+#' 
+#' @note 
+#' The `Spectra` object might contain features that were not identified. If
+#' the calculation needs to be done according to *QC:4000177*, the 
+#' `Spectra` object should be prepared accordingly. 
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
@@ -1880,8 +2093,7 @@ meanCharge <- function(spectra, msLevel = 1L) {
     }
     
     charge <- ProtGenerics::precursorCharge(spectra)
-    chargeMean <- mean(charge, na.rm = TRUE)
-    return(chargeMean)
+    mean(charge, na.rm = TRUE)
 }
 
 #' @name medianCharge
@@ -1896,10 +2108,22 @@ meanCharge <- function(spectra, msLevel = 1L) {
 #' "Median precursor charge in all MS2" [PSI:QC]
 #' id: QC:4000183
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the precursor charge is obtained,
+#' 
+#' (3) the median of the precursor charge values is calculated and returned.
+#' 
 #' @details
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000001 ! QC metric
+#' 
+#' @note 
+#' The `Spectra` object might contain features that were not identified. If
+#' the calculation needs to be done according to *QC:4000178*, the 
+#' `Spectra` object should be prepared accordingly.
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
@@ -1943,7 +2167,6 @@ medianCharge <- function(spectra, msLevel = 1L) {
     }
     
     charge <- ProtGenerics::precursorCharge(spectra)
-    chargeMedian <- median(charge, na.rm = TRUE)
-    return(chargeMedian)
+    median(charge, na.rm = TRUE)
 }
 
