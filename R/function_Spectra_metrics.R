@@ -464,8 +464,8 @@ numberSpectra <- function(spectra, msLevel = 1L) {
 #' 
 #' @note
 #' `medianPrecursorMZ` will calculate the *precursor* median m/z of all 
-#' Spectra within `spectra`. If the calculation should be done according to
-#' *QC:4000065*, the `spectra` object should be prepared accordingly. 
+#' Spectra within `spectra`. If the calculation needs be done according to
+#' *QC:4000065*, the `Spectra` object should be prepared accordingly.
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
@@ -523,12 +523,29 @@ medianPrecursorMZ <- function(spectra, msLevel = 1L) {
 #' "The interquartile retention time period, in seconds, for all peptide 
 #' identifications over the complete run." [PSI:QC]
 #' id: QC:4000072
+#' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the retention time values are obtained,
+#' 
+#' (3) the interquartile range is obtained from the values and returned
+#' (`NA` values are removed).
 #'
 #' @details
 #' Longer times indicate better chromatographic separation.
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000022 ! chromatogram metric
+#' 
+#' @note 
+#' The `Spectra` object might contain features that were not identified. If
+#' the calculation needs to be done according to *QC:4000072*, the 
+#' `Spectra` object should be prepared accordingly. 
+#' 
+#' The stored retention time information in `spectra` might have a different
+#' unit than seconds. `rtIQR` will return the IQR based on the values stored
+#' in `spectra` and will not convert these values to seconds. 
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
@@ -590,11 +607,35 @@ rtIQR <- function(spectra, msLevel = 1L) {
 #' period, in peptides per second." [PSI:QC]
 #' id: QC:4000073
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the retention time values are obtained,
+#' 
+#' (3) the 25% and 75% quantiles are obtained from the retention time values
+#' (`NA` values are removed),
+#' 
+#' (4) the number of eluted features between this 25% and 75% quantile is 
+#' calculated,
+#' 
+#' (5) the number of features is divided by the interquartile range of the 
+#' retention time and returned.
+#' 
+#' 
 #' @details
 #' Higher rates indicate efficient sampling and identification.
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000022 ! chromatogram metric
+#' 
+#' @note 
+#' The `Spectra` object might contain features that were not identified. If
+#' the calculation needs to be done according to *QC:4000073*, the 
+#' `Spectra` object should be prepared accordingly. 
+#' 
+#' The stored retention time information in `spectra` might have a different
+#' unit than seconds. `rtIQR` will return the IQR based on the values stored
+#' in `spectra` and will not convert these values to seconds. 
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
@@ -639,9 +680,8 @@ rtIQRrate <- function(spectra, msLevel = 1L) {
     }
     
     ## order spectra according to increasing retention time
+    spectra <- .rt_order_spetra(spectra)
     RT <- ProtGenerics::rtime(spectra)
-    spectra <- spectra[order(RT)]
-    RT <- RT[order(RT)]
     
     quantileRT <- stats::quantile(RT, na.rm = TRUE)
     
@@ -718,9 +758,7 @@ areaUnderTIC <- function(spectra, msLevel = 1L) {
     TIC <- ProtGenerics::ionCount(spectra)
     
     ## sum up the TIC (equivalent to the area) and return
-    area <- sum(TIC, na.rm = TRUE)
-    
-    return(area)
+    sum(TIC, na.rm = TRUE)
 }
 
 #' @name areaUnderTICRTquantiles
