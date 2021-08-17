@@ -79,7 +79,7 @@ rtDuration <- function(spectra) {
 #' when `probs` is set to `c(0, 0.25, 0.5, 0.75, 1)` the 0%, 25%, 50%, 75% and
 #' 100% quantile is calculated,
 #' 
-#' (4) the relative duration (retention time duration divided by the total 
+#' (4) the relative retention time (retention time divided by the total 
 #' run time taking into account the minimum retention time) is calculated,
 #' 
 #' (5) the relative duration of the LC run after which the cumulative
@@ -179,8 +179,22 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),
 #' quarter of all MS2 events divided by RT-Duration." [PSI:QC]
 #' id: QC:4000056
 #' 
-#' @details
+#' The metric is calculated as follows:
+#' (1) the retention time duration of the whole `Spectra` object is determined
+#' (taking into account all the MS levels),
 #' 
+#' (1) the `Spectra` object is filtered according to the MS level and 
+#' subsequently ordered according to the retention time
+#' 
+#' (2) the MS events are split into four (approximately) equal parts,
+#' 
+#' (3) the relative retention time is calculated (using the retention time 
+#' duration from (1) and taking into account the minimum retention time),
+#' 
+#' (4) the relative retention time values associated to the MS event parts
+#' are returned.
+#' 
+#' @details
 #' is_a: QC:4000004 ! n-tuple
 #' is_a: QC:4000010 ! ID free
 #' is_a: QC:4000021 ! retention time metric
@@ -223,10 +237,10 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),
 #' rtOverMSQuarters(spectra = sps, msLevel = 2L)
 rtOverMSQuarters <- function(spectra, msLevel = 1L) {
 
-    ## I would assume that with RT duration they mean the run time of the whole
-    ## run, including MS1 and MS2
+    ## we assume that with RT duration the mzQC consortium means the run time 
+    ## of the whole run, including MS1 and MS2
     rtd <- rtDuration(spectra)
-    
+
     ## truncate spectra based on the msLevel
     spectra <- filterMsLevel(object = spectra, msLevel)
     
@@ -260,6 +274,16 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L) {
 #' quantile of TIC. For the boundary elements min/max are used." [PSI:QC]
 #' id: QC:4000058
 #' 
+#' *TIC changes* are interpreted as follows:
+#' (1) the cumulative sum (`cumsum`) of the  spectras' TIC is calculated 
+#' (with spectra ordered by retention time),
+#' 
+#' (2) quartiles are then calculated on these, 
+#' 
+#' (3) for *QC:4000057* the log2 ratio between the 25, 50, 75
+#' and 100% quartile to the 0% quartile is calculated. For *QC:4000058* 
+#' ratios between the 25/0, 50/25, 75/50 and 100/75% quartiles are calculated.
+#' 
 #' @note 
 #' This function interprets the *quantiles* from the [PSI:QC] definition as
 #' *quartiles*, i.e. the 0, 25, 50, 75 and 100% quantiles are used.
@@ -271,16 +295,6 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L) {
 #' is_a: QC:4000023 ! MS1 metric
 #' 
 #' The `log2` values are returned instead of the `log` values.
-#' 
-#' *TIC changes* are interpreted as follows:
-#' (1) the cumulative sum (`cumsum`) of the  spectras' TIC is calculated 
-#' (with spectra ordered by retention time). 
-#' 
-#' (2) Quartiles are then calculated on these. 
-#' 
-#' (3) For *QC:4000057* the log2 ratio between the 25, 50, 75
-#' and 100% quartile to the 0% quartile is calculated. For *QC:4000058* 
-#' ratios between the 25/0, 50/25, 75/50 and 100/75% quartiles are calculated.
 #' 
 #' @param spectra `Spectra` object
 #' @param relativeTo `character`
@@ -361,7 +375,6 @@ ticQuantileToQuantileLogRatio <- function(spectra,
                             changeQ4 / changeQ3)
         names(ratioQuantileTIC) <- c("Q2/Q1", "Q3/Q2", "Q4/Q3")
     }
-      
     
     ## take the log2 and return
     logRatioQuantileTIC <- log2(ratioQuantileTIC)
@@ -370,29 +383,32 @@ ticQuantileToQuantileLogRatio <- function(spectra,
 }
 
 #' @name numberSpectra
-#' 
+#'
 #' @title Number of MS1/MS2 spectra (QC:4000059/QC:4000060)
-#' 
+#'
 #' @description
 #' "The number of MS1 events in the run." [PSI:QC]
 #' id: QC:4000059
 #' "The number of MS2 events in the run." [PSI:QC]
 #' id: QC:4000060
-#' 
+#'
+#' For *QC:4000059*, `msLevel` is set to 1. For *QC:4000060*, `msLevel` is 
+#' set to 2.
+#'
 #' @details
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000010 ! ID free
 #' is_a: QC:4000023 ! MS1 metric
-#' 
+#'
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
-#' 
+#'
 #' @return `numeric(1)`
-#' 
+#'
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
-#' 
+#'
 #' @export
-#' 
+#'
 #' @importFrom ProtGenerics filterMsLevel
 #' 
 #' @examples
@@ -420,9 +436,7 @@ ticQuantileToQuantileLogRatio <- function(spectra,
 numberSpectra <- function(spectra, msLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
-    len <- length(spectra)
-    
-    return(len)
+    length(spectra)
 }
 
 
@@ -440,6 +454,9 @@ numberSpectra <- function(spectra, msLevel = 1L) {
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000023 ! MS1 metric
 #' is_a: QC:4000025 ! ion source metric
+#' 
+#' @note
+#' 
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
