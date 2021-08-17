@@ -71,7 +71,7 @@ rtDuration <- function(spectra) {
 #' @param probs `numeric` defining the quantiles. See [stats::quantile()] for
 #'     details. Defaults to `probs = seq(0, 1, 0.25)`.
 #' 
-#' @param msLevel `numeric(1)`
+#' @param msLevel `integer(1)`
 #'
 #' @param ... additional arguments passed to [stats::quantile()].
 #' 
@@ -163,12 +163,11 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),
 #' is_a: QC:4000023 ! MS1 metric
 #'
 #' @note
-#'
-#' RT-Duration considers the total runtime (including MS1 and MS2 scans).
+#' `rtDuration` considers the total runtime (including MS1 and MS2 scans).
 #' 
 #' @param spectra `Spectra` object
 #'
-#' @param msLevel `numeric(1)`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(4)`
 #' 
@@ -204,7 +203,7 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L) {
     ## run, including MS1 and MS2
     rtd <- rtDuration(spectra)
     
-    ## truncate spectra based on the MSLevel
+    ## truncate spectra based on the msLevel
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
@@ -237,6 +236,10 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L) {
 #' quantile of TIC. For the boundary elements min/max are used." [PSI:QC]
 #' id: QC:4000058
 #' 
+#' @note 
+#' This function interprets the *quantiles* from the [PSI:QC] definition as
+#' *quartiles*, i.e. the 0, 25, 50, 75 and 100% quantiles are used.
+#' 
 #' @details
 #' is_a: QC:4000004 ! n-tuple
 #' is_a: QC:4000010 ! ID free
@@ -245,9 +248,15 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L) {
 #' 
 #' The `log2` values are returned instead of the `log` values.
 #' 
+#' *TIC changes* are interpreted as the cumulative sum (`cumsum`) of the
+#' spectras' TIC (with spectra ordered by retention time). Quartiles are then
+#' calculated on these. For *QC:4000057* the log2 ratio between the 25, 50, 75
+#' and 100% quartile to the 0% quartile is calculated. For *QC:4000058* 
+#' ratios between the 25/0, 50/25, 75/50 and 100/75% quartiles are calculated.
+#' 
 #' @param spectra `Spectra` object
 #' @param relativeTo `character`
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -278,15 +287,15 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' sps <- Spectra(spd)
 #' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "Q1",
-#'     MSLevel = 2L)
+#'     msLevel = 2L)
 #' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "previous",
-#'     MSLevel = 2L)
+#'     msLevel = 2L)
 ticQuantileToQuantileLogRatio <- function(spectra, 
-                              relativeTo = c("Q1", "previous"), MSLevel = 1L) {
+                              relativeTo = c("Q1", "previous"), msLevel = 1L) {
   
     relativeTo <- match.arg(relativeTo)
     
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -348,7 +357,7 @@ ticQuantileToQuantileLogRatio <- function(spectra,
 #' is_a: QC:4000023 ! MS1 metric
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric(1)`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -378,11 +387,11 @@ ticQuantileToQuantileLogRatio <- function(spectra,
 #'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' sps <- Spectra(spd)
-#' numberSpectra(spectra = sps, MSLevel = 1L)
-#' numberSpectra(spectra = sps, MSLevel = 2L)
-numberSpectra <- function(spectra, MSLevel = 1L) {
+#' numberSpectra(spectra = sps, msLevel = 1L)
+#' numberSpectra(spectra = sps, msLevel = 2L)
+numberSpectra <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     len <- length(spectra)
     
     return(len)
@@ -405,7 +414,7 @@ numberSpectra <- function(spectra, MSLevel = 1L) {
 #' is_a: QC:4000025 ! ion source metric
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -436,10 +445,10 @@ numberSpectra <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorMz <- c(170.16, 170.16, 195.0876)
 #' sps <- Spectra(spd)
-#' medianPrecursorMZ(spectra = sps, MSLevel = 2L)
-medianPrecursorMZ <- function(spectra, MSLevel = 1L) {
+#' medianPrecursorMZ(spectra = sps, msLevel = 2L)
+medianPrecursorMZ <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -468,7 +477,7 @@ medianPrecursorMZ <- function(spectra, MSLevel = 1L) {
 #' is_a: QC:4000022 ! chromatogram metric
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -500,10 +509,10 @@ medianPrecursorMZ <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' rtIQR(spectra = sps, MSLevel = 2L)
-rtIQR <- function(spectra, MSLevel = 1L) {
+#' rtIQR(spectra = sps, msLevel = 2L)
+rtIQR <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -534,7 +543,7 @@ rtIQR <- function(spectra, MSLevel = 1L) {
 #' is_a: QC:4000022 ! chromatogram metric
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(2)`
 #' 
@@ -566,10 +575,10 @@ rtIQR <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' rtIQRrate(spectra = sps, MSLevel = 2L)
-rtIQRrate <- function(spectra, MSLevel = 1L) {
+#' rtIQRrate(spectra = sps, msLevel = 2L)
+rtIQRrate <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -592,7 +601,7 @@ rtIQRrate <- function(spectra, MSLevel = 1L) {
     
     ## divide the number of eluted features between the 25% and 75% quantile
     ## by the IQR to get the elution rate per second 
-    rate <- nFeatures / rtIQR(spectra, MSLevel = MSLevel)
+    rate <- nFeatures / rtIQR(spectra, msLevel = msLevel)
     
     return(rate)
 }
@@ -613,7 +622,7 @@ rtIQRrate <- function(spectra, MSLevel = 1L) {
 #' The sum of the TIC is returned as an equivalent to the area.
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -643,10 +652,10 @@ rtIQRrate <- function(spectra, MSLevel = 1L) {
 #'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' sps <- Spectra(spd)
-#' areaUnderTIC(spectra = sps, MSLevel = 2L)
-areaUnderTIC <- function(spectra, MSLevel = 1L) {
+#' areaUnderTIC(spectra = sps, msLevel = 2L)
+areaUnderTIC <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -677,7 +686,7 @@ areaUnderTIC <- function(spectra, MSLevel = 1L) {
 #' The sum of the TIC is returned as an equivalent to the area.
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(4)`
 #' 
@@ -709,10 +718,10 @@ areaUnderTIC <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' areaUnderTICRTquantiles(spectra = sps, MSLevel = 2L)
-areaUnderTICRTquantiles <- function(spectra, MSLevel = 1L) {
+#' areaUnderTICRTquantiles(spectra = sps, msLevel = 2L)
+areaUnderTICRTquantiles <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -762,7 +771,7 @@ areaUnderTICRTquantiles <- function(spectra, MSLevel = 1L) {
 #' is_a: QC:4000001 ! QC metric
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -794,10 +803,10 @@ areaUnderTICRTquantiles <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorIntensity <- c(100, 100, 100)
 #' sps <- Spectra(spd)
-#' extentIdentifiedPrecursorIntensity(spectra = sps, MSLevel = 2L)
-extentIdentifiedPrecursorIntensity <- function(spectra, MSLevel = 1L) {
+#' extentIdentifiedPrecursorIntensity(spectra = sps, msLevel = 2L)
+extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -833,7 +842,7 @@ extentIdentifiedPrecursorIntensity <- function(spectra, MSLevel = 1L) {
 #' equivalent to the TIC.
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #'
@@ -865,10 +874,10 @@ extentIdentifiedPrecursorIntensity <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' medianTICRTIQR(spectra = sps, MSLevel = 2L)
-medianTICRTIQR <- function(spectra, MSLevel = 1L) {
+#' medianTICRTIQR(spectra = sps, msLevel = 2L)
+medianTICRTIQR <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -912,7 +921,7 @@ medianTICRTIQR <- function(spectra, MSLevel = 1L) {
 #' is_a: QC:4000001 ! QC metric
 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return
 #' `numeric(1)`
@@ -945,10 +954,10 @@ medianTICRTIQR <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' medianTICofRTRange(spectra = sps, MSLevel = 2L)
-medianTICofRTRange <- function(spectra, MSLevel = 1L) {
+#' medianTICofRTRange(spectra = sps, msLevel = 2L)
+medianTICofRTRange <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -1000,7 +1009,7 @@ medianTICofRTRange <- function(spectra, MSLevel = 1L) {
 #' is_a: QC:4000004 ! n-tuple
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return
 #' `numeric(2)`
@@ -1031,10 +1040,10 @@ medianTICofRTRange <- function(spectra, MSLevel = 1L) {
 #'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' sps <- Spectra(spd)
-#' mzAcquisitionRange(spectra = sps, MSLevel = 2L)
-mzAcquisitionRange <- function(spectra, MSLevel = 1L) {
+#' mzAcquisitionRange(spectra = sps, msLevel = 2L)
+mzAcquisitionRange <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -1060,7 +1069,7 @@ mzAcquisitionRange <- function(spectra, MSLevel = 1L) {
 #' is_a: QC:4000004 ! n-tuple
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return
 #' `numeric(2)`
@@ -1092,10 +1101,10 @@ mzAcquisitionRange <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' rtAcquisitionRange(spectra = sps, MSLevel = 2L)
-rtAcquisitionRange <- function(spectra, MSLevel = 1L) {
+#' rtAcquisitionRange(spectra = sps, msLevel = 2L)
+rtAcquisitionRange <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra")
@@ -1125,7 +1134,7 @@ rtAcquisitionRange <- function(spectra, MSLevel = 1L) {
 #' the acquisition. 
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return
 #' `numeric(2)`
@@ -1157,10 +1166,10 @@ rtAcquisitionRange <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorIntensity <- c(100.0, 100.0, 100.0)
 #' sps <- Spectra(spd)
-#' precursorIntensityRange(spectra = sps, MSLevel = 2L)
-precursorIntensityRange <- function(spectra, MSLevel = 1) {
+#' precursorIntensityRange(spectra = sps, msLevel = 2L)
+precursorIntensityRange <- function(spectra, msLevel = 1) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra")
@@ -1207,7 +1216,7 @@ precursorIntensityRange <- function(spectra, MSLevel = 1) {
 #' dynamic range of the acquisition in relation to identifiability.
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(3)`
 #' 
@@ -1239,10 +1248,10 @@ precursorIntensityRange <- function(spectra, MSLevel = 1) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorIntensity <- c(100.0, 100.0, 100.0)
 #' sps <- Spectra(spd)
-#' precursorIntensityQuartiles(spectra = sps, MSLevel = 2L)
-precursorIntensityQuartiles <- function(spectra, MSLevel = 1L) {
+#' precursorIntensityQuartiles(spectra = sps, msLevel = 2L)
+precursorIntensityQuartiles <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra")
@@ -1289,7 +1298,7 @@ precursorIntensityQuartiles <- function(spectra, MSLevel = 1L) {
 #' dynamic range of the acquisition in relation to identifiability.
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -1320,10 +1329,10 @@ precursorIntensityQuartiles <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorIntensity <- c(100.0, 100.0, 100.0)     
 #' sps <- Spectra(spd)
-#' precursorIntensityMean(spectra = sps, MSLevel = 2L)
-precursorIntensityMean <- function(spectra, MSLevel = 1L) {
+#' precursorIntensityMean(spectra = sps, msLevel = 2L)
+precursorIntensityMean <- function(spectra, msLevel = 1L) {
     
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra")
@@ -1368,7 +1377,7 @@ precursorIntensityMean <- function(spectra, MSLevel = 1L) {
 #' dynamic range of the acquisition in relation to identifiability.
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -1400,10 +1409,10 @@ precursorIntensityMean <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorIntensity <- c(100.0, 100.0, 100.0)
 #' sps <- Spectra(spd)
-#' precursorIntensitySD(spectra = sps, MSLevel = 2L)
-precursorIntensitySD <- function(spectra, MSLevel = 1L) {
+#' precursorIntensitySD(spectra = sps, msLevel = 2L)
+precursorIntensitySD <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
   
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra")
@@ -1437,7 +1446,7 @@ precursorIntensitySD <- function(spectra, MSLevel = 1L) {
 #' 
 #' @param spectra `Spectra` object
 #' @param change `character`, one of `"jump"` or `"fall"`
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -1467,14 +1476,14 @@ precursorIntensitySD <- function(spectra, MSLevel = 1L) {
 #'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' sps <- Spectra(spd)
-#' msSignal10XChange(spectra = sps, change = "jump", MSLevel = 2L)
-#' msSignal10XChange(spectra = sps, change = "fall", MSLevel = 2L)
+#' msSignal10XChange(spectra = sps, change = "jump", msLevel = 2L)
+#' msSignal10XChange(spectra = sps, change = "fall", msLevel = 2L)
 msSignal10XChange <- function(spectra, change = c("jump", "fall"), 
-                                                          MSLevel = 1L) {
+                                                          msLevel = 1L) {
 
     change <- match.arg(change)
     
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra")
@@ -1520,7 +1529,7 @@ msSignal10XChange <- function(spectra, change = c("jump", "fall"),
 #' is_a: QC:4000001 ! QC metric
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -1551,10 +1560,10 @@ msSignal10XChange <- function(spectra, change = c("jump", "fall"),
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorCharge <- c(1L, 1L, 1L)
 #' sps <- Spectra(spd)
-#' RatioCharge1over2(spectra = sps, MSLevel = 2L)
-RatioCharge1over2 <- function(spectra, MSLevel = 1L) {
+#' RatioCharge1over2(spectra = sps, msLevel = 2L)
+RatioCharge1over2 <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -1592,7 +1601,7 @@ RatioCharge1over2 <- function(spectra, MSLevel = 1L) {
 #' is_a: QC:4000001 ! QC metric
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -1623,10 +1632,10 @@ RatioCharge1over2 <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorCharge <- c(1L, 1L, 1L)
 #' sps <- Spectra(spd)
-#' RatioCharge3over2(spectra = sps, MSLevel = 2L)
-RatioCharge3over2 <- function(spectra, MSLevel = 1L) {
+#' RatioCharge3over2(spectra = sps, msLevel = 2L)
+RatioCharge3over2 <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -1665,7 +1674,7 @@ RatioCharge3over2 <- function(spectra, MSLevel = 1L) {
 #' is_a: QC:4000001 ! QC metric
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -1696,10 +1705,10 @@ RatioCharge3over2 <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorCharge <- c(1L, 1L, 1L)
 #' sps <- Spectra(spd)
-#' RatioCharge4over2(spectra = sps, MSLevel = 2L)
-RatioCharge4over2 <- function(spectra, MSLevel = 1L) {
+#' RatioCharge4over2(spectra = sps, msLevel = 2L)
+RatioCharge4over2 <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -1738,7 +1747,7 @@ RatioCharge4over2 <- function(spectra, MSLevel = 1L) {
 #' is_a: QC:4000001 ! QC metric
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -1769,10 +1778,10 @@ RatioCharge4over2 <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorCharge <- c(1L, 1L, 1L)
 #' sps <- Spectra(spd)
-#' meanCharge(spectra = sps, MSLevel = 2L)
-meanCharge <- function(spectra, MSLevel = 1L) {
+#' meanCharge(spectra = sps, msLevel = 2L)
+meanCharge <- function(spectra, msLevel = 1L) {
     
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
@@ -1801,7 +1810,7 @@ meanCharge <- function(spectra, MSLevel = 1L) {
 #' is_a: QC:4000001 ! QC metric
 #' 
 #' @param spectra `Spectra` object
-#' @param MSLevel `numeric`
+#' @param msLevel `integer(1)`
 #' 
 #' @return `numeric(1)`
 #' 
@@ -1832,10 +1841,10 @@ meanCharge <- function(spectra, MSLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' sps <- Spectra(spd)
 #' spd$precursorCharge <- c(1L, 1L, 1L)
-#' medianCharge(spectra = sps, MSLevel = 2L)
-medianCharge <- function(spectra, MSLevel = 1L) {
+#' medianCharge(spectra = sps, msLevel = 2L)
+medianCharge <- function(spectra, msLevel = 1L) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, MSLevel)
+    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         stop("Spectra object does not contain any spectra") 
