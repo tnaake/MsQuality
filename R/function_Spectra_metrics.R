@@ -7,10 +7,20 @@
 #' highest scan time minus the lowest scan time." [PSI:QC]
 #' id: QC:4000053
 #' 
+#' The metric is calculated as follows:
+#' (1) the retention time associated to the individual Spectra is obtained,
+#' 
+#' (2) the maximum and the minimum of the retention time is obtained,
+#' 
+#' (3) the difference between the maximum and the minimum is calculated and 
+#' returned.
+#' 
 #' @details
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000010 ! ID free
 #' is_a: QC:4000021 ! retention time metric
+#' 
+#' Retention time values that are `NA` are removed.
 #' 
 #' @param spectra `Spectra` object
 #' 
@@ -47,7 +57,7 @@
 rtDuration <- function(spectra) {
   
     RT <- rtime(object = spectra)
-    max(RT) - min(RT)
+    max(RT, na.rm = TRUE) - min(RT, na.rm = TRUE)
 }
 
 #' @name rtOverTICquantile
@@ -248,9 +258,13 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L) {
 #' 
 #' The `log2` values are returned instead of the `log` values.
 #' 
-#' *TIC changes* are interpreted as the cumulative sum (`cumsum`) of the
-#' spectras' TIC (with spectra ordered by retention time). Quartiles are then
-#' calculated on these. For *QC:4000057* the log2 ratio between the 25, 50, 75
+#' *TIC changes* are interpreted as follows:
+#' (1) the cumulative sum (`cumsum`) of the  spectras' TIC is calculated 
+#' (with spectra ordered by retention time). 
+#' 
+#' (2) Quartiles are then calculated on these. 
+#' 
+#' (3) For *QC:4000057* the log2 ratio between the 25, 50, 75
 #' and 100% quartile to the 0% quartile is calculated. For *QC:4000058* 
 #' ratios between the 25/0, 50/25, 75/50 and 100/75% quartiles are calculated.
 #' 
