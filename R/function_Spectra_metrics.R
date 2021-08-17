@@ -449,6 +449,13 @@ numberSpectra <- function(spectra, msLevel = 1L) {
 #' FDR." [PSI:QC]
 #' id: QC:4000065
 #' 
+#' The metric is calculated as follows:
+#' (1) the `Spectra` object is filtered according to the MS level,
+#' 
+#' (2) the precursor m/z values are obtained,
+#' 
+#' (3) the median value is returned (`NAs` are removed).
+#' 
 #' @details
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000009 ! ID based
@@ -456,7 +463,9 @@ numberSpectra <- function(spectra, msLevel = 1L) {
 #' is_a: QC:4000025 ! ion source metric
 #' 
 #' @note
-#' 
+#' `medianPrecursorMZ` will calculate the *precursor* median m/z of all 
+#' Spectra within `spectra`. If the calculation should be done according to
+#' *QC:4000065*, the `spectra` object should be prepared accordingly. 
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer(1)`
