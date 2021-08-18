@@ -29,7 +29,7 @@ test_that("rtOverTICquantile", {
     expect_error(rtOverTICquantile(NULL), "unable to find an inherited method")
     suppressWarnings(tmp <- rtOverTICquantile(sps_sciex))
     expect_equal(as.numeric(tmp),
-        c(0.001058682, 0.250272370, 0.500517792, 0.749731480, 1.000000000))
+        c(0.0, 0.25, 0.5, 0.75, 1), tolerance = 1e-02)
     expect_equal(names(tmp), c("0%", "25%", "50%", "75%", "100%"))
 })
 ## END unit test rtOverTICquantile ##
@@ -39,9 +39,9 @@ test_that("rtOverMSQuarters", {
     expect_error(rtOverMSQuarters(NULL), "unable to find an inherited method")
     expect_error(rtOverMSQuarters(NULL), "unable to find an inherited method")
     expect_equal(as.numeric(rtOverMSQuarters(sps_sciex, msLevel = 1L)), 
-        c(0.2502724, 0.5005370, 0.7507863, 1.0000000), tolerance = 1e-06)
+        c(0.25, 0.5, 0.75, 1), tolerance = 1e-02)
     expect_equal(names(rtOverMSQuarters(sps_sciex, msLevel = 1L)), 
-        c("Q1", "Q2", "Q3", "Q4"), tolerance = 1e-06)
+        c("Quarter1", "Quarter2", "Quarter3", "Quarter4"), tolerance = 1e-06)
     expect_error(rtOverMSQuarters(sps_sciex, msLevel = 2L), 
         "Spectra object does not contain any spectra")
 })
