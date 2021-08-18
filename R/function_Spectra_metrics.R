@@ -724,7 +724,7 @@ rtIQRrate <- function(spectra, msLevel = 1L) {
     }
     
     ## order spectra according to increasing retention time
-    spectra <- .rt_order_spetra(spectra)
+    spectra <- .rt_order_spectra(spectra)
     RT <- ProtGenerics::rtime(spectra)
     
     quantileRT <- stats::quantile(RT, na.rm = TRUE)
