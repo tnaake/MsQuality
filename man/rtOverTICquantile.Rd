@@ -4,21 +4,42 @@
 \alias{rtOverTICquantile}
 \title{RT over TIC quantile (QC:4000054)}
 \usage{
-rtOverTICquantile(spectra, MSLevel = 1L)
+rtOverTICquantile(spectra, probs = seq(0, 1, 0.25), msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric(1)`}
+\item{probs}{`numeric` defining the quantiles. See [stats::quantile()] for
+details. Defaults to `probs = seq(0, 1, 0.25)`.}
+
+\item{msLevel}{`integer(1)`}
+
+\item{...}{additional arguments passed to [stats::quantile()].}
 }
 \value{
-`numeric(4)`
+`numeric` of length equal to length `probs` with the relative
+   duration (duration divided by the total run time) after which the TIC
+   exceeds the respective quantile of the TIC.
 }
 \description{
 "The interval when the respective quantile of the TIC accumulates divided by 
 retention time duration. The number of quantiles observed is given by the 
 size of the tuple." [PSI:QC]
 id: QC:4000054
+
+The metric is calculated as follows:
+(1) the `Spectra` object is ordered according to the retention time,
+
+(2) the cumulative sum of the ion count is calculated (TIC),
+
+(3) the quantiles are calculated according to the `probs` argument, e.g.
+when `probs` is set to `c(0, 0.25, 0.5, 0.75, 1)` the 0%, 25%, 50%, 75% and
+100% quantile is calculated,
+
+(4) the relative retention time (retention time divided by the total 
+run time taking into account the minimum retention time) is calculated,
+
+(5) the relative duration of the LC run after which the cumulative
 }
 \details{
 is_a: QC:4000004 ! n-tuple
@@ -47,8 +68,8 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-rtOverTICquantile(spectra = sps, MSLevel = 2L)
+rtOverTICquantile(spectra = sps, msLevel = 2L)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake, \email{thomasnaake@googlemail.com}, Johannes Rainer
 }

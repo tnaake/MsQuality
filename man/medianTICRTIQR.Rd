@@ -5,12 +5,12 @@
 \title{Median of TIC values in the RT range in which the middle half of 
 peptides are identified (QC:4000130)}
 \usage{
-medianTICRTIQR(spectra, MSLevel = 1L)
+medianTICRTIQR(spectra, msLevel = 1L)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer(1)`}
 }
 \value{
 `numeric(1)`
@@ -19,6 +19,20 @@ medianTICRTIQR(spectra, MSLevel = 1L)
 "Median of TIC values in the RT range in which half of peptides are 
 identified (RT values of Q1 to Q3 of identifications)" [PSI:QC]
 id: QC:4000130
+
+The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the `Spectra` object is ordered according to the retention time,
+
+(3) the features between the 1st and 3rd quartile are obtained 
+(half of the features that are present in `spectra`),
+
+(4) the ion count of the features within the 1st and 3rd quartile is 
+obtained,
+
+(5) the median value of the ion count is calculated (`NA` values are 
+removed) and the median value is returned.
 }
 \details{
 is_a: QC:4000003 ! single value
@@ -27,6 +41,11 @@ is_a: QC:4000001 ! QC metric
 
 The function `medianTICrtIQR` uses the function `ionCount` as an 
 equivalent to the TIC.
+}
+\note{
+The `Spectra` object might contain features that were not identified. If
+the calculation needs to be done according to *QC:4000130*, the 
+`Spectra` object should be prepared accordingly.
 }
 \examples{
 library(S4Vectors)
@@ -49,7 +68,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-medianTICRTIQR(spectra = sps, MSLevel = 2L)
+medianTICRTIQR(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

@@ -4,12 +4,12 @@
 \alias{mzAcquisitionRange}
 \title{m/z acquisition range (QC:4000138)}
 \usage{
-mzAcquisitionRange(spectra, MSLevel = 1L)
+mzAcquisitionRange(spectra, msLevel = 1L)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer(1)`}
 }
 \value{
 `numeric(2)`
@@ -17,6 +17,13 @@ mzAcquisitionRange(spectra, MSLevel = 1L)
 \description{
 "Upper and lower limit of m/z values at which spectra are recorded." [PSI:QC]
 id: QC:4000138
+
+The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the m/z values of the peaks within `spectra` are obtained,
+
+(3) the minimum and maximum m/z values are obtained and returned.
 }
 \details{
 is_a: QC:4000010 ! ID free
@@ -43,7 +50,7 @@ spd$intensity <- list(
     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 sps <- Spectra(spd)
-mzAcquisitionRange(spectra = sps, MSLevel = 2L)
+mzAcquisitionRange(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

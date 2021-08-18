@@ -6,12 +6,12 @@
 Identified precursor intensity distribution sigma (QC:4000230), or 
 Unidentified precursor intensity distribution sigma (QC:4000235)}
 \usage{
-precursorIntensitySD(spectra, MSLevel = 1L)
+precursorIntensitySD(spectra, msLevel = 1L)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer(1)`}
 }
 \value{
 `numeric(1)`
@@ -27,6 +27,14 @@ id: QC:4000230
 "From the distribution of unidentified precursor intensities, the 
 sigma value" [PSI:QC]
 id: QC:4000235
+
+The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the intensity of the precursor ions within `spectra` are obtained,
+
+(3) the standard deviation of precursor intensity values is obtained 
+(`NA` values are removed) and returned.
 }
 \details{
 is_a: QC:4000003 ! single value
@@ -41,6 +49,11 @@ dynamic range of the acquisition in relation to identifiability.
 
 The intensity distribution of the unidentified precursors informs about the 
 dynamic range of the acquisition in relation to identifiability.
+}
+\note{
+The `Spectra` object might contain features that were (not) identified. If
+the calculation needs to be done according to *QC:4000230*/*QC:4000235*, the 
+`Spectra` object should be prepared accordingly.
 }
 \examples{
 library(S4Vectors)
@@ -63,7 +76,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$precursorIntensity <- c(100.0, 100.0, 100.0)
 sps <- Spectra(spd)
-precursorIntensitySD(spectra = sps, MSLevel = 2L)
+precursorIntensitySD(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

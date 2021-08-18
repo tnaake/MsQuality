@@ -4,12 +4,12 @@
 \alias{rtIQRrate}
 \title{Peptide identification rate of the interquartile RT period (QC:4000073)}
 \usage{
-rtIQRrate(spectra, MSLevel = 1L)
+rtIQRrate(spectra, msLevel = 1L)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer(1)`}
 }
 \value{
 `numeric(2)`
@@ -18,12 +18,35 @@ rtIQRrate(spectra, MSLevel = 1L)
 "The identification rate of peptides for the interquartile retention time 
 period, in peptides per second." [PSI:QC]
 id: QC:4000073
+
+The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the retention time values are obtained,
+
+(3) the 25% and 75% quantiles are obtained from the retention time values
+(`NA` values are removed),
+
+(4) the number of eluted features between this 25% and 75% quantile is 
+calculated,
+
+(5) the number of features is divided by the interquartile range of the 
+retention time and returned.
 }
 \details{
 Higher rates indicate efficient sampling and identification.
 is_a: QC:4000003 ! single value
 is_a: QC:4000009 ! ID based
 is_a: QC:4000022 ! chromatogram metric
+}
+\note{
+The `Spectra` object might contain features that were not identified. If
+the calculation needs to be done according to *QC:4000073*, the 
+`Spectra` object should be prepared accordingly. 
+
+The stored retention time information in `spectra` might have a different
+unit than seconds. `rtIQR` will return the IQR based on the values stored
+in `spectra` and will not convert these values to seconds.
 }
 \examples{
 library(S4Vectors)
@@ -46,7 +69,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-rtIQRrate(spectra = sps, MSLevel = 2L)
+rtIQRrate(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

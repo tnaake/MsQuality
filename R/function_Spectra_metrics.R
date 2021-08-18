@@ -159,11 +159,55 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),
     res
 }
 
-.rt_order_spectra <- function(x) {
-    RT <- rtime(x)
+#' @name .rt_order_spectra
+#' 
+#' @title Order Spectra according to increasing retention time
+#' 
+#' @description 
+#' The function `.rt_order_spectra` orders the features in a `Spectra` object
+#' according to the (increasing) retention time values. 
+#' 
+#' @details
+#' Internal function in quality metric functions.
+#' 
+#' @param spectra `Spectra` object
+#' 
+#' @return `Spectra` object with the features ordered according to the 
+#' (increasing) retention time
+#' 
+#' @author Johannes Rainer
+#' 
+#' @export 
+#' 
+#' @importFrom ProtGenerics rtime
+#' 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
+#' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0001847", "HMDB0000001", "HMDB0000001"),
+#'     name = c("Caffeine", "1-Methylhistidine", "1-Methylhistidine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876),
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16))
+#' spd$intensity <- list(
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994),
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643))
+#' spd$rtime <- c(15.84, 9.44, 9.44)
+#' sps <- Spectra(spd)
+#' .rt_order_spectra(sps)
+.rt_order_spectra <- function(spectra) {
+    RT <- rtime(spectra)
     if (is.unsorted(RT))
-        x <- x[order(RT)]
-    x
+        spectra <- spectra[order(RT)]
+    spectra
 }
 
 #' @name rtOverMSQuarters

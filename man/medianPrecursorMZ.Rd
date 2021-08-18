@@ -4,12 +4,12 @@
 \alias{medianPrecursorMZ}
 \title{Precursor median m/z for IDs (QC:4000065)}
 \usage{
-medianPrecursorMZ(spectra, MSLevel = 1L)
+medianPrecursorMZ(spectra, msLevel = 1L)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer(1)`}
 }
 \value{
 `numeric(1)`
@@ -18,12 +18,24 @@ medianPrecursorMZ(spectra, MSLevel = 1L)
 "Median m/z value for all identified peptides (unique ions) after 
 FDR." [PSI:QC]
 id: QC:4000065
+
+The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the precursor m/z values are obtained,
+
+(3) the median value is returned (`NAs` are removed).
 }
 \details{
 is_a: QC:4000003 ! single value
 is_a: QC:4000009 ! ID based
 is_a: QC:4000023 ! MS1 metric
 is_a: QC:4000025 ! ion source metric
+}
+\note{
+`medianPrecursorMZ` will calculate the *precursor* median m/z of all 
+Spectra within `spectra`. If the calculation needs be done according to
+*QC:4000065*, the `Spectra` object should be prepared accordingly.
 }
 \examples{
 library(S4Vectors)
@@ -46,7 +58,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$precursorMz <- c(170.16, 170.16, 195.0876)
 sps <- Spectra(spd)
-medianPrecursorMZ(spectra = sps, MSLevel = 2L)
+medianPrecursorMZ(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

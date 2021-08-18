@@ -4,12 +4,12 @@
 \alias{rtAcquisitionRange}
 \title{Retention time acquisition range (QC:4000139)}
 \usage{
-rtAcquisitionRange(spectra, MSLevel = 1L)
+rtAcquisitionRange(spectra, msLevel = 1L)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer(1)`}
 }
 \value{
 `numeric(2)`
@@ -17,6 +17,13 @@ rtAcquisitionRange(spectra, MSLevel = 1L)
 \description{
 "Upper and lower limit of time at which spectra are recorded." [PSI:QC]
 id: QC:4000139
+
+#' The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the retention time values of the features within `spectra` are obtained,
+
+(3) the minimum and maximum retention time values are obtained and returned.
 }
 \details{
 is_a: QC:4000004 ! n-tuple
@@ -42,7 +49,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-rtAcquisitionRange(spectra = sps, MSLevel = 2L)
+rtAcquisitionRange(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

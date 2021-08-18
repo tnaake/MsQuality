@@ -4,12 +4,12 @@
 \alias{precursorIntensityRange}
 \title{Precursor intensity range (QC:4000144)}
 \usage{
-precursorIntensityRange(spectra, MSLevel = 1)
+precursorIntensityRange(spectra, msLevel = 1)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer(1)`}
 }
 \value{
 `numeric(2)`
@@ -17,6 +17,14 @@ precursorIntensityRange(spectra, MSLevel = 1)
 \description{
 "Minimum and maximum precursor intensity recorded." [PSI:QC]
 id: QC:4000144
+
+The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the intensity of the precursor ions within `spectra` are obtained,
+
+(3) the minimum and maximum precursor intensity values are obtained and 
+returned.
 }
 \details{
 is_a: QC:4000010 ! ID free
@@ -47,7 +55,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$precursorIntensity <- c(100.0, 100.0, 100.0)
 sps <- Spectra(spd)
-precursorIntensityRange(spectra = sps, MSLevel = 2L)
+precursorIntensityRange(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

@@ -4,12 +4,12 @@
 \alias{rtOverMSQuarters}
 \title{MS1/MS2 quantiles RT fraction (QC:4000055/QC:4000056)}
 \usage{
-rtOverMSQuarters(spectra, MSLevel = 1L)
+rtOverMSQuarters(spectra, msLevel = 1L)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric(1)`}
+\item{msLevel}{`integer(1)`}
 }
 \value{
 `numeric(4)`
@@ -22,12 +22,30 @@ id: QC:4000055
 "The interval used for acquisition of the first, second, third, and fourth 
 quarter of all MS2 events divided by RT-Duration." [PSI:QC]
 id: QC:4000056
+
+The metric is calculated as follows:
+(1) the retention time duration of the whole `Spectra` object is determined
+(taking into account all the MS levels),
+
+(1) the `Spectra` object is filtered according to the MS level and 
+subsequently ordered according to the retention time
+
+(2) the MS events are split into four (approximately) equal parts,
+
+(3) the relative retention time is calculated (using the retention time 
+duration from (1) and taking into account the minimum retention time),
+
+(4) the relative retention time values associated to the MS event parts
+are returned.
 }
 \details{
 is_a: QC:4000004 ! n-tuple
 is_a: QC:4000010 ! ID free
 is_a: QC:4000021 ! retention time metric
 is_a: QC:4000023 ! MS1 metric
+}
+\note{
+`rtDuration` considers the total runtime (including MS1 and MS2 scans).
 }
 \examples{
 library(S4Vectors)
@@ -50,8 +68,8 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-rtOverMSQuarters(spectra = sps, MSLevel = 2L)
+rtOverMSQuarters(spectra = sps, msLevel = 2L)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake, \email{thomasnaake@googlemail.com}, Johannes Rainer
 }

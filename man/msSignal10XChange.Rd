@@ -4,14 +4,14 @@
 \alias{msSignal10XChange}
 \title{MS1 signal jump/fall (10x) count (QC:4000172/QC:4000173)}
 \usage{
-msSignal10XChange(spectra, change = c("jump", "fall"), MSLevel = 1L)
+msSignal10XChange(spectra, change = c("jump", "fall"), msLevel = 1L)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
 \item{change}{`character`, one of `"jump"` or `"fall"`}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer(1)`}
 }
 \value{
 `numeric(1)`
@@ -24,13 +24,32 @@ id: QC:4000172
 "The count of MS1 signal decline (spectra sum) by a factor of ten or more 
 (10x) between two subsequent scans" [PSI:QC]
 id: QC:4000173
+
+#' The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the intensity of the precursor ions within `spectra` are obtained,
+
+(3) the intensity values of the features are obtained via the ion count,
+
+(4) the signal jumps/declines of the intensity values with the two 
+subsequent intensity values is calculated,
+
+(5) in the case of *QC:4000172*, the signal jumps by a factor of ten or more
+are counted and returned;
+in the case of *QC:4000173*, the signal declines by a factor of ten or more
+are counted and returned.
 }
 \details{
 is_a: QC:4000003 ! single value
 is_a: QC:4000010 ! ID free
 is_a: QC:4000001 ! QC metric
+
 An unusual high count of signal jumps or falls can indicate ESI stability 
 issues.
+
+The function `msSignal10XChange` uses the function `ionCount` as an 
+equivalent to the TIC.
 }
 \examples{
 library(S4Vectors)
@@ -52,8 +71,8 @@ spd$intensity <- list(
     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 sps <- Spectra(spd)
-msSignal10XChange(spectra = sps, change = "jump", MSLevel = 2L)
-msSignal10XChange(spectra = sps, change = "fall", MSLevel = 2L)
+msSignal10XChange(spectra = sps, change = "jump", msLevel = 2L)
+msSignal10XChange(spectra = sps, change = "fall", msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

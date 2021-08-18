@@ -4,12 +4,12 @@
 \alias{extentIdentifiedPrecursorIntensity}
 \title{Extent of identified precursor intensity (QC:4000125)}
 \usage{
-extentIdentifiedPrecursorIntensity(spectra, MSLevel = 1L)
+extentIdentifiedPrecursorIntensity(spectra, msLevel = 1L)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer(1)`}
 }
 \value{
 `numeric(1)`
@@ -18,12 +18,28 @@ extentIdentifiedPrecursorIntensity(spectra, MSLevel = 1L)
 "Ratio of 95th over 5th percentile of precursor intensity for identified 
 peptides" [PSI:QC]
 id: QC:4000125
+
+The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the intensities of the precursor ions are obtained,
+
+(3) the 5% and 95% quantile of these intensities are obtained 
+(`NA` values are removed),
+
+(4) the ratio between the 95% and the 5% intensity quantile is calculated
+and returned.
 }
 \details{
 Can be used to approximate the dynamic range of signal
 is_a: QC:4000003 ! single value
 is_a: QC:4000009 ! ID based
 is_a: QC:4000001 ! QC metric
+}
+\note{
+The `Spectra` object might contain features that were not identified. If
+the calculation needs to be done according to *QC:4000125*, the 
+`Spectra` object should be prepared accordingly.
 }
 \examples{
 library(S4Vectors)
@@ -46,7 +62,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$precursorIntensity <- c(100, 100, 100)
 sps <- Spectra(spd)
-extentIdentifiedPrecursorIntensity(spectra = sps, MSLevel = 2L)
+extentIdentifiedPrecursorIntensity(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}
