@@ -435,7 +435,7 @@ adjust for sample type-specific effects.
 
 ```{r}
 library("ggplot2")
-ggplot(subset(metrics_l, metric == "numberSpectra_MSLevel1")) +
+ggplot(subset(metrics_l, metric == "numberSpectra_msLevel1")) +
     geom_point(aes(x = sample, y = value, col = method)) +
     theme_bw() + xlab("Samples") + ylab("number of features") +
     guides(shape = guide_legend(override.aes = list(size = 5))) +
