@@ -1773,6 +1773,7 @@ precursorIntensitySD <- function(spectra, msLevel = 1L) {
 #'     c(3.407, 47.494, 3.094, 100.0, 13.240),
 #'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
 #' msSignal10XChange(spectra = sps, change = "jump", msLevel = 2L)
 #' msSignal10XChange(spectra = sps, change = "fall", msLevel = 2L)

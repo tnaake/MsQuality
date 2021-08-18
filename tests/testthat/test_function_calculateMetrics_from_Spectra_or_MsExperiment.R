@@ -28,9 +28,9 @@ metrics <- c("rtDuration", "rtOverTICquantile", "ticQuantileToQuantileLogRatio",
     "numberSpectra", "areaUnderTIC", "msSignal10Change")
 
 ## additional parameters passed to the quality metrics functions
-## (MSLevel is an argument of areaUnderTIC and msSignal10XChange,
+## (msLevel is an argument of areaUnderTIC and msSignal10XChange,
 ## relativeTo is an argument of msSignal10XChange)
-params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"), 
+params_l <- list(msLevel = 1, relativeTo = c("Q1", "previous"), 
     change = c("jump", "fall"))
 
 ## calculate the metrics from MsExperiment
@@ -48,16 +48,16 @@ suppressWarnings(metrics_mse_wrapper <- calculateMetrics(object = mse,
     metrics = metrics, params = params_l))
 
 ## START unit test calculateMetricsFromMsExperiment ## 
-colnames_metrics_mse <- c("rtDuration", "rtOverTICquantile_MSLevel1_0%",                           
-    "rtOverTICquantile_MSLevel1_25%", "rtOverTICquantile_MSLevel1_50%",                      
-    "rtOverTICquantile_MSLevel1_75%", "rtOverTICquantile_MSLevel1_100%",                
-    "ticQuantileToQuantileLogRatio_relativeToQ1_MSLevel1_Q2/Q1",
-    "ticQuantileToQuantileLogRatio_relativeToQ1_MSLevel1_Q3/Q1",
-    "ticQuantileToQuantileLogRatio_relativeToQ1_MSLevel1_Q4/Q1",
-    "ticQuantileToQuantileLogRatio_relativeToprevious_MSLevel1_Q2/Q1",
-    "ticQuantileToQuantileLogRatio_relativeToprevious_MSLevel1_Q3/Q2",
-    "ticQuantileToQuantileLogRatio_relativeToprevious_MSLevel1_Q4/Q3",
-    "numberSpectra_MSLevel1", "areaUnderTIC_MSLevel1")
+colnames_metrics_mse <- c("rtDuration", "rtOverTICquantile_msLevel1_0%",                           
+    "rtOverTICquantile_msLevel1_25%", "rtOverTICquantile_msLevel1_50%",                      
+    "rtOverTICquantile_msLevel1_75%", "rtOverTICquantile_msLevel1_100%",                
+    "ticQuantileToQuantileLogRatio_relativeToQ1_msLevel1_Q2/Q1",
+    "ticQuantileToQuantileLogRatio_relativeToQ1_msLevel1_Q3/Q1",
+    "ticQuantileToQuantileLogRatio_relativeToQ1_msLevel1_Q4/Q1",
+    "ticQuantileToQuantileLogRatio_relativeToprevious_msLevel1_Q2/Q1",
+    "ticQuantileToQuantileLogRatio_relativeToprevious_msLevel1_Q3/Q2",
+    "ticQuantileToQuantileLogRatio_relativeToprevious_msLevel1_Q4/Q3",
+    "numberSpectra_msLevel1", "areaUnderTIC_msLevel1")
 test_that("calculateMetricsFromMsExperiment", {
     expect_equal(dim(metrics_mse), c(2, 14))
     expect_equal(rownames(metrics_mse), NULL)
