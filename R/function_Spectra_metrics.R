@@ -292,6 +292,10 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L) {
         stop("Spectra object does not contain any spectra")
     }
     
+    if (length(spectra) < 4) {
+        stop("Spectra object does contain less than four spectra")
+    }
+
     ## order spectra according to increasing retention time
     spectra <- .rt_order_spectra(spectra)
     RT <- rtime(spectra)
@@ -301,7 +305,11 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L) {
     ## (they are not necessarily equal)
     ind <- sort(rep(seq_len(4), length.out = length(spectra)))
     idx <- which(c(diff(ind), 1) == 1)
-    (RT[idx] - rtmin) / rtd
+    
+    ## calculate the retention time inidces
+    rt_quarters <- (RT[idx] - rtmin) / rtd
+    names(rt_quarters) <- c("Quarter1", "Quarter2", "Quarter3", "Quarter4")
+    rt_quarters
 }
 
 #' @name ticQuantileToQuantileLogRatio
