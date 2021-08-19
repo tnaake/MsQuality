@@ -135,14 +135,14 @@ calculateMetricsFromSpectra <- function(spectra,
     unlist(metrics_vals)
 }
 
-#' @name calculateMetricsFromMSE
+#' @name calculateMetricsFromMsExperiment
 #' 
 #' @title Calculate QC metrics from a MsExperiment object
 #' 
 #' @description
-#' The function `calculateMetricsFromMSE` calculates quality metrics from a
-#' `MsExperiment`. Each spectra in the `mse` object should refer to one
-#' mzML file/to one sample.
+#' The function `calculateMetricsFromMsExperiment` calculates quality metrics 
+#' from a `MsExperiment` object. Each spectra in the `mse` object should 
+#' refer to one mzML file/to one sample.
 #' 
 #' @details
 #' The metrics are defined by the argument `metrics`. Further arguments 
