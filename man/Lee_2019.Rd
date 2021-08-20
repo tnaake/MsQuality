@@ -129,7 +129,7 @@ sps_l_hilic <- sps_l_hilic[!inds_remove]
 
 ## The functions in `msQC` might also accept a collection of `Spectra` 
 ## objects stored in an `MsExperiment`. We will convert the list of 
-`Spectra` objects to an `MsExperiment` object.
+## `Spectra` objects to an `MsExperiment` object.
 
 ## create the MsExperiment objects
 sps_c_rplc <- Reduce(c, sps_l_rplc)
