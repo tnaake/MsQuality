@@ -1,24 +1,24 @@
-\name{msQC-package}
-\alias{msQC-package}
-\alias{msQC}
+\name{MsQuality-package}
+\alias{MsQuality-package}
+\alias{MsQuality}
 \docType{package}
 \title{
-\packageTitle{msQC}
+\packageTitle{MsQuality}
 }
 \description{
-msQC enables to calculate quality metrics of mass spectrometry
+MsQuality enables to calculate quality metrics of mass spectrometry
 data. It is build upon Spectra and MsExperiment objects.
 }
 
 \details{
 The DESCRIPTION file:
-\packageDESCRIPTION{msQC}
-\packageIndices{msQC}
+\packageDESCRIPTION{MsQuality}
+\packageIndices{MsQuality}
 }
 
 \author{
-\packageAuthor{msQC}
-Maintainer: \packageMaintainer{msQC}
+\packageAuthor{MsQuality}
+Maintainer: \packageMaintainer{MsQuality}
 }
 
 \keyword{ package, QC, proteomics, metabolomics, mass spectrometry }

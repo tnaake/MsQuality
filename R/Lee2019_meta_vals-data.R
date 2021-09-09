@@ -3,7 +3,7 @@
 #' @aliases meta
 #' @aliases vals
 #' 
-#' @title Example data for \code{msQC}: data set of Lee et al. (2019)
+#' @title Example data for \code{MsQuality}: data set of Lee et al. (2019)
 #' 
 #' @description 
 #' The data set of Lee et al. (2019) contains metabolite information measured

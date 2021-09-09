@@ -1,8 +1,8 @@
 library("testthat")
-library("msQC")
+library("MsQuality")
 library("Spectra")
 library("MsExperiment")
 library("msdata")
 library("S4Vectors")
 
-test_check("msQC")
+test_check("MsQuality")
