@@ -1,20 +1,20 @@
 ---
-title: "msQC: Calculation of QC metrics from mass spectrometry data"
+title: "MsQuality: Calculation of QC metrics from mass spectrometry data"
 author:
  - name: Thomas Naake and Johannes Rainer
    mail: thomas.naake@embl.de, thomasnaake@googlemail.com, johannes.rainer@eurac.edu
    affiliation: European Molecular Biology Laboratory, Meyerhofstrasse 1, 69117 Heidelberg/ EURAC Research, Viale Druso 1, 39100 BOlzano
-package: msQC
+package: MsQuality
       
 output:  
     BiocStyle::html_document:
         toc_float: true
-bibliography: msQC-citations.bib
+bibliography: MsQuality-citations.bib
 vignette: >
     %\VignetteIndexEntry{QC for metabolomics and proteomics data}
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteKeywords{Mass Spectrometry, MS, Metabolomics, Proteomics, Visualization, QC}
-    %\VignettePackage{msQC-vignette}
+    %\VignettePackage{MsQuality-vignette}
     %\VignetteEncoding{UTF-8}
 ---
 
@@ -25,7 +25,7 @@ BiocStyle::markdown()
 ```{r env, include=FALSE, echo=FALSE, cache=FALSE}
 library("knitr")
 opts_chunk$set(stop_on_error = 1L)
-suppressPackageStartupMessages(library("msQC"))
+suppressPackageStartupMessages(library("MsQuality"))
 suppressPackageStartupMessages(library("Spectra"))
 ```
 
@@ -34,9 +34,9 @@ suppressPackageStartupMessages(library("Spectra"))
 Data quality assessment is an integral part of preparatory data analysis 
 to ensure sound biological information retrieval. 
 
-We present here the `msQC` package, which provides functionality to calculate
+We present here the `MsQuality` package, which provides functionality to calculate
 quality metrics for mass spectrometry-derived, spectral data at the per-sample
-level. `msQC` relies on the [`mzQC`](https://github.com/HUPO-PSI/mzQC) 
+level. `MsQuality` relies on the [`mzQC`](https://github.com/HUPO-PSI/mzQC) 
 framework of quality metrics defined by the Human Proteome 
 Organization-Proteomics Standards Intitiative (HUPO-PSI). These metrics 
 quantify the quality of spectral raw files using a controlled vocabulary. 
@@ -45,9 +45,9 @@ mass spectrometry data on a clinical/large scale: while it is easier to control
 for high-quality data acquisition in small-scale experiments, typically run
 in one or few batches, clinical data sets are often acquired over longer 
 time frames and are prone to higher technical variation that is often
-unnoticed. `msQC` tries to address this problem by calculating metrics that
+unnoticed. `MsQuality` tries to address this problem by calculating metrics that
 can be stored along the spectral data sets (raw files or feature-extracted 
-data sets). `msQC`, thus, facilitates the tracking of shifts in data quality
+data sets). `MsQuality`, thus, facilitates the tracking of shifts in data quality
 and quantifies the quality using multiple metrics. It should be thus easier
 to identify samples that are of low quality (high-number of missing values,
 termination of chromatographic runs, low instrument sensitivity, etc.).
@@ -61,7 +61,7 @@ should always be regarded in the context of the sample type and experimental
 settings, i.e. quality metrics should always be compared with regard to the
 sample type, experimental setup, instrumentation, etc..
 
-The `msQC` package allows to calculate low-level quality metrics that require
+The `MsQuality` package allows to calculate low-level quality metrics that require
 minimum information on mass spectrometry data: retention time, m/z values, 
 and associated intensities.
 The list included in the `mzQC` framework is excessive, also including 
@@ -70,11 +70,11 @@ accessible from .raw or .mzML files, e.g. pump pressure mean, or rely
 on alignment results, e.g. retention time mean shift, signal-to-noise ratio,
 precursor errors (ppm). 
 
-The `msQC` package is built upon the `Spectra` and the `MsExperiment` package.
+The `MsQuality` package is built upon the `Spectra` and the `MsExperiment` package.
 Metrics will be calculated based on the information stored in a 
 `Spectra` object, thus, the spectral data of each sample should be stored
 in one `Spectra` object. The `MsExperiment` serves as a container to 
-store the mass spectral data of multiple samples. `msQC` enables the user
+store the mass spectral data of multiple samples. `MsQuality` enables the user
 to calculate quality metrics both on `Spectra` and `MsExperiment` objects. 
 
 In this vignette, we will (i) create some exemplary `Spectra` and 
@@ -89,15 +89,15 @@ To install this package, start `R` and enter:
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-BiocManager::install("msQC")
+BiocManager::install("MsQuality")
 ```
 
 This will install this package and all eventually missing dependencies.
 
 # Questions and bugs {-}
 
-`msQC` is currently under active development. If you discover any bugs, typos or develop ideas of improving `msQC` feel free to raise an issue via
-[GitHub](https://github.com/tnaake/msQC) or send a mail to the developer.
+`MsQuality` is currently under active development. If you discover any bugs, typos or develop ideas of improving `MsQuality` feel free to raise an issue via
+[GitHub](https://github.com/tnaake/MsQuality) or send a mail to the developer.
 
 
 # Create `Spectra` and `MsExperiment` objects 
@@ -105,7 +105,7 @@ This will install this package and all eventually missing dependencies.
 Load the `MsExperiment` and `Spectra` packages.
 
 ```{r load_MsExperiment_Spectra}
-library("msQC")
+library("MsQuality")
 library("MsExperiment")
 library("Spectra")
 ```
@@ -173,7 +173,7 @@ objects containing the data of all samples (objects `msexp_rplc` and
 `msexp_hilic`). We will load here these objects:
 
 ```{r load_Lee2019, eval = TRUE, echo = TRUE}
-data("Lee2019", package = "msQC")
+data("Lee2019", package = "MsQuality")
 ```
 
 The final data set contains 541 paired samples (i.e. 541 samples derived 
