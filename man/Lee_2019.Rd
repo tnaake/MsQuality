@@ -7,7 +7,7 @@
 \alias{msexp_rplc}
 \alias{sps_l_hilic}
 \alias{sps_l_rplc}
-\title{Example data for \code{msQC}: data set of Lee et al. (2019)}
+\title{Example data for \code{MsQuality}: data set of Lee et al. (2019)}
 \format{
 \code{Spectra} and \code{MsExperiment}
 }
@@ -15,7 +15,7 @@
 ## First, we will load the information on the metabolite levels and the
 ## associated metadata (information on molecular weight, retention time,
 ## etc.).
-data("Lee_2019_meta_vals", package = "msQC")
+data("Lee_2019_meta_vals", package = "MsQuality")
 
 ## We will create per sample one `Spectra` object. The data set of
 ## Lee et al. (2019) contains samples in columns and the feature-extracted
@@ -127,7 +127,7 @@ table(inds_remove)
 sps_l_rplc <- sps_l_rplc[!inds_remove]
 sps_l_hilic <- sps_l_hilic[!inds_remove]
 
-## The functions in `msQC` might also accept a collection of `Spectra` 
+## The functions in `MsQuality` might also accept a collection of `Spectra` 
 ## objects stored in an `MsExperiment`. We will convert the list of 
 ## `Spectra` objects to an `MsExperiment` object.
 
