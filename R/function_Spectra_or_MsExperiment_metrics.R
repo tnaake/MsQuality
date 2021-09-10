@@ -49,8 +49,8 @@ qualityMetrics <- function(object) {
             "medianTICRTIQR", "medianTICofRTRange", "mzAcquisitionRange",
             "rtAcquisitionRange", "precursorIntensityRange", 
             "precursorIntensityQuartiles", "precursorIntensityMean",
-            "precursorIntensitySD", "msSignal10XChange", "RatioCharge1over2", 
-            "RatioCharge3over2", "RatioCharge4over2", "meanCharge", 
+            "precursorIntensitySD", "msSignal10XChange", "ratioCharge1over2", 
+            "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
             "medianCharge"
         )
     if (is(object, "MsExperiment"))
@@ -62,8 +62,8 @@ qualityMetrics <- function(object) {
             "medianTICRTIQR", "medianTICofRTRange", "mzAcquisitionRange",
             "rtAcquisitionRange", "precursorIntensityRange", 
             "precursorIntensityQuartiles", "precursorIntensityMean",
-            "precursorIntensitySD", "msSignal10XChange", "RatioCharge1over2", 
-            "RatioCharge3over2", "RatioCharge4over2", "meanCharge", 
+            "precursorIntensitySD", "msSignal10XChange", "ratioCharge1over2", 
+            "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
             "medianCharge"
         )
     return(.metrics)

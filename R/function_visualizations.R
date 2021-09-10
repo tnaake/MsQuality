@@ -182,13 +182,13 @@ plotMetric_tibble <- function(qc, metric) {
     return(qc_df_l)
 }
 
-#' @name MsQuality
+#' @name shinyMsQuality
 #'
 #' @title Shiny application to visualize quality metrics
 #'
 #' @description
-#' The function `MsQuality` function starts a shiny application to visualize
-#' the quality metrics interactively. It allows to display all metrics
+#' The function `shinyMsQuality` function starts a shiny application to 
+#' visualize the quality metrics interactively. It allows to display all metrics
 #' contained in `qc`. 
 #' 
 #' The function accepts the output of `calculateMetrics`,
@@ -252,9 +252,9 @@ plotMetric_tibble <- function(qc, metric) {
 #' rownames(qc) <- c("Sample 1", "Sample 2")
 #' 
 #' \dontrun{
-#' MsQuality(qc)
+#' shinyMsQuality(qc)
 #' }
-MsQuality <- function(qc) {
+shinyMsQuality <- function(qc) {
 
     metrics <- stringr::str_split(colnames(qc), 
                                         pattern = "_", simplify = TRUE)[, 1]
