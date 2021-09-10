@@ -65,7 +65,7 @@ qc <- calculateMetricsFromMsExperiment(msexp = mse, metrics = metrics,
 rownames(qc) <- c("Sample 1", "Sample 2")
 
 \dontrun{
-shinyMsQuality(qc)
+shinyMsQuality(qc = qc)
 }
 }
 \author{

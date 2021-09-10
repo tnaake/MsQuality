@@ -21,7 +21,12 @@ function accepts the output of `calculateMetrics`,
 a vector specifying the metric to display.
 }
 \details{
-
+`plotMetric` will select all columns that start with
+`metric`. The different levels in the `name` column in the returned tibble 
+correspond to the columns that were selected and do not contain the
+`metric` prefix. In case there is no additional specification 
+(e.g. for the metric `rtDuration` only the column `rtDuration` will 
+be selected), the `name` column will include the `metric` (`rtDuration`).
 }
 \examples{
 library(msdata)

@@ -10,7 +10,12 @@
 #' a vector specifying the metric to display.
 #' 
 #' @details
-#' 
+#' `plotMetric` will select all columns that start with
+#' `metric`. The different levels in the `name` column in the returned tibble 
+#' correspond to the columns that were selected and do not contain the
+#' `metric` prefix. In case there is no additional specification 
+#' (e.g. for the metric `rtDuration` only the column `rtDuration` will 
+#' be selected), the `name` column will include the `metric` (`rtDuration`).
 #' 
 #' @param qc `matrix`/`data.frame`
 #' @param metric `character`
@@ -19,7 +24,7 @@
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
-#' @importFrom ggplot2 ggplot geom_point aes scale_colour_brewer theme_bw
+#' @importFrom ggplot2 ggplot geom_point aes_string scale_colour_brewer theme_bw
 #' @importFrom ggplot2 xlab ggtitle guides guide_legend theme element_text
 #' @importFrom ggplot2 element_blank
 #' @importFrom plotly ggplotly 
@@ -71,7 +76,8 @@ plotMetric <- function(qc, metric = "areaUnderTIC") {
     qc_tbl_l <- plotMetric_tibble(qc = qc, metric = metric)
     
     g <- ggplot2::ggplot(qc_tbl_l) +
-        ggplot2::geom_point(ggplot2::aes(x = rowname, y = value, col = name)) +
+        ggplot2::geom_point(ggplot2::aes_string(x = "rowname", 
+                                                y = "value", col = "name")) +
         ggplot2::scale_colour_brewer(palette= "Set1") + ggplot2::theme_bw() +
         ggplot2::xlab("sample") + ggplot2::ggtitle(metric) +
         ggplot2::guides(shape = ggplot2::guide_legend(
@@ -114,6 +120,8 @@ plotMetric <- function(qc, metric = "areaUnderTIC") {
 #' @importFrom tibble rownames_to_column
 #' @importFrom tidyr pivot_longer
 #' 
+#' @export
+#' 
 #' @examples 
 #' library(msdata)
 #' library(MsExperiment)
@@ -153,7 +161,7 @@ plotMetric <- function(qc, metric = "areaUnderTIC") {
 #' qc <- calculateMetricsFromMsExperiment(msexp = mse, metrics = metrics, 
 #'     params = params_l)
 #' rownames(qc) <- c("Sample 1", "Sample 2")
-#' plotMetric_df(qc, metric = "areaUnderTIC")
+#' plotMetric_tibble(qc, metric = "areaUnderTIC")
 plotMetric_tibble <- function(qc, metric) {
     
     cols <- grep(colnames(qc), pattern = metric)
@@ -206,10 +214,11 @@ plotMetric_tibble <- function(qc, metric) {
 #' 
 #' @export
 #' 
-#' @importFrom shiny shinyUI selectInput fluidRow req runApp
+#' @importFrom shiny shinyUI selectInput fluidRow req runApp reactive
 #' @importFrom shinydashboard dashboardPage dashboardHeader dashboardSidebar
 #' @importFrom shinydashboard dashboardBody
 #' @importFrom plotly plotlyOutput renderPlotly
+#' @importFrom htmlwidgets saveWidget
 #' 
 #' @examples
 #' library(msdata)
@@ -252,7 +261,7 @@ plotMetric_tibble <- function(qc, metric) {
 #' rownames(qc) <- c("Sample 1", "Sample 2")
 #' 
 #' \dontrun{
-#' shinyMsQuality(qc)
+#' shinyMsQuality(qc = qc)
 #' }
 shinyMsQuality <- function(qc) {
 
@@ -275,7 +284,7 @@ shinyMsQuality <- function(qc) {
 
     server <-  function(input, output, session) {
 
-        metricPlot_r <- reactive({plotMetric(qc = qc, metric = input$metric)})
+        metricPlot_r <- shiny::reactive({plotMetric(qc = qc, metric = input$metric)})
 
         output$metricPlot <- plotly::renderPlotly({
             shiny::req(metricPlot_r())

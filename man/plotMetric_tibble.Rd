@@ -66,7 +66,7 @@ params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"),
 qc <- calculateMetricsFromMsExperiment(msexp = mse, metrics = metrics, 
     params = params_l)
 rownames(qc) <- c("Sample 1", "Sample 2")
-plotMetric_df(qc, metric = "areaUnderTIC")
+plotMetric_tibble(qc, metric = "areaUnderTIC")
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}
