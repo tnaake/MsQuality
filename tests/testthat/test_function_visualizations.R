@@ -57,10 +57,10 @@ test_that("plotMetric", {
 
 ## START unit test plotMetric_tibble ##
 test_that("plotMetric_tibble", {
-    expect_is(plotMetric_tibble(qc = qc, metric = "areaUnderTIC"), "tibble")
+    expect_is(plotMetric_tibble(qc = qc, metric = "areaUnderTIC"), "tbl")
     tbl <- plotMetric_tibble(qc = qc, metric = "areaUnderTIC")
     expect_equal(tbl$rowname, factor(c("Sample 1", "Sample 2")))
-    expect_equal(tbl$name, c("MsLevel1", "MsLevel1"))
+    expect_equal(tbl$name, c("msLevel1", "msLevel1"))
     expect_equal(tbl$value, c(1273927561, 1273927561))
     expect_error(plotMetric_tibble(qc = NULL, metric = "areaUnderTIC"),
                  "metric not in qc")
@@ -71,7 +71,7 @@ test_that("plotMetric_tibble", {
 ## END unit test plotMetric_tibble ## 
 
 ## START unit test shinyMsQuality ##
-test_that("plotMetric_tibble", {
+test_that("shinyMsQuality", {
     expect_error(shinyMsQuality(qc = matrix()), "subscript out of bounds")
     expect_error(shinyMsQuality(qc = NULL), "subscript out of bounds")
 })
