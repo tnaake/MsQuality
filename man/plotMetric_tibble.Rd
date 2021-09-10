@@ -2,23 +2,30 @@
 % Please edit documentation in R/function_visualizations.R
 \name{plotMetric_tibble}
 \alias{plotMetric_tibble}
-\title{}
+\title{Helper function for plotMetric}
 \usage{
 plotMetric_tibble(qc, metric)
 }
 \arguments{
 \item{qc}{`data.frame`}
 
-\item{metric}{`metric`}
+\item{metric}{`character`}
 }
 \value{
 `tibble`
 }
 \description{
-
+The function `plotMetric_tibble` is a helper function for the function
+`plotMetric`. It returns a tibble in long format that is interpretable
+by `ggplot2`.
 }
 \details{
-
+`plotMetric_tibble` will select all columns that start with
+`metric`. The different levels in the `name` column in the returned tibble 
+correspond to the columns that were selected and do not contain the
+`metric` prefix. In case there is no additional specification 
+(e.g. for the metric `rtDuration` only the column `rtDuration` will 
+be selected), the `name` column will include the `metric` (`rtDuration`).
 }
 \examples{
 library(msdata)

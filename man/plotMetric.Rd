@@ -2,20 +2,23 @@
 % Please edit documentation in R/function_visualizations.R
 \name{plotMetric}
 \alias{plotMetric}
-\title{}
+\title{Visualize a quality metric}
 \usage{
 plotMetric(qc, metric = "areaUnderTIC")
 }
 \arguments{
-\item{qc}{`data.frame`}
+\item{qc}{`matrix`/`data.frame`}
 
-\item{metric}{`metric`}
+\item{metric}{`character`}
 }
 \value{
 `plotly`
 }
 \description{
-
+The function `plotMetric` visualizes the metric values per sample. The 
+function accepts the output of `calculateMetrics`,
+`calculateMetricsFromSpectra`, or `calculateMetricsFromMsExperiment` and
+a vector specifying the metric to display.
 }
 \details{
 

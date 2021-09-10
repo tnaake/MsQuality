@@ -1,15 +1,19 @@
 
 #' @name plotMetric
 #'
-#' @title 
+#' @title Visualize a quality metric
 #'
 #' @description
-#' 
+#' The function `plotMetric` visualizes the metric values per sample. The 
+#' function accepts the output of `calculateMetrics`,
+#' `calculateMetricsFromSpectra`, or `calculateMetricsFromMsExperiment` and
+#' a vector specifying the metric to display.
 #' 
 #' @details
 #' 
-#' @param qc `data.frame`
-#' @param metric `metric`
+#' 
+#' @param qc `matrix`/`data.frame`
+#' @param metric `character`
 #' 
 #' @return `plotly`
 #' 
@@ -84,15 +88,23 @@ plotMetric <- function(qc, metric = "areaUnderTIC") {
 
 #' @name plotMetric_tibble
 #'
-#' @title 
+#' @title Helper function for plotMetric
 #'
 #' @description
-#' 
+#' The function `plotMetric_tibble` is a helper function for the function
+#' `plotMetric`. It returns a tibble in long format that is interpretable
+#' by `ggplot2`.
 #' 
 #' @details
+#' `plotMetric_tibble` will select all columns that start with
+#' `metric`. The different levels in the `name` column in the returned tibble 
+#' correspond to the columns that were selected and do not contain the
+#' `metric` prefix. In case there is no additional specification 
+#' (e.g. for the metric `rtDuration` only the column `rtDuration` will 
+#' be selected), the `name` column will include the `metric` (`rtDuration`). 
 #' 
 #' @param qc `data.frame`
-#' @param metric `metric`
+#' @param metric `character`
 #' 
 #' @return `tibble`
 #' 
@@ -101,8 +113,6 @@ plotMetric <- function(qc, metric = "areaUnderTIC") {
 #' @importFrom stringr str_remove
 #' @importFrom tibble rownames_to_column
 #' @importFrom tidyr pivot_longer
-#' 
-#' @export
 #' 
 #' @examples 
 #' library(msdata)
@@ -177,9 +187,16 @@ plotMetric_tibble <- function(qc, metric) {
 #' @title Shiny application to visualize quality metrics
 #'
 #' @description
+#' The function `MsQuality` function starts a shiny application to visualize
+#' the quality metrics interactively. It allows to display all metrics
+#' contained in `qc`. 
 #' 
+#' The function accepts the output of `calculateMetrics`,
+#' `calculateMetricsFromSpectra`, or `calculateMetricsFromMsExperiment`
 #' 
 #' @details
+#' The plots within the shiny application can be saved by clicking on the 
+#' download button.
 #' 
 #' @param qc `data.frame`
 #' 
@@ -195,13 +212,54 @@ plotMetric_tibble <- function(qc, metric) {
 #' @importFrom plotly plotlyOutput renderPlotly
 #' 
 #' @examples
+#' library(msdata)
+#' library(MsExperiment)
+#' library(S4Vectors)
+#' mse <- MsExperiment()
+#' sd <- DataFrame(sample_id = c("QC1", "QC2"),
+#'     sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
+#' sampleData(mse) <- sd
 #' 
+#' ## define file names containing spectra data for the samples and
+#' ## add them, along with other arbitrary files to the experiment
+#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+#' experimentFiles(mse) <- MsExperimentFiles(
+#'     mzML_files = fls,
+#'     annotations = "internal_standards.txt")
+#' ## link samples to data files: first sample to first file in "mzML_files",
+#' ## second sample to second file in "mzML_files"
+#' mse <- linkSampleData(mse, with = "experimentFiles.mzML_files",
+#'     sampleIndex = c(1, 2), withIndex = c(1, 2))
+#' mse <- linkSampleData(mse, with = "experimentFiles.annotations",
+#'                       sampleIndex = c(1, 2), withIndex = c(1, 1))
+#'
+#' library(Spectra)
+#' ## import the data and add it to the mse object
+#' spectra(mse) <- Spectra(fls, backend = MsBackendMzR())
+#' 
+#' ## define the quality metrics to be calculated
+#' metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
+#' 
+#' ## additional parameters passed to the quality metrics functions
+#' ## (MSLevel is an argument of areaUnderTIC and msSignal10XChange,
+#' ## relativeTo is an argument of msSignal10XChange)
+#' params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"), 
+#'     change = c("jump", "fall"))
+#'     
+#' ## calculate the metrics
+#' qc <- calculateMetricsFromMsExperiment(msexp = mse, metrics = metrics, 
+#'     params = params_l)
+#' rownames(qc) <- c("Sample 1", "Sample 2")
+#' 
+#' \dontrun{
+#' MsQuality(qc)
+#' }
 MsQuality <- function(qc) {
-    
+
     metrics <- stringr::str_split(colnames(qc), 
                                         pattern = "_", simplify = TRUE)[, 1]
     metrics <- unique(metrics)
-    
+
     ui <- shiny::shinyUI(shinydashboard::dashboardPage(skin = "black",
         shinydashboard::dashboardHeader(title = "MsQuality"),
         shinydashboard::dashboardSidebar(
@@ -216,14 +274,14 @@ MsQuality <- function(qc) {
     ))
 
     server <-  function(input, output, session) {
-        
+
         metricPlot_r <- reactive({plotMetric(qc = qc, metric = input$metric)})
-        
+
         output$metricPlot <- plotly::renderPlotly({
             shiny::req(metricPlot_r())
             metricPlot_r()
         })
-        
+
         output$downloadPlot <- shiny::downloadHandler(
             filename = function() {
                 paste("metrics_", input$metric, ".html", sep = "")
@@ -233,7 +291,7 @@ MsQuality <- function(qc) {
             }
         )
     }
-    
+
     app <- list(ui = ui, server = server)
     shiny::runApp(app)
 }
