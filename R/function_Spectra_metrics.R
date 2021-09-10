@@ -1811,7 +1811,7 @@ msSignal10XChange <- function(spectra, change = c("jump", "fall"),
     return(numberRatioChange)
 }
 
-#' @name RatioCharge1over2
+#' @name ratioCharge1over2
 #' 
 #' @title Charged peptides ratio 1+ over 2+ (QC:4000174) or 
 #' Charged spectra ratio 1+ over 2+ (QC:4000179)
@@ -1876,8 +1876,8 @@ msSignal10XChange <- function(spectra, change = c("jump", "fall"),
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorCharge <- c(1L, 1L, 1L)
 #' sps <- Spectra(spd)
-#' RatioCharge1over2(spectra = sps, msLevel = 2L)
-RatioCharge1over2 <- function(spectra, msLevel = 1L) {
+#' ratioCharge1over2(spectra = sps, msLevel = 2L)
+ratioCharge1over2 <- function(spectra, msLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
@@ -1899,7 +1899,7 @@ RatioCharge1over2 <- function(spectra, msLevel = 1L) {
     return(chargeRatio)
 }
 
-#' @name RatioCharge3over2
+#' @name ratioCharge3over2
 #' 
 #' @title Charged peptides ratio 3+ over 2+ (QC:4000175) or 
 #' charged spectra ratio 3+ over 2+ (QC:4000180)
@@ -1964,8 +1964,8 @@ RatioCharge1over2 <- function(spectra, msLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorCharge <- c(1L, 1L, 1L)
 #' sps <- Spectra(spd)
-#' RatioCharge3over2(spectra = sps, msLevel = 2L)
-RatioCharge3over2 <- function(spectra, msLevel = 1L) {
+#' ratioCharge3over2(spectra = sps, msLevel = 2L)
+ratioCharge3over2 <- function(spectra, msLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
@@ -1987,7 +1987,7 @@ RatioCharge3over2 <- function(spectra, msLevel = 1L) {
     return(chargeRatio)
 }
 
-#' @name RatioCharge4over2
+#' @name ratioCharge4over2
 #' 
 #' @title Charged peptides ratio 4+ over 2+ (QC:4000176) or charged spectra 
 #' ratio 4+ over 2+ (QC:4000181)
@@ -2053,8 +2053,8 @@ RatioCharge3over2 <- function(spectra, msLevel = 1L) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorCharge <- c(1L, 1L, 1L)
 #' sps <- Spectra(spd)
-#' RatioCharge4over2(spectra = sps, msLevel = 2L)
-RatioCharge4over2 <- function(spectra, msLevel = 1L) {
+#' ratioCharge4over2(spectra = sps, msLevel = 2L)
+ratioCharge4over2 <- function(spectra, msLevel = 1L) {
   
     spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
     
