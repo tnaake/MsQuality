@@ -38,7 +38,7 @@ qm_spectra <- c("rtDuration", "rtOverTICquantile", "rtOverMSQuarters",
     "medianTICofRTRange", "mzAcquisitionRange", "rtAcquisitionRange", 
     "precursorIntensityRange", "precursorIntensityQuartiles", 
     "precursorIntensityMean", "precursorIntensitySD", "msSignal10XChange", 
-    "RatioCharge1over2", "RatioCharge3over2", "RatioCharge4over2", "meanCharge", 
+    "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
     "medianCharge")
 qm_mse <- c("rtDuration", "rtOverTICquantile", "rtOverMSQuarters",
     "ticQuantileToQuantileLogRatio", "numberSpectra", "medianPrecursorMZ", 
@@ -47,7 +47,7 @@ qm_mse <- c("rtDuration", "rtOverTICquantile", "rtOverMSQuarters",
     "medianTICofRTRange", "mzAcquisitionRange", "rtAcquisitionRange", 
     "precursorIntensityRange", "precursorIntensityQuartiles", 
     "precursorIntensityMean", "precursorIntensitySD", "msSignal10XChange", 
-    "RatioCharge1over2", "RatioCharge3over2", "RatioCharge4over2", "meanCharge", 
+    "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
     "medianCharge")
 
 test_that("qualityMetrics", {
