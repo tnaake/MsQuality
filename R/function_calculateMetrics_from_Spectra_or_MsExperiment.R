@@ -83,7 +83,6 @@ calculateMetricsFromSpectra <- function(spectra,
         ## continue with a = 1:3, NB: this is not the case if we have specified
         ## the arguments within params
         formals_i <- lapply(formals_i, function(x) 
-            ##if (is.call(x)) {eval(x)[1]} else {x})
             if (is.call(x)) {eval(x)} else {x})
         ## 3) remove the type of arguments that are refObject, this will be 
         ## for instance the spectra argument
@@ -124,9 +123,7 @@ calculateMetricsFromSpectra <- function(spectra,
             metric_i_j <- unlist(metric_i_j)
             
         }
-        # if (is(metric_i_j, "vector") & length(metric_i_j) > 1) {
-        #     names_metric <- paste(names_metric, names(metric_i_j), sep = "_")
-        # }
+
         names(metric_i_j) <- names_metric
 
         return(metric_i_j)
