@@ -64,7 +64,7 @@ calculateMetricsFromSpectra <- function(spectra,
     
     ## calculate the metrics (using all metrics defined in metrics) using the
     ## spectra object
-    ## lapply is the outer loop going iterating through the functions `metrics`
+    ## lapply is the outer loop that iterates through the functions `metrics`
     metrics_vals <- lapply(seq_along(metrics), function(i) {
         
         formals_i <- formals(metrics[i])
@@ -77,18 +77,21 @@ calculateMetricsFromSpectra <- function(spectra,
         inds <- match(names(formals_i), names(params_i))
         inds <- inds[!is.na(inds)]
         formals_i[names(formals_i) %in% names(params_i)] <- params_i[inds]
+        
         ## 2) when there are calls/language types in formals_i, i.e. if there
         ## are several options for the arguments defined, take all the 
         ## options, e.g. if we have function(a = c(1:3)) ..., we will  
         ## continue with a = 1:3, NB: this is not the case if we have specified
         ## the arguments within params
-        formals_i <- lapply(formals_i, function(x) 
+        formals_i <- lapply(formals_i, function(x)
             if (is.call(x)) {eval(x)} else {x})
+        
         ## 3) remove the type of arguments that are refObject, this will be 
         ## for instance the spectra argument
         inds_remove <- unlist(lapply(formals_i, function(x) is(x, "refObject")))
         formals_i <- formals_i[!inds_remove]
-        ## 4) use all parameter combinations defined in formals_i and create a 
+        
+        ## 4) use all parameter combinations defined in formals_i and create a
         ## grid
         params_i <- expand.grid(formals_i, stringsAsFactors = FALSE)
         
