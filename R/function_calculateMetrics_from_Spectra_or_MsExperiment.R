@@ -80,7 +80,7 @@ calculateMetricsFromSpectra <- function(spectra,
         
         ## 2) when there are calls/language types in formals_i, i.e. if there
         ## are several options for the arguments defined, take all the 
-        ## options, e.g. if we have function(a = c(1:3)) ..., we will  
+        ## options, e.g. if we have function(a = c(1:3)), we will  
         ## continue with a = 1:3, NB: this is not the case if we have specified
         ## the arguments within params
         formals_i <- lapply(formals_i, function(x)
