@@ -206,7 +206,8 @@ plotMetric_tibble <- function(qc, metric) {
 #' The plots within the shiny application can be saved by clicking on the 
 #' download button.
 #' 
-#' @param qc `data.frame`
+#' @param qc `matrix`, contains the calculated quality metrics, the columns
+#' contain the metrics and the rows the samples
 #' 
 #' @return `shiny`
 #' 
@@ -264,11 +265,17 @@ plotMetric_tibble <- function(qc, metric) {
 #' shinyMsQuality(qc = qc)
 #' }
 shinyMsQuality <- function(qc) {
+    
+    if (!is.matrix(qc)) stop("qc is not a matrix")
+    if (!is.numeric(qc)) stop("qc has to be numeric")
 
     metrics <- stringr::str_split(colnames(qc), 
                                         pattern = "_", simplify = TRUE)[, 1]
     metrics <- unique(metrics)
 
+    ## define the user interface of the application: create a sidebar that 
+    ## allows to select the metrics and a body that displays the plot and 
+    ## allows for downloading the plot
     ui <- shiny::shinyUI(shinydashboard::dashboardPage(skin = "black",
         shinydashboard::dashboardHeader(title = "MsQuality"),
         shinydashboard::dashboardSidebar(
@@ -284,13 +291,18 @@ shinyMsQuality <- function(qc) {
 
     server <-  function(input, output, session) {
 
-        metricPlot_r <- shiny::reactive({plotMetric(qc = qc, metric = input$metric)})
+        ## reactive expression that stores the plotly object
+        metricPlot_r <- shiny::reactive({
+            plotMetric(qc = qc, metric = input$metric)
+        })
 
+        ## expression that renders the plotly object
         output$metricPlot <- plotly::renderPlotly({
             shiny::req(metricPlot_r())
             metricPlot_r()
         })
 
+        ## add functionality to download the plot
         output$downloadPlot <- shiny::downloadHandler(
             filename = function() {
                 paste("metrics_", input$metric, ".html", sep = "")
