@@ -38,9 +38,9 @@
 #' metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
 #' 
 #' ## additional parameters passed to the quality metrics functions
-#' ## (MSLevel is an argument of areaUnderTIC and msSignal10XChange,
+#' ## (MsLevel is an argument of areaUnderTIC and msSignal10XChange,
 #' ## relativeTo is an argument of msSignal10XChange)
-#' params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"), 
+#' params_l <- list(MsLevel = 1, relativeTo = c("Q1", "previous"), 
 #'     change = c("jump", "fall"))
 #'     
 #' ## calculate the metrics
@@ -197,9 +197,9 @@ calculateMetricsFromSpectra <- function(spectra,
 #' metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
 #' 
 #' ## additional parameters passed to the quality metrics functions
-#' ## (MSLevel is an argument of areaUnderTIC and msSignal10XChange,
+#' ## (MsLevel is an argument of areaUnderTIC and msSignal10XChange,
 #' ## relativeTo is an argument of msSignal10XChange)
-#' params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"), 
+#' params_l <- list(MsLevel = 1, relativeTo = c("Q1", "previous"), 
 #'     change = c("jump", "fall"))
 #'     
 #' ## calculate the metrics
@@ -277,9 +277,9 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #' metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
 #' 
 #' ## additional parameters passed to the quality metrics functions
-#' ## (MSLevel is an argument of areaUnderTIC and msSignal10XChange,
+#' ## (MsLevel is an argument of areaUnderTIC and msSignal10XChange,
 #' ## relativeTo is an argument of msSignal10XChange)
-#' params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"), 
+#' params_l <- list(MsLevel = 1, relativeTo = c("Q1", "previous"), 
 #'     change = c("jump", "fall"))
 #'     
 #' ## calculate the metrics
