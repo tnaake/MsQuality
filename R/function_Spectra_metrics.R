@@ -431,9 +431,7 @@ ticQuantileToQuantileLogRatio <- function(spectra,
     }
     
     ## take the log2 and return
-    logRatioQuantileTIC <- log2(ratioQuantileTIC)
-    
-    return(logRatioQuantileTIC)
+    log2(ratioQuantileTIC)
 }
 
 #' @name numberSpectra
@@ -564,9 +562,7 @@ medianPrecursorMZ <- function(spectra, msLevel = 1L) {
     
     ################ FDR correction??????????? 
     mz <- ProtGenerics::precursorMz(spectra)
-    medianMZ <- median(mz, na.rm = TRUE)
-    
-    return(medianMZ)
+    median(mz, na.rm = TRUE)
 }
 
 #' @name rtIQR
@@ -647,9 +643,7 @@ rtIQR <- function(spectra, msLevel = 1L) {
     RT <- ProtGenerics::rtime(spectra)
     
     ## IQR???, what is the unit for rtime, always seconds??
-    iqr <- stats::IQR(RT, na.rm = TRUE)
-    
-    return(iqr)
+    stats::IQR(RT, na.rm = TRUE)
 }
 
 #' @name rtIQRrate
@@ -749,9 +743,7 @@ rtIQRrate <- function(spectra, msLevel = 1L) {
     
     ## divide the number of eluted features between the 25% and 75% quantile
     ## by the IQR to get the elution rate per second 
-    rate <- nFeatures / rtIQR(spectra, msLevel = msLevel)
-    
-    return(rate)
+    nFeatures / rtIQR(spectra, msLevel = msLevel)
 }
 
 #' @name areaUnderTIC
@@ -1001,9 +993,7 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L) {
                                                               na.rm = TRUE)
     
     ## calculate the ratio between the 95% and 5% quantile and return the value
-    ratio <- quantilePrecInt[["95%"]] / quantilePrecInt[["5%"]]
-    
-    return(ratio)
+    quantilePrecInt[["95%"]] / quantilePrecInt[["5%"]]
 }
 
 #' @name medianTICRTIQR
@@ -1514,10 +1504,7 @@ precursorIntensityQuartiles <- function(spectra, msLevel = 1L) {
     }
   
     int <- ProtGenerics::precursorIntensity(spectra)
-    quartiles <- stats::quantile(int, probs = c(0.25, 0.50, 0.75), 
-                                                                na.rm = TRUE)
-    
-    return(quartiles)
+    stats::quantile(int, probs = c(0.25, 0.50, 0.75), na.rm = TRUE)
 }
 
 
@@ -1700,9 +1687,7 @@ precursorIntensitySD <- function(spectra, msLevel = 1L) {
     }
     
     int <- ProtGenerics::precursorIntensity(spectra)
-    mzSD <- stats::sd(int, na.rm = TRUE)
-    
-    return(mzSD)
+    stats::sd(int, na.rm = TRUE)
 }
 
 #' @name msSignal10XChange
