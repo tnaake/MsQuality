@@ -10,7 +10,7 @@ library(MsExperiment)
 library(S4Vectors)
 mse <- MsExperiment()
 sd <- DataFrame(sample_id = c("QC1", "QC2"),
-                sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
+    sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
 sampleData(mse) <- sd
 
 ## define file names containing spectra data for the samples and
@@ -32,16 +32,13 @@ spectra(mse) <- Spectra(fls, backend = MsBackendMzR())
 
 ## define the quality metrics to be calculated
 metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
- 
+
+## calculate the metrics
 ## additional parameters passed to the quality metrics functions
 ## (MSLevel is an argument of areaUnderTIC and msSignal10XChange,
 ## relativeTo is an argument of msSignal10XChange)
-params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"), 
-     change = c("jump", "fall"))
-     
-## calculate the metrics
 qc <- calculateMetricsFromMsExperiment(msexp = mse, metrics = metrics, 
-    params = params_l)
+    msLevel = 1, relativeTo = "Q1", change = "jump")
 rownames(qc) <- c("Sample 1", "Sample 2")
 
 ## START unit test plotMetric ## 
@@ -60,7 +57,7 @@ test_that("plotMetric_tibble", {
     expect_is(plotMetric_tibble(qc = qc, metric = "areaUnderTIC"), "tbl")
     tbl <- plotMetric_tibble(qc = qc, metric = "areaUnderTIC")
     expect_equal(tbl$rowname, factor(c("Sample 1", "Sample 2")))
-    expect_equal(tbl$name, c("msLevel1", "msLevel1"))
+    expect_equal(tbl$name, c("areaUnderTIC", "areaUnderTIC"))
     expect_equal(tbl$value, c(1273927561, 1273927561))
     expect_error(plotMetric_tibble(qc = NULL, metric = "areaUnderTIC"),
                  "metric not in qc")
@@ -72,7 +69,7 @@ test_that("plotMetric_tibble", {
 
 ## START unit test shinyMsQuality ##
 test_that("shinyMsQuality", {
-    expect_error(shinyMsQuality(qc = matrix()), "subscript out of bounds")
-    expect_error(shinyMsQuality(qc = NULL), "subscript out of bounds")
+    expect_error(shinyMsQuality(qc = matrix()), "'qc' has to be numeric")
+    expect_error(shinyMsQuality(qc = NULL), "'qc' is not a matrix")
 })
 ## END unit test shinyMsQuality ## 
