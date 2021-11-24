@@ -326,22 +326,19 @@ of parameters passed to the individual quality metrics functions. For
 each quality metrics functions, the relevant parameters are selected based on 
 the accepted arguments. 
 
-If there are several arguments passed to a 
-quality metrics functions passed to a grid of the combination between the 
-different parameters is run with the quality metrics functions. 
+Additional arguments can be given to the quality metrics functions. 
 For example, the function `ticQuantileToQuantileLogRatio` function has the 
-arguments `relativeTo` and `MSLevel`. `relativeTo` specifies to which 
+arguments `relativeTo` and `msLevel`. `relativeTo` specifies to which 
 quantile the log TIC quantile is relatively related to (either to the 1st 
 quantile or the respective previous one). One `Spectra` object may also contain
-more than one MSLevel, e.g. if it also contains information on MS$^2$ or 
-MS$^3$ features. If the user specifies 
-`params = list(relativeTo = c("Q1", "previous"), MSLevel = c(1L, 2L))`, 
-`ticQUantileToQuantileLogRatio` is run 
-with the parameter combinations `relativeTo = "Q1", MSLevel = 1L`, 
-`relativeTo = "previous", MSLevel = 1L`, `relativeTo = "Q1", MSLevel = 2L`, 
-and `relativeTo = "previous", MSLevel = 2L`. The different results based on 
-these parameter combinations is returned and the combination is indicated in 
-the names of the returned vector. 
+more than one `msLevel`, e.g. if it also contains information on MS$^2$ or 
+MS$^3$ features. If the user adds the arguments 
+`relativeTo = "Q1", msLevel = c(1L, 2L))`, `ticQUantileToQuantileLogRatio` is 
+run with the parameter combinations `relativeTo = "Q1", msLevel = c(1L, 2L)`.
+
+The  results based on 
+these parameter combinations are returned and the used parameters are returned
+as attributes to the returned vector. 
 
 Here, we would like to calculate the metrics of all the included quality 
 metrics functions (`qualityMetrics(object)`) and additionally pass the 
@@ -349,16 +346,24 @@ parameter `relativeTo = "Q1"` and `relativeTo = "previous"`.
 
 ```{r calculateMetrics}
 sps_rplc_sample_1 <- sps_l_rplc[[1]]
-metrics_rplc_sps <- calculateMetrics(object = sps_rplc_sample_1,
+metrics_rplc_sps_Q1 <- calculateMetrics(object = sps_rplc_sample_1,
     metrics = qualityMetrics(sps_rplc_sample_1),
-    params = list(relativeTo = c("Q1", "previous"), MSLevel = 1L))
-metrics_rplc_sps
+    relativeTo = "Q1", msLevel = 1L)
+metrics_rplc_sps_Q1
+metrics_rplc_sps_previous <- calculateMetrics(object = sps_rplc_sample_1,
+    metrics = qualityMetrics(sps_rplc_sample_1),
+    relativeTo = "previous", msLevel = 1L)
+metrics_rplc_sps_previous
 
 sps_hilic_sample_1 <- sps_l_hilic[[1]]
-metrics_hilic_sps <- calculateMetrics(object = sps_hilic_sample_1,
+metrics_hilic_sps_Q1 <- calculateMetrics(object = sps_hilic_sample_1,
     metrics = qualityMetrics(sps_hilic_sample_1),
-    params = list(relativeTo = c("Q1", "previous")))
-metrics_hilic_sps
+    relativeTo = "Q1")
+metrics_hilic_sps_Q1
+metrics_hilic_sps_previous <- calculateMetrics(object = sps_hilic_sample_1,
+    metrics = qualityMetrics(sps_hilic_sample_1),
+    relativeTo = "previous")
+metrics_hilic_sps_previous
 ```
 
 Alternatively, an `MsExperiment` object might be passed to 
@@ -378,12 +383,12 @@ msexp_hilic_subset <- msexp_hilic[, 1:50]
 ## for RPLC-derived MsExperiment
 metrics_rplc_msexp <- calculateMetrics(object = msexp_rplc_subset,
     metrics = qualityMetrics(msexp_rplc_subset),
-    params = list(relativeTo = c("Q1", "previous"), MSLevel = 1L))
+    relativeTo = "Q1", msLevel = 1L)
 
 ## for HILIC-derived MsExperiment
 metrics_hilic_msexp <- calculateMetrics(object = msexp_hilic_subset,
     metrics = qualityMetrics(msexp_hilic_subset),
-    params = list(relativeTo = c("Q1", "previous")))
+    relativeTo = "Q1")
 ```
 
 When passing an `MsExperiment` object to `calculateMetrics` a `data.frame`
