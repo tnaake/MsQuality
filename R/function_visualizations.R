@@ -266,8 +266,8 @@ plotMetric_tibble <- function(qc, metric) {
 #' }
 shinyMsQuality <- function(qc) {
     
-    if (!is.matrix(qc)) stop("qc is not a matrix")
-    if (!is.numeric(qc)) stop("qc has to be numeric")
+    if (!is.matrix(qc)) stop("'qc' is not a matrix")
+    if (!is.numeric(qc)) stop("'qc' has to be numeric")
 
     metrics <- stringr::str_split(colnames(qc), 
                                         pattern = "_", simplify = TRUE)[, 1]
