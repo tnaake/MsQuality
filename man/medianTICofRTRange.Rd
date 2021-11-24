@@ -5,12 +5,14 @@
 \title{Median of TIC values in the shortest RT range in which half of the 
 peptides are identified (QC:4000132)}
 \usage{
-medianTICofRTRange(spectra, msLevel = 1L)
+medianTICofRTRange(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

@@ -4,12 +4,14 @@
 \alias{rtIQR}
 \title{Interquartile RT period for peptide identifications (QC:4000072)}
 \usage{
-rtIQR(spectra, msLevel = 1L)
+rtIQR(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

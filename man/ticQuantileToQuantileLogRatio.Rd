@@ -5,18 +5,16 @@
 \title{MS1 quantile TIC change ratio to Quantile 1 (QC:4000057) or to 
 previous quantile (QC:4000058)}
 \usage{
-ticQuantileToQuantileLogRatio(
-  spectra,
-  relativeTo = c("Q1", "previous"),
-  msLevel = 1L
-)
+ticQuantileToQuantileLogRatio(spectra, relativeTo = "Q1", msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{relativeTo}{`character`}
+\item{relativeTo}{`character(1)`, one of `"Q1"` or `"previous"`}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

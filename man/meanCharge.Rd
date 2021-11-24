@@ -12,12 +12,14 @@ The metric is calculated as follows:
 
 (3) the mean of the precursor charge values is calculated and returned.}
 \usage{
-meanCharge(spectra, msLevel = 1L)
+meanCharge(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

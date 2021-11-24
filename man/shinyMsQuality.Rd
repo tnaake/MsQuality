@@ -7,7 +7,8 @@
 shinyMsQuality(qc)
 }
 \arguments{
-\item{qc}{`data.frame`}
+\item{qc}{`matrix`, contains the calculated quality metrics, the columns
+contain the metrics and the rows the samples}
 }
 \value{
 `shiny`

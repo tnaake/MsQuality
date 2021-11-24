@@ -4,14 +4,16 @@
 \alias{msSignal10XChange}
 \title{MS1 signal jump/fall (10x) count (QC:4000172/QC:4000173)}
 \usage{
-msSignal10XChange(spectra, change = c("jump", "fall"), msLevel = 1L)
+msSignal10XChange(spectra, change = "jump", msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{change}{`character`, one of `"jump"` or `"fall"`}
+\item{change}{`character(1)`, one of `"jump"` or `"fall"`}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

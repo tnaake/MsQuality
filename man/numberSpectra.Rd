@@ -4,12 +4,14 @@
 \alias{numberSpectra}
 \title{Number of MS1/MS2 spectra (QC:4000059/QC:4000060)}
 \usage{
-numberSpectra(spectra, msLevel = 1L)
+numberSpectra(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

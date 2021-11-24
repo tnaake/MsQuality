@@ -4,12 +4,14 @@
 \alias{rtAcquisitionRange}
 \title{Retention time acquisition range (QC:4000139)}
 \usage{
-rtAcquisitionRange(spectra, msLevel = 1L)
+rtAcquisitionRange(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(2)`

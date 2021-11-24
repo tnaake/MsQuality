@@ -5,12 +5,14 @@
 \title{Median of TIC values in the RT range in which the middle half of 
 peptides are identified (QC:4000130)}
 \usage{
-medianTICRTIQR(spectra, msLevel = 1L)
+medianTICRTIQR(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

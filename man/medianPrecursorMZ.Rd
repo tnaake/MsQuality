@@ -4,12 +4,14 @@
 \alias{medianPrecursorMZ}
 \title{Precursor median m/z for IDs (QC:4000065)}
 \usage{
-medianPrecursorMZ(spectra, msLevel = 1L)
+medianPrecursorMZ(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

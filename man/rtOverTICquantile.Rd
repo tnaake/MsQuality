@@ -4,7 +4,13 @@
 \alias{rtOverTICquantile}
 \title{RT over TIC quantile (QC:4000054)}
 \usage{
-rtOverTICquantile(spectra, probs = seq(0, 1, 0.25), msLevel = 1L, ...)
+rtOverTICquantile(
+  spectra,
+  probs = seq(0, 1, 0.25),
+  msLevel = 1L,
+  relative = TRUE,
+  ...
+)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
@@ -12,7 +18,10 @@ rtOverTICquantile(spectra, probs = seq(0, 1, 0.25), msLevel = 1L, ...)
 \item{probs}{`numeric` defining the quantiles. See [stats::quantile()] for
 details. Defaults to `probs = seq(0, 1, 0.25)`.}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{relative}{`logical`, if set to `TRUE` the relative retention time 
+will be returned instead of the abolute retention time}
 
 \item{...}{additional arguments passed to [stats::quantile()].}
 }
@@ -36,10 +45,11 @@ The metric is calculated as follows:
 when `probs` is set to `c(0, 0.25, 0.5, 0.75, 1)` the 0%, 25%, 50%, 75% and
 100% quantile is calculated,
 
-(4) the relative retention time (retention time divided by the total 
-run time taking into account the minimum retention time) is calculated,
+(4) the retention time/relative retention time (retention time divided by 
+the total run time taking into account the minimum retention time) is 
+calculated,
 
-(5) the relative duration of the LC run after which the cumulative
+(5) the (relative) duration of the LC run after which the cumulative
 }
 \details{
 is_a: QC:4000004 ! n-tuple

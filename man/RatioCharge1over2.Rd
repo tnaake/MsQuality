@@ -5,12 +5,14 @@
 \title{Charged peptides ratio 1+ over 2+ (QC:4000174) or 
 Charged spectra ratio 1+ over 2+ (QC:4000179)}
 \usage{
-ratioCharge1over2(spectra, msLevel = 1L)
+ratioCharge1over2(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

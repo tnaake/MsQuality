@@ -4,12 +4,14 @@
 \alias{mzAcquisitionRange}
 \title{m/z acquisition range (QC:4000138)}
 \usage{
-mzAcquisitionRange(spectra, msLevel = 1L)
+mzAcquisitionRange(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(2)`

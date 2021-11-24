@@ -4,12 +4,14 @@
 \alias{rtIQRrate}
 \title{Peptide identification rate of the interquartile RT period (QC:4000073)}
 \usage{
-rtIQRrate(spectra, msLevel = 1L)
+rtIQRrate(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(2)`

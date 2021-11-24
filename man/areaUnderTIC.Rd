@@ -4,12 +4,14 @@
 \alias{areaUnderTIC}
 \title{Area under TIC (QC:4000077)}
 \usage{
-areaUnderTIC(spectra, msLevel = 1L)
+areaUnderTIC(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

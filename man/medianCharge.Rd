@@ -5,12 +5,14 @@
 \title{Median charge in identified spectra (QC:4000178) or median
 precursor charge in all MS2 (QC:4000183)}
 \usage{
-medianCharge(spectra, msLevel = 1L)
+medianCharge(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

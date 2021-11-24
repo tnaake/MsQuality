@@ -4,10 +4,12 @@
 \alias{rtDuration}
 \title{RT duration (QC:4000053)}
 \usage{
-rtDuration(spectra)
+rtDuration(spectra, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

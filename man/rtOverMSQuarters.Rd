@@ -4,12 +4,14 @@
 \alias{rtOverMSQuarters}
 \title{MS1/MS2 quantiles RT fraction (QC:4000055/QC:4000056)}
 \usage{
-rtOverMSQuarters(spectra, msLevel = 1L)
+rtOverMSQuarters(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(4)`

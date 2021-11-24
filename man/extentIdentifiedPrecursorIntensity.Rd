@@ -4,12 +4,14 @@
 \alias{extentIdentifiedPrecursorIntensity}
 \title{Extent of identified precursor intensity (QC:4000125)}
 \usage{
-extentIdentifiedPrecursorIntensity(spectra, msLevel = 1L)
+extentIdentifiedPrecursorIntensity(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

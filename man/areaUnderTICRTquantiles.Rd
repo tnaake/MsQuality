@@ -4,12 +4,14 @@
 \alias{areaUnderTICRTquantiles}
 \title{Area under TIC RT quantiles (QC:4000078)}
 \usage{
-areaUnderTICRTquantiles(spectra, msLevel = 1L)
+areaUnderTICRTquantiles(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(4)`

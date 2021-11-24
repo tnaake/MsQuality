@@ -6,12 +6,14 @@
 Identified precursor intensity distribution mean (QC:4000229), or
 Unidentified precursor intensity distribution mean (QC:4000234)}
 \usage{
-precursorIntensityMean(spectra, msLevel = 1L)
+precursorIntensityMean(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`

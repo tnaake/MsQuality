@@ -4,12 +4,14 @@
 \alias{precursorIntensityRange}
 \title{Precursor intensity range (QC:4000144)}
 \usage{
-precursorIntensityRange(spectra, msLevel = 1)
+precursorIntensityRange(spectra, msLevel = 1, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(2)`

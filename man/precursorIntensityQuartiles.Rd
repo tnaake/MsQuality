@@ -6,12 +6,14 @@
 Identified precursor intensity distribution Q1, Q2, Q3 (QC:4000228), or
 Unidentified precursor intensity distribution Q1, Q2, Q3 (QC:4000233)}
 \usage{
-precursorIntensityQuartiles(spectra, msLevel = 1L)
+precursorIntensityQuartiles(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{msLevel}{`integer(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(3)`
