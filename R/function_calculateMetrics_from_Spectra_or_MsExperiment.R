@@ -15,8 +15,8 @@
 #' @param spectra `Spectra` object
 #' @param metrics `character` specifying the quality metrics to be calculated
 #' on `mse`
-#' @param params `list` containing parameters passed to the quality metrics
-#' functions defined in `metrics`
+#' @param ... arguments passed to the quality metrics functions defined in 
+#' `metrics`
 #' 
 #' @return named `numeric` vector
 #' 
@@ -36,18 +36,17 @@
 #' 
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
-#' 
-#' ## additional parameters passed to the quality metrics functions
-#' ## (MsLevel is an argument of areaUnderTIC and msSignal10XChange,
-#' ## relativeTo is an argument of msSignal10XChange)
-#' params_l <- list(MsLevel = 1, relativeTo = c("Q1", "previous"), 
-#'     change = c("jump", "fall"))
 #'     
 #' ## calculate the metrics
+#' ## additional parameters passed to the quality metrics functions
+#' ## (MsLevel is an argument of areaUnderTIC and msSignal10XChange,
+#' ## relativeTo is an argument of msSignal10XChange) passed to ...
 #' calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
-#'     params = params_l)
+#'     msLevel = 1, change = "jump", relativeTo = "Q1")
+#' calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
+#'     msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromSpectra <- function(spectra, 
-    metrics = qualityMetrics(spectra), params = list()) {
+    metrics = qualityMetrics(spectra), ...) {
     
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(spectra), throw an error if there are metrics that 
@@ -56,82 +55,27 @@ calculateMetricsFromSpectra <- function(spectra,
         several.ok = TRUE)
     
     if(!is(spectra, "Spectra")) stop("spectra is not of class 'Spectra'")
-    if (any(duplicated(names(params)))) stop("params contains duplicated names")
+    ##if (any(duplicated(names(params)))) stop("params contains duplicated names")
+    
+    dots <- list(...)
     
     ## prepare the argument for the metric functions by writing spectra to a 
     ## list
     sp_l <- list(spectra = spectra)
     
+    args <- c(sp_l, dots)
+    
     ## calculate the metrics (using all metrics defined in metrics) using the
     ## spectra object
     ## lapply is the outer loop that iterates through the functions `metrics`
     metrics_vals <- lapply(seq_along(metrics), function(i) {
-        
-        formals_i <- formals(metrics[i])
-        
-        ## how to deal with different arguments for some of the functions? (1-4)
-        ## use all parameter combinations from params that fit to the function:
-        ## 1) check if parameters in params are in formals of the metric 
-        ## function, update the list entry for these paramters
-        params_i <- params[names(params) %in% names(formals_i)]
-        inds <- match(names(formals_i), names(params_i))
-        inds <- inds[!is.na(inds)]
-        formals_i[names(formals_i) %in% names(params_i)] <- params_i[inds]
-        
-        ## 2) when there are calls/language types in formals_i, i.e. if there
-        ## are several options for the arguments defined, take all the 
-        ## options, e.g. if we have function(a = c(1:3)), we will  
-        ## continue with a = 1:3, NB: this is not the case if we have specified
-        ## the arguments within params
-        formals_i <- lapply(formals_i, function(x)
-            if (is.call(x)) {eval(x)} else {x})
-        
-        ## 3) remove the type of arguments that are refObject, this will be 
-        ## for instance the spectra argument
-        inds_remove <- unlist(lapply(formals_i, function(x) is(x, "refObject")))
-        formals_i <- formals_i[!inds_remove]
-        
-        ## 4) use all parameter combinations defined in formals_i and create a
-        ## grid
-        params_i <- expand.grid(formals_i, stringsAsFactors = FALSE)
-        
-        ## in case there are no further parameters for the function metrics[i]:
-        if (nrow(params_i) == 0) {
-            metric_i_j <- do.call(metrics[i], args = sp_l)
-            names_metric <- metrics[i]
-            
-            ## in case there are further parameters for the function metrics[i]:
-        } else {
-            ## iterate through the parameter combinations and return the values
-            metric_i_j <- apply(params_i, 1, function(j) {
-                args_l <- append(sp_l, as.list(j))
-                do.call(metrics[i], args = args_l)
-            }, simplify = FALSE)
-            
-            ## iterate trough the parameter combinations and return the names
-            names_metric <- apply(params_i, 1, function(j) {
-                paste(c(metrics[i], paste0(names(j), j)), collapse = "_")
-            })
-        }
-        
-        if (is(metric_i_j, "list")) {
-            names_metric <- lapply(seq_along(names_metric), function(j) {
-                if (length(names(metric_i_j[[j]])) > 0) {
-                    paste(names_metric[j], names(metric_i_j[[j]]), sep = "_")
-                } else {
-                    paste(names_metric[j])
-                }
-            })
-            names_metric <- unlist(names_metric)
-            metric_i_j <- unlist(metric_i_j)
-            
-        }
-
-        names(metric_i_j) <- names_metric
-
-        return(metric_i_j)
+        do.call(metrics[i], args)
     })
-    unlist(metrics_vals)
+    names(metrics_vals) <- metrics
+    metrics_vals <- unlist(metrics_vals)
+    attributes(metrics_vals) <- c(attributes(metrics_vals), dots)
+    metrics_vals
+    
 }
 
 #' @name calculateMetricsFromMsExperiment
@@ -152,8 +96,8 @@ calculateMetricsFromSpectra <- function(spectra,
 #' @param msexp `MsExperiment` object
 #' @param metrics `character` specifying the quality metrics to be calculated
 #' on `mse`
-#' @param params `list` containing parameters passed to the quality metrics
-#' functions defined in `metrics`
+#' @param ... arguments passed to the quality metrics functions defined in 
+#' `metrics`
 #' 
 #' @return `data.frame` containing in the columns the metrics for the 
 #' different spectra (in rows)
@@ -196,17 +140,16 @@ calculateMetricsFromSpectra <- function(spectra,
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
 #' 
+#' ## calculate the metrics
 #' ## additional parameters passed to the quality metrics functions
 #' ## (MsLevel is an argument of areaUnderTIC and msSignal10XChange,
-#' ## relativeTo is an argument of msSignal10XChange)
-#' params_l <- list(MsLevel = 1, relativeTo = c("Q1", "previous"), 
-#'     change = c("jump", "fall"))
-#'     
-#' ## calculate the metrics
+#' ## relativeTo is an argument of msSignal10XChange) passed to ...
 #' calculateMetricsFromMsExperiment(msexp = mse, metrics = metrics, 
-#'     params = params_l)
+#'     msLevel = 1, change = "jump", relativeTo = "Q1")
+#' calculateMetricsFromMsExperiment(msexp = mse, metrics = metrics, 
+#'     msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromMsExperiment <- function(msexp, 
-    metrics = qualityMetrics(msexp), params = list()) {
+    metrics = qualityMetrics(msexp), ...) {
     
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(mse), throw an error if there are metrics that 
@@ -226,8 +169,8 @@ calculateMetricsFromMsExperiment <- function(msexp,
     ## the lapply loop returns list containing named numeric vectors
     mse_metrics <- lapply(seq_len(nsample), function(i) {
         spectra_i <- ProtGenerics::spectra(msexp[, i])
-        calculateMetricsFromSpectra(spectra = spectra_i, metrics = metrics, 
-                                    params = params)
+        calculateMetricsFromSpectra(spectra = spectra_i, 
+            metrics = metrics, ...)
     })
     df <- do.call("rbind", mse_metrics)
     rownames(df) <- rownames(sD)
@@ -252,8 +195,8 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #' @param object `Spectra` or `MsExperiment` object
 #' @param metrics `character` specifying the quality metrics to be calculated
 #' on `mse`
-#' @param params `list` containing parameters passed to the quality metrics
-#' functions defined in `metrics`
+#' @param ... arguments passed to the quality metrics functions defined in 
+#' `metrics`
 #' 
 #' @return named `numeric` vector (if `object` is a `Spectra` object) or 
 #' `data.frame` containing in the columns the metrics for the 
@@ -275,18 +218,17 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #' 
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
-#' 
+#'     
+#' #' ## calculate the metrics
 #' ## additional parameters passed to the quality metrics functions
 #' ## (MsLevel is an argument of areaUnderTIC and msSignal10XChange,
-#' ## relativeTo is an argument of msSignal10XChange)
-#' params_l <- list(MsLevel = 1, relativeTo = c("Q1", "previous"), 
-#'     change = c("jump", "fall"))
-#'     
-#' ## calculate the metrics
+#' ## relativeTo is an argument of msSignal10XChange) passed to ...
 #' calculateMetrics(object = spectra, metrics = metrics, 
-#'     params = params_l)
+#'     msLevel = 1, change = "jump", relativeTo = "Q1")
+#' calculateMetrics(object = spectra, metrics = metrics, 
+#'     msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetrics <- function(object, 
-        metrics = qualityMetrics(object), params = list()) {
+        metrics = qualityMetrics(object), ...) {
     
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(object), throw an error if there are metrics that 
@@ -296,12 +238,12 @@ calculateMetrics <- function(object,
     
     if (is(object, "Spectra")) {
         metrics_vals <- calculateMetricsFromSpectra(spectra = object, 
-            metrics = metrics, params = params)
+            metrics = metrics, ...)
     }
     
     if (is(object, "MsExperiment")) {
         metrics_vals <- calculateMetricsFromMsExperiment(msexp = object,
-            metrics = metrics, params = params)
+            metrics = metrics, ...)
     }
     
     metrics_vals
