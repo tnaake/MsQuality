@@ -37,6 +37,8 @@ Can be used to approximate the dynamic range of signal
 is_a: QC:4000003 ! single value
 is_a: QC:4000009 ! ID based
 is_a: QC:4000001 ! QC metric
+
+Precursor intensity values that are `NA` are removed.
 }
 \note{
 The `Spectra` object might contain features that were not identified. If

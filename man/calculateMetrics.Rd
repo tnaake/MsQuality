@@ -39,12 +39,12 @@ fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
 spectra <- Spectra(fls, backend = MsBackendMzR())
 
 ## define the quality metrics to be calculated
-metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
+metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
     
 #' ## calculate the metrics
 ## additional parameters passed to the quality metrics functions
-## (MsLevel is an argument of areaUnderTIC and msSignal10XChange,
-## relativeTo is an argument of msSignal10XChange) passed to ...
+## (MsLevel is an argument of areaUnderTic and msSignal10xChange,
+## relativeTo is an argument of msSignal10xChange) passed to ...
 calculateMetrics(object = spectra, metrics = metrics, 
     msLevel = 1, change = "jump", relativeTo = "Q1")
 calculateMetrics(object = spectra, metrics = metrics, 
