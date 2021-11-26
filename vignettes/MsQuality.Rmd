@@ -202,14 +202,14 @@ calculated for both `Spectra` and `MsExperiment` objects.
 - *rtDuration*, **RT duration** (QC:4000053), 
   "The retention time duration of the MS run in seconds, similar to the 
   highest scan time minus the lowest scan time." [PSI:QC];
-- *rtOverTICquantile*, **RT over TIC quantile** (QC:4000054), 
+- *rtOverTicQuantile*, **RT over TIC quantile** (QC:4000054), 
   "The interval when the respective quantile of the TIC accumulates divided by 
   retention time duration. The number of quantiles observed is given by the 
   size of the tuple." [PSI:QC];
-- *rtOverMSQuarters*, **MS1 quantiles RT fraction** (QC:4000055), 
+- *rtOverMsQuarters*, **MS1 quantiles RT fraction** (QC:4000055), 
   "The interval used for acquisition of the first, second, third, and fourth 
   quarter of all MS1 events divided by RT-Duration." [PSI:QC];
-- *rtOverMSQuarters*, **MS1/MS2 quantiles RT fraction** (QC:4000055), 
+- *rtOverMsQuarters*, **MS1/MS2 quantiles RT fraction** (QC:4000055), 
   "The interval used for acquisition of the first, second, third, and fourth 
   quarter of all MS2 events divided by RT-Duration." [PSI:QC];
 - *ticQuantileToQuantileLogRatio*,
@@ -224,17 +224,17 @@ calculated for both `Spectra` and `MsExperiment` objects.
   "The number of MS1 events in the run." [PSI:QC];
 - *numberSpectra*, **Number of MS2 spectra** (QC:4000060), 
   "The number of MS2 events in the run." [PSI:QC];
-- *medianPrecursorMZ*, **Precursor median m/z for IDs** (QC:4000065), 
+- *medianPrecursorMz*, **Precursor median m/z for IDs** (QC:4000065), 
   "Median m/z value for all identified peptides (unique ions) after 
   FDR." [PSI:QC];
-- *rtIQR*, **Interquartile RT period for peptide identifications** (QC:4000072),
+- *rtIqr*, **Interquartile RT period for peptide identifications** (QC:4000072),
   "The interquartile retention time period, in seconds, for all peptide 
   identifications over the complete run." [PSI:QC];
-- *rtIQRrate*, **Peptide identification rate of the interquartile RT period**
+- *rtIqrRate*, **Peptide identification rate of the interquartile RT period**
   (QC:4000073), 
   "The identification rate of peptides for the interquartile retention time 
   period, in peptides per second." [PSI:QC];
-- *areaUnderTIC*, **Area under TIC** (QC:4000077),
+- *areaUnderTic*, **Area under TIC** (QC:4000077),
   "The area under the total ion chromatogram." [PSI:QC];
 - *areaUnderTICRTquantiles*, **Area under TIC RT quantiles** (QC:4000078),
   "The area under the total ion chromatogram of the retention time quantiles. 
@@ -243,11 +243,11 @@ calculated for both `Spectra` and `MsExperiment` objects.
   **Extent of identified precursor intensity** (QC:4000125),
   "Ratio of 95th over 5th percentile of precursor intensity for identified 
   peptides" [PSI:QC];
-- *medianTICRTIQR*, **Median of TIC values in the RT range in which the middle 
+- *medianTicRtIqr*, **Median of TIC values in the RT range in which the middle 
   half of peptides are identified** (QC:4000130),
   "Median of TIC values in the RT range in which half of peptides are 
   identified (RT values of Q1 to Q3 of identifications)" [PSI:QC];
-- *medianTICofRTRange*, **Median of TIC values in the shortest RT range in 
+- *medianTicOfRtRange*, **Median of TIC values in the shortest RT range in 
   which half of the peptides are identified** (QC:4000132),
   "Median of TIC values in the shortest RT range in which half of the 
   peptides are identified"  [PSI:QC] 
@@ -278,19 +278,19 @@ calculated for both `Spectra` and `MsExperiment` objects.
 - *precursorIntensityMean*, **Unidentified precursor intensity distribution 
   mean** (QC:4000234), "From the distribution of unidentified precursor 
   intensities, the mean" [PSI:QC];
-- *precursorIntensitySD*, **Precursor intensity distribution sigma**
+- *precursorIntensitySd*, **Precursor intensity distribution sigma**
   (QC:4000169), "From the distribution of precursor intensities, the sigma 
   value." [PSI:QC];
-- *precursorIntensitySD*, **Identified precursor intensity distribution sigma**
+- *precursorIntensitySd*, **Identified precursor intensity distribution sigma**
   (QC:4000230), "From the distribution of identified precursor intensities, 
   the sigma value" [PSI:QC];
 - *precursorIntensitySD*, **Unidentified precursor intensity distribution 
   sigma** (QC:400235), "From the distribution of unidentified precursor 
   intensities, the sigma value" [PSI:QC];
-- *msSignal10XChange*, **MS1 signal jump (10x) count** (QC:4000172),
+- *msSignal10xChange*, **MS1 signal jump (10x) count** (QC:4000172),
   "The count of MS1 signal jump (spectra sum) by a factor of ten or more (10x)
   between two subsequent scans" [PSI:QC];
-- *msSignal10XChange*, **MS1 signal fall (10x) count** (QC:4000173),
+- *msSignal10xChange*, **MS1 signal fall (10x) count** (QC:4000173),
   "The count of MS1 signal decline (spectra sum) by a factor of ten or more 
   (10x) between two subsequent scans" [PSI:QC];
 - *RatioCharge1over2*, **Charged peptides ratio 1+ over 2+** (QC:4000174),
@@ -430,7 +430,7 @@ the differnt retention time quantiles and could indicate drifts or
 interruptions of sensitivity during the run.
 
 ```{r}
-plotMetric(qc = metrics_msexp, metric = "areaUnderTICRTquantiles")
+plotMetric(qc = metrics_msexp, metric = "areaUnderTicRtQuantiles")
 ```
 
 Alternatively, to browse through all metrics that were calculated, we can use

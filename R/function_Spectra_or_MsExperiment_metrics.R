@@ -42,27 +42,27 @@
 qualityMetrics <- function(object) {
     if (is(object, "Spectra"))
         .metrics <- c(
-            "rtDuration", "rtOverTICquantile", "rtOverMSQuarters",
+            "rtDuration", "rtOverTicQuantile", "rtOverMsQuarters",
             "ticQuantileToQuantileLogRatio", "numberSpectra", 
-            "medianPrecursorMZ", "rtIQR", "rtIQRrate", "areaUnderTIC", 
-            "areaUnderTICRTquantiles", "extentIdentifiedPrecursorIntensity",
-            "medianTICRTIQR", "medianTICofRTRange", "mzAcquisitionRange",
+            "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic", 
+            "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity",
+            "medianTicRtIqr", "medianTicOfRtRange", "mzAcquisitionRange",
             "rtAcquisitionRange", "precursorIntensityRange", 
             "precursorIntensityQuartiles", "precursorIntensityMean",
-            "precursorIntensitySD", "msSignal10XChange", "ratioCharge1over2", 
+            "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2", 
             "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
             "medianCharge"
         )
     if (is(object, "MsExperiment"))
         .metrics <-  c(
-            "rtDuration", "rtOverTICquantile", "rtOverMSQuarters",
+            "rtDuration", "rtOverTicQuantile", "rtOverMsQuarters",
             "ticQuantileToQuantileLogRatio", "numberSpectra", 
-            "medianPrecursorMZ", "rtIQR", "rtIQRrate", "areaUnderTIC", 
-            "areaUnderTICRTquantiles", "extentIdentifiedPrecursorIntensity", 
-            "medianTICRTIQR", "medianTICofRTRange", "mzAcquisitionRange",
+            "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic", 
+            "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity", 
+            "medianTicRtIqr", "medianTicOfRtRange", "mzAcquisitionRange",
             "rtAcquisitionRange", "precursorIntensityRange", 
             "precursorIntensityQuartiles", "precursorIntensityMean",
-            "precursorIntensitySD", "msSignal10XChange", "ratioCharge1over2", 
+            "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2", 
             "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
             "medianCharge"
         )

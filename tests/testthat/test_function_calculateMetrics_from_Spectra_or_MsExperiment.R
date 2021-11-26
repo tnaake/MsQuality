@@ -23,8 +23,8 @@ spectra(mse) <- spectra
 
 ## build the results
 ## define the quality metrics to be calculated
-metrics <- c("rtDuration", "rtOverTICquantile", "ticQuantileToQuantileLogRatio",
-    "numberSpectra", "areaUnderTIC", "msSignal10XChange")
+metrics <- c("rtDuration", "rtOverTicQuantile", "ticQuantileToQuantileLogRatio",
+    "numberSpectra", "areaUnderTic", "msSignal10xChange")
 
 ## calculate the metrics from MsExperiment
 ## additional parameters passed to the quality metrics functions
@@ -45,13 +45,13 @@ suppressWarnings(metrics_mse_wrapper <- calculateMetrics(object = mse,
     metrics = metrics, msLevel = 1, relativeTo = "Q1", change = "jump"))
 
 ## START unit test calculateMetricsFromMsExperiment ## 
-colnames_metrics_mse <- c("rtDuration", "rtOverTICquantile.0%",                  
-    "rtOverTICquantile.25%", "rtOverTICquantile.50%",
-    "rtOverTICquantile.75%", "rtOverTICquantile.100%",
+colnames_metrics_mse <- c("rtDuration", "rtOverTicQuantile.0%",                  
+    "rtOverTicQuantile.25%", "rtOverTicQuantile.50%",
+    "rtOverTicQuantile.75%", "rtOverTicQuantile.100%",
     "ticQuantileToQuantileLogRatio.Q2/Q1",
     "ticQuantileToQuantileLogRatio.Q3/Q1",
     "ticQuantileToQuantileLogRatio.Q4/Q1",
-    "numberSpectra", "areaUnderTIC", "msSignal10XChange")
+    "numberSpectra", "areaUnderTic", "msSignal10xChange")
 test_that("calculateMetricsFromMsExperiment", {
     expect_equal(dim(metrics_mse), c(2, 12))
     expect_equal(rownames(metrics_mse), NULL)
@@ -67,7 +67,7 @@ test_that("calculateMetricsFromMsExperiment", {
         metrics = "ticQuantileToQuantileLogRatio", 
         relativeTo = c("Q1", "previous")), "'relativeTo' has to be of length 1")
     expect_error(calculateMetricsFromMsExperiment(mse, 
-        metrics = "msSignal10XChange", change = c("jump", "fall")), 
+        metrics = "msSignal10xChange", change = c("jump", "fall")), 
         "'change' has to be of length 1")
 })
 ## END unit test calculateMetricsFromMsExperiment
@@ -96,7 +96,7 @@ test_that("calculateMetricsFromSpectra", {
         metrics = "ticQuantileToQuantileLogRatio",
         relativeTo = c("Q1", "previous")), "'relativeTo' has to be of length 1")
     expect_error(calculateMetricsFromSpectra(spectra, 
-        metrics = "msSignal10XChange", change = c("jump", "fall")), 
+        metrics = "msSignal10xChange", change = c("jump", "fall")), 
         "'change' has to be of length 1")
 })
 ## END unit test calculateMetricsFromSpectra ##

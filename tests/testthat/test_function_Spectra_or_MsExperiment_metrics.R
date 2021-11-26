@@ -31,22 +31,22 @@ library(Spectra)
 spectra(mse) <- Spectra(fls, backend = MsBackendMzR())
 
 
-qm_spectra <- c("rtDuration", "rtOverTICquantile", "rtOverMSQuarters",
-    "ticQuantileToQuantileLogRatio", "numberSpectra", "medianPrecursorMZ", 
-    "rtIQR", "rtIQRrate", "areaUnderTIC", "areaUnderTICRTquantiles", 
-    "extentIdentifiedPrecursorIntensity", "medianTICRTIQR", 
-    "medianTICofRTRange", "mzAcquisitionRange", "rtAcquisitionRange", 
+qm_spectra <- c("rtDuration", "rtOverTicQuantile", "rtOverMsQuarters",
+    "ticQuantileToQuantileLogRatio", "numberSpectra", "medianPrecursorMz", 
+    "rtIqr", "rtIqrRate", "areaUnderTic", "areaUnderTicRtQuantiles", 
+    "extentIdentifiedPrecursorIntensity", "medianTicRtIqr", 
+    "medianTicOfRtRange", "mzAcquisitionRange", "rtAcquisitionRange", 
     "precursorIntensityRange", "precursorIntensityQuartiles", 
-    "precursorIntensityMean", "precursorIntensitySD", "msSignal10XChange", 
+    "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange", 
     "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
     "medianCharge")
-qm_mse <- c("rtDuration", "rtOverTICquantile", "rtOverMSQuarters",
-    "ticQuantileToQuantileLogRatio", "numberSpectra", "medianPrecursorMZ", 
-    "rtIQR", "rtIQRrate", "areaUnderTIC", "areaUnderTICRTquantiles", 
-    "extentIdentifiedPrecursorIntensity", "medianTICRTIQR", 
-    "medianTICofRTRange", "mzAcquisitionRange", "rtAcquisitionRange", 
+qm_mse <- c("rtDuration", "rtOverTicQuantile", "rtOverMsQuarters",
+    "ticQuantileToQuantileLogRatio", "numberSpectra", "medianPrecursorMz", 
+    "rtIqr", "rtIqrRate", "areaUnderTic", "areaUnderTicRtQuantiles", 
+    "extentIdentifiedPrecursorIntensity", "medianTicRtIqr", 
+    "medianTicOfRtRange", "mzAcquisitionRange", "rtAcquisitionRange", 
     "precursorIntensityRange", "precursorIntensityQuartiles", 
-    "precursorIntensityMean", "precursorIntensitySD", "msSignal10XChange", 
+    "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange", 
     "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
     "medianCharge")
 

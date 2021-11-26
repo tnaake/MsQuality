@@ -61,7 +61,7 @@ rtDuration <- function(spectra, ...) {
     max(RT, na.rm = TRUE) - min(RT, na.rm = TRUE)
 }
 
-#' @name rtOverTICquantile
+#' @name rtOverTicQuantile
 #' 
 #' @title RT over TIC quantile (QC:4000054)
 #' 
@@ -140,15 +140,15 @@ rtDuration <- function(spectra, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' rtOverTICquantile(spectra = sps, msLevel = 2L)
-rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
+#' rtOverTicQuantile(spectra = sps, msLevel = 2L)
+rtOverTicQuantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
     msLevel = 1L, relative = TRUE, ...) {
     
     ## truncate spectra based on the MS level
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     ## order spectra according to increasing retention time
-    spectra <- .rt_order_spectra(spectra)
+    spectra <- .rtOrderSpectra(spectra)
     RT <- rtime(spectra)
 
     ## what is the (relative) duration of the LC run after which the cumulative
@@ -174,7 +174,7 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
 #' @title Order Spectra according to increasing retention time
 #' 
 #' @description 
-#' The function `.rt_order_spectra` orders the features in a `Spectra` object
+#' The function `.rtOrderSpectra` orders the features in a `Spectra` object
 #' according to the (increasing) retention time values. 
 #' 
 #' @details
@@ -210,8 +210,8 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
 #'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643))
 #' spd$rtime <- c(15.84, 9.44, 9.44)
 #' sps <- Spectra(spd)
-#' .rt_order_spectra(sps)
-.rt_order_spectra <- function(spectra) {
+#' .rtOrderSpectra(sps)
+.rtOrderSpectra <- function(spectra) {
     RT <- rtime(spectra)
     if (any(is.na(RT)))
         warning("missing retention time values. Will keep original ",
@@ -221,7 +221,7 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
     spectra
 }
 
-#' @name rtOverMSQuarters
+#' @name rtOverMsQuarters
 #' 
 #' @title MS1/MS2 quantiles RT fraction (QC:4000055/QC:4000056)
 #' 
@@ -294,8 +294,8 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
 #'     c(3.146, 61.611))
 #' spd$rtime <- c(9.44, 9.44, 15.84, 15.81)
 #' sps <- Spectra(spd)
-#' rtOverMSQuarters(spectra = sps, msLevel = 2L)
-rtOverMSQuarters <- function(spectra, msLevel = 1L, ...) {
+#' rtOverMsQuarters(spectra = sps, msLevel = 2L)
+rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
 
     ## we assume that with RT duration the mzQC consortium means the run time 
     ## of the whole run, including MS1 and MS2
@@ -307,7 +307,7 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L, ...) {
         stop("Spectra object does contain less than four spectra")
 
     ## order spectra according to increasing retention time
-    spectra <- .rt_order_spectra(spectra)
+    spectra <- .rtOrderSpectra(spectra)
     RT <- rtime(spectra)
     rtmin <- min(RT)
     
@@ -405,10 +405,10 @@ ticQuantileToQuantileLogRatio <- function(spectra, relativeTo = "Q1",
     
     spectra <- filterMsLevel(object = spectra, msLevel)    
     if (length(spectra) == 0)
-        stop("Spectra object does not contain any spectra")
+        stop("'spectra' does not contain any spectra")
     
     ## order spectra according to increasing retention time
-    spectra <- .rt_order_spectra(spectra)
+    spectra <- .rtOrderSpectra(spectra)
     
     ## create cumulative sum of tic/ionCount
     TIC <- ionCount(spectra)
@@ -488,11 +488,12 @@ ticQuantileToQuantileLogRatio <- function(spectra, relativeTo = "Q1",
 #' numberSpectra(spectra = sps, msLevel = 1L)
 #' numberSpectra(spectra = sps, msLevel = 2L)
 numberSpectra <- function(spectra, msLevel = 1L, ...) {  
-    length(filterMsLevel(object = spectra, msLevel))
+    spectra <- filterMsLevel(object = spectra, msLevel)
+    length(spectra)
 }
 
 
-#' @name medianPrecursorMZ
+#' @name medianPrecursorMz
 #' 
 #' @title Precursor median m/z for IDs (QC:4000065)
 #' 
@@ -515,7 +516,7 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
 #' is_a: QC:4000025 ! ion source metric
 #' 
 #' @note
-#' `medianPrecursorMZ` will calculate the *precursor* median m/z of all 
+#' `medianPrecursorMz` will calculate the *precursor* median m/z of all 
 #' Spectra within `spectra`. If the calculation needs be done according to
 #' *QC:4000065*, the `Spectra` object should be prepared accordingly, i.e.
 #' filtered with e.g. [filterPrecursorMz()] or subsetted to spectra with
@@ -554,18 +555,18 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorMz <- c(170.16, 170.16, 195.0876)
 #' sps <- Spectra(spd)
-#' medianPrecursorMZ(spectra = sps, msLevel = 2L)
-medianPrecursorMZ <- function(spectra, msLevel = 1L, ...) {  
+#' medianPrecursorMz(spectra = sps, msLevel = 2L)
+medianPrecursorMz <- function(spectra, msLevel = 1L, ...) {  
     spectra <- filterMsLevel(object = spectra, msLevel)
     if (length(spectra) == 0)
-        stop("Spectra object does not contain any spectra")
+        stop("'spectra' does not contain any spectra")
     
-    ################ FDR correction??????????? 
+    ## FDR correction??
     mz <- precursorMz(spectra)
     median(mz, na.rm = TRUE)
 }
 
-#' @name rtIQR
+#' @name rtIqr
 #' 
 #' @title Interquartile RT period for peptide identifications (QC:4000072)
 #' 
@@ -588,6 +589,8 @@ medianPrecursorMZ <- function(spectra, msLevel = 1L, ...) {
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000022 ! chromatogram metric
 #' 
+#' Retention time values that are `NA` are removed.
+#' 
 #' @note 
 #' The `Spectra` object might contain features that were not identified. If
 #' the calculation needs to be done according to *QC:4000072*, the 
@@ -595,7 +598,7 @@ medianPrecursorMZ <- function(spectra, msLevel = 1L, ...) {
 #' with identification data.
 #' 
 #' The stored retention time information in `spectra` might have a different
-#' unit than seconds. `rtIQR` will return the IQR based on the values stored
+#' unit than seconds. `rtIqr` will return the IQR based on the values stored
 #' in `spectra` and will not convert these values to seconds. 
 #' 
 #' @param spectra `Spectra` object
@@ -632,20 +635,21 @@ medianPrecursorMZ <- function(spectra, msLevel = 1L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' rtIQR(spectra = sps, msLevel = 2L)
-rtIQR <- function(spectra, msLevel = 1L, ...) {
+#' rtIqr(spectra = sps, msLevel = 2L)
+rtIqr <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)    
     if (length(spectra) == 0)
-        stop("Spectra object does not contain any spectra") 
+        stop("'spectra' does not contain any spectra") 
     
     ## get the retention time
-    RT <- rtime(spectra)
+    rt <- rtime(spectra)
     
-    ## IQR???, what is the unit for rtime, always seconds?? Usually yes.
-    IQR(RT, na.rm = TRUE)
+    ## remove the retention time values that are NA and return the interquartile 
+    ## range 
+    IQR(rt, na.rm = TRUE)
 }
 
-#' @name rtIQRrate
+#' @name rtIqrRate
 #' 
 #' @title Peptide identification rate of the interquartile RT period (QC:4000073)
 #' 
@@ -682,7 +686,7 @@ rtIQR <- function(spectra, msLevel = 1L, ...) {
 #' spectra with identification data.
 #' 
 #' The stored retention time information in `spectra` might have a different
-#' unit than seconds. `rtIQR` will return the IQR based on the values stored
+#' unit than seconds. `rtIqr` will return the IQR based on the values stored
 #' in `spectra` and will not convert these values to seconds. 
 #' 
 #' @param spectra `Spectra` object
@@ -719,14 +723,14 @@ rtIQR <- function(spectra, msLevel = 1L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' rtIQRrate(spectra = sps, msLevel = 2L)
-rtIQRrate <- function(spectra, msLevel = 1L, ...) {
+#' rtIqrRate(spectra = sps, msLevel = 2L)
+rtIqrRate <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)    
     if (length(spectra) == 0)
-        stop("Spectra object does not contain any spectra") 
+        stop("'spectra' does not contain any spectra") 
     
     ## order spectra according to increasing retention time
-    spectra <- .rt_order_spectra(spectra)
+    spectra <- .rtOrderSpectra(spectra)
     RT <- rtime(spectra)
     
     quantileRT <- quantile(RT, na.rm = TRUE)
@@ -741,10 +745,10 @@ rtIQRrate <- function(spectra, msLevel = 1L, ...) {
     
     ## divide the number of eluted features between the 25% and 75% quantile
     ## by the IQR to get the elution rate per second 
-    nFeatures / rtIQR(spectra, msLevel = msLevel)
+    nFeatures / rtIqr(spectra, msLevel = msLevel)
 }
 
-#' @name areaUnderTIC
+#' @name areaUnderTic
 #' 
 #' @title Area under TIC (QC:4000077)
 #' 
@@ -796,11 +800,11 @@ rtIQRrate <- function(spectra, msLevel = 1L, ...) {
 #'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' sps <- Spectra(spd)
-#' areaUnderTIC(spectra = sps, msLevel = 2L)
-areaUnderTIC <- function(spectra, msLevel = 1L, ...) {  
+#' areaUnderTic(spectra = sps, msLevel = 2L)
+areaUnderTic <- function(spectra, msLevel = 1L, ...) {  
     spectra <- filterMsLevel(object = spectra, msLevel)    
     if (length(spectra) == 0)
-        stop("Spectra object does not contain any spectra") 
+        stop("'spectra' does not contain any spectra") 
 
     TIC <- ionCount(spectra)
     
@@ -808,7 +812,7 @@ areaUnderTIC <- function(spectra, msLevel = 1L, ...) {
     sum(TIC, na.rm = TRUE)
 }
 
-#' @name areaUnderTICRTquantiles
+#' @name areaUnderTicRtQuantiles
 #' 
 #' @title Area under TIC RT quantiles (QC:4000078)
 #' 
@@ -875,37 +879,37 @@ areaUnderTIC <- function(spectra, msLevel = 1L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' areaUnderTICRTquantiles(spectra = sps, msLevel = 2L)
-areaUnderTICRTquantiles <- function(spectra, msLevel = 1L, ...) {
+#' areaUnderTicRtQuantiles(spectra = sps, msLevel = 2L)
+areaUnderTicRtQuantiles <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     if (length(spectra) == 0)
-        stop("Spectra object does not contain any spectra")
+        stop("'spectra' does not contain any spectra")
 
     ## order spectra according to increasing retention time
-    spectra <- .rt_order_spectra(spectra)
-    RT <- rtime(spectra)
+    spectra <- .rtOrderSpectra(spectra)
+    rt <- rtime(spectra)
     
-    quantileRT <- quantile(RT, na.rm = TRUE)
+    quantileRT <- quantile(rt, na.rm = TRUE)
     
-    TIC <- ionCount(spectra)
+    tic <- ionCount(spectra)
     
     ## get the TICs for the 1st, 2nd, 3rd, and 4th quartile
-    ticQ1 <- TIC[RT > quantileRT[["0%"]] & RT <= quantileRT[["25%"]]]
-    ticQ2 <- TIC[RT > quantileRT[["25%"]] & RT <= quantileRT[["50%"]]]
-    ticQ3 <- TIC[RT > quantileRT[["50%"]] & RT <= quantileRT[["75%"]]]
-    ticQ4 <- TIC[RT > quantileRT[["75%"]] & RT <= quantileRT[["100%"]]]
+    ticQ1 <- tic[rt > quantileRT[["0%"]] & rt <= quantileRT[["25%"]]]
+    ticQ2 <- tic[rt > quantileRT[["25%"]] & rt <= quantileRT[["50%"]]]
+    ticQ3 <- tic[rt > quantileRT[["50%"]] & rt <= quantileRT[["75%"]]]
+    ticQ4 <- tic[rt > quantileRT[["75%"]] & rt <= quantileRT[["100%"]]]
     
     ## sum the TICs (area) for the 1st, 2nd, 3rd, and 4th quartile
-    areaTICQ1 <- sum(ticQ1, na.rm = TRUE)
-    areaTICQ2 <- sum(ticQ2, na.rm = TRUE)
-    areaTICQ3 <- sum(ticQ3, na.rm = TRUE)
-    areaTICQ4 <- sum(ticQ4, na.rm = TRUE)
+    areaTicQ1 <- sum(ticQ1, na.rm = TRUE)
+    areaTicQ2 <- sum(ticQ2, na.rm = TRUE)
+    areaTicQ3 <- sum(ticQ3, na.rm = TRUE)
+    areaTicQ4 <- sum(ticQ4, na.rm = TRUE)
     
     ## return the summed TICs as a named vector
-    areaTIC <- c(areaTICQ1, areaTICQ2, areaTICQ3, areaTICQ4)
-    names(areaTIC) <- c("25%", "50%", "75%", "100%")
+    areaTic <- c(areaTicQ1, areaTicQ2, areaTicQ3, areaTicQ4)
+    names(areaTic) <- c("25%", "50%", "75%", "100%")
     
-    areaTIC
+    areaTic
 }
 
 #' @name extentIdentifiedPrecursorIntensity
@@ -933,6 +937,8 @@ areaUnderTICRTquantiles <- function(spectra, msLevel = 1L, ...) {
 #' is_a: QC:4000003 ! single value
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000001 ! QC metric
+#' 
+#' Precursor intensity values that are `NA` are removed.
 #' 
 #' @note 
 #' The `Spectra` object might contain features that were not identified. If
@@ -978,7 +984,7 @@ areaUnderTICRTquantiles <- function(spectra, msLevel = 1L, ...) {
 extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {  
     spectra <- filterMsLevel(object = spectra, msLevel)
     if (length(spectra) == 0)
-        stop("Spectra object does not contain any spectra") 
+        stop("'spectra' does not contain any spectra") 
   
     ## retrieve the precursorIntensity and calculate the 5% and 95% quantile
     precInt <- precursorIntensity(spectra)
@@ -988,7 +994,7 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {
     quantilePrecInt[["95%"]] / quantilePrecInt[["5%"]]
 }
 
-#' @name medianTICRTIQR
+#' @name medianTicRtIqr
 #' 
 #' @title Median of TIC values in the RT range in which the middle half of 
 #' peptides are identified (QC:4000130)
@@ -1017,7 +1023,7 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000001 ! QC metric
 #' 
-#' The function `medianTICrtIQR` uses the function [ionCount()] as an 
+#' The function `medianTicRtIqr` uses the function [ionCount()] as an 
 #' equivalent to the TIC.
 #' 
 #' @note 
@@ -1060,13 +1066,15 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' medianTICRTIQR(spectra = sps, msLevel = 2L)
-medianTICRTIQR <- function(spectra, msLevel = 1L, ...) {
+#' medianTicRtIqr(spectra = sps, msLevel = 2L)
+medianTicRtIqr <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
+    
     if (length(spectra) == 0)
-        stop("Spectra object does not contain any spectra") 
+        stop("'spectra' does not contain any spectra") 
+    
     ## order spectra according to increasing retention time
-    spectra <- .rt_order_spectra(spectra)
+    spectra <- .rtOrderSpectra(spectra)
     
     ## get the Q1 to Q3 of identifications 
     ## (half of peptides that are identitied)
@@ -1081,7 +1089,7 @@ medianTICRTIQR <- function(spectra, msLevel = 1L, ...) {
     median(ticQ1ToQ3, na.rm = TRUE)
 }
 
-#' @name medianTICofRTRange
+#' @name medianTicOfRtRange
 #' 
 #' @title Median of TIC values in the shortest RT range in which half of the 
 #' peptides are identified (QC:4000132)
@@ -1114,7 +1122,7 @@ medianTICRTIQR <- function(spectra, msLevel = 1L, ...) {
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000001 ! QC metric
 #' 
-#' The function `medianTICofRTRange` uses the function `ionCount` as an 
+#' The function `medianTicOfRtRange` uses the function `ionCount` as an 
 #' equivalent to the TIC.
 #' 
 #' @note 
@@ -1158,20 +1166,20 @@ medianTICRTIQR <- function(spectra, msLevel = 1L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' medianTICofRTRange(spectra = sps, msLevel = 2L)
-medianTICofRTRange <- function(spectra, msLevel = 1L, ...) {
+#' medianTicOfRtRange(spectra = sps, msLevel = 2L)
+medianTicOfRtRange <- function(spectra, msLevel = 1L, ...) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra") 
+        stop("'spectra' does not contain any spectra") 
     } 
     
     ## order spectra according to increasing retention time
-    spectra <- .rt_order_spectra(spectra)
-    RT <- ProtGenerics::rtime(spectra)
+    spectra <- .rtOrderSpectra(spectra)
+    rt <- rtime(spectra)
     
-    TIC <- ProtGenerics::ionCount(spectra)
+    tic <- ionCount(spectra)
     
     ## retrieve number of features in object and calculate the number for half
     ## of the features
@@ -1183,8 +1191,8 @@ medianTICofRTRange <- function(spectra, msLevel = 1L, ...) {
     ## calculate the RT range
     rangeRT <- lapply(seq_len(n_half + 1), function(i) {
         ind <- seq(i, i - 1 + n_half)
-        rt <- RT[ind]
-        max(rt) - min(rt)
+        rt_i <- rt[ind]
+        max(rt_i) - min(rt_i)
     })
     rangeRT <- unlist(rangeRT)
     
@@ -1192,8 +1200,8 @@ medianTICofRTRange <- function(spectra, msLevel = 1L, ...) {
     ## the median TIC
     indMin <- which.min(rangeRT)
     ind <- seq(indMin, indMin - 1 + n_half)
-    ticMin <- TIC[ind]
-    stats::median(ticMin, na.rm = TRUE)
+    ticMin <- tic[ind]
+    median(ticMin, na.rm = TRUE)
 }
 
 #' @name mzAcquisitionRange
@@ -1252,15 +1260,15 @@ medianTICofRTRange <- function(spectra, msLevel = 1L, ...) {
 #' mzAcquisitionRange(spectra = sps, msLevel = 2L)
 mzAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra") 
+        stop("'spectra' does not contain any spectra") 
     } 
 
-    mzList <- ProtGenerics::mz(spectra)
-    MZ <- unlist(mzList)
-    mzRange <- range(MZ)
+    mzList <- mz(spectra)
+    mz <- unlist(mzList)
+    mzRange <- range(mz)
     names(mzRange) <- c("min", "max")
     
     return(mzRange)
@@ -1321,14 +1329,14 @@ mzAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
 #' rtAcquisitionRange(spectra = sps, msLevel = 2L)
 rtAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra")
+        stop("'spectra' does not contain any spectra")
     }
     
-    RT <- ProtGenerics::rtime(spectra)
-    rtRange <- range(RT)
+    rt <- rtime(spectra)
+    rtRange <- range(rt)
     names(rtRange) <- c("min", "max")
     
     return(rtRange)
@@ -1395,13 +1403,13 @@ rtAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
 #' precursorIntensityRange(spectra = sps, msLevel = 2L)
 precursorIntensityRange <- function(spectra, msLevel = 1, ...) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra")
+        stop("'spectra' does not contain any spectra")
     }
   
-    int <- ProtGenerics::precursorIntensity(spectra)
+    int <- precursorIntensity(spectra)
     rangeInt <- range(int)
     names(rangeInt) <- c("min", "max")
     
@@ -1491,14 +1499,14 @@ precursorIntensityRange <- function(spectra, msLevel = 1, ...) {
 #' precursorIntensityQuartiles(spectra = sps, msLevel = 2L)
 precursorIntensityQuartiles <- function(spectra, msLevel = 1L, ...) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra")
+        stop("'spectra' does not contain any spectra")
     }
   
-    int <- ProtGenerics::precursorIntensity(spectra)
-    stats::quantile(int, probs = c(0.25, 0.50, 0.75), na.rm = TRUE)
+    int <- precursorIntensity(spectra)
+    quantile(int, probs = c(0.25, 0.50, 0.75), na.rm = TRUE)
 }
 
 
@@ -1584,17 +1592,17 @@ precursorIntensityQuartiles <- function(spectra, msLevel = 1L, ...) {
 #' precursorIntensityMean(spectra = sps, msLevel = 2L)
 precursorIntensityMean <- function(spectra, msLevel = 1L, ...) {
     
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra")
+        stop("'spectra' does not contain any spectra")
     }
   
-    int <- ProtGenerics::precursorIntensity(spectra)
+    int <- precursorIntensity(spectra)
     mean(int, na.rm = TRUE)
 }
 
-#' @name precursorIntensitySD
+#' @name precursorIntensitySd
 #' 
 #' @title Precursor intensity distribution sigma (QC:4000169),
 #' Identified precursor intensity distribution sigma (QC:4000230), or 
@@ -1673,20 +1681,20 @@ precursorIntensityMean <- function(spectra, msLevel = 1L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorIntensity <- c(100.0, 100.0, 100.0)
 #' sps <- Spectra(spd)
-#' precursorIntensitySD(spectra = sps, msLevel = 2L)
-precursorIntensitySD <- function(spectra, msLevel = 1L, ...) {
+#' precursorIntensitySd(spectra = sps, msLevel = 2L)
+precursorIntensitySd <- function(spectra, msLevel = 1L, ...) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
   
     if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra")
+        stop("'spectra' does not contain any spectra")
     }
     
-    int <- ProtGenerics::precursorIntensity(spectra)
-    stats::sd(int, na.rm = TRUE)
+    int <- precursorIntensity(spectra)
+    sd(int, na.rm = TRUE)
 }
 
-#' @name msSignal10XChange
+#' @name msSignal10xChange
 #' 
 #' @title MS1 signal jump/fall (10x) count (QC:4000172/QC:4000173)
 #' 
@@ -1722,7 +1730,7 @@ precursorIntensitySD <- function(spectra, msLevel = 1L, ...) {
 #' An unusual high count of signal jumps or falls can indicate ESI stability 
 #' issues.
 #' 
-#' The function `msSignal10XChange` uses the function `ionCount` as an 
+#' The function `msSignal10xChange` uses the function `ionCount` as an 
 #' equivalent to the TIC.
 #' 
 #' @param spectra `Spectra` object
@@ -1759,10 +1767,9 @@ precursorIntensitySD <- function(spectra, msLevel = 1L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' msSignal10XChange(spectra = sps, change = "jump", msLevel = 2L)
-#' msSignal10XChange(spectra = sps, change = "fall", msLevel = 2L)
-msSignal10XChange <- function(spectra, change = "jump", msLevel = 1L, ...) {
-
+#' msSignal10xChange(spectra = sps, change = "jump", msLevel = 2L)
+#' msSignal10xChange(spectra = sps, change = "fall", msLevel = 2L)
+msSignal10xChange <- function(spectra, change = "jump", msLevel = 1L, ...) {
   
     if (length(change) != 1) {
         stop("'change' has to be of length 1")
@@ -1770,29 +1777,28 @@ msSignal10XChange <- function(spectra, change = "jump", msLevel = 1L, ...) {
         change <- match.arg(change, choices = c("jump", "fall"))
     }
     
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra")
+        stop("'spectra' does not contain any spectra")
     }
     
     ## order spectra according to increasing retention time
-    spectra <- .rt_order_spectra(spectra)
-    RT <- ProtGenerics::rtime(spectra)
+    spectra <- .rtOrderSpectra(spectra)
 
-    TIC <- ProtGenerics::ionCount(spectra)
+    tic <- ionCount(spectra)
     
-    precedingTIC <- TIC[seq_len(length(TIC) - 1)]
-    followingTIC <- TIC[seq_len(length(TIC))[-1]]
+    precedingTic <- tic[seq_len(length(tic) - 1)]
+    followingTic <- tic[seq_len(length(tic))[-1]]
     
     ## calculate the ratio between following and preceding TICs and calculate
     ## the number of 10X jumps or falls depending on the change argument
-    ratioTIC <- followingTIC / precedingTIC
+    ratioTic <- followingTic / precedingTic
     
     if (change == "jump")
-      numberRatioChange <- sum(ratioTIC >= 10)
+      numberRatioChange <- sum(ratioTic >= 10)
     if (change == "fall")
-      numberRatioChange <- sum(ratioTIC <= 0.1)
+      numberRatioChange <- sum(ratioTic <= 0.1)
     
     return(numberRatioChange)
 }
@@ -1866,14 +1872,14 @@ msSignal10XChange <- function(spectra, change = "jump", msLevel = 1L, ...) {
 #' ratioCharge1over2(spectra = sps, msLevel = 2L)
 ratioCharge1over2 <- function(spectra, msLevel = 1L, ...) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra") 
+        stop("'spectra' does not contain any spectra") 
     }
     
     ## is there a way to get charge of actual entries, not only of precursor?
-    charge <- ProtGenerics::precursorCharge(spectra)
+    charge <- precursorCharge(spectra)
     
     ## get the number of precursor per charge
     chargeTable <- table(charge)
@@ -1955,14 +1961,14 @@ ratioCharge1over2 <- function(spectra, msLevel = 1L, ...) {
 #' ratioCharge3over2(spectra = sps, msLevel = 2L)
 ratioCharge3over2 <- function(spectra, msLevel = 1L, ...) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra") 
+        stop("'spectra' does not contain any spectra") 
     }
     
     ## is there a way to get charge of actual entries, not only of precursor?
-    charge <- ProtGenerics::precursorCharge(spectra)
+    charge <- precursorCharge(spectra)
     
     ## get the number of precursor per charge
     chargeTable <- table(charge)
@@ -2045,14 +2051,14 @@ ratioCharge3over2 <- function(spectra, msLevel = 1L, ...) {
 #' ratioCharge4over2(spectra = sps, msLevel = 2L)
 ratioCharge4over2 <- function(spectra, msLevel = 1L, ...) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra") 
+        stop("'spectra' does not contain any spectra") 
     }
     
     ## is there a way to get charge of actual entries, not only of precursor?
-    charge <- ProtGenerics::precursorCharge(spectra)
+    charge <- precursorCharge(spectra)
     
     ## get the number of precursor per charge
     chargeTable <- table(charge)
@@ -2131,13 +2137,13 @@ ratioCharge4over2 <- function(spectra, msLevel = 1L, ...) {
 #' meanCharge(spectra = sps, msLevel = 2L)
 meanCharge <- function(spectra, msLevel = 1L, ...) {
     
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra") 
+        stop("'spectra' object does not contain any spectra") 
     }
     
-    charge <- ProtGenerics::precursorCharge(spectra)
+    charge <- precursorCharge(spectra)
     mean(charge, na.rm = TRUE)
 }
 
@@ -2206,13 +2212,13 @@ meanCharge <- function(spectra, msLevel = 1L, ...) {
 #' medianCharge(spectra = sps, msLevel = 2L)
 medianCharge <- function(spectra, msLevel = 1L, ...) {
   
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
+    spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra") 
+        stop("'spectra' does not contain any spectra") 
     }
     
-    charge <- ProtGenerics::precursorCharge(spectra)
+    charge <- precursorCharge(spectra)
     median(charge, na.rm = TRUE)
 }
 

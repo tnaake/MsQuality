@@ -31,7 +31,7 @@ library(Spectra)
 spectra(mse) <- Spectra(fls, backend = MsBackendMzR())
 
 ## define the quality metrics to be calculated
-metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
+metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
 
 ## calculate the metrics
 ## additional parameters passed to the quality metrics functions
@@ -52,20 +52,20 @@ test_that("plotMetric", {
 })
 ## END unit test plotMetric ##
 
-## START unit test plotMetric_tibble ##
-test_that("plotMetric_tibble", {
-    expect_is(plotMetric_tibble(qc = qc, metric = "areaUnderTIC"), "tbl")
-    tbl <- plotMetric_tibble(qc = qc, metric = "areaUnderTIC")
+## START unit test plotMetricTibble ##
+test_that("plotMetricTibble", {
+    expect_is(plotMetricTibble(qc = qc, metric = "areaUnderTic"), "tbl")
+    tbl <- plotMetricTibble(qc = qc, metric = "areaUnderTic")
     expect_equal(tbl$rowname, factor(c("Sample 1", "Sample 2")))
-    expect_equal(tbl$name, c("areaUnderTIC", "areaUnderTIC"))
+    expect_equal(tbl$name, c("areaUnderTic", "areaUnderTic"))
     expect_equal(tbl$value, c(1273927561, 1273927561))
-    expect_error(plotMetric_tibble(qc = NULL, metric = "areaUnderTIC"),
-                 "metric not in qc")
-    expect_error(plotMetric_tibble(qc = matrix(), metric = "areaUnderTIC"),
-                 "metric not in qc")
-    expect_error(plotMetric_tibble(qc = qc, metric = "foo"), "metric not in qc")
+    expect_error(plotMetricTibble(qc = NULL, metric = "areaUnderTic"),
+                 "'metric' not in qc")
+    expect_error(plotMetricTibble(qc = matrix(), metric = "areaUnderTic"),
+                 "'metric' not in qc")
+    expect_error(plotMetricTibble(qc = qc, metric = "foo"), "'metric' not in qc")
 })
-## END unit test plotMetric_tibble ## 
+## END unit test plotMetricTibble ## 
 
 ## START unit test shinyMsQuality ##
 test_that("shinyMsQuality", {

@@ -73,36 +73,35 @@
 #' plotMetric(qc, metric = "areaUnderTIC") 
 plotMetric <- function(qc, metric = "areaUnderTIC") {
     
-    qc_tbl_l <- plotMetric_tibble(qc = qc, metric = metric)
+    qc_tbl_l <- plotMetricTibble(qc = qc, metric = metric)
     
-    g <- ggplot2::ggplot(qc_tbl_l) +
-        ggplot2::geom_point(ggplot2::aes_string(x = "rowname", 
-                                                y = "value", col = "name")) +
-        ggplot2::scale_colour_brewer(palette= "Set1") + ggplot2::theme_bw() +
-        ggplot2::xlab("sample") + ggplot2::ggtitle(metric) +
-        ggplot2::guides(shape = ggplot2::guide_legend(
+    g <- ggplot(qc_tbl_l) +
+        geom_point(aes_string(x = "rowname", y = "value", col = "name")) +
+        scale_colour_brewer(palette= "Set1") + theme_bw() +
+        xlab("sample") + ggtitle(metric) +
+        guides(shape = guide_legend(
             override.aes = list(size = 5))) +
-        ggplot2::guides(colour = ggplot2::guide_legend(
+        guides(colour = guide_legend(
             override.aes = list(size= 5))) +
-        ggplot2::theme(
-            axis.text.x = ggplot2::element_text(angle = 90, size = 10), 
-            panel.grid.major = ggplot2::element_blank(), 
-            panel.grid.minor = ggplot2::element_blank())
+        theme(
+            axis.text.x = element_text(angle = 90, size = 10), 
+            panel.grid.major = element_blank(), 
+            panel.grid.minor = element_blank())
     
-    g |> plotly::ggplotly(tooltip = c("x", "y"))
+    g |> ggplotly(tooltip = c("x", "y"))
 }
 
-#' @name plotMetric_tibble
+#' @name plotMetricTibble
 #'
 #' @title Helper function for plotMetric
 #'
 #' @description
-#' The function `plotMetric_tibble` is a helper function for the function
+#' The function `plotMetricTibble` is a helper function for the function
 #' `plotMetric`. It returns a tibble in long format that is interpretable
 #' by `ggplot2`.
 #' 
 #' @details
-#' `plotMetric_tibble` will select all columns that start with
+#' `plotMetricRibble` will select all columns that start with
 #' `metric`. The different levels in the `name` column in the returned tibble 
 #' correspond to the columns that were selected and do not contain the
 #' `metric` prefix. In case there is no additional specification 
@@ -149,24 +148,21 @@ plotMetric <- function(qc, metric = "areaUnderTIC") {
 #' spectra(mse) <- Spectra(fls, backend = MsBackendMzR())
 #' 
 #' ## define the quality metrics to be calculated
-#' metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
-#' 
-#' ## additional parameters passed to the quality metrics functions
-#' ## (MSLevel is an argument of areaUnderTIC and msSignal10XChange,
-#' ## relativeTo is an argument of msSignal10XChange)
-#' params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"), 
-#'     change = c("jump", "fall"))
-#'     
+#' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+#'
 #' ## calculate the metrics
+#' ## additional parameters passed to the quality metrics functions
+#' ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
+#' ## relativeTo is an argument of msSignal10xChange)
 #' qc <- calculateMetricsFromMsExperiment(msexp = mse, metrics = metrics, 
-#'     params = params_l)
+#'     msLevel = 1, relativeTo = "Q1", change = "jump")
 #' rownames(qc) <- c("Sample 1", "Sample 2")
-#' plotMetric_tibble(qc, metric = "areaUnderTIC")
-plotMetric_tibble <- function(qc, metric) {
+#' plotMetricTibble(qc, metric = "areaUnderTIC")
+plotMetricTibble <- function(qc, metric) {
     
     cols <- grep(colnames(qc), pattern = metric)
     
-    if (length(cols) == 0) stop("metric not in qc")
+    if (length(cols) == 0) stop("'metric' not in qc")
     
     qc_df <- as.data.frame(qc)
     qc_df <- qc_df[, cols, drop = FALSE]
@@ -174,17 +170,17 @@ plotMetric_tibble <- function(qc, metric) {
     ## remove from the colnames the "metric" part and the first _ separator
     ## assign then the new colnames to qc_df (in case the metric doesn't have
     ## any suffixes, e.g. "rtDuration", leave it as it is)
-    colnames_df <- stringr::str_remove(colnames(qc_df), pattern = metric)
-    colnames_df <- stringr::str_remove(colnames_df, pattern = "^_")
+    colnames_df <- str_remove(colnames(qc_df), pattern = metric)
+    colnames_df <- str_remove(colnames_df, pattern = "^_")
     
     colnames_df[colnames_df == ""] <- colnames(qc_df)[colnames_df == ""]
     colnames(qc_df) <- colnames_df
     
     ## add the rownames to the new column rowname
-    qc_df <- tibble::rownames_to_column(qc_df)
+    qc_df <- rownames_to_column(qc_df)
     
     ## convert the table into the long format  
-    qc_df_l <- tidyr::pivot_longer(qc_df, cols = seq_len(ncol(qc_df))[-1])
+    qc_df_l <- pivot_longer(qc_df, cols = seq_len(ncol(qc_df))[-1])
     qc_df_l$rowname <- factor(qc_df_l$rowname, levels = qc_df$rowname)
     
     return(qc_df_l)
@@ -216,10 +212,12 @@ plotMetric_tibble <- function(qc, metric) {
 #' @export
 #' 
 #' @importFrom shiny shinyUI selectInput fluidRow req runApp reactive
+#' @importFrom shiny downloadButton downloadHandler
 #' @importFrom shinydashboard dashboardPage dashboardHeader dashboardSidebar
 #' @importFrom shinydashboard dashboardBody
 #' @importFrom plotly plotlyOutput renderPlotly
 #' @importFrom htmlwidgets saveWidget
+#' @importFrom stringr str_split
 #' 
 #' @examples
 #' library(msdata)
@@ -269,50 +267,49 @@ shinyMsQuality <- function(qc) {
     if (!is.matrix(qc)) stop("'qc' is not a matrix")
     if (!is.numeric(qc)) stop("'qc' has to be numeric")
 
-    metrics <- stringr::str_split(colnames(qc), 
-                                        pattern = "_", simplify = TRUE)[, 1]
+    metrics <- str_split(colnames(qc), pattern = "_", simplify = TRUE)[, 1]
     metrics <- unique(metrics)
 
     ## define the user interface of the application: create a sidebar that 
     ## allows to select the metrics and a body that displays the plot and 
     ## allows for downloading the plot
-    ui <- shiny::shinyUI(shinydashboard::dashboardPage(skin = "black",
-        shinydashboard::dashboardHeader(title = "MsQuality"),
-        shinydashboard::dashboardSidebar(
-            shiny::selectInput(inputId = "metric",
+    ui <- shinyUI(dashboardPage(skin = "black",
+        dashboardHeader(title = "MsQuality"),
+        dashboardSidebar(
+            selectInput(inputId = "metric",
                                label = "Select metric",
                                choices = metrics, multiple = FALSE)
         ),
-        shinydashboard::dashboardBody(shiny::fluidRow(
-            plotly::plotlyOutput(outputId = "metricPlot"),
-            shiny::downloadButton(outputId = "downloadPlot", "Download plot")
+        dashboardBody(fluidRow(
+            plotlyOutput(outputId = "metricPlot"),
+            downloadButton(outputId = "downloadPlot", "Download plot")
         ))
     ))
 
     server <-  function(input, output, session) {
 
         ## reactive expression that stores the plotly object
-        metricPlot_r <- shiny::reactive({
+        metricPlot_r <- reactive({
             plotMetric(qc = qc, metric = input$metric)
         })
 
         ## expression that renders the plotly object
-        output$metricPlot <- plotly::renderPlotly({
-            shiny::req(metricPlot_r())
+        output$metricPlot <- renderPlotly({
+            req(metricPlot_r())
             metricPlot_r()
         })
 
         ## add functionality to download the plot
-        output$downloadPlot <- shiny::downloadHandler(
+        output$downloadPlot <- downloadHandler(
             filename = function() {
                 paste("metrics_", input$metric, ".html", sep = "")
             },
             content = function(file) {
-                htmlwidgets::saveWidget(metricPlot_r(), file)
+                saveWidget(metricPlot_r(), file)
             }
         )
     }
 
     app <- list(ui = ui, server = server)
-    shiny::runApp(app)
+    runApp(app)
 }
