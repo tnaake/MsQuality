@@ -27,6 +27,12 @@ id: QC:4000057
 "The log ratio for the second to n-th quantile of TIC over the previous 
 quantile of TIC. For the boundary elements min/max are used." [PSI:QC]
 id: QC:4000058
+}
+\details{
+is_a: QC:4000004 ! n-tuple
+is_a: QC:4000010 ! ID free
+is_a: QC:4000022 ! chromatogram metric
+is_a: QC:4000023 ! MS1 metric
 
 *TIC changes* are interpreted as follows:
 (1) the cumulative sum (`cumsum`) of the  spectras' TIC is calculated 
@@ -37,12 +43,6 @@ id: QC:4000058
 (3) for *QC:4000057* the log2 ratio between the 25, 50, 75
 and 100% quantile to the 0% quantile is calculated. For *QC:4000058* 
 ratios between the 25/0, 50/25, 75/50 and 100/75% quantiles are calculated.
-}
-\details{
-is_a: QC:4000004 ! n-tuple
-is_a: QC:4000010 ! ID free
-is_a: QC:4000022 ! chromatogram metric
-is_a: QC:4000023 ! MS1 metric
 
 The `log2` values are returned instead of the `log` values.
 }

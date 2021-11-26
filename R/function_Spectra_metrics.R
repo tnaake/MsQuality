@@ -511,7 +511,8 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
 #' `medianPrecursorMZ` will calculate the *precursor* median m/z of all 
 #' Spectra within `spectra`. If the calculation needs be done according to
 #' *QC:4000065*, the `Spectra` object should be prepared accordingly, i.e.
-#' filtered with e.g. [filterPrecursorMz()].
+#' filtered with e.g. [filterPrecursorMz()] or subsetted to spectra with
+#' identification data.
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer`
@@ -583,7 +584,8 @@ medianPrecursorMZ <- function(spectra, msLevel = 1L, ...) {
 #' @note 
 #' The `Spectra` object might contain features that were not identified. If
 #' the calculation needs to be done according to *QC:4000072*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' `Spectra` object should be prepared accordingly, i.e. subsetted to spectra
+#' with identification data.
 #' 
 #' The stored retention time information in `spectra` might have a different
 #' unit than seconds. `rtIQR` will return the IQR based on the values stored
@@ -669,7 +671,8 @@ rtIQR <- function(spectra, msLevel = 1L, ...) {
 #' @note 
 #' The `Spectra` object might contain features that were not identified. If
 #' the calculation needs to be done according to *QC:4000073*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' `Spectra` object should be prepared accordingly, i.e. being subsetted to
+#' spectra with identification data.
 #' 
 #' The stored retention time information in `spectra` might have a different
 #' unit than seconds. `rtIQR` will return the IQR based on the values stored
@@ -927,7 +930,8 @@ areaUnderTICRTquantiles <- function(spectra, msLevel = 1L, ...) {
 #' @note 
 #' The `Spectra` object might contain features that were not identified. If
 #' the calculation needs to be done according to *QC:4000125*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' `Spectra` object should be prepared accordingly, i.e. being subsetted to
+#' spectra with identification data.
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer`
@@ -1012,7 +1016,8 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {
 #' @note 
 #' The `Spectra` object might contain features that were not identified. If
 #' the calculation needs to be done according to *QC:4000130*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' `Spectra` object should be prepared accordingly, i.e. being subsetted to
+#' spectra with identification data.
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer`
@@ -1108,7 +1113,8 @@ medianTICRTIQR <- function(spectra, msLevel = 1L, ...) {
 #' @note 
 #' The `Spectra` object might contain features that were not identified. If
 #' the calculation needs to be done according to *QC:4000132*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' `Spectra` object should be prepared accordingly, i.e. being subsetted to
+#' spectra with identification data. 
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer`
