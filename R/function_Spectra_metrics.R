@@ -238,15 +238,15 @@ rtOverTicQuantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
 #' (1) the retention time duration of the whole `Spectra` object is determined
 #' (taking into account all the MS levels),
 #' 
-#' (1) the `Spectra` object is filtered according to the MS level and 
+#' (2) the `Spectra` object is filtered according to the MS level and 
 #' subsequently ordered according to the retention time
 #' 
-#' (2) the MS events are split into four (approximately) equal parts,
+#' (3) the MS events are split into four (approximately) equal parts,
 #' 
-#' (3) the relative retention time is calculated (using the retention time 
+#' (4) the relative retention time is calculated (using the retention time 
 #' duration from (1) and taking into account the minimum retention time),
 #' 
-#' (4) the relative retention time values associated to the MS event parts
+#' (5) the relative retention time values associated to the MS event parts
 #' are returned.
 #' 
 #' @details
@@ -304,7 +304,7 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
     ## truncate spectra based on the msLevel
     spectra <- filterMsLevel(object = spectra, msLevel)
     if (length(spectra) < 4)
-        stop("Spectra object does contain less than four spectra")
+        stop("'spectra' does contain less than four spectra")
 
     ## order spectra according to increasing retention time
     spectra <- .rtOrderSpectra(spectra)
@@ -349,7 +349,7 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
 #' is_a: QC:4000023 ! MS1 metric
 #'
 #' *TIC changes* are interpreted as follows:
-#' (1) the cumulative sum (`cumsum`) of the  spectras' TIC is calculated 
+#' (1) the cumulative sum (`cumsum`) of the  `spectra`'s TIC is calculated 
 #' (with spectra ordered by retention time),
 #' 
 #' (2) quartiles are then calculated on these, 
@@ -683,7 +683,7 @@ rtIqr <- function(spectra, msLevel = 1L, ...) {
 #' The `Spectra` object might contain features that were not identified. If
 #' the calculation needs to be done according to *QC:4000073*, the 
 #' `Spectra` object should be prepared accordingly, i.e. being subsetted to
-#' spectra with identification data.
+#' `spectra` with identification data.
 #' 
 #' The stored retention time information in `spectra` might have a different
 #' unit than seconds. `rtIqr` will return the IQR based on the values stored

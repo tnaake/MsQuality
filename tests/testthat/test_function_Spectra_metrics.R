@@ -43,7 +43,7 @@ test_that("rtOverMsQuarters", {
     expect_equal(names(rtOverMsQuarters(sps_sciex, msLevel = 1L)), 
         c("Quarter1", "Quarter2", "Quarter3", "Quarter4"), tolerance = 1e-06)
     expect_error(rtOverMsQuarters(sps_sciex, msLevel = 2L), 
-        "'spectra' does not contain any spectra")
+        "'spectra' does contain less than four spectra")
 })
 ## END unit test rtOverMsQuarters ##
 
