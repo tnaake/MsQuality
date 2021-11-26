@@ -37,7 +37,9 @@ is_a: QC:4000025 ! ion source metric
 \note{
 `medianPrecursorMZ` will calculate the *precursor* median m/z of all 
 Spectra within `spectra`. If the calculation needs be done according to
-*QC:4000065*, the `Spectra` object should be prepared accordingly.
+*QC:4000065*, the `Spectra` object should be prepared accordingly, i.e.
+filtered with e.g. [filterPrecursorMz()] or subsetted to spectra with
+identification data.
 }
 \examples{
 library(S4Vectors)

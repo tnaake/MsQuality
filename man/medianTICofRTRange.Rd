@@ -51,7 +51,8 @@ equivalent to the TIC.
 \note{
 The `Spectra` object might contain features that were not identified. If
 the calculation needs to be done according to *QC:4000132*, the 
-`Spectra` object should be prepared accordingly.
+`Spectra` object should be prepared accordingly, i.e. being subsetted to
+spectra with identification data.
 }
 \examples{
 library(S4Vectors)

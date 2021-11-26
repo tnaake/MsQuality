@@ -56,8 +56,7 @@
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
 #' rtDuration(spectra = sps)
-rtDuration <- function(spectra, ...) {
-  
+rtDuration <- function(spectra, ...) {  
     RT <- rtime(object = spectra)
     max(RT, na.rm = TRUE) - min(RT, na.rm = TRUE)
 }
@@ -172,8 +171,6 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
     res
 }
 
-#' @name .rt_order_spectra
-#' 
 #' @title Order Spectra according to increasing retention time
 #' 
 #' @description 
@@ -189,8 +186,6 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
 #' (increasing) retention time
 #' 
 #' @author Johannes Rainer
-#' 
-#' @export 
 #' 
 #' @importFrom ProtGenerics rtime
 #' 
@@ -218,7 +213,10 @@ rtOverTICquantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
 #' .rt_order_spectra(sps)
 .rt_order_spectra <- function(spectra) {
     RT <- rtime(spectra)
-    if (is.unsorted(RT))
+    if (any(is.na(RT)))
+        warning("missing retention time values. Will keep original ",
+                "ordering of spectra.")
+    else if (is.unsorted(RT))
         spectra <- spectra[order(RT)]
     spectra
 }
@@ -305,14 +303,8 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L, ...) {
 
     ## truncate spectra based on the msLevel
     spectra <- filterMsLevel(object = spectra, msLevel)
-    
-    if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra")
-    }
-    
-    if (length(spectra) < 4) {
+    if (length(spectra) < 4)
         stop("Spectra object does contain less than four spectra")
-    }
 
     ## order spectra according to increasing retention time
     spectra <- .rt_order_spectra(spectra)
@@ -343,7 +335,19 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L, ...) {
 #' "The log ratio for the second to n-th quantile of TIC over the previous 
 #' quantile of TIC. For the boundary elements min/max are used." [PSI:QC]
 #' id: QC:4000058
+#'
+#' @note
+#'
+#' This function interprets the *quantiles* from the [PSI:QC] definition as
+#' *quartiles*, i.e. the 0, 25, 50, 75 and 100% quantiles are used.
 #' 
+#' @details
+#' 
+#' is_a: QC:4000004 ! n-tuple
+#' is_a: QC:4000010 ! ID free
+#' is_a: QC:4000022 ! chromatogram metric
+#' is_a: QC:4000023 ! MS1 metric
+#'
 #' *TIC changes* are interpreted as follows:
 #' (1) the cumulative sum (`cumsum`) of the  spectras' TIC is calculated 
 #' (with spectra ordered by retention time),
@@ -353,16 +357,6 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L, ...) {
 #' (3) for *QC:4000057* the log2 ratio between the 25, 50, 75
 #' and 100% quantile to the 0% quantile is calculated. For *QC:4000058* 
 #' ratios between the 25/0, 50/25, 75/50 and 100/75% quantiles are calculated.
-#' 
-#' @note 
-#' This function interprets the *quantiles* from the [PSI:QC] definition as
-#' *quartiles*, i.e. the 0, 25, 50, 75 and 100% quantiles are used.
-#' 
-#' @details
-#' is_a: QC:4000004 ! n-tuple
-#' is_a: QC:4000010 ! ID free
-#' is_a: QC:4000022 ! chromatogram metric
-#' is_a: QC:4000023 ! MS1 metric
 #' 
 #' The `log2` values are returned instead of the `log` values.
 #' 
@@ -376,8 +370,6 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L, ...) {
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @export
-#' 
-#' @importFrom ProtGenerics filterMsLevel tic ionCount
 #' 
 #' @examples
 #' library(S4Vectors)
@@ -406,60 +398,46 @@ rtOverMSQuarters <- function(spectra, msLevel = 1L, ...) {
 ticQuantileToQuantileLogRatio <- function(spectra, relativeTo = "Q1", 
     msLevel = 1L, ...) {
   
-  
-    if (length(relativeTo) != 1) {
+    if (length(relativeTo) != 1)
         stop("'relativeTo' has to be of length 1")
-    } else {
+    else
         relativeTo <- match.arg(relativeTo, choices = c("Q1", "previous"))
-    }
     
-    
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
-    
-    if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra") 
-    }
+    spectra <- filterMsLevel(object = spectra, msLevel)    
+    if (length(spectra) == 0)
+        stop("Spectra object does not contain any spectra")
     
     ## order spectra according to increasing retention time
-    RT <- ProtGenerics::rtime(spectra)
-    spectra <- spectra[order(RT)]
-    RT <- RT[order(RT)]
+    spectra <- .rt_order_spectra(spectra)
     
     ## create cumulative sum of tic/ionCount
-    TIC <- ProtGenerics::ionCount(spectra)
-    
-    ############# does this make sense?
-    ticSum <- cumsum(TIC)
-    
+    TIC <- ionCount(spectra)
+    ticSum <- cumsum(TIC)    
     quantileTICSum <- quantile(ticSum, na.rm = TRUE)
-    
+
     ## calculate the changes in TIC per quantile
     changeQ1 <- quantileTICSum[["25%"]] - quantileTICSum[["0%"]]
     changeQ2 <- quantileTICSum[["50%"]] - quantileTICSum[["25%"]]
     changeQ3 <- quantileTICSum[["75%"]] - quantileTICSum[["50%"]]
     changeQ4 <- quantileTICSum[["100%"]] - quantileTICSum[["75%"]]
-    
-    ## calculate the ratio between Q2/Q3/Q4 to Q1 TIC changes
     if (relativeTo == "Q1") {
         ratioQuantileTIC <- c(changeQ2, changeQ3, changeQ4) / changeQ1
         names(ratioQuantileTIC) <- c("Q2/Q1", "Q3/Q1", "Q4/Q1")
     }
-      
-    
+
     ## calculate the ratio between Q2/Q3/Q4 to previous quantile TIC changes
     if (relativeTo == "previous") {
         ratioQuantileTIC <- c(changeQ2 / changeQ1, changeQ3 / changeQ2, 
                             changeQ4 / changeQ3)
         names(ratioQuantileTIC) <- c("Q2/Q1", "Q3/Q2", "Q4/Q3")
     }
-    
     ## take the log2 and return
     log2(ratioQuantileTIC)
 }
 
 #' @name numberSpectra
 #'
-#' @title Number of MS1/MS2 spectra (QC:4000059/QC:4000060)
+#' @title Number of MS1 or MS2 spectra (QC:4000059/QC:4000060)
 #'
 #' @description
 #' "The number of MS1 events in the run." [PSI:QC]
@@ -509,10 +487,8 @@ ticQuantileToQuantileLogRatio <- function(spectra, relativeTo = "Q1",
 #' sps <- Spectra(spd)
 #' numberSpectra(spectra = sps, msLevel = 1L)
 #' numberSpectra(spectra = sps, msLevel = 2L)
-numberSpectra <- function(spectra, msLevel = 1L, ...) {
-  
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
-    length(spectra)
+numberSpectra <- function(spectra, msLevel = 1L, ...) {  
+    length(filterMsLevel(object = spectra, msLevel))
 }
 
 
@@ -541,7 +517,9 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
 #' @note
 #' `medianPrecursorMZ` will calculate the *precursor* median m/z of all 
 #' Spectra within `spectra`. If the calculation needs be done according to
-#' *QC:4000065*, the `Spectra` object should be prepared accordingly.
+#' *QC:4000065*, the `Spectra` object should be prepared accordingly, i.e.
+#' filtered with e.g. [filterPrecursorMz()] or subsetted to spectra with
+#' identification data.
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer`
@@ -577,16 +555,13 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
 #' spd$precursorMz <- c(170.16, 170.16, 195.0876)
 #' sps <- Spectra(spd)
 #' medianPrecursorMZ(spectra = sps, msLevel = 2L)
-medianPrecursorMZ <- function(spectra, msLevel = 1L, ...) {
-  
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
-    
-    if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra") 
-    }
+medianPrecursorMZ <- function(spectra, msLevel = 1L, ...) {  
+    spectra <- filterMsLevel(object = spectra, msLevel)
+    if (length(spectra) == 0)
+        stop("Spectra object does not contain any spectra")
     
     ################ FDR correction??????????? 
-    mz <- ProtGenerics::precursorMz(spectra)
+    mz <- precursorMz(spectra)
     median(mz, na.rm = TRUE)
 }
 
@@ -616,7 +591,8 @@ medianPrecursorMZ <- function(spectra, msLevel = 1L, ...) {
 #' @note 
 #' The `Spectra` object might contain features that were not identified. If
 #' the calculation needs to be done according to *QC:4000072*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' `Spectra` object should be prepared accordingly, i.e. subsetted to spectra
+#' with identification data.
 #' 
 #' The stored retention time information in `spectra` might have a different
 #' unit than seconds. `rtIQR` will return the IQR based on the values stored
@@ -658,18 +634,15 @@ medianPrecursorMZ <- function(spectra, msLevel = 1L, ...) {
 #' sps <- Spectra(spd)
 #' rtIQR(spectra = sps, msLevel = 2L)
 rtIQR <- function(spectra, msLevel = 1L, ...) {
-  
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
-    
-    if (length(spectra) == 0) {
+    spectra <- filterMsLevel(object = spectra, msLevel)    
+    if (length(spectra) == 0)
         stop("Spectra object does not contain any spectra") 
-    }
     
     ## get the retention time
-    RT <- ProtGenerics::rtime(spectra)
+    RT <- rtime(spectra)
     
-    ## IQR???, what is the unit for rtime, always seconds??
-    stats::IQR(RT, na.rm = TRUE)
+    ## IQR???, what is the unit for rtime, always seconds?? Usually yes.
+    IQR(RT, na.rm = TRUE)
 }
 
 #' @name rtIQRrate
@@ -705,7 +678,8 @@ rtIQR <- function(spectra, msLevel = 1L, ...) {
 #' @note 
 #' The `Spectra` object might contain features that were not identified. If
 #' the calculation needs to be done according to *QC:4000073*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' `Spectra` object should be prepared accordingly, i.e. being subsetted to
+#' spectra with identification data.
 #' 
 #' The stored retention time information in `spectra` might have a different
 #' unit than seconds. `rtIQR` will return the IQR based on the values stored
@@ -747,18 +721,15 @@ rtIQR <- function(spectra, msLevel = 1L, ...) {
 #' sps <- Spectra(spd)
 #' rtIQRrate(spectra = sps, msLevel = 2L)
 rtIQRrate <- function(spectra, msLevel = 1L, ...) {
-  
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
-    
-    if (length(spectra) == 0) {
+    spectra <- filterMsLevel(object = spectra, msLevel)    
+    if (length(spectra) == 0)
         stop("Spectra object does not contain any spectra") 
-    }
     
     ## order spectra according to increasing retention time
     spectra <- .rt_order_spectra(spectra)
-    RT <- ProtGenerics::rtime(spectra)
+    RT <- rtime(spectra)
     
-    quantileRT <- stats::quantile(RT, na.rm = TRUE)
+    quantileRT <- quantile(RT, na.rm = TRUE)
     
     ## get the RT values of the 25% and 75% quantile
     quantile25RT <- quantileRT[["25%"]]
@@ -826,15 +797,12 @@ rtIQRrate <- function(spectra, msLevel = 1L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' sps <- Spectra(spd)
 #' areaUnderTIC(spectra = sps, msLevel = 2L)
-areaUnderTIC <- function(spectra, msLevel = 1L, ...) {
-  
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
-    
-    if (length(spectra) == 0) {
+areaUnderTIC <- function(spectra, msLevel = 1L, ...) {  
+    spectra <- filterMsLevel(object = spectra, msLevel)    
+    if (length(spectra) == 0)
         stop("Spectra object does not contain any spectra") 
-    }
 
-    TIC <- ProtGenerics::ionCount(spectra)
+    TIC <- ionCount(spectra)
     
     ## sum up the TIC (equivalent to the area) and return
     sum(TIC, na.rm = TRUE)
@@ -909,20 +877,17 @@ areaUnderTIC <- function(spectra, msLevel = 1L, ...) {
 #' sps <- Spectra(spd)
 #' areaUnderTICRTquantiles(spectra = sps, msLevel = 2L)
 areaUnderTICRTquantiles <- function(spectra, msLevel = 1L, ...) {
-  
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
-    
-    if (length(spectra) == 0) {
-        stop("Spectra object does not contain any spectra") 
-    }
+    spectra <- filterMsLevel(object = spectra, msLevel)
+    if (length(spectra) == 0)
+        stop("Spectra object does not contain any spectra")
 
     ## order spectra according to increasing retention time
     spectra <- .rt_order_spectra(spectra)
-    RT <- ProtGenerics::rtime(spectra)
+    RT <- rtime(spectra)
     
-    quantileRT <- stats::quantile(RT, na.rm = TRUE)
+    quantileRT <- quantile(RT, na.rm = TRUE)
     
-    TIC <- ProtGenerics::ionCount(spectra)
+    TIC <- ionCount(spectra)
     
     ## get the TICs for the 1st, 2nd, 3rd, and 4th quartile
     ticQ1 <- TIC[RT > quantileRT[["0%"]] & RT <= quantileRT[["25%"]]]
@@ -940,7 +905,7 @@ areaUnderTICRTquantiles <- function(spectra, msLevel = 1L, ...) {
     areaTIC <- c(areaTICQ1, areaTICQ2, areaTICQ3, areaTICQ4)
     names(areaTIC) <- c("25%", "50%", "75%", "100%")
     
-    return(areaTIC)
+    areaTIC
 }
 
 #' @name extentIdentifiedPrecursorIntensity
@@ -972,7 +937,8 @@ areaUnderTICRTquantiles <- function(spectra, msLevel = 1L, ...) {
 #' @note 
 #' The `Spectra` object might contain features that were not identified. If
 #' the calculation needs to be done according to *QC:4000125*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' `Spectra` object should be prepared accordingly, i.e. being subsetted to
+#' spectra with identification data.
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer`
@@ -1009,18 +975,14 @@ areaUnderTICRTquantiles <- function(spectra, msLevel = 1L, ...) {
 #' spd$precursorIntensity <- c(100, 100, 100)
 #' sps <- Spectra(spd)
 #' extentIdentifiedPrecursorIntensity(spectra = sps, msLevel = 2L)
-extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {
-  
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
-    
-    if (length(spectra) == 0) {
+extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {  
+    spectra <- filterMsLevel(object = spectra, msLevel)
+    if (length(spectra) == 0)
         stop("Spectra object does not contain any spectra") 
-    }
   
     ## retrieve the precursorIntensity and calculate the 5% and 95% quantile
-    precInt <- ProtGenerics::precursorIntensity(spectra)
-    quantilePrecInt <- stats::quantile(precInt, probs = c(0.05, 0.95), 
-                                                              na.rm = TRUE)
+    precInt <- precursorIntensity(spectra)
+    quantilePrecInt <- quantile(precInt, probs = c(0.05, 0.95), na.rm = TRUE)
     
     ## calculate the ratio between the 95% and 5% quantile and return the value
     quantilePrecInt[["95%"]] / quantilePrecInt[["5%"]]
@@ -1055,13 +1017,14 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {
 #' is_a: QC:4000009 ! ID based
 #' is_a: QC:4000001 ! QC metric
 #' 
-#' The function `medianTICrtIQR` uses the function `ionCount` as an 
+#' The function `medianTICrtIQR` uses the function [ionCount()] as an 
 #' equivalent to the TIC.
 #' 
 #' @note 
 #' The `Spectra` object might contain features that were not identified. If
 #' the calculation needs to be done according to *QC:4000130*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' `Spectra` object should be prepared accordingly, i.e. being subsetted to
+#' spectra with identification data.
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer`
@@ -1099,12 +1062,9 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {
 #' sps <- Spectra(spd)
 #' medianTICRTIQR(spectra = sps, msLevel = 2L)
 medianTICRTIQR <- function(spectra, msLevel = 1L, ...) {
-  
-    spectra <- ProtGenerics::filterMsLevel(object = spectra, msLevel)
-    
-    if (length(spectra) == 0) {
+    spectra <- filterMsLevel(object = spectra, msLevel)
+    if (length(spectra) == 0)
         stop("Spectra object does not contain any spectra") 
-    } 
     ## order spectra according to increasing retention time
     spectra <- .rt_order_spectra(spectra)
     
@@ -1114,14 +1074,11 @@ medianTICRTIQR <- function(spectra, msLevel = 1L, ...) {
     ind <- sort(ind)
     Q1ToQ3 <- spectra[ind %in% c(2, 3), ]
     
-    # ## take the TIC of the Q1 to Q3 of identifications
-    
-    ## how to define TIC? take the ionCount?? #######################
     ## take the ionCount of the Q1 to Q3 of identifications
-    ticQ1ToQ3 <- ProtGenerics::ionCount(Q1ToQ3)
+    ticQ1ToQ3 <- ionCount(Q1ToQ3)
     
     ## take the median value of the TIC within this interval and return it
-    stats::median(ticQ1ToQ3, na.rm = TRUE)
+    median(ticQ1ToQ3, na.rm = TRUE)
 }
 
 #' @name medianTICofRTRange
@@ -1163,7 +1120,8 @@ medianTICRTIQR <- function(spectra, msLevel = 1L, ...) {
 #' @note 
 #' The `Spectra` object might contain features that were not identified. If
 #' the calculation needs to be done according to *QC:4000132*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' `Spectra` object should be prepared accordingly, i.e. being subsetted to
+#' spectra with identification data. 
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer`

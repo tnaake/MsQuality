@@ -308,3 +308,12 @@ test_that("ratioCharge4over2", {
 })
 ## END unit test ratioCharge4over2 ##
 
+test_that(".rt_order_spectra works", {
+    tmp <- sps_sciex[sample(seq_along(sps_sciex), 10)]
+    res <- .rt_order_spectra(tmp)
+    expect_true(!is.unsorted(rtime(res)))
+
+    tmp$rtime[4] <- NA
+    expect_warning(res <- .rt_order_spectra(tmp))
+    expect_equal(rtime(res), rtime(tmp))
+})

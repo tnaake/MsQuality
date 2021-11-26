@@ -41,13 +41,14 @@ is_a: QC:4000003 ! single value
 is_a: QC:4000009 ! ID based
 is_a: QC:4000001 ! QC metric
 
-The function `medianTICrtIQR` uses the function `ionCount` as an 
+The function `medianTICrtIQR` uses the function [ionCount()] as an 
 equivalent to the TIC.
 }
 \note{
 The `Spectra` object might contain features that were not identified. If
 the calculation needs to be done according to *QC:4000130*, the 
-`Spectra` object should be prepared accordingly.
+`Spectra` object should be prepared accordingly, i.e. being subsetted to
+spectra with identification data.
 }
 \examples{
 library(S4Vectors)
