@@ -4,12 +4,14 @@
 \alias{areaUnderTICRTquantiles}
 \title{Area under TIC RT quantiles (QC:4000078)}
 \usage{
-areaUnderTICRTquantiles(spectra, MSLevel = 1L)
+areaUnderTICRTquantiles(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(4)`
@@ -18,6 +20,19 @@ areaUnderTICRTquantiles(spectra, MSLevel = 1L)
 "The area under the total ion chromatogram of the retention time quantiles. 
 Number of quantiles are given by the n-tuple." [PSI:QC]
 id: QC:4000078
+
+The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the `Spectra` object is ordered according to the retention time,
+
+(3) the 0%, 25%, 50%, 75%, and 100% quantiles of the retention time values
+are obtained,
+
+(4) the ion count of the intervals between the 0%/25%, 25%/50%, 50%/75%, and
+75%/100% are obtained 
+
+(5) the ion counts of the intervals are summed (TIC) and the values returned
 }
 \details{
 is_a: QC:4000004 ! n-tuple
@@ -25,6 +40,10 @@ is_a: QC:4000010 ! ID free
 is_a: QC:4000022 ! chromatogram metric
 
 The sum of the TIC is returned as an equivalent to the area.
+}
+\note{
+This function interprets the *quantiles* from the [PSI:QC] definition as
+*quartiles*, i.e. the 0, 25, 50, 75 and 100% quantiles are used.
 }
 \examples{
 library(S4Vectors)
@@ -47,7 +66,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-areaUnderTICRTquantiles(spectra = sps, MSLevel = 2L)
+areaUnderTICRTquantiles(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

@@ -5,11 +5,7 @@
 \alias{calculateMetricsFromSpectra}
 \title{Calculate QC metrics from a Spectra object}
 \usage{
-calculateMetricsFromSpectra(
-  spectra,
-  metrics = qualityMetrics(spectra),
-  params = list()
-)
+calculateMetricsFromSpectra(spectra, metrics = qualityMetrics(spectra), ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
@@ -17,8 +13,8 @@ calculateMetricsFromSpectra(
 \item{metrics}{`character` specifying the quality metrics to be calculated
 on `mse`}
 
-\item{params}{`list` containing parameters passed to the quality metrics
-functions defined in `metrics`}
+\item{...}{arguments passed to the quality metrics functions defined in 
+`metrics`}
 }
 \value{
 named `numeric` vector
@@ -41,16 +37,15 @@ spectra <- Spectra(fls, backend = MsBackendMzR())
 
 ## define the quality metrics to be calculated
 metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
-
-## additional parameters passed to the quality metrics functions
-## (MSLevel is an argument of areaUnderTIC and msSignal10XChange,
-## relativeTo is an argument of msSignal10XChange)
-params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"), 
-    change = c("jump", "fall"))
     
 ## calculate the metrics
+## additional parameters passed to the quality metrics functions
+## (MsLevel is an argument of areaUnderTIC and msSignal10XChange,
+## relativeTo is an argument of msSignal10XChange) passed to ...
 calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
-    params = params_l)
+    msLevel = 1, change = "jump", relativeTo = "Q1")
+calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
+    msLevel = 1, change = "fall", relativeTo = "previous")
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

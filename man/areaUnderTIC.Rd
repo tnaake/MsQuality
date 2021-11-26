@@ -4,12 +4,14 @@
 \alias{areaUnderTIC}
 \title{Area under TIC (QC:4000077)}
 \usage{
-areaUnderTIC(spectra, MSLevel = 1L)
+areaUnderTIC(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`
@@ -17,6 +19,11 @@ areaUnderTIC(spectra, MSLevel = 1L)
 \description{
 "The area under the total ion chromatogram." [PSI:QC]
 id: QC:4000077
+
+The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the sum of the ion counts are obtained and returned.
 }
 \details{
 is_a: QC:4000003 ! single value
@@ -45,7 +52,7 @@ spd$intensity <- list(
     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 sps <- Spectra(spd)
-areaUnderTIC(spectra = sps, MSLevel = 2L)
+areaUnderTIC(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

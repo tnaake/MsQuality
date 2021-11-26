@@ -5,7 +5,7 @@
 \alias{Lee_2019_meta_vals}
 \alias{meta}
 \alias{vals}
-\title{Example data for \code{msQC}: data set of Lee et al. (2019)}
+\title{Example data for \code{MsQuality}: data set of Lee et al. (2019)}
 \format{
 \code{data.frame}
 }

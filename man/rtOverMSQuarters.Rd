@@ -4,12 +4,14 @@
 \alias{rtOverMSQuarters}
 \title{MS1/MS2 quantiles RT fraction (QC:4000055/QC:4000056)}
 \usage{
-rtOverMSQuarters(spectra, MSLevel = 1L)
+rtOverMSQuarters(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(4)`
@@ -22,6 +24,21 @@ id: QC:4000055
 "The interval used for acquisition of the first, second, third, and fourth 
 quarter of all MS2 events divided by RT-Duration." [PSI:QC]
 id: QC:4000056
+
+The metric is calculated as follows:
+(1) the retention time duration of the whole `Spectra` object is determined
+(taking into account all the MS levels),
+
+(1) the `Spectra` object is filtered according to the MS level and 
+subsequently ordered according to the retention time
+
+(2) the MS events are split into four (approximately) equal parts,
+
+(3) the relative retention time is calculated (using the retention time 
+duration from (1) and taking into account the minimum retention time),
+
+(4) the relative retention time values associated to the MS event parts
+are returned.
 }
 \details{
 is_a: QC:4000004 ! n-tuple
@@ -29,29 +46,34 @@ is_a: QC:4000010 ! ID free
 is_a: QC:4000021 ! retention time metric
 is_a: QC:4000023 ! MS1 metric
 }
+\note{
+`rtDuration` considers the total runtime (including MS1 and MS2 scans).
+}
 \examples{
 library(S4Vectors)
 library(Spectra)
 
 spd <- DataFrame(
-    msLevel = c(2L, 2L, 2L),
-    polarity = c(1L, 1L, 1L),
-    id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
-    name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+    msLevel = c(2L, 2L, 2L, 2L),
+    polarity = c(1L, 1L, 1L, 1L),
+    id = c("HMDB0000001", "HMDB0000001", "HMDB0001847", "unknown"),
+    name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine", "unknown"))
 ## Assign m/z and intensity values
 spd$mz <- list(
     c(109.2, 124.2, 124.5, 170.16, 170.52),
     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
-        111.0551, 123.0429, 138.0662, 195.0876))
+        111.0551, 123.0429, 138.0662, 195.0876),
+    c(83.0603, 195.0876))
 spd$intensity <- list(
     c(3.407, 47.494, 3.094, 100.0, 13.240),
     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
-    c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
-spd$rtime <- c(9.44, 9.44, 15.84)
+    c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994),
+    c(3.146, 61.611))
+spd$rtime <- c(9.44, 9.44, 15.84, 15.81)
 sps <- Spectra(spd)
-rtOverMSQuarters(spectra = sps, MSLevel = 2L)
+rtOverMSQuarters(spectra = sps, msLevel = 2L)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake, \email{thomasnaake@googlemail.com}, Johannes Rainer
 }

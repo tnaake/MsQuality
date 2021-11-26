@@ -4,10 +4,12 @@
 \alias{rtDuration}
 \title{RT duration (QC:4000053)}
 \usage{
-rtDuration(spectra)
+rtDuration(spectra, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`
@@ -16,11 +18,21 @@ rtDuration(spectra)
 "The retention time duration of the MS run in seconds, similar to the 
 highest scan time minus the lowest scan time." [PSI:QC]
 id: QC:4000053
+
+The metric is calculated as follows:
+(1) the retention time associated to the individual Spectra is obtained,
+
+(2) the maximum and the minimum of the retention time is obtained,
+
+(3) the difference between the maximum and the minimum is calculated and 
+returned.
 }
 \details{
 is_a: QC:4000003 ! single value
 is_a: QC:4000010 ! ID free
 is_a: QC:4000021 ! retention time metric
+
+Retention time values that are `NA` are removed.
 }
 \examples{
 library(S4Vectors)

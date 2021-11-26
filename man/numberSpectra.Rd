@@ -4,12 +4,14 @@
 \alias{numberSpectra}
 \title{Number of MS1/MS2 spectra (QC:4000059/QC:4000060)}
 \usage{
-numberSpectra(spectra, MSLevel = 1L)
+numberSpectra(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric(1)`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`
@@ -19,6 +21,9 @@ numberSpectra(spectra, MSLevel = 1L)
 id: QC:4000059
 "The number of MS2 events in the run." [PSI:QC]
 id: QC:4000060
+
+For *QC:4000059*, `msLevel` is set to 1. For *QC:4000060*, `msLevel` is 
+set to 2.
 }
 \details{
 is_a: QC:4000003 ! single value
@@ -45,8 +50,8 @@ spd$intensity <- list(
     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 sps <- Spectra(spd)
-numberSpectra(spectra = sps, MSLevel = 1L)
-numberSpectra(spectra = sps, MSLevel = 2L)
+numberSpectra(spectra = sps, msLevel = 1L)
+numberSpectra(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

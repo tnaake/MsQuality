@@ -6,12 +6,14 @@
 Identified precursor intensity distribution Q1, Q2, Q3 (QC:4000228), or
 Unidentified precursor intensity distribution Q1, Q2, Q3 (QC:4000233)}
 \usage{
-precursorIntensityQuartiles(spectra, MSLevel = 1L)
+precursorIntensityQuartiles(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(3)`
@@ -28,6 +30,14 @@ id: QC:40000228
 "From the distribution of unidentified precursor intensities, the 
 quartiles Q1, Q2, Q3" [PSI:QC]
 id: QC:4000233
+
+The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the intensity of the precursor ions within `spectra` are obtained,
+
+(3) the 25%, 50%, and 75% quantile of the  precursor intensity values are 
+obtained (`NA` values are removed) and returned.
 }
 \details{
 is_a: QC:4000010 ! ID free
@@ -42,6 +52,11 @@ dynamic range of the acquisition in relation to identifiability.
 
 The intensity distribution of the unidentified precursors informs about the 
 dynamic range of the acquisition in relation to identifiability.
+}
+\note{
+The `Spectra` object might contain features that were (not) identified. If
+the calculation needs to be done according to *QC:4000228*/*QC:4000233*, the 
+`Spectra` object should be prepared accordingly.
 }
 \examples{
 library(S4Vectors)
@@ -64,7 +79,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$precursorIntensity <- c(100.0, 100.0, 100.0)
 sps <- Spectra(spd)
-precursorIntensityQuartiles(spectra = sps, MSLevel = 2L)
+precursorIntensityQuartiles(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

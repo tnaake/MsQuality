@@ -5,12 +5,14 @@
 \title{Median of TIC values in the shortest RT range in which half of the 
 peptides are identified (QC:4000132)}
 \usage{
-medianTICofRTRange(spectra, MSLevel = 1L)
+medianTICofRTRange(spectra, msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`
@@ -19,11 +21,37 @@ medianTICofRTRange(spectra, MSLevel = 1L)
 "Median of TIC values in the shortest RT range in which half of the 
 peptides are identified"  [PSI:QC] 
 id: QC:4000132
+
+The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the `Spectra` object is ordered according to the retention time,
+
+(3) the number of features in `spectra` is obtained and the number for 
+half of the features is calculated,
+
+(4) iterate through the features (always by taking the neighbouring
+half of features) and calculate the retention time range of the
+set of features,
+
+(5) retrieve the set of features with the minimum retention time 
+range,
+
+(6) calculate from the set of (5) the median TIC (`NA` values are removed)
+and return it.
 }
 \details{
 is_a: QC:4000003 ! single value
 is_a: QC:4000009 ! ID based
 is_a: QC:4000001 ! QC metric
+
+The function `medianTICofRTRange` uses the function `ionCount` as an 
+equivalent to the TIC.
+}
+\note{
+The `Spectra` object might contain features that were not identified. If
+the calculation needs to be done according to *QC:4000132*, the 
+`Spectra` object should be prepared accordingly.
 }
 \examples{
 library(S4Vectors)
@@ -46,7 +74,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-medianTICofRTRange(spectra = sps, MSLevel = 2L)
+medianTICofRTRange(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

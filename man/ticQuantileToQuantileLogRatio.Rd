@@ -5,18 +5,16 @@
 \title{MS1 quantile TIC change ratio to Quantile 1 (QC:4000057) or to 
 previous quantile (QC:4000058)}
 \usage{
-ticQuantileToQuantileLogRatio(
-  spectra,
-  relativeTo = c("Q1", "previous"),
-  MSLevel = 1L
-)
+ticQuantileToQuantileLogRatio(spectra, relativeTo = "Q1", msLevel = 1L, ...)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{relativeTo}{`character`}
+\item{relativeTo}{`character(1)`, one of `"Q1"` or `"previous"`}
 
-\item{MSLevel}{`numeric`}
+\item{msLevel}{`integer`}
+
+\item{...}{not used here}
 }
 \value{
 `numeric(1)`
@@ -29,6 +27,16 @@ id: QC:4000057
 "The log ratio for the second to n-th quantile of TIC over the previous 
 quantile of TIC. For the boundary elements min/max are used." [PSI:QC]
 id: QC:4000058
+
+*TIC changes* are interpreted as follows:
+(1) the cumulative sum (`cumsum`) of the  spectras' TIC is calculated 
+(with spectra ordered by retention time),
+
+(2) quartiles are then calculated on these, 
+
+(3) for *QC:4000057* the log2 ratio between the 25, 50, 75
+and 100% quantile to the 0% quantile is calculated. For *QC:4000058* 
+ratios between the 25/0, 50/25, 75/50 and 100/75% quantiles are calculated.
 }
 \details{
 is_a: QC:4000004 ! n-tuple
@@ -37,6 +45,10 @@ is_a: QC:4000022 ! chromatogram metric
 is_a: QC:4000023 ! MS1 metric
 
 The `log2` values are returned instead of the `log` values.
+}
+\note{
+This function interprets the *quantiles* from the [PSI:QC] definition as
+*quartiles*, i.e. the 0, 25, 50, 75 and 100% quantiles are used.
 }
 \examples{
 library(S4Vectors)
@@ -59,9 +71,9 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 sps <- Spectra(spd)
 ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "Q1",
-    MSLevel = 2L)
+    msLevel = 2L)
 ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "previous",
-    MSLevel = 2L)
+    msLevel = 2L)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}
