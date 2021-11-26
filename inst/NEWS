@@ -7,6 +7,7 @@ Changes in version 0.99.1 (2021-11-23)
     arguments but comma-separated arguments given to ...
   o for all metric functions the ... parameter is added
   o adjust the vignette and help pages  
++ rename functions to camel case
 
 Changes in version 0.99.0 (2021-09-10)
 + add quality metrics/functions (metrics based on HUPO-mzQC):
