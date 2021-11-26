@@ -4,10 +4,12 @@ Title: MsQuality - Quality metric calculation via Spectra and MsExperiment objec
 Version: 0.99.1
 Date: 2021-11-23
 Authors@R: c(person(given = "Thomas", family = "Naake", 
-		email = "thomasnaake@googlemail.com", role = c("aut", "cre")),
+		email = "thomasnaake@googlemail.com", role = c("aut", "cre"),
+		comment = c(ORCID = "0000-0001-7917-5580")),
 	person(given = "Johannes", family = "Rainer",
-		email = "johannes.rainer@eurac.edu", role = "aut"),
-		comment = c(ORCID = "0000-0002-6977-7147"))
+		email = "johannes.rainer@eurac.edu", role = "aut",
+		comment = c(ORCID = "0000-0002-6977-7147")))
+Maintainer: Thomas Naake <thomasnaake@googlemail.com>
 VignetteBuilder: knitr
 Description: MsQuality enables to calculate quality metrics of mass spectrometry
 	data. It is build upon Spectra and MsExperiment objects.

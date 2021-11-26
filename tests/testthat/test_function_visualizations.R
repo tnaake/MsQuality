@@ -43,12 +43,12 @@ rownames(qc) <- c("Sample 1", "Sample 2")
 
 ## START unit test plotMetric ## 
 test_that("plotMetric", {
-    expect_is(plotMetric(qc = qc, metric = "areaUnderTIC"), "plotly")
-    expect_error(plotMetric(qc = NULL, metric = "areaUnderTIC"),
-        "metric not in qc")
-    expect_error(plotMetric(qc = matrix(), metric = "areaUnderTIC"),
-        "metric not in qc")
-    expect_error(plotMetric(qc = qc, metric = "foo"), "metric not in qc")
+    expect_is(plotMetric(qc = qc, metric = "areaUnderTic"), "plotly")
+    expect_error(plotMetric(qc = NULL, metric = "areaUnderTic"),
+        "'metric' not in qc")
+    expect_error(plotMetric(qc = matrix(), metric = "areaUnderTic"),
+        "'metric' not in qc")
+    expect_error(plotMetric(qc = qc, metric = "foo"), "'metric' not in qc")
 })
 ## END unit test plotMetric ##
 
