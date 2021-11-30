@@ -96,7 +96,7 @@ jobs:
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
           install.packages("devtools", dependencies = TRUE, ask = FALSE, update = FALSE)
-          devtools::install_github("rformassspectrometry/MsExperiment", ask = FALSE)
+          devtools::install_github("rformassspectrometry/MsExperiment", force = TRUE)
         shell: Rscript {0}
 
       - name: Cache R packages
@@ -179,8 +179,8 @@ jobs:
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = TRUE, upgrade = TRUE)
           ## Manually install required packages      
           install.packages("devtools", dependencies = TRUE, ask = FALSE, update = FALSE)
-          devtools::install_github("rformassspectrometry/MsExperiment", ask = FALSE)
-          BiocInstaller::install("mzR", dependencies = TRUE, ask = FALSE)
+          devtools::install_github("rformassspectrometry/MsExperiment", force = TRUE)
+          BiocManager::install("mzR", dependencies = TRUE, ask = FALSE)
           ## For running the checks
           message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))
           remotes::install_cran("rcmdcheck")
