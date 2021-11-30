@@ -35,7 +35,7 @@ is_a: QC:4000022 ! chromatogram metric
 is_a: QC:4000023 ! MS1 metric
 
 *TIC changes* are interpreted as follows:
-(1) the cumulative sum (`cumsum`) of the  spectras' TIC is calculated 
+(1) the cumulative sum (`cumsum`) of the  `spectra`'s TIC is calculated 
 (with spectra ordered by retention time),
 
 (2) quartiles are then calculated on these, 

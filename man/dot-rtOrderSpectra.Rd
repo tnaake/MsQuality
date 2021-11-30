@@ -41,7 +41,7 @@ spd$intensity <- list(
     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643))
 spd$rtime <- c(15.84, 9.44, 9.44)
 sps <- Spectra(spd)
-.rtOrderSpectra(sps)
+MsQuality:::.rtOrderSpectra(sps)
 }
 \author{
 Johannes Rainer

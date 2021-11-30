@@ -45,7 +45,7 @@ is_a: QC:4000022 ! chromatogram metric
 The `Spectra` object might contain features that were not identified. If
 the calculation needs to be done according to *QC:4000073*, the 
 `Spectra` object should be prepared accordingly, i.e. being subsetted to
-spectra with identification data.
+`spectra` with identification data.
 
 The stored retention time information in `spectra` might have a different
 unit than seconds. `rtIqr` will return the IQR based on the values stored

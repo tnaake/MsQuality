@@ -29,15 +29,15 @@ The metric is calculated as follows:
 (1) the retention time duration of the whole `Spectra` object is determined
 (taking into account all the MS levels),
 
-(1) the `Spectra` object is filtered according to the MS level and 
+(2) the `Spectra` object is filtered according to the MS level and 
 subsequently ordered according to the retention time
 
-(2) the MS events are split into four (approximately) equal parts,
+(3) the MS events are split into four (approximately) equal parts,
 
-(3) the relative retention time is calculated (using the retention time 
+(4) the relative retention time is calculated (using the retention time 
 duration from (1) and taking into account the minimum retention time),
 
-(4) the relative retention time values associated to the MS event parts
+(5) the relative retention time values associated to the MS event parts
 are returned.
 }
 \details{
