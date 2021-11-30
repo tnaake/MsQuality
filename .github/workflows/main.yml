@@ -95,7 +95,7 @@ jobs:
         run: |
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-          instal.packages("devtools", dependencies = TRUE, ask = FALSE, update = FALSE)
+          install.packages("devtools", dependencies = TRUE, ask = FALSE, update = FALSE)
           devtools::install_github("rformassspectrometry/MsExperiment", ask = FALSE)
         shell: Rscript {0}
 
