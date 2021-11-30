@@ -180,6 +180,7 @@ jobs:
           ## Manually install required packages      
           install.packages("devtools", dependencies = TRUE, ask = FALSE, update = FALSE)
           devtools::install_github("rformassspectrometry/MsExperiment", ask = FALSE)
+          BiocInstaller::install("mzR", dependencies = TRUE, ask = FALSE)
           ## For running the checks
           message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))
           remotes::install_cran("rcmdcheck")
