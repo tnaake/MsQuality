@@ -52,17 +52,14 @@ library(Spectra)
 spectra(mse) <- Spectra(fls, backend = MsBackendMzR())
 
 ## define the quality metrics to be calculated
-metrics <- c("areaUnderTIC", "rtDuration", "msSignal10XChange")
-
-## additional parameters passed to the quality metrics functions
-## (MSLevel is an argument of areaUnderTIC and msSignal10XChange,
-## relativeTo is an argument of msSignal10XChange)
-params_l <- list(MSLevel = 1, relativeTo = c("Q1", "previous"), 
-    change = c("jump", "fall"))
+metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
     
 ## calculate the metrics
+## additional parameters passed to the quality metrics functions
+## (msLevel is an argument of areaUnderTic and msSignal10xChange,
+## relativeTo is an argument of msSignal10xChange)
 qc <- calculateMetricsFromMsExperiment(msexp = mse, metrics = metrics, 
-    params = params_l)
+    msLevel = 1, relativeTo = "Q1", change = "jump")
 rownames(qc) <- c("Sample 1", "Sample 2")
 
 \dontrun{

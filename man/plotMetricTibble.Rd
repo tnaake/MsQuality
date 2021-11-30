@@ -63,7 +63,7 @@ metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
 qc <- calculateMetricsFromMsExperiment(msexp = mse, metrics = metrics, 
     msLevel = 1, relativeTo = "Q1", change = "jump")
 rownames(qc) <- c("Sample 1", "Sample 2")
-plotMetricTibble(qc, metric = "areaUnderTIC")
+plotMetricTibble(qc, metric = "areaUnderTic")
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}
