@@ -73,12 +73,12 @@ plotMetric <- function(qc, metric = "areaUnderTic") {
     
     g <- ggplot(qc_tbl_l) +
         geom_point(aes_string(x = "rowname", y = "value", col = "name")) +
-        scale_colour_brewer(palette= "Set1") + theme_bw() +
+        scale_colour_brewer(palette = "Set1") + theme_bw() +
         xlab("sample") + ggtitle(metric) +
         guides(shape = guide_legend(
             override.aes = list(size = 5))) +
         guides(colour = guide_legend(
-            override.aes = list(size= 5))) +
+            override.aes = list(size = 5))) +
         theme(
             axis.text.x = element_text(angle = 90, size = 10), 
             panel.grid.major = element_blank(), 
