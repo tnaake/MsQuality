@@ -19,7 +19,8 @@ Organization-Proteomics Standards Intitiative (HUPO-PSI). These metrics
 quantify the quality of spectral raw files using a controlled vocabulary. 
 
 The package is especially addressed towards users that acquire 
-mass spectrometry data on a clinical/large scale: while it is easier to control 
+mass spectrometry data on a large scale (e.g. data sets from clinical settings 
+consisting of several thousands of samples): while it is easier to control 
 for high-quality data acquisition in small-scale experiments, typically run
 in one or few batches, clinical data sets are often acquired over longer 
 time frames and are prone to higher technical variation that is often
