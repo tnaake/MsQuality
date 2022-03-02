@@ -392,7 +392,7 @@ metrics_rplc_msexp <- calculateMetrics(object = msexp_rplc_subset,
 ## for HILIC-derived MsExperiment
 metrics_hilic_msexp <- calculateMetrics(object = msexp_hilic_subset,
     metrics = qualityMetrics(msexp_hilic_subset),
-    relativeTo = "Q1")
+    relativeTo = "Q1", msLevel = 1L)
 ```
 
 When passing an `MsExperiment` object to `calculateMetrics` a `data.frame`
