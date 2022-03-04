@@ -18,6 +18,7 @@
 #' 
 #' @param qc `matrix`/`data.frame`
 #' @param metric `character`
+#' @param plotly logical(1)
 #' 
 #' @return `plotly`
 #' 
@@ -67,7 +68,7 @@
 #'     msLevel = 1, relativeTo = "Q1", change = "jump")
 #' rownames(qc) <- c("Sample 1", "Sample 2")
 #' plotMetric(qc, metric = "areaUnderTic") 
-plotMetric <- function(qc, metric = "areaUnderTic") {
+plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
     
     qc_tbl_l <- plotMetricTibble(qc = qc, metric = metric)
     
@@ -83,8 +84,10 @@ plotMetric <- function(qc, metric = "areaUnderTic") {
             axis.text.x = element_text(angle = 90, size = 10), 
             panel.grid.major = element_blank(), 
             panel.grid.minor = element_blank())
-    
-    g |> ggplotly(tooltip = c("x", "y"))
+    if (plotly)
+        g |> ggplotly(tooltip = c("x", "y"))
+    else 
+        g
 }
 
 #' @name plotMetricTibble
