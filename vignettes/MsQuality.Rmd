@@ -379,7 +379,7 @@ There are in total 541 samples respectively in the objects
 `msexp_rplc` and `msexp_hilic`. To improve the visualization and 
 interpretability, we will only calculate the metrics from the first 50 of 
 these samples.
-```{r}
+```{r metrics_rplc_hilic_lee2019}
 ## subset the MsExperiment objects
 msexp_rplc_subset <- msexp_rplc[, 1:50]
 msexp_hilic_subset <- msexp_hilic[, 1:50]
