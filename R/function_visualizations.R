@@ -20,7 +20,7 @@
 #' @param metric `character`
 #' @param plotly logical(1)
 #' 
-#' @return `plotly`
+#' @return `gg` `plotly`
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -67,7 +67,7 @@
 #' qc <- calculateMetricsFromMsExperiment(msexp = mse, metrics = metrics, 
 #'     msLevel = 1, relativeTo = "Q1", change = "jump")
 #' rownames(qc) <- c("Sample 1", "Sample 2")
-#' plotMetric(qc, metric = "areaUnderTic") 
+#' plotMetric(qc, metric = "areaUnderTic", plotly = TRUE) 
 plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
     
     qc_tbl_l <- plotMetricTibble(qc = qc, metric = metric)
@@ -76,10 +76,8 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
         geom_point(aes_string(x = "rowname", y = "value", col = "name")) +
         scale_colour_brewer(palette = "Set1") + theme_bw() +
         xlab("sample") + ggtitle(metric) +
-        guides(shape = guide_legend(
-            override.aes = list(size = 5))) +
-        guides(colour = guide_legend(
-            override.aes = list(size = 5))) +
+        guides(shape = guide_legend(override.aes = list(size = 5))) +
+        guides(colour = guide_legend(override.aes = list(size = 5))) +
         theme(
             axis.text.x = element_text(angle = 90, size = 10), 
             panel.grid.major = element_blank(), 

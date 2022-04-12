@@ -4,15 +4,17 @@
 \alias{plotMetric}
 \title{Visualize a quality metric}
 \usage{
-plotMetric(qc, metric = "areaUnderTic")
+plotMetric(qc, metric = "areaUnderTic", plotly = TRUE)
 }
 \arguments{
 \item{qc}{`matrix`/`data.frame`}
 
 \item{metric}{`character`}
+
+\item{plotly}{logical(1)}
 }
 \value{
-`plotly`
+`gg` `plotly`
 }
 \description{
 The function `plotMetric` visualizes the metric values per sample. The 
@@ -64,7 +66,7 @@ metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
 qc <- calculateMetricsFromMsExperiment(msexp = mse, metrics = metrics, 
     msLevel = 1, relativeTo = "Q1", change = "jump")
 rownames(qc) <- c("Sample 1", "Sample 2")
-plotMetric(qc, metric = "areaUnderTic") 
+plotMetric(qc, metric = "areaUnderTic", plotly = TRUE) 
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}
