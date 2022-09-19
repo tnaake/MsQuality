@@ -171,7 +171,7 @@
 #' msexp_rplc
 #' msexp_hilic
 #' 
-#' save(sps_l_rplc, sps_l_hilic, msexp_rplc, msexp_hilic, 
+#' save(sps_c_rplc, sps_c_hilic, ##msexp_rplc, msexp_hilic, 
 #'     file = "Lee2019.RData", compress = "xz")
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
