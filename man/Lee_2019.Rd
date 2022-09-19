@@ -3,10 +3,8 @@
 \docType{data}
 \name{Lee_2019}
 \alias{Lee_2019}
-\alias{msexp_hilic}
-\alias{msexp_rplc}
-\alias{sps_l_hilic}
-\alias{sps_l_rplc}
+\alias{sps_c_hilic}
+\alias{sps_c_rplc}
 \title{Example data for \code{MsQuality}: data set of Lee et al. (2019)}
 \format{
 \code{Spectra} and \code{MsExperiment}
@@ -154,7 +152,7 @@ msexp_hilic <- linkSampleData(object = msexp_hilic,
 msexp_rplc
 msexp_hilic
 
-save(sps_l_rplc, sps_l_hilic, msexp_rplc, msexp_hilic, 
+save(sps_c_rplc, sps_c_hilic, ##msexp_rplc, msexp_hilic, 
     file = "Lee2019.RData", compress = "xz")
 }
 \value{

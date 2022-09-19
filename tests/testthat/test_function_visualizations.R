@@ -32,7 +32,7 @@ test_that("plotMetricTibble", {
     tbl <- plotMetricTibble(qc = qc, metric = "areaUnderTic")
     expect_equal(tbl$rowname, factor(c("Sample 1", "Sample 2")))
     expect_equal(tbl$name, c("areaUnderTic", "areaUnderTic"))
-    expect_equal(tbl$value, c(1273927561, 1273927561))
+    expect_equal(tbl$value, c(650969677, 622957884))
     expect_error(plotMetricTibble(qc = NULL, metric = "areaUnderTic"),
                  "'metric' not in qc")
     expect_error(plotMetricTibble(qc = matrix(), metric = "areaUnderTic"),

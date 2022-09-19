@@ -1,9 +1,7 @@
 #' @name Lee_2019
-#' 
-#' @aliases msexp_hilic
-#' @aliases msexp_rplc
-#' @aliases sps_l_hilic
-#' @aliases sps_l_rplc
+#'
+#' @aliases sps_c_hilic
+#' @aliases sps_c_rplc
 #'
 #' @title Example data for \code{MsQuality}: data set of Lee et al. (2019)
 #'

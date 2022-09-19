@@ -7,16 +7,15 @@
 #' quality metrics depending on `object`.
 #' 
 #' @details
-#' `object` is either a `Spectra` or `MsExperiment` object. 
+#' `object` is a `Spectra`. 
 #' 
-#' @param object object of type `Spectra` or `MsExperiment`
+#' @param object object of type `Spectra`
 #' 
 #' @return `character`
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @importFrom Spectra Spectra
-#' @importFrom MsExperiment MsExperiment
 #' @export
 #' 
 #' @examples 
@@ -36,6 +35,7 @@
 #'     c(3.407, 47.494, 3.094, 100.0, 13.240),
 #'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$dataOrigin <- rep("sample_1", 3)
 #' sps <- Spectra(spd)
 #' 
 #' qualityMetrics(object = sps)
@@ -53,19 +53,5 @@ qualityMetrics <- function(object) {
             "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
             "medianCharge"
         )
-    if (is(object, "MsExperiment"))
-        .metrics <-  c(
-            "rtDuration", "rtOverTicQuantile", "rtOverMsQuarters",
-            "ticQuantileToQuantileLogRatio", "numberSpectra", 
-            "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic", 
-            "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity", 
-            "medianTicRtIqr", "medianTicOfRtRange", "mzAcquisitionRange",
-            "rtAcquisitionRange", "precursorIntensityRange", 
-            "precursorIntensityQuartiles", "precursorIntensityMean",
-            "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2", 
-            "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
-            "medianCharge"
-        )
-    return(.metrics)
+    .metrics
 }
-

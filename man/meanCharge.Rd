@@ -3,14 +3,7 @@
 \name{meanCharge}
 \alias{meanCharge}
 \title{Mean charge in identified spectra (QC:4000177) or mean precursor 
-charge in all MS2 (QC:4000182)
-
-The metric is calculated as follows:
-(1) the `Spectra` object is filtered according to the MS level,
-
-(2) the precursor charge is obtained,
-
-(3) the mean of the precursor charge values is calculated and returned.}
+charge in all MS2 (QC:4000182)}
 \usage{
 meanCharge(spectra, msLevel = 1L, ...)
 }
@@ -30,6 +23,13 @@ id: QC:4000177
 
 "Mean precursor charge in all MS2" [PSI:QC]
 id: QC:4000182
+
+The metric is calculated as follows:
+(1) the `Spectra` object is filtered according to the MS level,
+
+(2) the precursor charge is obtained,
+
+(3) the mean of the precursor charge values is calculated and returned.
 }
 \details{
 is_a: QC:4000003 ! single value

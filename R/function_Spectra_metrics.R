@@ -2077,6 +2077,13 @@ ratioCharge4over2 <- function(spectra, msLevel = 1L, ...) {
 #' @title Mean charge in identified spectra (QC:4000177) or mean precursor 
 #' charge in all MS2 (QC:4000182)
 #' 
+#' @description 
+#' "Mean charge in identified spectra" [PSI:QC]
+#' id: QC:4000177
+#' 
+#' "Mean precursor charge in all MS2" [PSI:QC]
+#' id: QC:4000182
+#' 
 #' The metric is calculated as follows:
 #' (1) the `Spectra` object is filtered according to the MS level,
 #' 
@@ -2084,12 +2091,6 @@ ratioCharge4over2 <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' (3) the mean of the precursor charge values is calculated and returned.
 #' 
-#' @description 
-#' "Mean charge in identified spectra" [PSI:QC]
-#' id: QC:4000177
-#' 
-#' "Mean precursor charge in all MS2" [PSI:QC]
-#' id: QC:4000182
 #'
 #' @details
 #' is_a: QC:4000003 ! single value

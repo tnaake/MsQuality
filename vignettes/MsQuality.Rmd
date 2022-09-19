@@ -34,13 +34,13 @@ suppressPackageStartupMessages(library("Spectra"))
 Data quality assessment is an integral part of preparatory data analysis 
 to ensure sound biological information retrieval. 
 
-We present here the `MsQuality` package, which provides functionality to calculate
-quality metrics for mass spectrometry-derived, spectral data at the per-sample
-level. `MsQuality` relies on the [`mzQC`](https://github.com/HUPO-PSI/mzQC) 
-framework of quality metrics defined by the Human Proteome 
-Organization-Proteomics Standards Intitiative (HUPO-PSI). These metrics 
-quantify the quality of spectral raw files using a controlled vocabulary. 
-The package is especially addressed towards users that acquire 
+We present here the `MsQuality` package, which provides functionality to 
+calculate quality metrics for mass spectrometry-derived, spectral data at the 
+per-sample level. `MsQuality` relies on the 
+[`mzQC`](https://github.com/HUPO-PSI/mzQC) framework of quality metrics defined 
+by the Human Proteome Organization-Proteomics Standards Intitiative (HUPO-PSI). 
+These metrics quantify the quality of spectral raw files using a controlled 
+vocabulary. The package is especially addressed towards users that acquire 
 mass spectrometry data on a large scale (e.g. data sets from clinical settings 
 consisting of several thousands of samples): while it is easier to control 
 for high-quality data acquisition in small-scale experiments, typically run
@@ -48,10 +48,10 @@ in one or few batches, clinical data sets are often acquired over longer
 time frames and are prone to higher technical variation that is often
 unnoticed. `MsQuality` tries to address this problem by calculating metrics that
 can be stored along the spectral data sets (raw files or feature-extracted 
-data sets). `MsQuality`, thus, facilitates the tracking of shifts in data quality
-and quantifies the quality using multiple metrics. It should be thus easier
-to identify samples that are of low quality (high-number of missing values,
-termination of chromatographic runs, low instrument sensitivity, etc.).
+data sets). `MsQuality`, thus, facilitates the tracking of shifts in data 
+quality and quantifies the quality using multiple metrics. It should be thus 
+easier to identify samples that are of low quality (high-number of missing 
+values, termination of chromatographic runs, low instrument sensitivity, etc.).
 
 We would like to note here that these metrics only give an indication of 
 data quality, and, before removing indicated low-quality samples from the
@@ -62,24 +62,22 @@ should always be regarded in the context of the sample type and experimental
 settings, i.e. quality metrics should always be compared with regard to the
 sample type, experimental setup, instrumentation, etc..
 
-The `MsQuality` package allows to calculate low-level quality metrics that require
-minimum information on mass spectrometry data: retention time, m/z values, 
-and associated intensities.
+The `MsQuality` package allows to calculate low-level quality metrics that 
+require minimum information on mass spectrometry data: retention time, 
+m/z values, and associated intensities.
 The list included in the `mzQC` framework is excessive, also including 
 metrics that rely on more high-level information, that might not be readily
 accessible from .raw or .mzML files, e.g. pump pressure mean, or rely
 on alignment results, e.g. retention time mean shift, signal-to-noise ratio,
 precursor errors (ppm). 
 
-The `MsQuality` package is built upon the `Spectra` and the `MsExperiment` package.
+The `MsQuality` package is built upon the `Spectra` package.
 Metrics will be calculated based on the information stored in a 
-`Spectra` object, thus, the spectral data of each sample should be stored
-in one `Spectra` object. The `MsExperiment` serves as a container to 
-store the mass spectral data of multiple samples. `MsQuality` enables the user
-to calculate quality metrics both on `Spectra` and `MsExperiment` objects. 
+`Spectra` object and the respective `dataOrigin` entries are used to 
+distinguish between the mass spectral data of multiple samples.
 
-In this vignette, we will (i) create some exemplary `Spectra` and 
-`MsExperiment` objects, (ii) calculate the quality metrics on these
+In this vignette, we will (i) create some exemplary `Spectra`
+objects, (ii) calculate the quality metrics on these
 data sets, and (iii) visualize some of the metrics.
 
 # Installation
@@ -104,18 +102,17 @@ This will install this package and all eventually missing dependencies.
 [GitHub](https://github.com/tnaake/MsQuality) or send a mail to the developer.
 
 
-# Create `Spectra` and `MsExperiment` objects 
+# Create `Spectra` objects 
 
-Load the `MsExperiment` and `Spectra` packages.
+Load the `Spectra` package.
 
-```{r load_MsExperiment_Spectra}
+```{r load_Spectra}
 library("MsQuality")
-library("MsExperiment")
 library("Spectra")
 ```
 
 
-## Create `Spectra` and `MsExperiment` objects from mzML files
+## Create `Spectra` object from mzML files
 
 There are several options available to create a `Spectra` object. One way, as
 outlined in the vignette of the `r BiocStyle::Biocpkg("Spectra")` package is 
@@ -132,34 +129,9 @@ sps_sciex <- Spectra(fls, backend = MsBackendMzR())
 ```
 
 The data set consists of a single sample measured in two different 
-injections to the same LC-MS setup. An empty instance of an
-`MsExperiment` object is created and populated with information on the samples
-by assigning data on the samples (`sampleData`), information on the 
-`mzML` files (`MsExperimentFiles`) and spectral information (`spectra`). 
-In a last step, using `linkSampleData`, the relationships between the samples
-and the spectral information are defined.
+injections to the same LC-MS setup. 
 
-```{r msexp_sciex, eval = FALSE, echo = TRUE}
-## this example is taken from the Spectra vignette
-lmse <- MsExperiment()
-sd <- DataFrame(sample_id = c("QC1", "QC2"),
-                sample_name = c("QC Pool", "QC Pool"),
-                injection_idx = c(1, 3))
-sampleData(lmse) <- sd
-
-## add mzML files to the experiment
-experimentFiles(lmse) <- MsExperimentFiles(mzML_files = fls)
-
-## add the Spectra object to the experiment
-spectra(lmse) <- sps_sciex
-
-## use linkSampleData to establish and define relationships between sample 
-## annotations and MS data
-lmse <- linkSampleData(lmse, with = "experimentFiles.mzML_file",
-                        sampleIndex = c(1, 2), withIndex = c(1, 2))
-```
-
-## Create `Spectra` and `MsExperiment` objects from (feature-extracted) intensity tables
+## Create `Spectra` object from (feature-extracted) intensity tables
 
 Another common approach is the creation of `Spectra` objects from a 
 `DataFrame`s using the `MsBackendDataFrame` backend. 
@@ -172,36 +144,30 @@ coupled to mass spectrometry
 
 In a separate step (see documentation for `Lee2019_meta_vals` and
 `Lee2019`), we have created a list containing `Spectra` objects for
-each samples (objects `sps_l_rplc` and `sps_l_hilic`) and `MsExperiment`
-objects containing the data of all samples (objects `msexp_rplc` and
-`msexp_hilic`). We will load here these objects:
+each samples (objects `sps_c_rplc` and `sps_c_hilic`).
+We will load here these objects:
 
 ```{r load_Lee2019, eval = TRUE, echo = TRUE}
 data("Lee2019", package = "MsQuality")
 ```
 
-The final data set contains 541 paired samples (i.e. 541 samples derived 
-from RPLC and 541 samples derived from HILIC).
+The final data set contains `r length(unique(dataOrigin(sps_c_rplc)))`
+paired samples (i.e. `r length(unique(dataOrigin(sps_c_rplc)))` samples derived 
+from RPLC and `r length(unique(dataOrigin(sps_c_rplc)))` samples derived 
+from HILIC).
 
-# Calculating the quality metrics on `Spectra` and `MsExperiment` objects
-
-The most important function to assess the data quality and to calculate the 
-metrics is the `calculateMetrics` function. The function takes
-a `Spectra` or `MsExperiment` object as input, a character vector of metrics
-to be calculated, and, optionally a list of parameters passed to the 
-quality metrics functions. 
+# Calculating the quality metrics on `Spectra` objects
 
 Currently, the following metrics are included:
 ```{r}
-qualityMetrics(msexp_rplc)
+qualityMetrics(sps_c_rplc)
 ```
 
 The following list gives a brief explanation for these metrics. Further 
 information may be found at the 
 [HUPO-PSI mzQC project page](https://github.com/HUPO-PSI/mzQC)  or in the 
 respective help file for the quality metric (accessible by e.g. entering
-`?rtDuration` to the R console). Currently, all quality metrics can be 
-calculated for both `Spectra` and `MsExperiment` objects. 
+`?rtDuration` to the R console).  
 
 - *rtDuration*, **RT duration** (QC:4000053), 
   "The retention time duration of the MS run in seconds, similar to the 
@@ -321,6 +287,11 @@ calculated for both `Spectra` and `MsExperiment` objects.
 - *medianCharge*, **Median precursor charge in all MS2** (QC:4000183),
   "Median precursor charge in all MS2" [PSI:QC].
 
+The most important function to assess the data quality and to calculate the 
+metrics is the `calculateMetrics` function. The function takes
+a `Spectra` object as input, a character vector of metrics
+to be calculated, and, optionally a list of parameters passed to the 
+quality metrics functions. 
 
 When passing a `Spectra` object to the function, a named vector is 
 returned by `calculateMetrics` with the metrics specified by the argument
@@ -340,71 +311,72 @@ MS$^3$ features. If the user adds the arguments
 `relativeTo = "Q1", msLevel = c(1L, 2L))`, `ticQUantileToQuantileLogRatio` is 
 run with the parameter combinations `relativeTo = "Q1", msLevel = c(1L, 2L)`.
 
-The  results based on 
-these parameter combinations are returned and the used parameters are returned
-as attributes to the returned vector. 
+The  results based on these parameter combinations are returned and the 
+used parameters are returned as attributes to the returned vector. 
 
 Here, we would like to calculate the metrics of all the included quality 
 metrics functions (`qualityMetrics(object)`) and additionally pass the 
-parameter `relativeTo = "Q1"` and `relativeTo = "previous"`.
+parameter `relativeTo = "Q1"` and `relativeTo = "previous"`. For computational
+reasons, we will restrict the calculation of the metrics to the first  
+sample and to RPLC samples.
 
 ```{r calculateMetrics}
-sps_rplc_sample_1 <- sps_l_rplc[[1]]
-metrics_rplc_sps_Q1 <- calculateMetrics(object = sps_rplc_sample_1,
-    metrics = qualityMetrics(sps_rplc_sample_1),
+## subset the Spectra objects
+dO_unique <- unique(dataOrigin(sps_c_rplc))[1]
+sps_rplc_subset <- sps_c_rplc[dataOrigin(sps_c_rplc) %in% dO_unique, ]
+sps_hilic_subset <- sps_c_hilic[dataOrigin(sps_c_hilic) %in% dO_unique, ]
+
+## RPLC
+metrics_rplc_sps_Q1 <- calculateMetrics(object = sps_rplc_subset,
+    metrics = qualityMetrics(sps_rplc_subset),
     relativeTo = "Q1", msLevel = 1L)
 metrics_rplc_sps_Q1
-metrics_rplc_sps_previous <- calculateMetrics(object = sps_rplc_sample_1,
-    metrics = qualityMetrics(sps_rplc_sample_1),
+metrics_rplc_sps_previous <- calculateMetrics(object = sps_rplc_subset,
+    metrics = qualityMetrics(sps_rplc_subset),
     relativeTo = "previous", msLevel = 1L)
 metrics_rplc_sps_previous
-
-sps_hilic_sample_1 <- sps_l_hilic[[1]]
-metrics_hilic_sps_Q1 <- calculateMetrics(object = sps_hilic_sample_1,
-    metrics = qualityMetrics(sps_hilic_sample_1),
-    relativeTo = "Q1")
-metrics_hilic_sps_Q1
-metrics_hilic_sps_previous <- calculateMetrics(object = sps_hilic_sample_1,
-    metrics = qualityMetrics(sps_hilic_sample_1),
-    relativeTo = "previous")
-metrics_hilic_sps_previous
 ```
 
-Alternatively, an `MsExperiment` object might be passed to 
-`calculateMetrics`. The function will iterate over the samples (referring
-to rows in `sampleData(msexp))`) and calculate the quality metrics on the
-corresponding `Spectra`s.
+Alternatively, a `Spectra` object might be passed to the function
+`calculateMetricsSpectra`. The function will, similarly as in `calculateMetrics`
+iterate over the samples (referring to entries in `dataOrigin(sps))`) and 
+calculate the quality metrics on the corresponding `Spectra`s.
 
-There are in total 541 samples respectively in the objects 
-`msexp_rplc` and `msexp_hilic`. To improve the visualization and 
-interpretability, we will only calculate the metrics from the first 50 of 
-these samples.
+There are in total `r length(unique(dataOrigin(sps_c_rplc)))` samples 
+respectively in the objects `sps_c_rplc` and `sps_c_hilic`. To improve 
+the visualization and interpretability, we will only calculate the metrics 
+from the first 20 of these samples.
+
 ```{r metrics_rplc_hilic_lee2019}
-## subset the MsExperiment objects
-msexp_rplc_subset <- msexp_rplc[, 1:50]
-msexp_hilic_subset <- msexp_hilic[, 1:50]
+## define metrics
+metrics_sps <- c("rtDuration", "rtOverTicQuantile", "rtOverMsQuarters",
+    "ticQuantileToQuantileLogRatio", "numberSpectra", "medianPrecursorMz",                
+    "rtIqr", "rtIqrRate", "areaUnderTic")
 
-## for RPLC-derived MsExperiment
-metrics_rplc_msexp <- calculateMetrics(object = msexp_rplc_subset,
-    metrics = qualityMetrics(msexp_rplc_subset),
-    relativeTo = "Q1", msLevel = 1L)
+## subset the Spectra objects
+dO_unique <- unique(dataOrigin(sps_c_rplc))[1:20]
+sps_rplc_subset <- sps_c_rplc[dataOrigin(sps_c_rplc) %in% dO_unique, ]
+sps_hilic_subset <- sps_c_hilic[dataOrigin(sps_c_hilic) %in% dO_unique, ]
 
-## for HILIC-derived MsExperiment
-metrics_hilic_msexp <- calculateMetrics(object = msexp_hilic_subset,
-    metrics = qualityMetrics(msexp_hilic_subset),
-    relativeTo = "Q1", msLevel = 1L)
+## for RPLC-derived Spectra
+metrics_rplc_sps <- calculateMetricsFromSpectra(spectra = sps_rplc_subset,
+    metrics = metrics_sps, relativeTo = "Q1", msLevel = 1L)
+
+## for HILIC-derived Spectra
+metrics_hilic_sps <- calculateMetricsFromSpectra(spectra = sps_hilic_subset,
+    metrics = metrics_sps, relativeTo = "Q1", msLevel = 1L)
 ```
 
-When passing an `MsExperiment` object to `calculateMetrics` a `data.frame`
+When passing an `Spectra` object to `calculateMetrics` a `data.frame`
 object is returned with the samples (derived from the rownames of 
-`sampleData(msexp)`) in the rows and the metrics in columns. 
+`dataOrigin(sps)`) in the rows and the metrics in columns. 
 
-We will show here the objects `metrics_rplc_msexp` and `metrics_hilic_msexp`
+We will show here the objects `metrics_rplc_sps` and `metrics_hilic_sps`
 ```{r paged_table_metrics, eval = TRUE, echo = FALSE}
-print("metrics_rplc_msexp")
-rmarkdown::paged_table(as.data.frame(metrics_rplc_msexp))
-print("metrics_hilic_msexp")
-rmarkdown::paged_table(as.data.frame(metrics_hilic_msexp))
+print("metrics_rplc_sps")
+rmarkdown::paged_table(as.data.frame(metrics_rplc_sps))
+print("metrics_hilic_sps")
+rmarkdown::paged_table(as.data.frame(metrics_hilic_sps))
 ```
 
 # Visualizing the results
@@ -424,8 +396,8 @@ As a general rule, only samples of the same type should be compared to
 adjust for sample type-specific effects.
 
 ```{r}
-metrics_msexp <- rbind(metrics_rplc_msexp, metrics_hilic_msexp)
-plotMetric(qc = metrics_msexp, metric = "numberSpectra")
+metrics_sps <- rbind(metrics_rplc_sps, metrics_hilic_sps)
+plotMetric(qc = metrics_sps, metric = "numberSpectra")
 ```
 
 Similarly, we are able to display the area under the TIC for the retention
@@ -434,14 +406,14 @@ the differnt retention time quantiles and could indicate drifts or
 interruptions of sensitivity during the run.
 
 ```{r}
-plotMetric(qc = metrics_msexp, metric = "areaUnderTicRtQuantiles")
+plotMetric(qc = metrics_sps, metric = "ticQuantileToQuantileLogRatio")
 ```
 
 Alternatively, to browse through all metrics that were calculated, we can use
 the `shinyMsQuality` function. 
 
 ```{r eval = FALSE}
-shinyMsQuality(qc = metrics_msexp)
+shinyMsQuality(qc = metrics_sps)
 ```
 
 # Appendix {-}
