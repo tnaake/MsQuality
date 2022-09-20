@@ -97,6 +97,31 @@ jobs:
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
           install.packages("devtools", dependencies = TRUE, ask = FALSE, update = FALSE)
         shell: Rscript {0}
+    
+     ## Find the corresponding R version based on the Bioconductor version
+      ## to use for the macOS and Windows checks by the next GHA job
+      - id: findrversion
+        name: Find Bioc and R versions
+        run: |
+          ## Find what branch we are working on
+          if echo "$GITHUB_REF" | grep -q "master"; then
+              biocversion="devel"
+          elif echo "$GITHUB_REF" | grep -q "RELEASE_"; then
+              biocversion="release"
+          fi
+          ## Define the R and Bioconductor version numbers
+          biocversionnum=$(Rscript -e "info <- BiocManager:::.version_map_get_online('https://bioconductor.org/config.yaml'); res <- subset(info, BiocStatus == '${biocversion}')[, 'Bioc']; cat(as.character(res))")
+          rversion=$(Rscript -e "info <- BiocManager:::.version_map_get_online('https://bioconductor.org/config.yaml'); res <- subset(info, BiocStatus == '${biocversion}')[, 'R']; cat(as.character(res))")
+          ## Print the results
+          echo $biocversion
+          echo $biocversionnum
+          echo $rversion
+          ## Save the info for the next job
+          echo "::set-output name=rversion::${rversion}"
+          echo "::set-output name=biocversionnum::${biocversionnum}"
+        shell:
+          bash {0}
+
 
       - name: Cache R packages
         if: "!contains(github.event.head_commit.message, '/nocache') && runner.os != 'Linux'"
