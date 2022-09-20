@@ -1,8 +1,8 @@
 Package: MsQuality
 Type: Package
-Title: MsQuality - Quality metric calculation via Spectra and MsExperiment objects
-Version: 0.99.1
-Date: 2021-11-23
+Title: MsQuality - Quality metric calculation from Spectra objects
+Version: 0.99.2
+Date: 2022-09-20
 Authors@R: c(person(given = "Thomas", family = "Naake", 
 		email = "thomasnaake@googlemail.com", role = c("aut", "cre"),
 		comment = c(ORCID = "0000-0001-7917-5580")),
@@ -36,7 +36,7 @@ Suggests:
 	rmarkdown (>= 2.7),
 	S4Vectors (>= 0.29.17),
 	testthat (>= 2.2.1)
-biocViews: Metabolomics, Proteomics, MassSpectrometry, QC
+biocViews: Metabolomics, Proteomics, MassSpectrometry, QualityControl
 License: GPL (>= 3)
 Encoding: UTF-8
 RoxygenNote: 7.2.0

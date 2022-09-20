@@ -1,3 +1,10 @@
+Changes in version 0.99.2 (2022-09-20):
++ create branch msexperiment to store infrastructure and functions for
+  MsExperiment objects
++ remove MsExperiment objects since this is still in BioC review and solely
+  rely on Spectra objects
++ adjust documentation for the implemented changes (removal of MsExperiment)  
+  
 Changes in version 0.99.1 (2021-11-23)
 + simplify calculateMetricsFromSpectra:
   o the function does not any longer match the arguments by the formal 
