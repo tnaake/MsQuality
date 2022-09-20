@@ -4,13 +4,20 @@
 \alias{calculateMetricsFromSpectra}
 \title{Calculate QC metrics from a Spectra object}
 \usage{
-calculateMetricsFromSpectra(spectra, metrics = qualityMetrics(spectra), ...)
+calculateMetricsFromSpectra(
+  spectra,
+  metrics = qualityMetrics(spectra),
+  f = spectra$dataOrigin,
+  ...
+)
 }
 \arguments{
 \item{spectra}{\code{Spectra} object}
 
 \item{metrics}{\code{character} specifying the quality metrics to be 
 calculated on \code{spectra}}
+
+\item{f}{\code{character}, grouping parameter for \code{spectra}}
 
 \item{...}{arguments passed to the quality metrics functions defined in 
 \code{metrics}}
@@ -22,7 +29,8 @@ different spectra (in rows)
 \description{
 The function \code{calculateMetricsFromSpectra} calculates quality metrics 
 from a \code{Spectra} object. The function will calculate the 
-metrics per sample according to the \code{dataOrigin} information.
+metrics per sample according to the grouping parameter \code{f}, 
+e.g. \code{dataOrigin} information.
 }
 \details{
 The metrics are defined by the argument \code{metrics}. Further arguments 

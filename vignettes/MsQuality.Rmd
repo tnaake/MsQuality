@@ -151,9 +151,9 @@ We will load here these objects:
 data("Lee2019", package = "MsQuality")
 ```
 
-The final data set contains `r length(unique(dataOrigin(sps_c_rplc)))`
-paired samples (i.e. `r length(unique(dataOrigin(sps_c_rplc)))` samples derived 
-from RPLC and `r length(unique(dataOrigin(sps_c_rplc)))` samples derived 
+The final data set contains `r length(unique(sps_c_rplc$dataOrigin))`
+paired samples (i.e. `r length(unique(sps_c_rplc$dataOrigin))` samples derived 
+from RPLC and `r length(unique(sps_c_rplc$dataOrigin))` samples derived 
 from HILIC).
 
 # Calculating the quality metrics on `Spectra` objects
@@ -322,9 +322,9 @@ sample and to RPLC samples.
 
 ```{r calculateMetrics}
 ## subset the Spectra objects
-dO_unique <- unique(dataOrigin(sps_c_rplc))[1]
-sps_rplc_subset <- sps_c_rplc[dataOrigin(sps_c_rplc) %in% dO_unique, ]
-sps_hilic_subset <- sps_c_hilic[dataOrigin(sps_c_hilic) %in% dO_unique, ]
+dO_unique <- unique(sps_c_rplc$dataOrigin)[1]
+sps_rplc_subset <- sps_c_rplc[sps_c_rplc$dataOrigin %in% dO_unique, ]
+sps_hilic_subset <- sps_c_hilic[sps_c_hilic$dataOrigin %in% dO_unique, ]
 
 ## RPLC
 metrics_rplc_sps_Q1 <- calculateMetrics(object = sps_rplc_subset,
@@ -339,10 +339,10 @@ metrics_rplc_sps_previous
 
 Alternatively, a `Spectra` object might be passed to the function
 `calculateMetricsSpectra`. The function will, similarly as in `calculateMetrics`
-iterate over the samples (referring to entries in `dataOrigin(sps))`) and 
+iterate over the samples (referring to entries in `sps$dataOrigin`) and 
 calculate the quality metrics on the corresponding `Spectra`s.
 
-There are in total `r length(unique(dataOrigin(sps_c_rplc)))` samples 
+There are in total `r length(unique(sps_c_rplc$dataOrigin))` samples 
 respectively in the objects `sps_c_rplc` and `sps_c_hilic`. To improve 
 the visualization and interpretability, we will only calculate the metrics 
 from the first 20 of these samples.
@@ -354,9 +354,9 @@ metrics_sps <- c("rtDuration", "rtOverTicQuantile", "rtOverMsQuarters",
     "rtIqr", "rtIqrRate", "areaUnderTic")
 
 ## subset the Spectra objects
-dO_unique <- unique(dataOrigin(sps_c_rplc))[1:20]
-sps_rplc_subset <- sps_c_rplc[dataOrigin(sps_c_rplc) %in% dO_unique, ]
-sps_hilic_subset <- sps_c_hilic[dataOrigin(sps_c_hilic) %in% dO_unique, ]
+dO_unique <- unique(sps_c_rplc$dataOrigin)[1:20]
+sps_rplc_subset <- sps_c_rplc[sps_c_rplc$dataOrigin %in% dO_unique, ]
+sps_hilic_subset <- sps_c_hilic[sps_c_hilic$dataOrigin %in% dO_unique, ]
 
 ## for RPLC-derived Spectra
 metrics_rplc_sps <- calculateMetricsFromSpectra(spectra = sps_rplc_subset,
@@ -369,7 +369,7 @@ metrics_hilic_sps <- calculateMetricsFromSpectra(spectra = sps_hilic_subset,
 
 When passing an `Spectra` object to `calculateMetrics` a `data.frame`
 object is returned with the samples (derived from the rownames of 
-`dataOrigin(sps)`) in the rows and the metrics in columns. 
+`sps$dataOrigin`) in the rows and the metrics in columns. 
 
 We will show here the objects `metrics_rplc_sps` and `metrics_hilic_sps`
 ```{r paged_table_metrics, eval = TRUE, echo = FALSE}

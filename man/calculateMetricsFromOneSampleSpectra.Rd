@@ -8,6 +8,7 @@ data from one sample}
 calculateMetricsFromOneSampleSpectra(
   spectra,
   metrics = qualityMetrics(spectra),
+  f = spectra$dataOrigin,
   ...
 )
 }
@@ -16,6 +17,8 @@ calculateMetricsFromOneSampleSpectra(
 
 \item{metrics}{`\code{character} specifying the quality metrics to be 
 calculated on \code{spectra}}
+
+\item{f}{\code{character}, grouping parameter for \code{spectra}}
 
 \item{...}{arguments passed to the quality metrics functions defined in 
 \code{metrics}}
@@ -34,7 +37,8 @@ argument. \code{params} can contain named entries which are matched against
 the formal arguments of the quality metric functions. 
 
 The \code{Spectra} object will only contain spectral data from one 
-data origin (\code{spectra$dataOrigin} is of length 1).
+data origin (e.g. \code{spectra$dataOrigin} is of length 1). The grouping 
+is specified by the argument \code{f}.
 }
 \examples{
 library(msdata)

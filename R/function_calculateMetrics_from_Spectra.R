@@ -14,11 +14,13 @@
 #' the formal arguments of the quality metric functions. 
 #' 
 #' The \code{Spectra} object will only contain spectral data from one 
-#' data origin (\code{spectra$dataOrigin} is of length 1).
+#' data origin (e.g. \code{spectra$dataOrigin} is of length 1). The grouping 
+#' is specified by the argument \code{f}.
 #' 
 #' @param spectra \code{Spectra} object
 #' @param metrics `\code{character} specifying the quality metrics to be 
 #' calculated on \code{spectra}
+#' @param f \code{character}, grouping parameter for \code{spectra}
 #' @param ... arguments passed to the quality metrics functions defined in 
 #' \code{metrics}
 #' 
@@ -47,7 +49,7 @@
 #' MsQuality:::calculateMetricsFromOneSampleSpectra(spectra = spectra, 
 #'     metrics = metrics, msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromOneSampleSpectra <- function(spectra, 
-    metrics = qualityMetrics(spectra), ...) {
+    metrics = qualityMetrics(spectra), f = spectra$dataOrigin, ...) {
     
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(spectra), throw an error if there are metrics that 
@@ -56,7 +58,7 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
         several.ok = TRUE)
 
     if(!is(spectra, "Spectra")) stop("'spectra' is not of class 'Spectra'")
-    if(length(unique(Spectra::dataOrigin(spectra))) != 1) 
+    if(length(unique(f)) != 1) 
         stop("'spectra' should only contain data from one origin")
     dots <- list(...)
 
@@ -88,7 +90,8 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' @description
 #' The function \code{calculateMetricsFromSpectra} calculates quality metrics 
 #' from a \code{Spectra} object. The function will calculate the 
-#' metrics per sample according to the \code{dataOrigin} information.
+#' metrics per sample according to the grouping parameter \code{f}, 
+#' e.g. \code{dataOrigin} information.
 #' 
 #' @details
 #' The metrics are defined by the argument \code{metrics}. Further arguments 
@@ -99,6 +102,7 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' @param spectra \code{Spectra} object
 #' @param metrics \code{character} specifying the quality metrics to be 
 #' calculated on \code{spectra}
+#' @param f \code{character}, grouping parameter for \code{spectra}
 #' @param ... arguments passed to the quality metrics functions defined in 
 #' \code{metrics}
 #' 
@@ -135,7 +139,7 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
 #'     msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromSpectra <- function(spectra, 
-    metrics = qualityMetrics(spectra), ...) {
+    metrics = qualityMetrics(spectra), f = spectra$dataOrigin, ...) {
     
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(spectra), throw an error if there are metrics that 
@@ -146,20 +150,20 @@ calculateMetricsFromSpectra <- function(spectra,
     if(!is(spectra, "Spectra")) stop("spectra is not of class 'Spectra'")
     
     ## get first the number of spectra in the mse object, one spectra should 
-    ## refer to one mzML file/sample 
-    dO <- Spectra::dataOrigin(spectra)
-    dO_unique <- unique(dO)
+    ## refer to one mzML file/sample or other grouping factor specified by
+    ## paramter f
+    f_unique <- unique(f)
     
     ## iterate through the different spectra per dataOrigin and calculate the 
     ## quality metrics using the calculateMetricsFromOneSampleSpectra
     ## the lapply loop returns list containing named numeric vectors
-    spectra_metrics <- lapply(dO_unique, function(dO_unique_i) {
-        spectra_i <- spectra[dO == dO_unique_i, ]
+    spectra_metrics <- lapply(f_unique, function(f_unique_i) {
+        spectra_i <- spectra[f == f_unique_i, ]
         calculateMetricsFromOneSampleSpectra(spectra = spectra_i, 
             metrics = metrics, ...)
     })
     df <- do.call("rbind", spectra_metrics)
-    rownames(df) <- dO_unique
+    rownames(df) <- f_unique
     
     ## add attributes
     dots <- list(...)
