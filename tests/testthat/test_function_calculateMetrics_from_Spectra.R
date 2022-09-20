@@ -99,10 +99,12 @@ test_that("calculateMetricsFromOneSampleSpectra", {
 ## START unit test calculateMetricsFromSpectra ##
 test_that("calculateMetricsFromSpectra", {
     expect_equal(dim(metrics_spectra), c(2, 12))
-    expect_equal(unlist(lapply(
-            strsplit(rownames(metrics_spectra), "sciex"), "[", 2)), 
-        c("\\20171016_POOL_POS_1_105-134.mzML", 
-          "\\20171016_POOL_POS_3_105-134.mzML"))
+    dirs <- unlist(lapply(
+        strsplit(rownames(metrics_spectra), "sciex"), "[", 2))
+    dirs <- gsub("[\\]|[/]", "", dirs)
+    expect_equal(dirs, 
+        c("20171016_POOL_POS_1_105-134.mzML", 
+          "20171016_POOL_POS_3_105-134.mzML"))
     expect_equal(colnames(metrics_spectra), colnames_metrics)
     expect_equal(as.numeric(metrics_spectra[1, ]), 
         metrics_spectra_1_vals, tolerance = 1e-06)
@@ -130,10 +132,12 @@ test_that("calculateMetricsFromSpectra", {
 ## START unit test calculateMetrics ##
 test_that("calculateMetrics", {
     expect_equal(dim(metrics_spectra_wrapper), c(2, 12))
-    expect_equal(unlist(lapply(
-            strsplit(rownames(metrics_spectra_wrapper), "sciex"), "[", 2)), 
-        c("\\20171016_POOL_POS_1_105-134.mzML", 
-            "\\20171016_POOL_POS_3_105-134.mzML"))
+    dirs <- unlist(lapply(
+        strsplit(rownames(metrics_spectra), "sciex"), "[", 2))
+    dirs <- gsub("[\\]|[/]", "", dirs)
+    expect_equal(dirs, 
+        c("20171016_POOL_POS_1_105-134.mzML", 
+            "20171016_POOL_POS_3_105-134.mzML"))
     expect_equal(length(metrics_spectra_wrapper), 24)
     expect_equal(colnames(metrics_spectra_wrapper), colnames_metrics)
     expect_true(is.numeric(metrics_spectra_wrapper))
