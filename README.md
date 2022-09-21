@@ -51,7 +51,7 @@ to calculate quality metrics both on `Spectra` and `MsExperiment` objects.
 
 You are welcome to 
 
- * write a mail to <thomasnaake@googlemail.com> 
+ * write a mail to <thomasnaake (at) googlemail (dot) com> 
  * submit suggestions and issues: <https://github.com/tnaake/MsQuality/issues>
  * send a pull request: <https://github.com/tnaake/MsQuality/issues> 
 
