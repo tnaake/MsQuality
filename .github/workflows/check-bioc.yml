@@ -146,8 +146,9 @@ jobs:
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
         run: |
-          ## Enable installing XML from binary if needed
-          install.packages("XML", type = "binary")
+          ## Enable installing RCurl and XML from binary if needed
+          options(install.packages.check.source = "no")
+          install.packages(c("RCurl", "XML"), type = "binary", )
         shell: Rscript {0}
 
       - name: Install BiocManager
