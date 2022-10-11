@@ -11,7 +11,8 @@ Authors@R: c(person(given = "Thomas", family = "Naake",
 		comment = c(ORCID = "0000-0002-6977-7147")))
 VignetteBuilder: knitr
 Description: MsQuality enables to calculate quality metrics of mass spectrometry
-	data. It is build upon Spectra objects.
+	data. The package is build upon Spectra objects and uses the mzQC-defined
+	quality metrics.
 Depends:
 	R (>= 4.1.0)
 Imports:
@@ -23,6 +24,7 @@ Imports:
 	shiny (>= 1.6.0),
 	shinydashboard (>= 0.7.1),
 	Spectra (>= 1.2.0),
+	stats (>= 4.1.0)
 	stringr (>= 1.4.0),
 	tibble (>= 3.1.4),
 	tidyr (>= 1.1.3)
