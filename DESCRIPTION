@@ -9,7 +9,6 @@ Authors@R: c(person(given = "Thomas", family = "Naake",
 	person(given = "Johannes", family = "Rainer",
 		email = "johannes.rainer@eurac.edu", role = "aut",
 		comment = c(ORCID = "0000-0002-6977-7147")))
-Maintainer: Thomas Naake <thomasnaake@googlemail.com>
 VignetteBuilder: knitr
 Description: MsQuality enables to calculate quality metrics of mass spectrometry
 	data. It is build upon Spectra objects.
