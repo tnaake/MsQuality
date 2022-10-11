@@ -88,10 +88,14 @@ To install this package, start `R` and enter:
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-if (!requireNamespace("devtools", quietly = TRUE))
-    install.packages("devtools")
+if (!requireNamespace("remotes", quietly = TRUE))
+    install.packages("remotes")
 
-devtools::install_github("tnaake/MsQuality")
+## to install from Bioconductor
+BiocManager::install("MsQuality")
+
+## to install from GitHub
+BiocManager::install("tnaake/MsQuality")
 ```
 
 This will install this package and all eventually missing dependencies.

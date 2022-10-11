@@ -56,17 +56,28 @@ You are welcome to
  * send a pull request: <https://github.com/tnaake/MsQuality/issues> 
 
 ## Install
-To install `MsQuality`, you have first to install the [devtools](http://cran.r-project.org/web/packages/devtools/index.html) 
+
+To install `MsQuality`, you have first to install the 
+[`BiocManager`](https://www.bioconductor.org/install/) and
+[remotes](http://cran.r-project.org/web/packages/cran/index.html) 
 package: 
 
 ```r
-install.packages("devtools")
-library("devtools")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+if (!requireNamespace("remotes", quietly = TRUE))
+    install.packages("remotes")
 ```
 
 Install the `MsQuality` package then via
+
 ```r
-install_github("tnaake/MsQuality")
+## to install from Bioconductor
+BiocManager::install("MsQuality")
+
+## to install from GitHub
+BiocManager::install("tnaake/MsQuality")
 ```
 
 
