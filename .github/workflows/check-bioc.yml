@@ -146,7 +146,8 @@ jobs:
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
         run: |
-          ## Edit below if you have any Windows system dependencies
+          ## Enable installing XML from binary if needed
+          install.packages("XML", type = "binary")
         shell: Rscript {0}
 
       - name: Install BiocManager
