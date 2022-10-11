@@ -1,7 +1,7 @@
 Package: MsQuality
 Type: Package
 Title: MsQuality - Quality metric calculation from Spectra objects
-Version: 0.99.3
+Version: 0.99.4
 Date: 2022-10-11
 Authors@R: c(person(given = "Thomas", family = "Naake", 
 		email = "thomasnaake@googlemail.com", role = c("aut", "cre"),
@@ -24,7 +24,7 @@ Imports:
 	shiny (>= 1.6.0),
 	shinydashboard (>= 0.7.1),
 	Spectra (>= 1.2.0),
-	stats (>= 4.1.0)
+	stats (>= 4.1.0),
 	stringr (>= 1.4.0),
 	tibble (>= 3.1.4),
 	tidyr (>= 1.1.3)

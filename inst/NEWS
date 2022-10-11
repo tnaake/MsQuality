@@ -1,3 +1,6 @@
+Changes in version 0.99.4 (2022-10-11):
++ add missing comma in DESCRIPTION
+
 Changes in version 0.99.3 (2022-10-11):
 + delete Maintainer field in DESCRIPTION
 + add instructions to install MsQuality in vignette and README.md via
