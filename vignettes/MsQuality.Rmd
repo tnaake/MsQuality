@@ -80,6 +80,51 @@ In this vignette, we will (i) create some exemplary `Spectra`
 objects, (ii) calculate the quality metrics on these
 data sets, and (iii) visualize some of the metrics.
 
+## Alternative software for data quality assessment
+
+Other `R` packages are available in Bioconductor that are able to assess 
+the quality of mass spectrometry data: 
+
+[`artMS`](https://bioconductor.org/packages/release/bioc/html/artMS.html)
+uses MaxQuant output and enables to calculate several QC metrics, e.g.
+correlation matrix for technical replicates, calculation of total sum of 
+intensities in biological replicates, total peptide counts in biological 
+replicates, charge state distribution of PSMs identified in each biological
+replicates, or MS1 scan counts in each biological replicate.
+
+[`MSstatsQC`](https://bioconductor.org/packages/release/bioc/html/MSstatsQC.html)
+and the visualization tool
+[`MSstatsQCgui`](https://bioconductor.org/packages/release/bioc/html/MSstatsQCgui.html)
+require csv files in long format from spectral processing tools such as 
+Skyline and Panorama autoQC or `MSnbase` objects. `MSstatsQC` enables to 
+generate individual, moving range, cumulative sum for mean, and/or
+cumulative sum for variability control charts for each metric. Metrics
+can be any kind of user-defined metric stored in the data columns for a given
+peptide, e.g. retention time and peak area.
+
+[`MQmetrics`](https://bioconductor.org/packages/release/bioc/html/MQmetrics.html)
+provides a pipeline to analyze the quality of proteomics data sets from
+MaxQuant files and focuses on proteomics-/MaxQuant-specific metrics, e.g.
+proteins identified, peptides identified, or proteins versus 
+peptide/protein ratio.
+
+[`MatrixQCvis`](https://bioconductor.org/packages/release/bioc/html/MatrixQCvis.html)
+provides an interactive shiny-based interface to assess data quality at various
+processing steps (normalization, transformation, batch correction, and 
+imputation) of rectangular matrices. The package includes several diagnostic
+plots and metrics such as barplots of intensity distributions, plots to 
+visualize drifts, MA plots and Hoeffding's D value calculation, and 
+dimension reduction plots and provides specific tools to analyze data sets 
+containing missing values as commonly observed in mass spectrometry.
+
+[`proBatch`](https://bioconductor.org/packages/release/bioc/html/proBatch.html)
+enables to assess batch effects in (prote)omics data sets and corrects these
+batch effects in subsequent steps. Several tools to visualize data quality are 
+included in the `proBatch` packages, such as barplots of intensity 
+distributions, cluster and heatmap analysis tools, and PCA dimension 
+reduction plots. Additionally, `proBatch` enables to assess diagnostics at 
+the feature level, e.g. peptides or spike-ins.
+
 # Installation
 
 To install this package, start `R` and enter:
@@ -102,9 +147,10 @@ This will install this package and all eventually missing dependencies.
 
 # Questions and bugs {-}
 
-`MsQuality` is currently under active development. If you discover any bugs, typos or develop ideas of improving `MsQuality` feel free to raise an issue via
-[GitHub](https://github.com/tnaake/MsQuality) or send a mail to the developer.
-
+`MsQuality` is currently under active development. If you discover any bugs, 
+typos or develop ideas of improving `MsQuality` feel free to raise an issue 
+via [GitHub](https://github.com/tnaake/MsQuality) or send a mail to the 
+developer.
 
 # Create `Spectra` objects 
 
@@ -148,23 +194,31 @@ coupled to mass spectrometry
 
 In a separate step (see documentation for `Lee2019_meta_vals` and
 `Lee2019`), we have created a list containing `Spectra` objects for
-each samples (objects `sps_c_rplc` and `sps_c_hilic`).
+each samples (objects `sps_rplc` and `sps_hilic`).
 We will load here these objects:
 
 ```{r load_Lee2019, eval = TRUE, echo = TRUE}
 data("Lee2019", package = "MsQuality")
 ```
 
-The final data set contains `r length(unique(sps_c_rplc$dataOrigin))`
-paired samples (i.e. `r length(unique(sps_c_rplc$dataOrigin))` samples derived 
-from RPLC and `r length(unique(sps_c_rplc$dataOrigin))` samples derived 
+The final data set contains `r length(unique(sps_rplc$dataOrigin))`
+paired samples (i.e. `r length(unique(sps_rplc$dataOrigin))` samples derived 
+from RPLC and `r length(unique(sps_hilic$dataOrigin))` samples derived 
 from HILIC).
+
+We will combine the `sps_rplc` and `sps_hilic` objects in the following and
+calculate on this combined document the metrics. 
+
+```{r combine_sps_rplc_sps_hilic, eval = TRUE, echo = TRUE}
+sps_comb <- c(sps_rplc, sps_hilic)
+```
+
 
 # Calculating the quality metrics on `Spectra` objects
 
 Currently, the following metrics are included:
 ```{r}
-qualityMetrics(sps_c_rplc)
+qualityMetrics(sps_comb)
 ```
 
 The following list gives a brief explanation for these metrics. Further 
@@ -318,7 +372,7 @@ run with the parameter combinations `relativeTo = "Q1", msLevel = c(1L, 2L)`.
 The  results based on these parameter combinations are returned and the 
 used parameters are returned as attributes to the returned vector. 
 
-Here, we would like to calculate the metrics of all the included quality 
+Here, we would like to calculate the metrics of **all** included quality 
 metrics functions (`qualityMetrics(object)`) and additionally pass the 
 parameter `relativeTo = "Q1"` and `relativeTo = "previous"`. For computational
 reasons, we will restrict the calculation of the metrics to the first  
@@ -326,19 +380,17 @@ sample and to RPLC samples.
 
 ```{r calculateMetrics}
 ## subset the Spectra objects
-dO_unique <- unique(sps_c_rplc$dataOrigin)[1]
-sps_rplc_subset <- sps_c_rplc[sps_c_rplc$dataOrigin %in% dO_unique, ]
-sps_hilic_subset <- sps_c_hilic[sps_c_hilic$dataOrigin %in% dO_unique, ]
+sps_comb_subset <- sps_comb[grep("Sample.1_", sps_comb$dataOrigin), ]
 
-## RPLC
-metrics_rplc_sps_Q1 <- calculateMetrics(object = sps_rplc_subset,
-    metrics = qualityMetrics(sps_rplc_subset),
+## for RPLC and HILIC
+metrics_sps_Q1 <- calculateMetrics(object = sps_comb_subset,
+    metrics = qualityMetrics(sps_comb_subset),
     relativeTo = "Q1", msLevel = 1L)
-metrics_rplc_sps_Q1
-metrics_rplc_sps_previous <- calculateMetrics(object = sps_rplc_subset,
-    metrics = qualityMetrics(sps_rplc_subset),
+metrics_sps_Q1
+metrics_sps_previous <- calculateMetrics(object = sps_comb_subset,
+    metrics = qualityMetrics(sps_comb_subset),
     relativeTo = "previous", msLevel = 1L)
-metrics_rplc_sps_previous
+metrics_sps_previous
 ```
 
 Alternatively, a `Spectra` object might be passed to the function
@@ -346,41 +398,34 @@ Alternatively, a `Spectra` object might be passed to the function
 iterate over the samples (referring to entries in `sps$dataOrigin`) and 
 calculate the quality metrics on the corresponding `Spectra`s.
 
-There are in total `r length(unique(sps_c_rplc$dataOrigin))` samples 
-respectively in the objects `sps_c_rplc` and `sps_c_hilic`. To improve 
+There are in total `r length(unique(sps_rplc$dataOrigin))` samples 
+respectively in the objects `sps_rplc` and `sps_hilic`. To improve 
 the visualization and interpretability, we will only calculate the metrics 
 from the first 20 of these samples.
 
 ```{r metrics_rplc_hilic_lee2019}
 ## define metrics
 metrics_sps <- c("rtDuration", "rtOverTicQuantile", "rtOverMsQuarters",
-    "ticQuantileToQuantileLogRatio", "numberSpectra", "medianPrecursorMz",                
+    "ticQuantileToQuantileLogRatio", "numberSpectra", "medianPrecursorMz",
     "rtIqr", "rtIqrRate", "areaUnderTic")
 
 ## subset the Spectra objects
-dO_unique <- unique(sps_c_rplc$dataOrigin)[1:20]
-sps_rplc_subset <- sps_c_rplc[sps_c_rplc$dataOrigin %in% dO_unique, ]
-sps_hilic_subset <- sps_c_hilic[sps_c_hilic$dataOrigin %in% dO_unique, ]
+sps_subset <- sps_comb[grep(paste0("Sample.", 1:20, "_"), sps_comb$dataOrigin), ]
 
-## for RPLC-derived Spectra
-metrics_rplc_sps <- calculateMetricsFromSpectra(spectra = sps_rplc_subset,
+## for RPLC-derived and HILIC-derived Spectra
+metrics_sps <- calculateMetricsFromSpectra(spectra = sps_subset,
     metrics = metrics_sps, relativeTo = "Q1", msLevel = 1L)
 
-## for HILIC-derived Spectra
-metrics_hilic_sps <- calculateMetricsFromSpectra(spectra = sps_hilic_subset,
-    metrics = metrics_sps, relativeTo = "Q1", msLevel = 1L)
 ```
 
 When passing an `Spectra` object to `calculateMetrics` a `data.frame`
 object is returned with the samples (derived from the rownames of 
 `sps$dataOrigin`) in the rows and the metrics in columns. 
 
-We will show here the objects `metrics_rplc_sps` and `metrics_hilic_sps`
+We will show here the objects `metrics_sps`
 ```{r paged_table_metrics, eval = TRUE, echo = FALSE}
-print("metrics_rplc_sps")
-rmarkdown::paged_table(as.data.frame(metrics_rplc_sps))
-print("metrics_hilic_sps")
-rmarkdown::paged_table(as.data.frame(metrics_hilic_sps))
+print("metrics_sps")
+rmarkdown::paged_table(as.data.frame(metrics_sps))
 ```
 
 # Visualizing the results
@@ -400,7 +445,6 @@ As a general rule, only samples of the same type should be compared to
 adjust for sample type-specific effects.
 
 ```{r}
-metrics_sps <- rbind(metrics_rplc_sps, metrics_hilic_sps)
 plotMetric(qc = metrics_sps, metric = "numberSpectra")
 ```
 
@@ -413,8 +457,8 @@ interruptions of sensitivity during the run.
 plotMetric(qc = metrics_sps, metric = "ticQuantileToQuantileLogRatio")
 ```
 
-Alternatively, to browse through all metrics that were calculated, we can use
-the `shinyMsQuality` function. 
+Alternatively, to browse through all metrics that were calculated in an 
+interactive way, we can use the `shinyMsQuality` function. 
 
 ```{r eval = FALSE}
 shinyMsQuality(qc = metrics_sps)

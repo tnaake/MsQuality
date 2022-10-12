@@ -1,7 +1,7 @@
 #' @name Lee_2019
 #'
-#' @aliases sps_c_hilic
-#' @aliases sps_c_rplc
+#' @aliases sps_hilic
+#' @aliases sps_rplc
 #'
 #' @title Example data for \code{MsQuality}: data set of Lee et al. (2019)
 #'
@@ -146,9 +146,12 @@
 #' ## objects stored in an `MsExperiment`. We will convert the list of 
 #' ## `Spectra` objects to an `MsExperiment` object.
 #' 
-#' ## create the MsExperiment objects
-#' sps_c_rplc <- Reduce(c, sps_l_rplc)
-#' sps_c_hilic <- Reduce(c, sps_l_hilic)
+#' ## create the final Spectra objects, add information on the origin 
+#' ## (RPLC, HILIC) of the spectra
+#' sps_rplc <- Reduce(c, sps_l_rplc)
+#' sps_hilic <- Reduce(c, sps_l_hilic)
+#' sps_rplc$dataOrigin <- paste0(sps_rplc$dataOrigin, "_RPLC")
+#' sps_hilic$dataOrigin <- paste0(sps_hilic$dataOrigin, "_HILIC")
 #' 
 #' ## create an empty MsExperiment object and fill it with data
 #' msexp_rplc <- msexp_hilic <- MsExperiment()
@@ -156,8 +159,8 @@
 #' sampleData(msexp_hilic) <- DataFrame(samples = names(sps_l_hilic))
 #' rownames(sampleData(msexp_rplc)) <- names(sps_l_rplc)
 #' rownames(sampleData(msexp_hilic)) <- names(sps_l_hilic)
-#' spectra(msexp_rplc) <- sps_c_rplc
-#' spectra(msexp_hilic) <- sps_c_hilic
+#' spectra(msexp_rplc) <- sps_rplc
+#' spectra(msexp_hilic) <- sps_hilic
 #' 
 #' ## link the spectra to the samples
 #' msexp_rplc <- linkSampleData(object = msexp_rplc,
@@ -169,8 +172,9 @@
 #' msexp_rplc
 #' msexp_hilic
 #' 
-#' save(sps_c_rplc, sps_c_hilic, ##msexp_rplc, msexp_hilic, 
+#' save(sps_rplc, sps_hilic, ##msexp_rplc, msexp_hilic, 
 #'     file = "Lee2019.RData", compress = "xz")
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 NULL
+

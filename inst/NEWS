@@ -1,3 +1,9 @@
+Changes in version 0.99.5 (2022-10-12):
++ add section on alternative software in vignette
++ simplify the vignette with regard to dealing with the RPLC and HILIC
+  example data set and adjust the Lee2019-data.R accordingly to keep 
+  the RPLC/HILIC information in the dataOrigin slot of the Spectra object
+
 Changes in version 0.99.4 (2022-10-11):
 + add missing comma in DESCRIPTION
 

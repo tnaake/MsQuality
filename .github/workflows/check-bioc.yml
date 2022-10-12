@@ -148,7 +148,7 @@ jobs:
         run: |
           ## Enable installing RCurl and XML from binary if needed
           options(install.packages.check.source = "no")
-          install.packages(c("RCurl", "XML"), type = "binary", )
+          install.packages(c("RCurl", "XML"), type = "binary")
         shell: Rscript {0}
 
       - name: Install BiocManager
