@@ -1,8 +1,8 @@
 Package: MsQuality
 Type: Package
 Title: MsQuality - Quality metric calculation from Spectra objects
-Version: 0.99.5
-Date: 2022-10-12
+Version: 0.99.6
+Date: 2022-11-28
 Authors@R: c(person(given = "Thomas", family = "Naake", 
 		email = "thomasnaake@googlemail.com", role = c("aut", "cre"),
 		comment = c(ORCID = "0000-0001-7917-5580")),
@@ -10,21 +10,31 @@ Authors@R: c(person(given = "Thomas", family = "Naake",
 		email = "johannes.rainer@eurac.edu", role = "aut",
 		comment = c(ORCID = "0000-0002-6977-7147")))
 VignetteBuilder: knitr
-Description: MsQuality enables to calculate quality metrics of mass spectrometry
-	data. The package is build upon Spectra objects and uses the mzQC-defined
-	quality metrics.
+Description: 
+	The MsQuality provides functionality to calculate quality metrics 
+	for mass spectrometry-derived, spectral data at the per-sample level. 
+	MsQuality relies on the mzQC framework of quality metrics defined by the 
+	Human Proteom Organization-Proteomics Standards Initiative (HUPO-PSI). 
+	These metrics quantify the quality of spectral raw files using a controlled 
+	vocabulary. The package is especially addressed towards users that acquire 
+	mass spectrometry data on a large scale (e.g. data sets from clinical 
+	settings consisting of several thousands of samples).
+	The MsQuality package allows to calculate low-level quality metrics that 
+	require minimum information on mass spectrometry data: retention time, 
+	m/z values, and associated intensities. MsQuality relies on the 
+	Spectra package and its infrastructure to store spectral data.
 Depends:
-	R (>= 4.1.0)
+	R (>= 4.2.0)
 Imports:
 	ggplot2 (>= 3.3.5),
 	htmlwidgets (>= 1.5.3),
-	methods (>= 4.1.0),
+	methods (>= 4.2.0),
 	plotly (>= 4.9.4.1),
 	ProtGenerics (>= 1.24.0),
 	shiny (>= 1.6.0),
 	shinydashboard (>= 0.7.1),
 	Spectra (>= 1.2.0),
-	stats (>= 4.1.0),
+	stats (>= 4.2.0),
 	stringr (>= 1.4.0),
 	tibble (>= 3.1.4),
 	tidyr (>= 1.1.3)
@@ -38,6 +48,8 @@ Suggests:
 	S4Vectors (>= 0.29.17),
 	testthat (>= 2.2.1)
 biocViews: Metabolomics, Proteomics, MassSpectrometry, QualityControl
-License: GPL (>= 3)
+URL: https://www.github.com/tnaake/MsQuality/
+BugReport: https://www.github.com/tnaake/MsQuality/issues/
+License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
