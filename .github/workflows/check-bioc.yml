@@ -207,7 +207,7 @@ jobs:
         run: |
           ## Manually install required packages      
           install.packages("devtools", dependencies = TRUE, ask = FALSE, update = FALSE)
-          BiocManager::install("mzR", dependencies = TRUE, ask = FALSE)
+          BiocManager::install("mzR", dependencies = TRUE, ask = FALSE, force = TRUE)
         shell: Rscript {0}
 
       - name: Install BiocGenerics
