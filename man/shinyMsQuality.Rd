@@ -47,9 +47,9 @@ qc <- calculateMetricsFromSpectra(spectra = sps, metrics = metrics,
     msLevel = 1, relativeTo = "Q1", change = "jump")
 rownames(qc) <- c("Sample 1", "Sample 2")
 
-\dontrun{
-shinyMsQuality(qc = qc)
-}
+if (interactive())
+    shinyMsQuality(qc = qc)
+
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

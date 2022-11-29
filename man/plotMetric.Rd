@@ -51,7 +51,9 @@ metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
 qc <- calculateMetricsFromSpectra(spectra = sps, metrics = metrics, 
     msLevel = 1, relativeTo = "Q1", change = "jump")
 rownames(qc) <- c("Sample 1", "Sample 2")
-plotMetric(qc, metric = "areaUnderTic", plotly = TRUE) 
+
+## do the actual plotting
+plotMetric(qc, metric = "areaUnderTic", plotly = TRUE)
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

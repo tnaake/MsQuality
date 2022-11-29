@@ -27,7 +27,7 @@
 #' @importFrom ggplot2 ggplot geom_point aes_string scale_colour_brewer theme_bw
 #' @importFrom ggplot2 xlab ggtitle guides guide_legend theme element_text
 #' @importFrom ggplot2 element_blank
-#' @importFrom plotly ggplotly 
+#' @importFrom plotly ggplotly partial_bundle
 #' 
 #' @export
 #' 
@@ -52,7 +52,9 @@
 #' qc <- calculateMetricsFromSpectra(spectra = sps, metrics = metrics, 
 #'     msLevel = 1, relativeTo = "Q1", change = "jump")
 #' rownames(qc) <- c("Sample 1", "Sample 2")
-#' plotMetric(qc, metric = "areaUnderTic", plotly = TRUE) 
+#' 
+#' ## do the actual plotting
+#' plotMetric(qc, metric = "areaUnderTic", plotly = TRUE)
 plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
     
     qc_tbl_l <- plotMetricTibble(qc = qc, metric = metric)
@@ -68,7 +70,9 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
             panel.grid.major = element_blank(), 
             panel.grid.minor = element_blank())
     if (plotly)
-        g |> ggplotly(tooltip = c("x", "y"))
+        g |> 
+            ggplotly(tooltip = c("x", "y")) |>
+            partial_bundle()
     else 
         g
 }
@@ -208,9 +212,9 @@ plotMetricTibble <- function(qc, metric) {
 #'     msLevel = 1, relativeTo = "Q1", change = "jump")
 #' rownames(qc) <- c("Sample 1", "Sample 2")
 #' 
-#' \dontrun{
-#' shinyMsQuality(qc = qc)
-#' }
+#' if (interactive())
+#'     shinyMsQuality(qc = qc)
+#'
 shinyMsQuality <- function(qc) {
     
     if (!is.matrix(qc)) stop("'qc' is not a matrix")
