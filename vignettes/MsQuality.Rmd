@@ -240,14 +240,17 @@ respective help file for the quality metric (accessible by e.g. entering
 - *rtOverMsQuarters*, **MS1/MS2 quantiles RT fraction** (QC:4000055), 
   "The interval used for acquisition of the first, second, third, and fourth 
   quarter of all MS2 events divided by RT-Duration." [PSI:QC];
-- *ticQuantileToQuantileLogRatio*,
-  **MS1 quantile TIC change ratio to Quantile 1** (QC:4000057),
-  "The log ratio for the second to n-th quantile of TIC changes over first 
-  quantile of TIC changes." [PSI:QC];
-- *ticQuantileToQuantileLogRatio*, 
-  **MS1 quantile TIC change ratio to previous quantile** (QC:4000058),
-  "The log ratio for the second to n-th quantile of TIC over the previous 
-  quantile of TIC." [PSI:QC];
+- *ticQuantileToQuantileLogRatio*, **MS1 TIC-change quartile ratios** 
+  (MS:4000057), "The log ratios of successive TIC-change quartiles. The 
+  TIC changes are the list of MS1 total ion current (TIC) value changes 
+  from one to the next scan, produced when each MS1 TIC is subtracted 
+  from the preceding MS1 TIC. The metric's value triplet represents the 
+  log ratio of the TIC-change Q2 to Q1, Q3 to Q2, TIC-change-max to Q3" 
+  [PSI:MS], `mode = "TIC_change"`;
+- *ticQuantileToQuantileLogRatio*, **MS1 TIC quartile ratios** (MS:4000058),
+  The log ratios of successive TIC quartiles. The metric's value triplet 
+  represents the log ratios of TIC-Q2 to TIC-Q1, TIC-Q3 to TIC-Q2, TIC-max to 
+  TIC-Q3." [PSI:MS], `mode = "TIC";
 - *numberSpectra*, **Number of MS1 spectra** (QC:4000059), 
   "The number of MS1 events in the run." [PSI:QC];
 - *numberSpectra*, **Number of MS2 spectra** (QC:4000060), 
@@ -264,7 +267,7 @@ respective help file for the quality metric (accessible by e.g. entering
   period, in peptides per second." [PSI:QC];
 - *areaUnderTic*, **Area under TIC** (QC:4000077),
   "The area under the total ion chromatogram." [PSI:QC];
-- *areaUnderTICRTquantiles*, **Area under TIC RT quantiles** (QC:4000078),
+- *areaUnderTicRtQuantiles*, **Area under TIC RT quantiles** (QC:4000078),
   "The area under the total ion chromatogram of the retention time quantiles. 
   Number of quantiles are given by the n-tuple." [PSI:QC];
 - *extentIdentifiedPrecursorIntensity*, 
@@ -331,10 +334,10 @@ respective help file for the quality metric (accessible by e.g. entering
   [PSI:QC];
 - *RatioCharge3over2*, **Charged spectra ratio 3+ over 2+** (QC:4000180),
   "Ratio of 3+ peptide count over 2+ peptide count in all MS2" [PSI:QC];
-- **RatioCharge4over2**, **Charged peptides ratio 4+ over 2+** (QC:4000176),
+- *RatioCharge4over2*, **Charged peptides ratio 4+ over 2+** (QC:4000176),
   "Ratio of 4+ peptide count  over 2+ peptide count in identified 
   spectra" [PSI:QC];
-- **RatioCharge4over2**, **Charged spectra ratio 4+ over 2+** (QC:4000181),
+- *RatioCharge4over2*, **Charged spectra ratio 4+ over 2+** (QC:4000181),
   "Ratio of 4+ peptide count over 2+ peptide count in all MS2" [PSI:QC];
 - *meanCharge*, **Mean charge in identified spectra** (QC:4000177),
   "Mean charge in identified spectra" [PSI:QC];
@@ -361,13 +364,16 @@ the accepted arguments.
 
 Additional arguments can be given to the quality metrics functions. 
 For example, the function `ticQuantileToQuantileLogRatio` function has the 
-arguments `relativeTo` and `msLevel`. `relativeTo` specifies to which 
+arguments `relativeTo`, `mode`, and `msLevel`. `relativeTo` specifies to which 
 quantile the log TIC quantile is relatively related to (either to the 1st 
-quantile or the respective previous one). One `Spectra` object may also contain
+quantile or the respective previous one). `mode` (either `"TIC_change"` or 
+`"TIC"`) specifies if the quantiles are taken from the changes between TICs 
+of scan events or the TICs directly. One `Spectra` object may also contain
 more than one `msLevel`, e.g. if it also contains information on MS$^2$ or 
 MS$^3$ features. If the user adds the arguments 
-`relativeTo = "Q1", msLevel = c(1L, 2L))`, `ticQUantileToQuantileLogRatio` is 
-run with the parameter combinations `relativeTo = "Q1", msLevel = c(1L, 2L)`.
+`relativeTo = "Q1", mode = "TIC", msLevel = c(1L, 2L))`, 
+`ticQUantileToQuantileLogRatio` is run with the parameter combinations 
+`relativeTo = "Q1", mode = "TIC", msLevel = c(1L, 2L)`.
 
 The  results based on these parameter combinations are returned and the 
 used parameters are returned as attributes to the returned vector. 

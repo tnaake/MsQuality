@@ -10,7 +10,8 @@ metrics <- c("rtDuration", "rtOverTicQuantile", "ticQuantileToQuantileLogRatio",
 ## (msLevel is an argument of areaUnderTIC and msSignal10XChange,
 ## relativeTo is an argument of msSignal10XChange)
 suppressWarnings(metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra,
-    metrics = metrics, msLevel = 1, relativeTo = "Q1", change = "jump"))
+    metrics = metrics, msLevel = 1, relativeTo = "Q1", mode = "TIC", 
+    change = "jump"))
 
 ## calculate the metrics from Spectra
 dO <- unique(spectra$dataOrigin)
@@ -18,14 +19,14 @@ spectra_1 <- spectra[spectra$dataOrigin == dO[1], ]
 spectra_2 <- spectra[spectra$dataOrigin == dO[2], ]
 suppressWarnings(metrics_spectra_1 <- calculateMetricsFromOneSampleSpectra(
     spectra = spectra_1, metrics = metrics, msLevel = 1, 
-    relativeTo = "Q1", change = "jump"))
+    relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(metrics_spectra_2 <- calculateMetricsFromOneSampleSpectra(
     spectra = spectra_2, metrics = metrics, msLevel = 1, 
-    relativeTo = "Q1", change = "jump"))
+    relativeTo = "Q1", mode = "TIC", change = "jump"))
 
 ## calculate the metrics by the wrapper function
 suppressWarnings(metrics_spectra_wrapper <- calculateMetrics(object = spectra,
-    metrics = metrics, msLevel = 1, relativeTo = "Q1", change = "jump"))
+    metrics = metrics, msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
 
 ## START unit test calculateMetricsFromOneSampleSpectra ## 
 colnames_metrics <- c("rtDuration", "rtOverTicQuantile.0%",                  

@@ -29,7 +29,7 @@ test_that("rtOverTicQuantile", {
     expect_error(rtOverTicQuantile(NULL), "unable to find an inherited method")
     suppressWarnings(tmp <- rtOverTicQuantile(sps_sciex))
     expect_equal(as.numeric(tmp),
-        c(0.0, 0.25, 0.5, 0.75, 1), tolerance = 1e-02)
+        c(0.0, 0.2010891, 0.4257983, 0.7247362, 1), tolerance = 1e-02)
     expect_equal(names(tmp), c("0%", "25%", "50%", "75%", "100%"))
 })
 ## END unit test rtOverTicQuantile ##
@@ -39,11 +39,17 @@ test_that("rtOverMsQuarters", {
     expect_error(rtOverMsQuarters(NULL), "unable to find an inherited method")
     expect_error(rtOverMsQuarters(NULL), "unable to find an inherited method")
     expect_equal(as.numeric(rtOverMsQuarters(sps_sciex, msLevel = 1L)), 
-        c(0.25, 0.5, 0.75, 1), tolerance = 1e-02)
+        c(0.2494778, 0.5000077, 0.7505222, 1), tolerance = 1e-06)
     expect_equal(names(rtOverMsQuarters(sps_sciex, msLevel = 1L)), 
-        c("Quarter1", "Quarter2", "Quarter3", "Quarter4"), tolerance = 1e-06)
-    expect_error(rtOverMsQuarters(sps_sciex, msLevel = 2L), 
-        "'spectra' does contain less than four spectra")
+        c("Quarter1", "Quarter2", "Quarter3", "Quarter4"))
+    expect_equal(as.numeric(rtOverMsQuarters(sps_sciex[1:3,], msLevel = 1L)), 
+        c(NaN, NaN, NaN, NaN), tolerance = 1e-06)
+    expect_equal(names(rtOverMsQuarters(sps_sciex[1:3, ], msLevel = 1L)), 
+        c("Quarter1", "Quarter2", "Quarter3", "Quarter4"))
+    expect_equal(as.numeric(rtOverMsQuarters(sps_sciex[1:4,], msLevel = 1L)), 
+        c(0, 0.333333, 0.6666667, 1), tolerance = 1e-06)
+    expect_equal(names(rtOverMsQuarters(sps_sciex[1:4, ], msLevel = 1L)), 
+        c("Quarter1", "Quarter2", "Quarter3", "Quarter4"))
 })
 ## END unit test rtOverMsQuarters ##
 
@@ -53,14 +59,29 @@ test_that("ticQuantileToQuantileLogRatio", {
         "unable to find an inherited method")
     expect_error(ticQuantileToQuantileLogRatio(NULL), 
         "unable to find an inherited method")
+    
+    ## mode = "TIC_change"
     tmp <- suppressWarnings(ticQuantileToQuantileLogRatio(sps_sciex, 
-                relativeTo = "previous", msLevel = 1L))
-    expect_equal(as.numeric(tmp), c(-0.05853477, -0.58202994, 0.15361253))
+        relativeTo = "previous", mode = "TIC_change", msLevel = 1L))
+    expect_equal(as.numeric(tmp), c(-6.047274, NaN, 2.505220), 
+        tolerance = 1e-06)
     expect_equal(names(tmp), c("Q2/Q1", "Q3/Q2", "Q4/Q3"))
     tmp <- suppressWarnings(ticQuantileToQuantileLogRatio(sps_sciex, 
-                relativeTo = "Q1", msLevel = 1L))
-    expect_equal(as.numeric(tmp), c(-0.05853477, -0.64056471, -0.48695218))
+        relativeTo = "Q1", mode = "TIC_change", msLevel = 1L))
+    expect_equal(as.numeric(tmp), c(-6.047274, NaN, NaN), tolerance = 1e-06)
     expect_equal(names(tmp), c("Q2/Q1", "Q3/Q1", "Q4/Q1"))
+    
+    ## mode = "TIC"
+    tmp <- suppressWarnings(ticQuantileToQuantileLogRatio(sps_sciex, 
+        relativeTo = "previous", mode = "TIC", msLevel = 1L))
+    expect_equal(as.numeric(tmp), c(0.4759104, 0.2566362, 0.6382157),
+        tolerance = 1e-06)
+    expect_equal(names(tmp), c("Q2/Q1", "Q3/Q2", "Q4/Q3"))
+    tmp <- suppressWarnings(ticQuantileToQuantileLogRatio(sps_sciex, 
+        relativeTo = "Q1", mode = "TIC", msLevel = 1L))
+    expect_equal(as.numeric(tmp), c(0.4759104, 0.7325466, 1.3707623), tolerance = 1e-06)
+    expect_equal(names(tmp), c("Q2/Q1", "Q3/Q1", "Q4/Q1"))
+    
     expect_error(ticQuantileToQuantileLogRatio(sps_sciex, msLevel = 2L), 
                  "'spectra' does not contain any spectra")
 })

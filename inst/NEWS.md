@@ -1,5 +1,9 @@
 # MsQuality 0.99
 
+## Changes in version 0.99.7 (2023-06-02)
+- adjust ticQuantileToQuantileLogRatio that it adheres to
+  Quameter calculation
+
 ## Changes in version 0.99.6 (2022-11-29):
 - extend section Description in `DESCRIPTION`
 - add sections BugReports and URL in `DESCRIPTION`

@@ -1,8 +1,8 @@
 Package: MsQuality
 Type: Package
 Title: MsQuality - Quality metric calculation from Spectra objects
-Version: 0.99.6
-Date: 2022-11-28
+Version: 0.99.7
+Date: 2023-02-06
 Authors@R: c(person(given = "Thomas", family = "Naake", 
 		email = "thomasnaake@googlemail.com", role = c("aut", "cre"),
 		comment = c(ORCID = "0000-0001-7917-5580")),
@@ -52,4 +52,4 @@ URL: https://www.github.com/tnaake/MsQuality/
 BugReport: https://www.github.com/tnaake/MsQuality/issues/
 License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3

@@ -2,15 +2,23 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{ticQuantileToQuantileLogRatio}
 \alias{ticQuantileToQuantileLogRatio}
-\title{MS1 quantile TIC change ratio to Quantile 1 (QC:4000057) or to 
-previous quantile (QC:4000058)}
+\title{MS1 TIC-change quartile ratios (MS:4000057) or  
+MS1 TIC quartile ratios (MS:4000058)}
 \usage{
-ticQuantileToQuantileLogRatio(spectra, relativeTo = "Q1", msLevel = 1L, ...)
+ticQuantileToQuantileLogRatio(
+  spectra,
+  relativeTo = "previous",
+  mode = "TIC_change",
+  msLevel = 1L,
+  ...
+)
 }
 \arguments{
 \item{spectra}{`Spectra` object}
 
 \item{relativeTo}{`character(1)`, one of `"Q1"` or `"previous"`}
+
+\item{mode}{`character(1)`, one of `"TIC_change"` or `"TIC"`}
 
 \item{msLevel}{`integer`}
 
@@ -20,31 +28,47 @@ ticQuantileToQuantileLogRatio(spectra, relativeTo = "Q1", msLevel = 1L, ...)
 `numeric(1)`
 }
 \description{
-"The log ratio for the second to n-th quantile of TIC changes over first 
-quantile of TIC changes." [PSI:QC]
-id: QC:4000057
+For calculation of MS:400057 set \code{mode = "TIC_change"}.
 
-"The log ratio for the second to n-th quantile of TIC over the previous 
-quantile of TIC. For the boundary elements min/max are used." [PSI:QC]
-id: QC:4000058
+"The log ratios of successive TIC-change quartiles. The TIC changes are 
+the list of MS1 total ion current (TIC) value changes from one to the next 
+scan, produced when each MS1 TIC is subtracted from the preceding MS1 TIC. 
+The metric's value triplet represents the log ratio of the TIC-change 
+Q2 to Q1, Q3 to Q2, TIC-change-max to Q3" [PSI:MS]
+id: MS:4000057
+
+For calculation of MS:400058 set \code{mode = "TIC"}.
+
+The log ratios of successive TIC quartiles. The metric's value triplet 
+represents the log ratios of TIC-Q2 to TIC-Q1, TIC-Q3 to TIC-Q2, 
+TIC-max to TIC-Q3." [PSI:MS]
+id: MS:4000058
 }
 \details{
-is_a: QC:4000004 ! n-tuple
-is_a: QC:4000010 ! ID free
-is_a: QC:4000022 ! chromatogram metric
-is_a: QC:4000023 ! MS1 metric
+is_a: MS:4000004 ! n-tuple
+relationship: has_metric_category MS:4000009 ! ID free metric
+relationship: has_metric_category MS:4000012 ! single run based metric
+relationship: has_metric_category MS:4000017 ! chromatogram metric
+relationship: has_metric_category MS:4000021 ! MS1 metric
+relationship: has_value_type xsd:float ! The allowed value-type for this CV term
+relationship: has_value_concept STATO:0000105 ! log signal intensity ratio
 
-*TIC changes* are interpreted as follows:
-(1) the cumulative sum (`cumsum`) of the  `spectra`'s TIC is calculated 
-(with spectra ordered by retention time),
+The metric is calculated as follows:
+(1) the TIC (`ionCount`) of the  `spectra` is calculated per scan
+event (with spectra ordered by retention time),
 
-(2) quartiles are then calculated on these, 
+(2) for *MS:4000057*, the differences between TIC values are calculated 
+between subsequent scan events,
+for *MS:4000058*, the TIC values between subsequent scan events are taken
+as they are,
 
-(3) for *QC:4000057* the log2 ratio between the 25, 50, 75
-and 100% quantile to the 0% quantile is calculated. For *QC:4000058* 
-ratios between the 25/0, 50/25, 75/50 and 100/75% quantiles are calculated.
+(3) for *MS:4000057* and *MS:4000058* the ratios between the 25%, 50%, 
+75%, and 100% quantile to the 25% quantile of the values of (2) are 
+calculated.
+Alternatively, if `relativeTo = "Q1"`, the ratios are calculated between the
+50%/25%, 75%/25%, and 100%/25% quantiles.
 
-The `log2` values are returned instead of the `log` values.
+The `log` values of the ratios are returned.
 }
 \note{
 This function interprets the *quantiles* from the [PSI:QC] definition as
@@ -70,10 +94,18 @@ spd$intensity <- list(
     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 sps <- Spectra(spd)
-ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "Q1",
-    msLevel = 2L)
+
+## MS:4000057
 ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "previous",
-    msLevel = 2L)
+    msLevel = 2L, mode = "TIC_change")
+ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "Q1",
+    msLevel = 2L, mode = "TIC_change")
+
+## MS:4000058
+ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "previous",
+    msLevel = 2L, mode = "TIC")
+ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "Q1",
+    msLevel = 2L, mode = "TIC")
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}

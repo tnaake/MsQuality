@@ -95,17 +95,11 @@ rtDuration <- function(spectra, ...) {
 #' is_a: QC:4000022 ! chromatogram metric
 #' 
 #' @param spectra `Spectra` object
-#'
-#' @param probs `numeric` defining the quantiles. See [stats::quantile()] for
-#'     details. Defaults to `probs = seq(0, 1, 0.25)`.
-#' 
+#' @param probs `numeric` defining the quantiles. See `probs = seq(0, 1, 0.25)`.
 #' @param msLevel `integer`
-#' @param ... not used here
-#' 
 #' @param relative `logical`, if set to `TRUE` the relative retention time 
 #' will be returned instead of the abolute retention time
-#'
-#' @param ... additional arguments passed to [stats::quantile()].
+#' @param ... not used here
 #' 
 #' @return `numeric` of length equal to length `probs` with the relative
 #'    duration (duration divided by the total run time) after which the TIC
@@ -141,7 +135,7 @@ rtDuration <- function(spectra, ...) {
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
 #' rtOverTicQuantile(spectra = sps, msLevel = 2L)
-rtOverTicQuantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
+rtOverTicQuantile <- function(spectra, probs = seq(0, 1, 0.25),
     msLevel = 1L, relative = TRUE, ...) {
     
     ## truncate spectra based on the MS level
@@ -155,9 +149,15 @@ rtOverTicQuantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
     ## TIC exceeds (for the first time) the respective quantile of the
     ## cumulative TIC? The "accumulates" is interpreted as the 
     ## "sum of the TICs of all previous spectra".
+    ## probs * max(TIC) calculates the portion of the total TIC at the probs,
+    ## e.g. if sum of TIC is 10000 and probs = c(0, 1, 0.25), ids will be 
+    ## the indices where the TIC is first higher than 0, 2500, 5000, 7500, 
+    ## and 10000
     TIC <- cumsum(ionCount(spectra))
-    ticQuantile <- quantile(TIC, probs = probs, ...)
-    idxs <- unlist(lapply(ticQuantile, function(z) which.max(TIC >= z)))
+    idxs <- lapply(probs * max(TIC), function(z) which(TIC >= z)[1]) |>
+        unlist()
+    
+    ##idxs <- unlist(lapply(ticQuantile, function(z) which.max(TIC >= z)))
     
     if (relative) {
         rtMin <- min(RT)
@@ -167,7 +167,7 @@ rtOverTicQuantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
         res <- RT[idxs]
     }
     
-    names(res) <- names(idxs)
+    names(res) <- paste0(probs * 100, "%")
     res
 }
 
@@ -254,15 +254,16 @@ rtOverTicQuantile <- function(spectra, probs = seq(0, 1, 0.25),# na.rm = FALSE,
 #' is_a: QC:4000010 ! ID free
 #' is_a: QC:4000021 ! retention time metric
 #' is_a: QC:4000023 ! MS1 metric
+#' 
+#' The function returns `c(NaN, NaN, NaN, NaN)` if the filtered `spectra` 
+#' object has less than 4 scan events.
 #'
 #' @note
 #' `rtDuration` considers the total runtime (including MS1 and MS2 scans).
 #' 
 #' @param spectra `Spectra` object
-#'
 #' @param msLevel `integer`
 #' @param ... not used here
-#'
 #' @param ... not used here
 #'  
 #' @return `numeric(4)`
@@ -303,65 +304,82 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
 
     ## truncate spectra based on the msLevel
     spectra <- filterMsLevel(object = spectra, msLevel)
-    if (length(spectra) < 4)
-        stop("'spectra' does contain less than four spectra")
-
-    ## order spectra according to increasing retention time
-    spectra <- .rtOrderSpectra(spectra)
-    RT <- rtime(spectra)
-    rtmin <- min(RT)
+    if (length(spectra) < 4) {
+        rt_quarters <- c(NaN, NaN, NaN, NaN)
+    } else {
+        ## order spectra according to increasing retention time
+        spectra <- .rtOrderSpectra(spectra)
+        RT <- rtime(spectra)
+        rtmin <- min(RT)
+        
+        ## partition the spectra (rows) into four parts 
+        ## (they are not necessarily equal)
+        ind <- sort(rep(seq_len(4), length.out = length(spectra)))
+        idx <- which(c(diff(ind), 1) == 1)
+        
+        ## calculate the retention time inidces
+        rt_quarters <- (RT[idx] - rtmin) / rtd
+    }
     
-    ## partition the spectra (rows) into four parts 
-    ## (they are not necessarily equal)
-    ind <- sort(rep(seq_len(4), length.out = length(spectra)))
-    idx <- which(c(diff(ind), 1) == 1)
-    
-    ## calculate the retention time inidces
-    rt_quarters <- (RT[idx] - rtmin) / rtd
     names(rt_quarters) <- c("Quarter1", "Quarter2", "Quarter3", "Quarter4")
     rt_quarters
 }
 
 #' @name ticQuantileToQuantileLogRatio
 #' 
-#' @title MS1 quantile TIC change ratio to Quantile 1 (QC:4000057) or to 
-#' previous quantile (QC:4000058)
+#' @title MS1 TIC-change quartile ratios (MS:4000057) or  
+#' MS1 TIC quartile ratios (MS:4000058)
 #' 
 #' @description 
-#' "The log ratio for the second to n-th quantile of TIC changes over first 
-#' quantile of TIC changes." [PSI:QC]
-#' id: QC:4000057
+#' For calculation of MS:400057 set \code{mode = "TIC_change"}.
 #' 
-#' "The log ratio for the second to n-th quantile of TIC over the previous 
-#' quantile of TIC. For the boundary elements min/max are used." [PSI:QC]
-#' id: QC:4000058
+#' "The log ratios of successive TIC-change quartiles. The TIC changes are 
+#' the list of MS1 total ion current (TIC) value changes from one to the next 
+#' scan, produced when each MS1 TIC is subtracted from the preceding MS1 TIC. 
+#' The metric's value triplet represents the log ratio of the TIC-change 
+#' Q2 to Q1, Q3 to Q2, TIC-change-max to Q3" [PSI:MS]
+#' id: MS:4000057
+#' 
+#' For calculation of MS:400058 set \code{mode = "TIC"}.
+#' 
+#' The log ratios of successive TIC quartiles. The metric's value triplet 
+#' represents the log ratios of TIC-Q2 to TIC-Q1, TIC-Q3 to TIC-Q2, 
+#' TIC-max to TIC-Q3." [PSI:MS]
+#' id: MS:4000058
 #'
 #' @note
-#'
 #' This function interprets the *quantiles* from the [PSI:QC] definition as
 #' *quartiles*, i.e. the 0, 25, 50, 75 and 100% quantiles are used.
 #' 
 #' @details
-#' 
-#' is_a: QC:4000004 ! n-tuple
-#' is_a: QC:4000010 ! ID free
-#' is_a: QC:4000022 ! chromatogram metric
-#' is_a: QC:4000023 ! MS1 metric
+#' is_a: MS:4000004 ! n-tuple
+#' relationship: has_metric_category MS:4000009 ! ID free metric
+#' relationship: has_metric_category MS:4000012 ! single run based metric
+#' relationship: has_metric_category MS:4000017 ! chromatogram metric
+#' relationship: has_metric_category MS:4000021 ! MS1 metric
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term
+#' relationship: has_value_concept STATO:0000105 ! log signal intensity ratio
 #'
-#' *TIC changes* are interpreted as follows:
-#' (1) the cumulative sum (`cumsum`) of the  `spectra`'s TIC is calculated 
-#' (with spectra ordered by retention time),
+#' The metric is calculated as follows:
+#' (1) the TIC (`ionCount`) of the  `spectra` is calculated per scan
+#' event (with spectra ordered by retention time),
+#'
+#' (2) for *MS:4000057*, the differences between TIC values are calculated 
+#' between subsequent scan events,
+#' for *MS:4000058*, the TIC values between subsequent scan events are taken
+#' as they are,
 #' 
-#' (2) quartiles are then calculated on these, 
+#' (3) for *MS:4000057* and *MS:4000058* the ratios between the 25%, 50%, 
+#' 75%, and 100% quantile to the 25% quantile of the values of (2) are 
+#' calculated.
+#' Alternatively, if `relativeTo = "Q1"`, the ratios are calculated between the
+#' 50%/25%, 75%/25%, and 100%/25% quantiles.
 #' 
-#' (3) for *QC:4000057* the log2 ratio between the 25, 50, 75
-#' and 100% quantile to the 0% quantile is calculated. For *QC:4000058* 
-#' ratios between the 25/0, 50/25, 75/50 and 100/75% quantiles are calculated.
-#' 
-#' The `log2` values are returned instead of the `log` values.
+#' The `log` values of the ratios are returned.
 #' 
 #' @param spectra `Spectra` object
 #' @param relativeTo `character(1)`, one of `"Q1"` or `"previous"`
+#' @param mode `character(1)`, one of `"TIC_change"` or `"TIC"` 
 #' @param msLevel `integer`
 #' @param ... not used here
 #' 
@@ -391,17 +409,30 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
 #'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' sps <- Spectra(spd)
-#' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "Q1",
-#'     msLevel = 2L)
+#' 
+#' ## MS:4000057
 #' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "previous",
-#'     msLevel = 2L)
-ticQuantileToQuantileLogRatio <- function(spectra, relativeTo = "Q1", 
-    msLevel = 1L, ...) {
-  
+#'     msLevel = 2L, mode = "TIC_change")
+#' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "Q1",
+#'     msLevel = 2L, mode = "TIC_change")
+#' 
+#' ## MS:4000058
+#' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "previous",
+#'     msLevel = 2L, mode = "TIC")
+#' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "Q1",
+#'     msLevel = 2L, mode = "TIC")
+ticQuantileToQuantileLogRatio <- function(spectra, 
+    relativeTo = "previous", mode = "TIC_change", msLevel = 1L, ...) {
+
     if (length(relativeTo) != 1)
         stop("'relativeTo' has to be of length 1")
     else
         relativeTo <- match.arg(relativeTo, choices = c("Q1", "previous"))
+    
+    if (length(mode) != 1)
+        stop("'relativeTo' has to be of length 1")
+    else
+        mode <- match.arg(mode, choices = c("TIC_change", "TIC"))
     
     spectra <- filterMsLevel(object = spectra, msLevel)    
     if (length(spectra) == 0)
@@ -410,29 +441,40 @@ ticQuantileToQuantileLogRatio <- function(spectra, relativeTo = "Q1",
     ## order spectra according to increasing retention time
     spectra <- .rtOrderSpectra(spectra)
     
-    ## create cumulative sum of tic/ionCount
+    ## calculate TIC/ionCount
     TIC <- ionCount(spectra)
-    ticSum <- cumsum(TIC)    
-    quantileTICSum <- quantile(ticSum, na.rm = TRUE)
-
+    
+    ## calculate TIC changes if mode == "TIC_change",
+    ## otherwise if mode == "TIC" take values as they are
+    if (mode == "TIC_change")
+        TIC <- diff(TIC) 
+    if (mode == "TIC")
+        TIC <- TIC
+    
+    ## obtain the quantiles (will be quartiles, 0%, 25%, 50%, 75%, 100%)
+    quantileTIC <- quantile(TIC, na.rm = TRUE)
+    
     ## calculate the changes in TIC per quantile
-    changeQ1 <- quantileTICSum[["25%"]] - quantileTICSum[["0%"]]
-    changeQ2 <- quantileTICSum[["50%"]] - quantileTICSum[["25%"]]
-    changeQ3 <- quantileTICSum[["75%"]] - quantileTICSum[["50%"]]
-    changeQ4 <- quantileTICSum[["100%"]] - quantileTICSum[["75%"]]
+    changeQ1 <- quantileTIC[["25%"]]
+    changeQ2 <- quantileTIC[["50%"]] 
+    changeQ3 <- quantileTIC[["75%"]]
+    changeQ4 <- quantileTIC[["100%"]]
+    
+    ## calculate the ratio between Q2/Q3/Q4 to Q1 quantile TIC (changes)
     if (relativeTo == "Q1") {
         ratioQuantileTIC <- c(changeQ2, changeQ3, changeQ4) / changeQ1
         names(ratioQuantileTIC) <- c("Q2/Q1", "Q3/Q1", "Q4/Q1")
     }
 
-    ## calculate the ratio between Q2/Q3/Q4 to previous quantile TIC changes
+    ## calculate the ratio between Q2/Q3/Q4 to previous quantile TIC (changes)
     if (relativeTo == "previous") {
         ratioQuantileTIC <- c(changeQ2 / changeQ1, changeQ3 / changeQ2, 
                             changeQ4 / changeQ3)
         names(ratioQuantileTIC) <- c("Q2/Q1", "Q3/Q2", "Q4/Q3")
     }
-    ## take the log2 and return
-    log2(ratioQuantileTIC)
+    
+    ## take the log and return
+    log(ratioQuantileTIC)
 }
 
 #' @name numberSpectra
@@ -1889,7 +1931,7 @@ ratioCharge1over2 <- function(spectra, msLevel = 1L, ...) {
     else 
         chargeRatio <- NA
     
-    return(chargeRatio)
+    chargeRatio
 }
 
 #' @name ratioCharge3over2
@@ -1978,7 +2020,7 @@ ratioCharge3over2 <- function(spectra, msLevel = 1L, ...) {
     else 
         chargeRatio <- NA
     
-    return(chargeRatio)
+    chargeRatio
 }
 
 #' @name ratioCharge4over2
@@ -2068,7 +2110,7 @@ ratioCharge4over2 <- function(spectra, msLevel = 1L, ...) {
     else 
         chargeRatio <- NA
     
-    return(chargeRatio)
+    chargeRatio
 }
 
 
