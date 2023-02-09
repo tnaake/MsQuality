@@ -15,15 +15,14 @@ rtOverTicQuantile(
 \arguments{
 \item{spectra}{`Spectra` object}
 
-\item{probs}{`numeric` defining the quantiles. See [stats::quantile()] for
-details. Defaults to `probs = seq(0, 1, 0.25)`.}
+\item{probs}{`numeric` defining the quantiles. See `probs = seq(0, 1, 0.25)`.}
 
 \item{msLevel}{`integer`}
 
 \item{relative}{`logical`, if set to `TRUE` the relative retention time 
 will be returned instead of the abolute retention time}
 
-\item{...}{additional arguments passed to [stats::quantile()].}
+\item{...}{not used here}
 }
 \value{
 `numeric` of length equal to length `probs` with the relative

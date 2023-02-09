@@ -435,44 +435,53 @@ ticQuantileToQuantileLogRatio <- function(spectra,
         mode <- match.arg(mode, choices = c("TIC_change", "TIC"))
     
     spectra <- filterMsLevel(object = spectra, msLevel)    
-    if (length(spectra) == 0)
-        stop("'spectra' does not contain any spectra")
+    if (length(spectra) == 0) {
+        
+        ratioQuantileTIC <- c(NaN, NaN, NaN)
+        
+    } else {
+        ## order spectra according to increasing retention time
+        spectra <- .rtOrderSpectra(spectra)
+        
+        ## calculate TIC/ionCount
+        TIC <- ionCount(spectra)
+        
+        ## calculate TIC changes if mode == "TIC_change",
+        ## otherwise if mode == "TIC" take values as they are
+        if (mode == "TIC_change")
+            TIC <- diff(TIC) 
+        if (mode == "TIC")
+            TIC <- TIC
+        
+        ## obtain the quantiles (will be quartiles, 0%, 25%, 50%, 75%, 100%)
+        quantileTIC <- quantile(TIC, na.rm = TRUE)
+        
+        ## calculate the changes in TIC per quantile
+        changeQ1 <- quantileTIC[["25%"]]
+        changeQ2 <- quantileTIC[["50%"]] 
+        changeQ3 <- quantileTIC[["75%"]]
+        changeQ4 <- quantileTIC[["100%"]]
+        
+        ## calculate the ratio between Q2/Q3/Q4 to Q1 quantile TIC (changes)
+        if (relativeTo == "Q1") {
+            ratioQuantileTIC <- c(changeQ2, changeQ3, changeQ4) / changeQ1
+        }
+        
+        ## calculate the ratio between Q2/Q3/Q4 to previous quantile TIC (changes)
+        if (relativeTo == "previous") {
+            ratioQuantileTIC <- c(changeQ2 / changeQ1, changeQ3 / changeQ2, 
+                                  changeQ4 / changeQ3)
+        }
+    }
     
-    ## order spectra according to increasing retention time
-    spectra <- .rtOrderSpectra(spectra)
-    
-    ## calculate TIC/ionCount
-    TIC <- ionCount(spectra)
-    
-    ## calculate TIC changes if mode == "TIC_change",
-    ## otherwise if mode == "TIC" take values as they are
-    if (mode == "TIC_change")
-        TIC <- diff(TIC) 
-    if (mode == "TIC")
-        TIC <- TIC
-    
-    ## obtain the quantiles (will be quartiles, 0%, 25%, 50%, 75%, 100%)
-    quantileTIC <- quantile(TIC, na.rm = TRUE)
-    
-    ## calculate the changes in TIC per quantile
-    changeQ1 <- quantileTIC[["25%"]]
-    changeQ2 <- quantileTIC[["50%"]] 
-    changeQ3 <- quantileTIC[["75%"]]
-    changeQ4 <- quantileTIC[["100%"]]
-    
-    ## calculate the ratio between Q2/Q3/Q4 to Q1 quantile TIC (changes)
+    ## add names 
     if (relativeTo == "Q1") {
-        ratioQuantileTIC <- c(changeQ2, changeQ3, changeQ4) / changeQ1
         names(ratioQuantileTIC) <- c("Q2/Q1", "Q3/Q1", "Q4/Q1")
     }
-
-    ## calculate the ratio between Q2/Q3/Q4 to previous quantile TIC (changes)
     if (relativeTo == "previous") {
-        ratioQuantileTIC <- c(changeQ2 / changeQ1, changeQ3 / changeQ2, 
-                            changeQ4 / changeQ3)
         names(ratioQuantileTIC) <- c("Q2/Q1", "Q3/Q2", "Q4/Q3")
     }
-    
+
     ## take the log and return
     log(ratioQuantileTIC)
 }
@@ -600,12 +609,16 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
 #' medianPrecursorMz(spectra = sps, msLevel = 2L)
 medianPrecursorMz <- function(spectra, msLevel = 1L, ...) {  
     spectra <- filterMsLevel(object = spectra, msLevel)
-    if (length(spectra) == 0)
-        stop("'spectra' does not contain any spectra")
+    if (length(spectra) == 0) {
+        medianMz <- NaN
+    } else {
+        ## FDR correction??
+        mz <- precursorMz(spectra)
+        medianMz <- median(mz, na.rm = TRUE)    
+    }
     
-    ## FDR correction??
-    mz <- precursorMz(spectra)
-    median(mz, na.rm = TRUE)
+    medianMz
+    
 }
 
 #' @name rtIqr
@@ -680,15 +693,18 @@ medianPrecursorMz <- function(spectra, msLevel = 1L, ...) {
 #' rtIqr(spectra = sps, msLevel = 2L)
 rtIqr <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)    
-    if (length(spectra) == 0)
-        stop("'spectra' does not contain any spectra") 
+    if (length(spectra) == 0) {
+        iqr <- NaN
+    } else {
+        ## get the retention time
+        rt <- rtime(spectra)
+        
+        ## remove the retention time values that are NA and return the interquartile 
+        ## range 
+        iqr <- IQR(rt, na.rm = TRUE)    
+    }
     
-    ## get the retention time
-    rt <- rtime(spectra)
-    
-    ## remove the retention time values that are NA and return the interquartile 
-    ## range 
-    IQR(rt, na.rm = TRUE)
+    iqr
 }
 
 #' @name rtIqrRate
@@ -768,26 +784,29 @@ rtIqr <- function(spectra, msLevel = 1L, ...) {
 #' rtIqrRate(spectra = sps, msLevel = 2L)
 rtIqrRate <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)    
-    if (length(spectra) == 0)
-        stop("'spectra' does not contain any spectra") 
+    if (length(spectra) == 0) {
+        rate <- NaN
+    } else {
+        ## order spectra according to increasing retention time
+        spectra <- .rtOrderSpectra(spectra)
+        RT <- rtime(spectra)
+        
+        quantileRT <- quantile(RT, na.rm = TRUE)
+        
+        ## get the RT values of the 25% and 75% quantile
+        quantile25RT <- quantileRT[["25%"]]
+        quantile75RT <- quantileRT[["75%"]]
+        
+        ## get the number of eluted features between the 25% and 75% quantile
+        nFeatures <- RT >= quantile25RT & RT <= quantile75RT
+        nFeatures <- sum(nFeatures)
+        
+        ## divide the number of eluted features between the 25% and 75% quantile
+        ## by the IQR to get the elution rate per second 
+        rate <- nFeatures / rtIqr(spectra, msLevel = msLevel)    
+    }
     
-    ## order spectra according to increasing retention time
-    spectra <- .rtOrderSpectra(spectra)
-    RT <- rtime(spectra)
-    
-    quantileRT <- quantile(RT, na.rm = TRUE)
-    
-    ## get the RT values of the 25% and 75% quantile
-    quantile25RT <- quantileRT[["25%"]]
-    quantile75RT <- quantileRT[["75%"]]
-    
-    ## get the number of eluted features between the 25% and 75% quantile
-    nFeatures <- RT >= quantile25RT & RT <= quantile75RT
-    nFeatures <- sum(nFeatures)
-    
-    ## divide the number of eluted features between the 25% and 75% quantile
-    ## by the IQR to get the elution rate per second 
-    nFeatures / rtIqr(spectra, msLevel = msLevel)
+    rate
 }
 
 #' @name areaUnderTic
@@ -845,13 +864,16 @@ rtIqrRate <- function(spectra, msLevel = 1L, ...) {
 #' areaUnderTic(spectra = sps, msLevel = 2L)
 areaUnderTic <- function(spectra, msLevel = 1L, ...) {  
     spectra <- filterMsLevel(object = spectra, msLevel)    
-    if (length(spectra) == 0)
-        stop("'spectra' does not contain any spectra") 
-
-    TIC <- ionCount(spectra)
+    if (length(spectra) == 0) {
+        tic <- NaN
+    } else {
+        TIC <- ionCount(spectra)
+        
+        ## sum up the TIC (equivalent to the area) and return
+        tic <- sum(TIC, na.rm = TRUE)
+    }
     
-    ## sum up the TIC (equivalent to the area) and return
-    sum(TIC, na.rm = TRUE)
+    tic
 }
 
 #' @name areaUnderTicRtQuantiles
@@ -924,31 +946,34 @@ areaUnderTic <- function(spectra, msLevel = 1L, ...) {
 #' areaUnderTicRtQuantiles(spectra = sps, msLevel = 2L)
 areaUnderTicRtQuantiles <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
-    if (length(spectra) == 0)
-        stop("'spectra' does not contain any spectra")
-
-    ## order spectra according to increasing retention time
-    spectra <- .rtOrderSpectra(spectra)
-    rt <- rtime(spectra)
+    if (length(spectra) == 0) {
+        areaTic <- c(NaN, NaN, NaN, NaN)
+    } else {
+        ## order spectra according to increasing retention time
+        spectra <- .rtOrderSpectra(spectra)
+        rt <- rtime(spectra)
+        
+        quantileRT <- quantile(rt, na.rm = TRUE)
+        
+        tic <- ionCount(spectra)
+        
+        ## get the TICs for the 1st, 2nd, 3rd, and 4th quartile
+        ticQ1 <- tic[rt > quantileRT[["0%"]] & rt <= quantileRT[["25%"]]]
+        ticQ2 <- tic[rt > quantileRT[["25%"]] & rt <= quantileRT[["50%"]]]
+        ticQ3 <- tic[rt > quantileRT[["50%"]] & rt <= quantileRT[["75%"]]]
+        ticQ4 <- tic[rt > quantileRT[["75%"]] & rt <= quantileRT[["100%"]]]
+        
+        ## sum the TICs (area) for the 1st, 2nd, 3rd, and 4th quartile
+        areaTicQ1 <- sum(ticQ1, na.rm = TRUE)
+        areaTicQ2 <- sum(ticQ2, na.rm = TRUE)
+        areaTicQ3 <- sum(ticQ3, na.rm = TRUE)
+        areaTicQ4 <- sum(ticQ4, na.rm = TRUE)
+        
+        ## return the summed TICs as a named vector
+        areaTic <- c(areaTicQ1, areaTicQ2, areaTicQ3, areaTicQ4)   
+    }
     
-    quantileRT <- quantile(rt, na.rm = TRUE)
-    
-    tic <- ionCount(spectra)
-    
-    ## get the TICs for the 1st, 2nd, 3rd, and 4th quartile
-    ticQ1 <- tic[rt > quantileRT[["0%"]] & rt <= quantileRT[["25%"]]]
-    ticQ2 <- tic[rt > quantileRT[["25%"]] & rt <= quantileRT[["50%"]]]
-    ticQ3 <- tic[rt > quantileRT[["50%"]] & rt <= quantileRT[["75%"]]]
-    ticQ4 <- tic[rt > quantileRT[["75%"]] & rt <= quantileRT[["100%"]]]
-    
-    ## sum the TICs (area) for the 1st, 2nd, 3rd, and 4th quartile
-    areaTicQ1 <- sum(ticQ1, na.rm = TRUE)
-    areaTicQ2 <- sum(ticQ2, na.rm = TRUE)
-    areaTicQ3 <- sum(ticQ3, na.rm = TRUE)
-    areaTicQ4 <- sum(ticQ4, na.rm = TRUE)
-    
-    ## return the summed TICs as a named vector
-    areaTic <- c(areaTicQ1, areaTicQ2, areaTicQ3, areaTicQ4)
+    ## add names
     names(areaTic) <- c("25%", "50%", "75%", "100%")
     
     areaTic
@@ -1025,15 +1050,18 @@ areaUnderTicRtQuantiles <- function(spectra, msLevel = 1L, ...) {
 #' extentIdentifiedPrecursorIntensity(spectra = sps, msLevel = 2L)
 extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {  
     spectra <- filterMsLevel(object = spectra, msLevel)
-    if (length(spectra) == 0)
-        stop("'spectra' does not contain any spectra") 
-  
-    ## retrieve the precursorIntensity and calculate the 5% and 95% quantile
-    precInt <- precursorIntensity(spectra)
-    quantilePrecInt <- quantile(precInt, probs = c(0.05, 0.95), na.rm = TRUE)
-    
-    ## calculate the ratio between the 95% and 5% quantile and return the value
-    quantilePrecInt[["95%"]] / quantilePrecInt[["5%"]]
+    if (length(spectra) == 0) {
+        ratio <- NaN
+    } else {
+        ## retrieve the precursorIntensity and calculate the 5% and 95% quantile
+        precInt <- precursorIntensity(spectra)
+        quantilePrecInt <- quantile(precInt, probs = c(0.05, 0.95), na.rm = TRUE)
+        
+        ## calculate the ratio between the 95% and 5% quantile and return the value
+        ratio <- quantilePrecInt[["95%"]] / quantilePrecInt[["5%"]]
+    }
+        
+    ratio
 }
 
 #' @name medianTicRtIqr
@@ -1112,23 +1140,27 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {
 medianTicRtIqr <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
-    if (length(spectra) == 0)
-        stop("'spectra' does not contain any spectra") 
+    if (length(spectra) == 0) {
+        medianTic <- NaN
+    } else {
     
-    ## order spectra according to increasing retention time
-    spectra <- .rtOrderSpectra(spectra)
+        ## order spectra according to increasing retention time
+        spectra <- .rtOrderSpectra(spectra)
+        
+        ## get the Q1 to Q3 of identifications 
+        ## (half of peptides that are identitied)
+        ind <- rep(seq_len(4), length.out = length(spectra))
+        ind <- sort(ind)
+        Q1ToQ3 <- spectra[ind %in% c(2, 3), ]
+        
+        ## take the ionCount of the Q1 to Q3 of identifications
+        ticQ1ToQ3 <- ionCount(Q1ToQ3)
+        
+        ## take the median value of the TIC within this interval and return it
+        medianTic <- median(ticQ1ToQ3, na.rm = TRUE)
+    }
     
-    ## get the Q1 to Q3 of identifications 
-    ## (half of peptides that are identitied)
-    ind <- rep(seq_len(4), length.out = length(spectra))
-    ind <- sort(ind)
-    Q1ToQ3 <- spectra[ind %in% c(2, 3), ]
-    
-    ## take the ionCount of the Q1 to Q3 of identifications
-    ticQ1ToQ3 <- ionCount(Q1ToQ3)
-    
-    ## take the median value of the TIC within this interval and return it
-    median(ticQ1ToQ3, na.rm = TRUE)
+    medianTic
 }
 
 #' @name medianTicOfRtRange
@@ -1214,36 +1246,39 @@ medianTicOfRtRange <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("'spectra' does not contain any spectra") 
-    } 
+        medianTic <- NaN
+        
+    } else {
     
-    ## order spectra according to increasing retention time
-    spectra <- .rtOrderSpectra(spectra)
-    rt <- rtime(spectra)
+        ## order spectra according to increasing retention time
+        spectra <- .rtOrderSpectra(spectra)
+        rt <- rtime(spectra)
+        tic <- ionCount(spectra)
+        
+        ## retrieve number of features in object and calculate the number for half
+        ## of the features
+        n <- length(spectra)
+        n_half <- ceiling(n / 2)
+        
+        ## iterate through the bunches of features (always take n_half features),
+        ## start with 1 + n_half, 2 + n_half, 3 + n_half, ..., i_end + n_half
+        ## calculate the RT range
+        rangeRT <- lapply(seq_len(n_half + 1), function(i) {
+            ind <- seq(i, i - 1 + n_half)
+            rt_i <- rt[ind]
+            max(rt_i) - min(rt_i)
+        })
+        rangeRT <- unlist(rangeRT)
+        
+        ## retrieve the index of the bunch with the minimum range and calculate
+        ## the median TIC
+        indMin <- which.min(rangeRT)
+        ind <- seq(indMin, indMin - 1 + n_half)
+        ticMin <- tic[ind]
+        medianTic <- median(ticMin, na.rm = TRUE)
+    }
     
-    tic <- ionCount(spectra)
-    
-    ## retrieve number of features in object and calculate the number for half
-    ## of the features
-    n <- length(spectra)
-    n_half <- ceiling(n / 2)
-    
-    ## iterate through the bunches of features (always take n_half features),
-    ## start with 1 + n_half, 2 + n_half, 3 + n_half, ..., i_end + n_half
-    ## calculate the RT range
-    rangeRT <- lapply(seq_len(n_half + 1), function(i) {
-        ind <- seq(i, i - 1 + n_half)
-        rt_i <- rt[ind]
-        max(rt_i) - min(rt_i)
-    })
-    rangeRT <- unlist(rangeRT)
-    
-    ## retrieve the index of the bunch with the minimum range and calculate
-    ## the median TIC
-    indMin <- which.min(rangeRT)
-    ind <- seq(indMin, indMin - 1 + n_half)
-    ticMin <- tic[ind]
-    median(ticMin, na.rm = TRUE)
+    medianTic
 }
 
 #' @name mzAcquisitionRange
@@ -1305,15 +1340,17 @@ mzAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("'spectra' does not contain any spectra") 
-    } 
-
-    mzList <- mz(spectra)
-    mz <- unlist(mzList)
-    mzRange <- range(mz)
-    names(mzRange) <- c("min", "max")
+        mzRange <- c(NaN, NaN)
+    } else {
+        mzList <- mz(spectra)
+        mz <- unlist(mzList)
+        mzRange <- range(mz)
+    }
     
-    return(mzRange)
+    ## add names
+    names(mzRange) <- c("min", "max")
+
+    mzRange
 }
 
 #' @name rtAcquisitionRange
@@ -1374,14 +1411,16 @@ rtAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("'spectra' does not contain any spectra")
+        rtRange <- c(NaN, NaN)
+    } else {
+        rt <- rtime(spectra)
+        rtRange <- range(rt)
     }
     
-    rt <- rtime(spectra)
-    rtRange <- range(rt)
-    names(rtRange) <- c("min", "max")
+    ## add names
+    names(rtRange) <- c("min", "max") 
     
-    return(rtRange)
+    rtRange
 }
 
 #' @name precursorIntensityRange
@@ -1448,14 +1487,16 @@ precursorIntensityRange <- function(spectra, msLevel = 1, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("'spectra' does not contain any spectra")
+        rangeInt <- c(NaN, NaN)
+    } else {
+        int <- precursorIntensity(spectra)
+        rangeInt <- range(int)
     }
-  
-    int <- precursorIntensity(spectra)
-    rangeInt <- range(int)
+
+    ## add names
     names(rangeInt) <- c("min", "max")
     
-    return(rangeInt)
+    rangeInt
 }
 
 #' @name precursorIntensityQuartiles
@@ -1544,11 +1585,14 @@ precursorIntensityQuartiles <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("'spectra' does not contain any spectra")
+        quantiles <- c(NaN, NaN, NaN)
+        names(quantiles) <- c("25%", "50%", "75%")
+    } else {
+        int <- precursorIntensity(spectra)
+        quantiles <- quantile(int, probs = c(0.25, 0.50, 0.75), na.rm = TRUE)
     }
-  
-    int <- precursorIntensity(spectra)
-    quantile(int, probs = c(0.25, 0.50, 0.75), na.rm = TRUE)
+    
+    quantiles
 }
 
 
@@ -1637,11 +1681,13 @@ precursorIntensityMean <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("'spectra' does not contain any spectra")
+        intensityMean <- NaN
+    } else {
+        int <- precursorIntensity(spectra)
+        intensityMean <- mean(int, na.rm = TRUE)
     }
   
-    int <- precursorIntensity(spectra)
-    mean(int, na.rm = TRUE)
+    intensityMean
 }
 
 #' @name precursorIntensitySd
@@ -1729,11 +1775,13 @@ precursorIntensitySd <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
   
     if (length(spectra) == 0) {
-        stop("'spectra' does not contain any spectra")
+        intensitySd <- NaN
+    } else {
+        int <- precursorIntensity(spectra)
+        intensitySd <- sd(int, na.rm = TRUE)
     }
     
-    int <- precursorIntensity(spectra)
-    sd(int, na.rm = TRUE)
+    intensitySd
 }
 
 #' @name msSignal10xChange
@@ -1822,27 +1870,27 @@ msSignal10xChange <- function(spectra, change = "jump", msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("'spectra' does not contain any spectra")
+        numberRatioChange <- NaN
+    } else {
+        ## order spectra according to increasing retention time
+        spectra <- .rtOrderSpectra(spectra)
+        
+        tic <- ionCount(spectra)
+        
+        precedingTic <- tic[seq_len(length(tic) - 1)]
+        followingTic <- tic[seq_len(length(tic))[-1]]
+        
+        ## calculate the ratio between following and preceding TICs and calculate
+        ## the number of 10X jumps or falls depending on the change argument
+        ratioTic <- followingTic / precedingTic
+        
+        if (change == "jump")
+            numberRatioChange <- sum(ratioTic >= 10)
+        if (change == "fall")
+            numberRatioChange <- sum(ratioTic <= 0.1)
     }
     
-    ## order spectra according to increasing retention time
-    spectra <- .rtOrderSpectra(spectra)
-
-    tic <- ionCount(spectra)
-    
-    precedingTic <- tic[seq_len(length(tic) - 1)]
-    followingTic <- tic[seq_len(length(tic))[-1]]
-    
-    ## calculate the ratio between following and preceding TICs and calculate
-    ## the number of 10X jumps or falls depending on the change argument
-    ratioTic <- followingTic / precedingTic
-    
-    if (change == "jump")
-      numberRatioChange <- sum(ratioTic >= 10)
-    if (change == "fall")
-      numberRatioChange <- sum(ratioTic <= 0.1)
-    
-    return(numberRatioChange)
+    numberRatioChange
 }
 
 #' @name ratioCharge1over2
@@ -1917,21 +1965,22 @@ ratioCharge1over2 <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("'spectra' does not contain any spectra") 
+        chargeRatio <- NaN
+    } else {
+        ## is there a way to get charge of actual entries, not only of precursor?
+        charge <- precursorCharge(spectra)
+        
+        ## get the number of precursor per charge
+        chargeTable <- table(charge)
+        
+        if (all(c(1, 2) %in% names(chargeTable)))
+            chargeRatio <- chargeTable[["1"]] / chargeTable[["2"]]
+        else 
+            chargeRatio <- NaN
     }
     
-    ## is there a way to get charge of actual entries, not only of precursor?
-    charge <- precursorCharge(spectra)
-    
-    ## get the number of precursor per charge
-    chargeTable <- table(charge)
-    
-    if (all(c(1, 2) %in% names(chargeTable)))
-        chargeRatio <- chargeTable[["1"]] / chargeTable[["2"]]
-    else 
-        chargeRatio <- NA
-    
     chargeRatio
+    
 }
 
 #' @name ratioCharge3over2
@@ -2006,19 +2055,19 @@ ratioCharge3over2 <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("'spectra' does not contain any spectra") 
+        chargeRatio <- NaN
+    } else {
+        ## is there a way to get charge of actual entries, not only of precursor?
+        charge <- precursorCharge(spectra)
+        
+        ## get the number of precursor per charge
+        chargeTable <- table(charge)
+        
+        if (all(c(2, 3) %in% names(chargeTable)))
+            chargeRatio <- chargeTable[["3"]] / chargeTable[["2"]]
+        else 
+            chargeRatio <- NaN
     }
-    
-    ## is there a way to get charge of actual entries, not only of precursor?
-    charge <- precursorCharge(spectra)
-    
-    ## get the number of precursor per charge
-    chargeTable <- table(charge)
-    
-    if (all(c(2, 3) %in% names(chargeTable)))
-        chargeRatio <- chargeTable[["3"]] / chargeTable[["2"]]
-    else 
-        chargeRatio <- NA
     
     chargeRatio
 }
@@ -2096,19 +2145,19 @@ ratioCharge4over2 <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("'spectra' does not contain any spectra") 
+        chargeRatio <- NaN
+    } else {
+        ## is there a way to get charge of actual entries, not only of precursor?
+        charge <- precursorCharge(spectra)
+        
+        ## get the number of precursor per charge
+        chargeTable <- table(charge)
+        
+        if (all(c(2, 4) %in% names(chargeTable)))
+            chargeRatio <- chargeTable[["4"]] / chargeTable[["2"]]
+        else 
+            chargeRatio <- NaN
     }
-    
-    ## is there a way to get charge of actual entries, not only of precursor?
-    charge <- precursorCharge(spectra)
-    
-    ## get the number of precursor per charge
-    chargeTable <- table(charge)
-    
-    if (all(c(2, 4) %in% names(chargeTable)))
-        chargeRatio <- chargeTable[["4"]] / chargeTable[["2"]]
-    else 
-        chargeRatio <- NA
     
     chargeRatio
 }
@@ -2183,11 +2232,14 @@ meanCharge <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("'spectra' object does not contain any spectra") 
+        meanCharge <- NaN
+    } else {
+        charge <- precursorCharge(spectra)
+        meanCharge <- mean(charge, na.rm = TRUE)   
     }
     
-    charge <- precursorCharge(spectra)
-    mean(charge, na.rm = TRUE)
+    meanCharge
+    
 }
 
 #' @name medianCharge
@@ -2258,10 +2310,12 @@ medianCharge <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        stop("'spectra' does not contain any spectra") 
+        medianCharge <- NaN
+    } else {
+        charge <- precursorCharge(spectra)
+        medianCharge <- median(charge, na.rm = TRUE)     
     }
     
-    charge <- precursorCharge(spectra)
-    median(charge, na.rm = TRUE)
+    medianCharge
 }
 

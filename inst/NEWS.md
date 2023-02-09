@@ -1,5 +1,10 @@
 # MsQuality 0.99
 
+## Changes in version 0.99.8 (2023-09-02)
+- adjust behaviour of metrics function when Spectra object of 
+  length 0 is presented, return NA values instead of raising an
+  error
+
 ## Changes in version 0.99.7 (2023-06-02)
 - adjust ticQuantileToQuantileLogRatio that it adheres to
   Quameter calculation

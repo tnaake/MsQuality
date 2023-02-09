@@ -45,6 +45,9 @@ is_a: QC:4000004 ! n-tuple
 is_a: QC:4000010 ! ID free
 is_a: QC:4000021 ! retention time metric
 is_a: QC:4000023 ! MS1 metric
+
+The function returns `c(NaN, NaN, NaN, NaN)` if the filtered `spectra` 
+object has less than 4 scan events.
 }
 \note{
 `rtDuration` considers the total runtime (including MS1 and MS2 scans).

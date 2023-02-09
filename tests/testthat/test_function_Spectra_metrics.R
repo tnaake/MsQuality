@@ -82,8 +82,15 @@ test_that("ticQuantileToQuantileLogRatio", {
     expect_equal(as.numeric(tmp), c(0.4759104, 0.7325466, 1.3707623), tolerance = 1e-06)
     expect_equal(names(tmp), c("Q2/Q1", "Q3/Q1", "Q4/Q1"))
     
-    expect_error(ticQuantileToQuantileLogRatio(sps_sciex, msLevel = 2L), 
-                 "'spectra' does not contain any spectra")
+    ## tests when Spectra object has length 0
+    tmp <- suppressWarnings(ticQuantileToQuantileLogRatio(sps_sciex, 
+        relativeTo = "previous", mode = "TIC", msLevel = 2L))
+    expect_equal(as.numeric(tmp), c(NaN, NaN, NaN))
+    expect_equal(names(tmp), c("Q2/Q1", "Q3/Q2", "Q4/Q3"))
+    tmp <- suppressWarnings(ticQuantileToQuantileLogRatio(sps_sciex, 
+        relativeTo = "Q1", mode = "TIC", msLevel = 2L))
+    expect_equal(as.numeric(tmp), c(NaN, NaN, NaN))
+    expect_equal(names(tmp), c("Q2/Q1", "Q3/Q1", "Q4/Q1"))
 })
 ## END unit test ticQuantiletoQuantileLogRatio ##
 
@@ -102,8 +109,7 @@ test_that("medianPrecursorMz", {
     expect_error(medianPrecursorMz(1:10), "unable to find an inherited method")
     expect_equal(medianPrecursorMz(sps_sciex, msLevel = 1L), 496.4041, 
         tolerance = 1e-06)
-    expect_error(medianPrecursorMz(sps_sciex, msLevel = 2L), 
-        "'spectra' does not contain any spectra")
+    expect_equal(medianPrecursorMz(sps_sciex, msLevel = 2L), NaN)
 })
 ## END unit test medianPrecursorMz ##
 
@@ -112,8 +118,7 @@ test_that("rtIqr", {
     expect_error(rtIqr(NULL), "unable to find an inherited method")
     expect_error(rtIqr(1:10), "unable to find an inherited method")
     expect_equal(rtIqr(sps_sciex, msLevel = 1L), 129.875)
-    expect_error(rtIqr(sps_sciex, msLevel = 2L), 
-        "'spectra' does not contain any spectra")
+    expect_equal(rtIqr(sps_sciex, msLevel = 2L), NaN)
 })
 ## END unit test rtIqr ##
 
@@ -123,8 +128,7 @@ test_that("rtIqrRate", {
     expect_error(rtIqrRate(1:10), "unable to find an inherited method")
     expect_equal(rtIqrRate(sps_sciex, msLevel = 1L), 7.160731, 
         tolerance = 1e-06)
-    expect_error(rtIqrRate(sps_sciex, msLevel = 2L), 
-        "'spectra' does not contain any spectra")
+    expect_equal(rtIqrRate(sps_sciex, msLevel = 2L), NaN)
 })
 ## END unit test rtIqrRate ##
 
@@ -134,8 +138,7 @@ test_that("areaUnderTic", {
     expect_error(areaUnderTic(1:10), "unable to find an inherited method")
     expect_equal(suppressWarnings(areaUnderTic(sps_sciex, msLevel = 1L)), 
         1273927561)
-    expect_error(areaUnderTic(sps_sciex, msLevel = 2L), 
-                 "'spectra' does not contain any spectra")
+    expect_equal(areaUnderTic(sps_sciex, msLevel = 2L), NaN)
 })
 ## END unit test areaUnderTic ##
 
@@ -146,8 +149,10 @@ test_that("areaUnderTicRtQuantiles", {
     suppressWarnings(tmp <- areaUnderTicRtQuantiles(sps_sciex, msLevel = 1L))
     expect_equal(as.numeric(tmp), c(383935723, 368643879, 245834029, 274788917))
     expect_equal(names(tmp), c("25%", "50%", "75%", "100%"))
-    expect_error(areaUnderTicRtQuantiles(sps_sciex, msLevel = 2L), 
-        "'spectra' does not contain any spectra")
+    
+    tmp <- areaUnderTicRtQuantiles(sps_sciex, msLevel = 2L)
+    expect_equal(as.numeric(tmp), c(NaN, NaN, NaN, NaN))
+    expect_equal(names(tmp), c("25%", "50%", "75%", "100%"))
 })
 ## END unit test areaUnderTicRtQuantiles ##
 
@@ -159,8 +164,8 @@ test_that("extentIdentifiedPrecursorIntensity", {
         "unable to find an inherited method")
     expect_equal(extentIdentifiedPrecursorIntensity(sps_sciex, msLevel = 1L), 
         1.034276, tolerance = 1e-06)
-    expect_error(extentIdentifiedPrecursorIntensity(sps_sciex, msLevel = 2), 
-        "'spectra' does not contain any spectra")
+    expect_equal(extentIdentifiedPrecursorIntensity(sps_sciex, msLevel = 2), 
+        NaN)
 })
 ## END unit test extentIdentifiedPrecursorIntensity ##
 
@@ -170,8 +175,7 @@ test_that("medianTicRtIqr", {
     expect_error(medianTicRtIqr(1:10), "unable to find an inherited method")
     expect_equal(suppressWarnings(medianTicRtIqr(sps_sciex, msLevel = 1L)), 
         718615)
-    expect_error(medianTicRtIqr(sps_sciex, msLevel = 2L), 
-        "'spectra' does not contain any spectra")
+    expect_equal(medianTicRtIqr(sps_sciex, msLevel = 2L), NaN)
 })
 ## END unit test medianTicRtIqr ##
 
@@ -181,8 +185,7 @@ test_that("medianTicOfRtRange", {
     expect_error(medianTicOfRtRange(1:10), "unable to find an inherited method")
     expect_equal(suppressWarnings(medianTicOfRtRange(sps_sciex, msLevel = 1L)), 
         804944)
-    expect_error(medianTicOfRtRange(sps_sciex, msLevel = 2L), 
-                 "'spectra' does not contain any spectra")
+    expect_equal(medianTicOfRtRange(sps_sciex, msLevel = 2L), NaN)
 })
 ## END unit test medianTicOfRtRange ##
 
@@ -193,8 +196,10 @@ test_that("mzAcquisitionRange", {
     tmp <- mzAcquisitionRange(sps_sciex, msLevel = 1L)
     expect_equal(as.numeric(tmp), c(105, 134), tolerance = 1e-06)
     expect_equal(names(tmp), c("min", "max"))
-    expect_error(mzAcquisitionRange(sps_sciex, msLevel = 2L), 
-        "'spectra' does not contain any spectra")
+    
+    tmp <-mzAcquisitionRange(sps_sciex, msLevel = 2L)
+    expect_equal(as.numeric(tmp), c(NaN, NaN))
+    expect_equal(names(tmp), c("min", "max"))
 })
 ## END unit test mzAcquisitionRange ##
 
@@ -205,8 +210,10 @@ test_that("rtAcquisitionRange", {
     tmp <- rtAcquisitionRange(sps_sciex, msLevel = 1L)
     expect_equal(as.numeric(tmp), c(0.275, 259.757))
     expect_equal(names(tmp), c("min", "max"))
-    expect_error(rtAcquisitionRange(sps_sciex, msLevel = 2L), 
-        "'spectra' does not contain any spectra")
+    
+    tmp <- rtAcquisitionRange(sps_sciex, msLevel = 2L)
+    expect_equal(as.numeric(tmp), c(NaN, NaN))
+    expect_equal(names(tmp), c("min", "max"))
 })
 ## END unit test rtAcquisitionRange ##
 
@@ -217,8 +224,10 @@ test_that("precursorIntensityRange", {
     tmp <- precursorIntensityRange(sps_sciex, msLevel = 1L)
     expect_equal(as.numeric(tmp), c(9679, 10286))
     expect_equal(names(tmp), c("min", "max"))
-    expect_error(precursorIntensityRange(sps_sciex, msLevel = 2L), 
-        "'spectra' does not contain any spectra")
+    
+    tmp <- precursorIntensityRange(sps_sciex, msLevel = 2L)
+    expect_equal(as.numeric(tmp), c(NaN, NaN))
+    expect_equal(names(tmp), c("min", "max"))
 })
 ## END unit test precursorIntensityRange ##
 
@@ -229,8 +238,10 @@ test_that("precursorIntensityQuartiles", {
     tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 1L)
     expect_equal(as.numeric(tmp), c(9934, 9999, 10067))
     expect_equal(names(tmp), c("25%", "50%", "75%"))
-    expect_error(precursorIntensityQuartiles(sps_sciex, msLevel = 2L), 
-                 "'spectra' does not contain any spectra")
+    
+    tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 2L)
+    expect_equal(as.numeric(tmp), c(NaN, NaN, NaN))
+    expect_equal(names(tmp), c("25%", "50%", "75%"))
 })
 ## END unit test precursorIntensityRange ##
 
@@ -240,8 +251,7 @@ test_that("precursorIntensityMean", {
     expect_error(precursorIntensityMean(1:10), "unable to find an inherited method")
     expect_equal(precursorIntensityMean(sps_sciex, msLevel = 1L), 9999.646,
         tolerance = 1e-06)
-    expect_error(precursorIntensityMean(sps_sciex, msLevel = 2L), 
-                 "'spectra' does not contain any spectra")
+    expect_equal(precursorIntensityMean(sps_sciex, msLevel = 2L), NaN)
 })
 ## END unit test precursorIntensityMean ##
 
@@ -251,8 +261,7 @@ test_that("precursorIntensitySd", {
     expect_error(precursorIntensitySd(1:10), "unable to find an inherited method")
     expect_equal(precursorIntensitySd(sps_sciex, msLevel = 1L), 101.0341, 
         tolerance = 1e-06)
-    expect_error(precursorIntensitySd(sps_sciex, msLevel = 2L), 
-        "'spectra' does not contain any spectra")
+    expect_equal(precursorIntensitySd(sps_sciex, msLevel = 2L), NaN)
 })
 ## END unit test precursorIntensitySd ##
 
@@ -264,10 +273,10 @@ test_that("msSignal10xChange", {
         msSignal10xChange(sps_sciex, change = "jump", msLevel = 1L)), 0)
     expect_equal(suppressWarnings(
         msSignal10xChange(sps_sciex, change = "fall", msLevel = 1L)), 0)
-    expect_error(msSignal10xChange(sps_sciex, change = "jump", msLevel = 2L), 
-        "'spectra' does not contain any spectra")
-    expect_error(msSignal10xChange(sps_sciex, change = "fall", msLevel = 2L), 
-        "'spectra' does not contain any spectra")
+    expect_equal(msSignal10xChange(sps_sciex, change = "jump", msLevel = 2L), 
+        NaN)
+    expect_equal(msSignal10xChange(sps_sciex, change = "fall", msLevel = 2L), 
+        NaN)
 })
 ## END unit test msSignal10xChange ##
 
@@ -282,12 +291,12 @@ test_that("ratioCharge1over2", {
     sps_sciex_foo@backend$precursorCharge <- as.integer(
         sample(x = c(1, 2, 3, 4), size = 1862, 
                replace = TRUE, prob = c(0.0, 0.85, 0.1, 0.05)))
-    expect_equal(ratioCharge1over2(sps_sciex_foo), NA)
+    expect_equal(ratioCharge1over2(sps_sciex_foo), NaN)
     sps_sciex_foo <- sps_sciex
     sps_sciex_foo@backend$precursorCharge <- as.integer(
         sample(x = c(1, 2, 3, 4), size = 1862, 
                replace = TRUE, prob = c(0.85, 0.0, 0.1, 0.05)))
-    expect_equal(ratioCharge1over2(sps_sciex_foo), NA)
+    expect_equal(ratioCharge1over2(sps_sciex_foo), NaN)
 })
 ## END unit test ratioCharge1over2 ##
 
@@ -302,12 +311,12 @@ test_that("ratioCharge3over2", {
     sps_sciex_foo@backend$precursorCharge <- as.integer(
         sample(x = c(1, 2, 3, 4), size = 1862, 
                replace = TRUE, prob = c(0.7, 0.0, 0.25, 0.05)))
-    expect_equal(ratioCharge3over2(sps_sciex_foo), NA)
+    expect_equal(ratioCharge3over2(sps_sciex_foo), NaN)
     sps_sciex_foo <- sps_sciex
     sps_sciex_foo@backend$precursorCharge <- as.integer(
         sample(x = c(1, 2, 3, 4), size = 1862, 
                replace = TRUE, prob = c(0.7, 0.25, 0.0, 0.05)))
-    expect_equal(ratioCharge3over2(sps_sciex_foo), NA)
+    expect_equal(ratioCharge3over2(sps_sciex_foo), NaN)
 })
 ## END unit test ratioCharge3over2 ##
 
@@ -322,12 +331,12 @@ test_that("ratioCharge4over2", {
     sps_sciex_foo@backend$precursorCharge <- as.integer(
         sample(x = c(1, 2, 3, 4), size = 1862, 
                replace = TRUE, prob = c(0.7, 0.0, 0.1, 0.20)))
-    expect_equal(ratioCharge4over2(sps_sciex_foo), NA)
+    expect_equal(ratioCharge4over2(sps_sciex_foo), NaN)
     sps_sciex_foo <- sps_sciex
     sps_sciex_foo@backend$precursorCharge <- as.integer(
         sample(x = c(1, 2, 3, 4), size = 1862, 
                replace = TRUE, prob = c(0.7, 0.25, 0.15, 0.0)))
-    expect_equal(ratioCharge4over2(sps_sciex_foo), NA)
+    expect_equal(ratioCharge4over2(sps_sciex_foo), NaN)
 })
 ## END unit test ratioCharge4over2 ##
 
@@ -340,3 +349,4 @@ test_that(".rtOrderSpectra works", {
     expect_warning(res <- .rtOrderSpectra(tmp))
     expect_equal(rtime(res), rtime(tmp))
 })
+
