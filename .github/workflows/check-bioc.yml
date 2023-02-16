@@ -207,8 +207,8 @@ jobs:
         run: |
           ## Manually install required packages      
           install.packages("devtools", dependencies = TRUE, ask = FALSE, update = FALSE)
-	  ##BiocManager::install("rhdf5", dependencies = TRUE, ask = FALSE, update = FALSE, INSTALL_opts = "--force-biarch")
-          BiocManager::install("mzR", dependencies = TRUE, ask = FALSE, update = FALSE)
+          BiocManager::install("rhdf5", dependencies = TRUE, ask = FALSE, update = FALSE, INSTALL_opts = "--force-biarch")
+          BiocManager::install("sneumann/mzR", dependencies = TRUE, ask = FALSE, update = FALSE)
         shell: Rscript {0}
 
       - name: Install BiocGenerics
