@@ -26,10 +26,10 @@ The metric is calculated as follows:
 
 (2) the retention time values are obtained,
 
-(3) the 25% and 75% quantiles are obtained from the retention time values
+(3) the 25\% and 75\% quantiles are obtained from the retention time values
 (`NA` values are removed),
 
-(4) the number of eluted features between this 25% and 75% quantile is 
+(4) the number of eluted features between this 25\% and 75\% quantile is 
 calculated,
 
 (5) the number of features is divided by the interquartile range of the 

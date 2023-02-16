@@ -26,11 +26,11 @@ The metric is calculated as follows:
 
 (2) the `Spectra` object is ordered according to the retention time,
 
-(3) the 0%, 25%, 50%, 75%, and 100% quantiles of the retention time values
-are obtained,
+(3) the 0\%, 25\%, 50\%, 75\%, and 100\% quantiles of the retention time 
+values are obtained,
 
-(4) the ion count of the intervals between the 0%/25%, 25%/50%, 50%/75%, and
-75%/100% are obtained 
+(4) the ion count of the intervals between the 0\%/25\%, 25\%/50\%, 
+50\%/75\%, and 75\%/100\% are obtained 
 
 (5) the ion counts of the intervals are summed (TIC) and the values returned
 }
@@ -43,7 +43,7 @@ The sum of the TIC is returned as an equivalent to the area.
 }
 \note{
 This function interprets the *quantiles* from the [PSI:QC] definition as
-*quartiles*, i.e. the 0, 25, 50, 75 and 100% quantiles are used.
+*quartiles*, i.e. the 0, 25, 50, 75 and 100\% quantiles are used.
 }
 \examples{
 library(S4Vectors)

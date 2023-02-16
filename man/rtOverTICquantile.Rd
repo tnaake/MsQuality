@@ -41,8 +41,8 @@ The metric is calculated as follows:
 (2) the cumulative sum of the ion count is calculated (TIC),
 
 (3) the quantiles are calculated according to the `probs` argument, e.g.
-when `probs` is set to `c(0, 0.25, 0.5, 0.75, 1)` the 0%, 25%, 50%, 75% and
-100% quantile is calculated,
+when `probs` is set to `c(0, 0.25, 0.5, 0.75, 1)` the 0\%, 25\%, 50\%, 75\% 
+and 100\% quantile is calculated,
 
 (4) the retention time/relative retention time (retention time divided by 
 the total run time taking into account the minimum retention time) is 

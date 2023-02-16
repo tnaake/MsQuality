@@ -5,7 +5,7 @@ fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
 spectra <- Spectra(fls, backend = MsBackendMzR())
 
 qm_spectra <- c("rtDuration", "rtOverTicQuantile", "rtOverMsQuarters",
-    "ticQuantileToQuantileLogRatio", "numberSpectra", "medianPrecursorMz", 
+    "ticQuartileToQuartileLogRatio", "numberSpectra", "medianPrecursorMz", 
     "rtIqr", "rtIqrRate", "areaUnderTic", "areaUnderTicRtQuantiles", 
     "extentIdentifiedPrecursorIntensity", "medianTicRtIqr", 
     "medianTicOfRtRange", "mzAcquisitionRange", "rtAcquisitionRange", 

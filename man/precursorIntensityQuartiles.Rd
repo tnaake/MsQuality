@@ -36,7 +36,7 @@ The metric is calculated as follows:
 
 (2) the intensity of the precursor ions within `spectra` are obtained,
 
-(3) the 25%, 50%, and 75% quantile of the  precursor intensity values are 
+(3) the 25\%, 50\%, and 75\% quantile of the  precursor intensity values are 
 obtained (`NA` values are removed) and returned.
 }
 \details{
@@ -79,6 +79,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$precursorIntensity <- c(100.0, 100.0, 100.0)
 sps <- Spectra(spd)
+
 precursorIntensityQuartiles(spectra = sps, msLevel = 2L)
 }
 \author{

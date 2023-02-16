@@ -26,10 +26,10 @@ The metric is calculated as follows:
 
 (2) the intensities of the precursor ions are obtained,
 
-(3) the 5% and 95% quantile of these intensities are obtained 
+(3) the 5\% and 95\% quantile of these intensities are obtained 
 (`NA` values are removed),
 
-(4) the ratio between the 95% and the 5% intensity quantile is calculated
+(4) the ratio between the 95\% and the 5\% intensity quantile is calculated
 and returned.
 }
 \details{
