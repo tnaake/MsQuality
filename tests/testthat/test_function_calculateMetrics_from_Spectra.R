@@ -3,7 +3,7 @@ spectra <- Spectra(fls, backend = MsBackendMzR())
 
 ## build the results
 ## define the quality metrics to be calculated
-metrics <- c("rtDuration", "rtOverTicQuantile", "ticQuantileToQuantileLogRatio",
+metrics <- c("rtDuration", "rtOverTicQuantile", "ticQuartileToQuartileLogRatio",
     "numberSpectra", "areaUnderTic", "msSignal10xChange")
 
 ## additional parameters passed to the quality metrics functions
@@ -32,9 +32,9 @@ suppressWarnings(metrics_spectra_wrapper <- calculateMetrics(object = spectra,
 colnames_metrics <- c("rtDuration", "rtOverTicQuantile.0%",                  
     "rtOverTicQuantile.25%", "rtOverTicQuantile.50%",
     "rtOverTicQuantile.75%", "rtOverTicQuantile.100%",
-    "ticQuantileToQuantileLogRatio.Q2/Q1",
-    "ticQuantileToQuantileLogRatio.Q3/Q1",
-    "ticQuantileToQuantileLogRatio.Q4/Q1",
+    "ticQuartileToQuartileLogRatio.Q2/Q1",
+    "ticQuartileToQuartileLogRatio.Q3/Q1",
+    "ticQuartileToQuartileLogRatio.Q4/Q1",
     "numberSpectra", "areaUnderTic", "msSignal10xChange")
 metrics_spectra_1_vals <- c(2.594770e+02, 0, 2.505386e-01,
     4.999981e-01, 7.505367e-01, 1.000000e+00, -1.603689e-01, -7.040791e-01,
@@ -69,7 +69,7 @@ test_that("calculateMetricsFromOneSampleSpectra", {
         "should be one of")
     expect_error(
         calculateMetricsFromOneSampleSpectra(spectra_1, 
-        metrics = "ticQuantileToQuantileLogRatio", 
+        metrics = "ticQuartileToQuartileLogRatio", 
         relativeTo = c("Q1", "previous")), "'relativeTo' has to be of length 1")
     expect_error(calculateMetricsFromOneSampleSpectra(spectra_1, 
         metrics = "msSignal10xChange", change = c("jump", "fall")), 
@@ -89,7 +89,7 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     expect_error(calculateMetricsFromOneSampleSpectra(NULL, metrics = metrics),
         "object '.metrics' not found")
     expect_error(calculateMetricsFromOneSampleSpectra(spectra_2,
-        metrics = "ticQuantileToQuantileLogRatio",
+        metrics = "ticQuartileToQuartileLogRatio",
         relativeTo = c("Q1", "previous")), "'relativeTo' has to be of length 1")
     expect_error(calculateMetricsFromOneSampleSpectra(spectra_2,
         metrics = "msSignal10xChange", change = c("jump", "fall")),
@@ -121,7 +121,7 @@ test_that("calculateMetricsFromSpectra", {
     expect_error(calculateMetricsFromSpectra(spectra, metrics = "foo"),
         "should be one of ")
     expect_error(calculateMetricsFromSpectra(spectra, 
-        metrics = "ticQuantileToQuantileLogRatio",
+        metrics = "ticQuartileToQuartileLogRatio",
         relativeTo = c("Q1", "previous")), "'relativeTo' has to be of length 1")
     expect_error(calculateMetricsFromSpectra(spectra, 
         metrics = "msSignal10xChange", change = c("jump", "fall")), 

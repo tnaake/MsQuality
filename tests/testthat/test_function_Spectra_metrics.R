@@ -53,46 +53,46 @@ test_that("rtOverMsQuarters", {
 })
 ## END unit test rtOverMsQuarters ##
 
-## START unit test ticQuantileToQuantileLogRatio ##
-test_that("ticQuantileToQuantileLogRatio", {
-    expect_error(ticQuantileToQuantileLogRatio(NULL), 
+## START unit test ticQuartileToQuartileLogRatio ##
+test_that("ticQuartileToQuartileLogRatio", {
+    expect_error(ticQuartileToQuartileLogRatio(NULL), 
         "unable to find an inherited method")
-    expect_error(ticQuantileToQuantileLogRatio(NULL), 
+    expect_error(ticQuartileToQuartileLogRatio(NULL), 
         "unable to find an inherited method")
     
     ## mode = "TIC_change"
-    tmp <- suppressWarnings(ticQuantileToQuantileLogRatio(sps_sciex, 
+    tmp <- suppressWarnings(ticQuartileToQuartileLogRatio(sps_sciex, 
         relativeTo = "previous", mode = "TIC_change", msLevel = 1L))
     expect_equal(as.numeric(tmp), c(-6.047274, NaN, 2.505220), 
         tolerance = 1e-06)
     expect_equal(names(tmp), c("Q2/Q1", "Q3/Q2", "Q4/Q3"))
-    tmp <- suppressWarnings(ticQuantileToQuantileLogRatio(sps_sciex, 
+    tmp <- suppressWarnings(ticQuartileToQuartileLogRatio(sps_sciex, 
         relativeTo = "Q1", mode = "TIC_change", msLevel = 1L))
     expect_equal(as.numeric(tmp), c(-6.047274, NaN, NaN), tolerance = 1e-06)
     expect_equal(names(tmp), c("Q2/Q1", "Q3/Q1", "Q4/Q1"))
     
     ## mode = "TIC"
-    tmp <- suppressWarnings(ticQuantileToQuantileLogRatio(sps_sciex, 
+    tmp <- suppressWarnings(ticQuartileToQuartileLogRatio(sps_sciex, 
         relativeTo = "previous", mode = "TIC", msLevel = 1L))
     expect_equal(as.numeric(tmp), c(0.4759104, 0.2566362, 0.6382157),
         tolerance = 1e-06)
     expect_equal(names(tmp), c("Q2/Q1", "Q3/Q2", "Q4/Q3"))
-    tmp <- suppressWarnings(ticQuantileToQuantileLogRatio(sps_sciex, 
+    tmp <- suppressWarnings(ticQuartileToQuartileLogRatio(sps_sciex, 
         relativeTo = "Q1", mode = "TIC", msLevel = 1L))
     expect_equal(as.numeric(tmp), c(0.4759104, 0.7325466, 1.3707623), tolerance = 1e-06)
     expect_equal(names(tmp), c("Q2/Q1", "Q3/Q1", "Q4/Q1"))
     
     ## tests when Spectra object has length 0
-    tmp <- suppressWarnings(ticQuantileToQuantileLogRatio(sps_sciex, 
+    tmp <- suppressWarnings(ticQuartileToQuartileLogRatio(sps_sciex, 
         relativeTo = "previous", mode = "TIC", msLevel = 2L))
     expect_equal(as.numeric(tmp), c(NaN, NaN, NaN))
     expect_equal(names(tmp), c("Q2/Q1", "Q3/Q2", "Q4/Q3"))
-    tmp <- suppressWarnings(ticQuantileToQuantileLogRatio(sps_sciex, 
+    tmp <- suppressWarnings(ticQuartileToQuartileLogRatio(sps_sciex, 
         relativeTo = "Q1", mode = "TIC", msLevel = 2L))
     expect_equal(as.numeric(tmp), c(NaN, NaN, NaN))
     expect_equal(names(tmp), c("Q2/Q1", "Q3/Q1", "Q4/Q1"))
 })
-## END unit test ticQuantiletoQuantileLogRatio ##
+## END unit test ticQuartileToQuartileLogRatio ##
 
 ## START unit test numberSpectra ##
 test_that("numberSpectra", {
@@ -237,13 +237,13 @@ test_that("precursorIntensityQuartiles", {
     expect_error(precursorIntensityQuartiles(1:10), "unable to find an inherited method")
     tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 1L)
     expect_equal(as.numeric(tmp), c(9934, 9999, 10067))
-    expect_equal(names(tmp), c("25%", "50%", "75%"))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
     
     tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 2L)
     expect_equal(as.numeric(tmp), c(NaN, NaN, NaN))
-    expect_equal(names(tmp), c("25%", "50%", "75%"))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
 })
-## END unit test precursorIntensityRange ##
+## END unit test precursorIntensityQuartiles ##
 
 ## START unit test precursorIntensityMean ##
 test_that("precursorIntensityMean", {

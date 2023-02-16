@@ -43,7 +43,7 @@ qualityMetrics <- function(object) {
     if (is(object, "Spectra"))
         .metrics <- c(
             "rtDuration", "rtOverTicQuantile", "rtOverMsQuarters",
-            "ticQuantileToQuantileLogRatio", "numberSpectra", 
+            "ticQuartileToQuartileLogRatio", "numberSpectra", 
             "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic", 
             "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity",
             "medianTicRtIqr", "medianTicOfRtRange", "mzAcquisitionRange",

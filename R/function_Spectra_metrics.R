@@ -77,8 +77,8 @@ rtDuration <- function(spectra, ...) {
 #' (2) the cumulative sum of the ion count is calculated (TIC),
 #' 
 #' (3) the quantiles are calculated according to the `probs` argument, e.g.
-#' when `probs` is set to `c(0, 0.25, 0.5, 0.75, 1)` the 0%, 25%, 50%, 75% and
-#' 100% quantile is calculated,
+#' when `probs` is set to `c(0, 0.25, 0.5, 0.75, 1)` the 0\%, 25\%, 50\%, 75\% 
+#' and 100\% quantile is calculated,
 #' 
 #' (4) the retention time/relative retention time (retention time divided by 
 #' the total run time taking into account the minimum retention time) is 
@@ -325,7 +325,7 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
     rt_quarters
 }
 
-#' @name ticQuantileToQuantileLogRatio
+#' @name ticQuartileToQuartileLogRatio
 #' 
 #' @title MS1 TIC-change quartile ratios (MS:4000057) or  
 #' MS1 TIC quartile ratios (MS:4000058)
@@ -349,7 +349,7 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
 #'
 #' @note
 #' This function interprets the *quantiles* from the [PSI:QC] definition as
-#' *quartiles*, i.e. the 0, 25, 50, 75 and 100% quantiles are used.
+#' *quartiles*, i.e. the 0, 25, 50, 75 and 100\% quantiles are used.
 #' 
 #' @details
 #' is_a: MS:4000004 ! n-tuple
@@ -369,11 +369,11 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
 #' for *MS:4000058*, the TIC values between subsequent scan events are taken
 #' as they are,
 #' 
-#' (3) for *MS:4000057* and *MS:4000058* the ratios between the 25%, 50%, 
-#' 75%, and 100% quantile to the 25% quantile of the values of (2) are 
+#' (3) for *MS:4000057* and *MS:4000058* the ratios between the 25\%, 50\%, 
+#' 75\%, and 100\% quantile to the 25% quantile of the values of (2) are 
 #' calculated.
 #' Alternatively, if `relativeTo = "Q1"`, the ratios are calculated between the
-#' 50%/25%, 75%/25%, and 100%/25% quantiles.
+#' 50\%/25\%, 75\%/25\%, and 100\%/25\% quantiles.
 #' 
 #' The `log` values of the ratios are returned.
 #' 
@@ -411,17 +411,17 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
 #' sps <- Spectra(spd)
 #' 
 #' ## MS:4000057
-#' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "previous",
+#' ticQuartileToQuartileLogRatio(spectra = sps, relativeTo = "previous",
 #'     msLevel = 2L, mode = "TIC_change")
-#' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "Q1",
+#' ticQuartileToQuartileLogRatio(spectra = sps, relativeTo = "Q1",
 #'     msLevel = 2L, mode = "TIC_change")
 #' 
 #' ## MS:4000058
-#' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "previous",
+#' ticQuartileToQuartileLogRatio(spectra = sps, relativeTo = "previous",
 #'     msLevel = 2L, mode = "TIC")
-#' ticQuantileToQuantileLogRatio(spectra = sps, relativeTo = "Q1",
+#' ticQuartileToQuartileLogRatio(spectra = sps, relativeTo = "Q1",
 #'     msLevel = 2L, mode = "TIC")
-ticQuantileToQuantileLogRatio <- function(spectra, 
+ticQuartileToQuartileLogRatio <- function(spectra, 
     relativeTo = "previous", mode = "TIC_change", msLevel = 1L, ...) {
 
     if (length(relativeTo) != 1)
@@ -721,10 +721,10 @@ rtIqr <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' (2) the retention time values are obtained,
 #' 
-#' (3) the 25% and 75% quantiles are obtained from the retention time values
+#' (3) the 25\% and 75\% quantiles are obtained from the retention time values
 #' (`NA` values are removed),
 #' 
-#' (4) the number of eluted features between this 25% and 75% quantile is 
+#' (4) the number of eluted features between this 25\% and 75\% quantile is 
 #' calculated,
 #' 
 #' (5) the number of features is divided by the interquartile range of the 
@@ -890,11 +890,11 @@ areaUnderTic <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' (2) the `Spectra` object is ordered according to the retention time,
 #' 
-#' (3) the 0%, 25%, 50%, 75%, and 100% quantiles of the retention time values
-#' are obtained,
+#' (3) the 0\%, 25\%, 50\%, 75\%, and 100\% quantiles of the retention time 
+#' values are obtained,
 #' 
-#' (4) the ion count of the intervals between the 0%/25%, 25%/50%, 50%/75%, and
-#' 75%/100% are obtained 
+#' (4) the ion count of the intervals between the 0\%/25\%, 25\%/50\%, 
+#' 50\%/75\%, and 75\%/100\% are obtained 
 #' 
 #' (5) the ion counts of the intervals are summed (TIC) and the values returned
 #' 
@@ -907,7 +907,7 @@ areaUnderTic <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' @note
 #' This function interprets the *quantiles* from the [PSI:QC] definition as
-#' *quartiles*, i.e. the 0, 25, 50, 75 and 100% quantiles are used.
+#' *quartiles*, i.e. the 0, 25, 50, 75 and 100\% quantiles are used.
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer`
@@ -993,10 +993,10 @@ areaUnderTicRtQuantiles <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' (2) the intensities of the precursor ions are obtained,
 #' 
-#' (3) the 5% and 95% quantile of these intensities are obtained 
+#' (3) the 5\% and 95\% quantile of these intensities are obtained 
 #' (`NA` values are removed),
 #' 
-#' (4) the ratio between the 95% and the 5% intensity quantile is calculated
+#' (4) the ratio between the 95\% and the 5\% intensity quantile is calculated
 #' and returned.
 #' 
 #' @details
@@ -1053,11 +1053,14 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {
     if (length(spectra) == 0) {
         ratio <- NaN
     } else {
-        ## retrieve the precursorIntensity and calculate the 5% and 95% quantile
+        ## retrieve the precursorIntensity and calculate the 5% and 95% 
+        ## quantile
         precInt <- precursorIntensity(spectra)
-        quantilePrecInt <- quantile(precInt, probs = c(0.05, 0.95), na.rm = TRUE)
+        quantilePrecInt <- quantile(precInt, probs = c(0.05, 0.95), 
+            na.rm = TRUE)
         
-        ## calculate the ratio between the 95% and 5% quantile and return the value
+        ## calculate the ratio between the 95% and 5% quantile and return the 
+        ## value
         ratio <- quantilePrecInt[["95%"]] / quantilePrecInt[["5%"]]
     }
         
@@ -1523,7 +1526,7 @@ precursorIntensityRange <- function(spectra, msLevel = 1, ...) {
 #' 
 #' (2) the intensity of the precursor ions within `spectra` are obtained,
 #' 
-#' (3) the 25%, 50%, and 75% quantile of the  precursor intensity values are 
+#' (3) the 25\%, 50\%, and 75\% quantile of the  precursor intensity values are 
 #' obtained (`NA` values are removed) and returned.
 #' 
 #' @details
@@ -1579,6 +1582,7 @@ precursorIntensityRange <- function(spectra, msLevel = 1, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$precursorIntensity <- c(100.0, 100.0, 100.0)
 #' sps <- Spectra(spd)
+#' 
 #' precursorIntensityQuartiles(spectra = sps, msLevel = 2L)
 precursorIntensityQuartiles <- function(spectra, msLevel = 1L, ...) {
   
@@ -1586,11 +1590,11 @@ precursorIntensityQuartiles <- function(spectra, msLevel = 1L, ...) {
     
     if (length(spectra) == 0) {
         quantiles <- c(NaN, NaN, NaN)
-        names(quantiles) <- c("25%", "50%", "75%")
     } else {
         int <- precursorIntensity(spectra)
         quantiles <- quantile(int, probs = c(0.25, 0.50, 0.75), na.rm = TRUE)
     }
+    names(quantiles) <- c("Q1", "Q2", "Q3")
     
     quantiles
 }

@@ -240,14 +240,14 @@ respective help file for the quality metric (accessible by e.g. entering
 - *rtOverMsQuarters*, **MS1/MS2 quantiles RT fraction** (QC:4000055), 
   "The interval used for acquisition of the first, second, third, and fourth 
   quarter of all MS2 events divided by RT-Duration." [PSI:QC];
-- *ticQuantileToQuantileLogRatio*, **MS1 TIC-change quartile ratios** 
+- *ticQuartileToQuartileLogRatio*, **MS1 TIC-change quartile ratios** 
   (MS:4000057), "The log ratios of successive TIC-change quartiles. The 
   TIC changes are the list of MS1 total ion current (TIC) value changes 
   from one to the next scan, produced when each MS1 TIC is subtracted 
   from the preceding MS1 TIC. The metric's value triplet represents the 
   log ratio of the TIC-change Q2 to Q1, Q3 to Q2, TIC-change-max to Q3" 
   [PSI:MS], `mode = "TIC_change"`;
-- *ticQuantileToQuantileLogRatio*, **MS1 TIC quartile ratios** (MS:4000058),
+- *ticQuartileToQuartileLogRatio*, **MS1 TIC quartile ratios** (MS:4000058),
   The log ratios of successive TIC quartiles. The metric's value triplet 
   represents the log ratios of TIC-Q2 to TIC-Q1, TIC-Q3 to TIC-Q2, TIC-max to 
   TIC-Q3." [PSI:MS], `mode = "TIC";
@@ -363,7 +363,7 @@ each quality metrics functions, the relevant parameters are selected based on
 the accepted arguments. 
 
 Additional arguments can be given to the quality metrics functions. 
-For example, the function `ticQuantileToQuantileLogRatio` function has the 
+For example, the function `ticQuartileToQuartileLogRatio` function has the 
 arguments `relativeTo`, `mode`, and `msLevel`. `relativeTo` specifies to which 
 quantile the log TIC quantile is relatively related to (either to the 1st 
 quantile or the respective previous one). `mode` (either `"TIC_change"` or 
@@ -372,7 +372,7 @@ of scan events or the TICs directly. One `Spectra` object may also contain
 more than one `msLevel`, e.g. if it also contains information on MS$^2$ or 
 MS$^3$ features. If the user adds the arguments 
 `relativeTo = "Q1", mode = "TIC", msLevel = c(1L, 2L))`, 
-`ticQUantileToQuantileLogRatio` is run with the parameter combinations 
+`ticQuartileToQuartileLogRatio` is run with the parameter combinations 
 `relativeTo = "Q1", mode = "TIC", msLevel = c(1L, 2L)`.
 
 The  results based on these parameter combinations are returned and the 
@@ -412,7 +412,7 @@ from the first 20 of these samples.
 ```{r metrics_rplc_hilic_lee2019}
 ## define metrics
 metrics_sps <- c("rtDuration", "rtOverTicQuantile", "rtOverMsQuarters",
-    "ticQuantileToQuantileLogRatio", "numberSpectra", "medianPrecursorMz",
+    "ticQuartileToQuartileLogRatio", "numberSpectra", "medianPrecursorMz",
     "rtIqr", "rtIqrRate", "areaUnderTic")
 
 ## subset the Spectra objects
@@ -460,7 +460,7 @@ the differnt retention time quantiles and could indicate drifts or
 interruptions of sensitivity during the run.
 
 ```{r}
-plotMetric(qc = metrics_sps, metric = "ticQuantileToQuantileLogRatio")
+plotMetric(qc = metrics_sps, metric = "ticQuartileToQuartileLogRatio")
 ```
 
 Alternatively, to browse through all metrics that were calculated in an 
