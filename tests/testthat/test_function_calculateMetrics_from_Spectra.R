@@ -3,7 +3,7 @@ spectra <- Spectra(fls, backend = MsBackendMzR())
 
 ## build the results
 ## define the quality metrics to be calculated
-metrics <- c("rtDuration", "rtOverTicQuantile", "ticQuartileToQuartileLogRatio",
+metrics <- c("rtDuration", "rtOverTicQuantiles", "ticQuartileToQuartileLogRatio",
     "numberSpectra", "areaUnderTic", "msSignal10xChange")
 
 ## additional parameters passed to the quality metrics functions
@@ -29,9 +29,9 @@ suppressWarnings(metrics_spectra_wrapper <- calculateMetrics(object = spectra,
     metrics = metrics, msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
 
 ## START unit test calculateMetricsFromOneSampleSpectra ## 
-colnames_metrics <- c("rtDuration", "rtOverTicQuantile.0%",                  
-    "rtOverTicQuantile.25%", "rtOverTicQuantile.50%",
-    "rtOverTicQuantile.75%", "rtOverTicQuantile.100%",
+colnames_metrics <- c("rtDuration", "rtOverTicQuantiles.0%",                  
+    "rtOverTicQuantiles.25%", "rtOverTicQuantiles.50%",
+    "rtOverTicQuantiles.75%", "rtOverTicQuantiles.100%",
     "ticQuartileToQuartileLogRatio.Q2/Q1",
     "ticQuartileToQuartileLogRatio.Q3/Q1",
     "ticQuartileToQuartileLogRatio.Q4/Q1",

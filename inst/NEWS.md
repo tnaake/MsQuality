@@ -2,6 +2,7 @@
 
 ## Changes in version 0.99.9 (2023-09-16)
 - rename ticQuantileToQuantileLogRatio to ticQuartileToQuartileLogRatio
+- rename rtOverTicQuantile to rtOverTicQuantiles
 - return quartiles instead of quantiles in precursorIntensityQuartiles
 
 ## Changes in version 0.99.8 (2023-09-02)

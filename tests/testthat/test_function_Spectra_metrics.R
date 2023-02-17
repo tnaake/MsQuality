@@ -23,16 +23,16 @@ test_that("rtDuration", {
 })
 ## END unit test rtDuration ##
 
-## START unit test rtOverTicQuantile ##
-test_that("rtOverTicQuantile", {
-    expect_error(rtOverTicQuantile(NULL), "unable to find an inherited method")
-    expect_error(rtOverTicQuantile(NULL), "unable to find an inherited method")
-    suppressWarnings(tmp <- rtOverTicQuantile(sps_sciex))
+## START unit test rtOverTicQuantiles ##
+test_that("rtOverTicQuantiles", {
+    expect_error(rtOverTicQuantiles(NULL), "unable to find an inherited method")
+    expect_error(rtOverTicQuantiles(NULL), "unable to find an inherited method")
+    suppressWarnings(tmp <- rtOverTicQuantiles(sps_sciex))
     expect_equal(as.numeric(tmp),
         c(0.0, 0.2010891, 0.4257983, 0.7247362, 1), tolerance = 1e-02)
     expect_equal(names(tmp), c("0%", "25%", "50%", "75%", "100%"))
 })
-## END unit test rtOverTicQuantile ##
+## END unit test rtOverTicQuantiles ##
 
 ## START unit test rtOverMsQuarters ##
 test_that("rtOverMsQuarters", {

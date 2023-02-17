@@ -263,7 +263,7 @@ calculated for both `Spectra` and `MsExperiment` objects.
 - *rtDuration*, **RT duration** (QC:4000053), 
   "The retention time duration of the MS run in seconds, similar to the 
   highest scan time minus the lowest scan time." [PSI:QC];
-- *rtOverTicQuantile*, **RT over TIC quantile** (QC:4000054), 
+- *rtOverTicQuantiles*, **RT over TIC quantile** (QC:4000054), 
   "The interval when the respective quantile of the TIC accumulates divided by 
   retention time duration. The number of quantiles observed is given by the 
   size of the tuple." [PSI:QC];
@@ -448,7 +448,7 @@ msexp_rplc_subset <- msexp_rplc[1:20]
 msexp_hilic_subset <- msexp_hilic[1:20]
 
 ## define metrics
-metrics_sps <- c("rtDuration", "rtOverTicQuantile", "rtOverMsQuarters",
+metrics_sps <- c("rtDuration", "rtOverTicQuantiles", "rtOverMsQuarters",
     "ticQuartileToQuartileLogRatio", "numberSpectra", "medianPrecursorMz",
     "rtIqr", "rtIqrRate", "areaUnderTic")
 

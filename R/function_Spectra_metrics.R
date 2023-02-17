@@ -61,7 +61,7 @@ rtDuration <- function(spectra, ...) {
     max(RT, na.rm = TRUE) - min(RT, na.rm = TRUE)
 }
 
-#' @name rtOverTicQuantile
+#' @name rtOverTicQuantiles
 #' 
 #' @title RT over TIC quantile (QC:4000054)
 #' 
@@ -134,8 +134,8 @@ rtDuration <- function(spectra, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' rtOverTicQuantile(spectra = sps, msLevel = 2L)
-rtOverTicQuantile <- function(spectra, probs = seq(0, 1, 0.25),
+#' rtOverTicQuantiles(spectra = sps, msLevel = 2L)
+rtOverTicQuantiles <- function(spectra, probs = seq(0, 1, 0.25),
     msLevel = 1L, relative = TRUE, ...) {
     
     ## truncate spectra based on the MS level
