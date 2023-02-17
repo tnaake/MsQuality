@@ -160,4 +160,3 @@ test_that("calculateMetrics", {
         "should be one of ")
 })
 ## END unit test calculateMetrics ## 
-

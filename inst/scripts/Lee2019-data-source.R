@@ -126,8 +126,10 @@ sps_hilic$dataOrigin <- paste0(sps_hilic$dataOrigin, "_HILIC")
 
 ## create an empty MsExperiment object and fill it with data
 msexp_rplc <- msexp_hilic <- MsExperiment()
-sampleData(msexp_rplc) <- DataFrame(samples = names(sps_l_rplc))
-sampleData(msexp_hilic) <- DataFrame(samples = names(sps_l_hilic))
+sampleData(msexp_rplc) <- DataFrame(
+    samples = paste0(names(sps_l_rplc), "_RPLC"))
+sampleData(msexp_hilic) <- DataFrame(
+    samples = paste0(names(sps_l_hilic), "_HILIC"))
 rownames(sampleData(msexp_rplc)) <- names(sps_l_rplc)
 rownames(sampleData(msexp_hilic)) <- names(sps_l_hilic)
 spectra(msexp_rplc) <- sps_rplc
@@ -143,5 +145,5 @@ msexp_hilic <- linkSampleData(object = msexp_hilic,
 msexp_rplc
 msexp_hilic
 
-save(sps_rplc, sps_hilic, ##msexp_rplc, msexp_hilic, 
+save(sps_rplc, sps_hilic, msexp_rplc, msexp_hilic, 
     file = "Lee2019.RData", compress = "xz")

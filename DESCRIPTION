@@ -1,6 +1,6 @@
 Package: MsQuality
 Type: Package
-Title: MsQuality - Quality metric calculation from Spectra objects
+Title: MsQuality - Quality metric calculation from Spectra and MsExperiment objects
 Version: 0.99.8
 Date: 2023-02-09
 Authors@R: c(person(given = "Thomas", family = "Naake", 
@@ -22,13 +22,15 @@ Description:
 	The MsQuality package allows to calculate low-level quality metrics that 
 	require minimum information on mass spectrometry data: retention time, 
 	m/z values, and associated intensities. MsQuality relies on the 
-	Spectra package and its infrastructure to store spectral data.
+	Spectra package, or alternatively the MsExperiment package, and its infrastructure 
+	to store spectral data.
 Depends:
 	R (>= 4.2.0)
 Imports:
 	ggplot2 (>= 3.3.5),
 	htmlwidgets (>= 1.5.3),
 	methods (>= 4.2.0),
+	MsExperiment (>= 0.99.0),
 	plotly (>= 4.9.4.1),
 	ProtGenerics (>= 1.24.0),
 	shiny (>= 1.6.0),

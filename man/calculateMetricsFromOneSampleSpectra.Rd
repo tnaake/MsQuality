@@ -15,7 +15,7 @@ calculateMetricsFromOneSampleSpectra(
 \arguments{
 \item{spectra}{\code{Spectra} object}
 
-\item{metrics}{`\code{character} specifying the quality metrics to be 
+\item{metrics}{\code{character} specifying the quality metrics to be 
 calculated on \code{spectra}}
 
 \item{f}{\code{character}, grouping parameter for \code{spectra}}

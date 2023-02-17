@@ -18,7 +18,7 @@
 #' is specified by the argument \code{f}.
 #' 
 #' @param spectra \code{Spectra} object
-#' @param metrics `\code{character} specifying the quality metrics to be 
+#' @param metrics \code{character} specifying the quality metrics to be 
 #' calculated on \code{spectra}
 #' @param f \code{character}, grouping parameter for \code{spectra}
 #' @param ... arguments passed to the quality metrics functions defined in 
@@ -114,7 +114,6 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' @export
 #' 
 #' @importFrom Spectra Spectra
-#' @importFrom ProtGenerics spectra
 #' @importFrom methods is
 #' 
 #' @examples 
@@ -173,29 +172,125 @@ calculateMetricsFromSpectra <- function(spectra,
     df
 }
 
-#' @name calculateMetrics
+
+#' @name calculateMetricsFromMsExperiment
 #' 
-#' @title Calculate QC metrics from a Spectra object
+#' @title Calculate QC metrics from a MsExperiment object
 #' 
 #' @description
-#' Calculate QC metrics from a `Spectra` object. 
-#' `calculateMetrics` is a wrapper for the function
-#' `calculateMetricsFromSpectra`.
+#' The function \code{calculateMetricsFromMsExperiment} calculates quality 
+#' metrics from a \code{MsExperiment} object. Each spectra in the 
+#' \code{msexp} object should refer to one mzML file/to one sample.
 #' 
 #' @details
-#' The metrics are defined by the argument `metrics`. Further arguments 
-#' passed to the quality metric functions can be specified by the `params`
-#' argument. `params` can contain named entries which are matched against 
+#' The metrics are defined by the argument \code{metrics}. Further arguments 
+#' passed to the quality metric functions can be specified by the \code{params}
+#' argument. \code{params} can contain named entries which are matched against
+#' the formal arguments of the quality metric functions.
+#' 
+#' @param msexp \code{MsExperiment} object
+#' @param metrics \code{character} specifying the quality metrics to be 
+#' calculated on \code{msexp}
+#' @param ... arguments passed to the quality metrics functions defined in 
+#' \code{metrics}
+#' 
+#' @return \code{data.frame} containing in the columns the metrics for the 
+#' different spectra (in rows)
+#' 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' 
+#' @export
+#' 
+#' @importFrom Spectra Spectra
+#' @importFrom ProtGenerics spectra
+#' @importFrom MsExperiment MsExperiment sampleData
+#' @importFrom methods is
+#' 
+#' @examples 
+#' library(msdata)
+#' library(MsExperiment)
+#' library(S4Vectors)
+#' 
+#' msexp <- MsExperiment()
+#' sd <- DataFrame(sample_id = c("QC1", "QC2"),
+#'     sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
+#' sampleData(msexp) <- sd
+#' 
+#' ## define file names containing spectra data for the samples and
+#' ## add them, along with other arbitrary files to the experiment
+#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+#' experimentFiles(msexp) <- MsExperimentFiles(
+#'     mzML_files = fls,
+#'     annotations = "internal_standards.txt")
+#' ## link samples to data files: first sample to first file in "mzML_files",
+#' ## second sample to second file in "mzML_files"
+#' msexp <- linkSampleData(msexp, with = "experimentFiles.mzML_files",
+#'     sampleIndex = c(1, 2), withIndex = c(1, 2))
+#' msexp <- linkSampleData(msexp, with = "experimentFiles.annotations",
+#'      sampleIndex = c(1, 2), withIndex = c(1, 1))
+#'
+#' library(Spectra)
+#' ## import the data and add it to the mse object
+#' spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
+#' 
+#' ## define the quality metrics to be calculated
+#' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+#' 
+#' ## additional parameters passed to the quality metrics functions
+#' ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
+#' ## relativeTo is an argument of msSignal10xChange) passed to ...
+#' calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
+#'     msLevel = 1, change = "jump", relativeTo = "Q1")
+#'     
+#' calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
+#'     msLevel = 1, change = "fall", relativeTo = "previous")
+calculateMetricsFromMsExperiment <- function(msexp, 
+    metrics = qualityMetrics(msexp), ...) {
+  
+    ## match metrics against the possible quality metrics defined in 
+    ## qualityMetrics(mse), throw an error if there are metrics that 
+    ## are not defined in qualityMetrics(mse)
+    metrics <- match.arg(metrics, choices = qualityMetrics(msexp), 
+        several.ok = TRUE)
+    
+    if(!is(msexp, "MsExperiment")) 
+        stop("'msexp' is not of class 'MsExperiment'")
+    
+    
+    ## get Spectra object from MsExperiment object and calculate the quality  
+    ## metrics using the calculateMetricsFromSpectra function, the metrics
+    ## will be stored in the data.frame df
+    sps <- spectra(msexp)
+    df <- calculateMetricsFromSpectra(spectra = sps, metrics = metrics, ...)
+    
+    ## return the data.frame
+    df
+}
+
+#' @name calculateMetrics
+#' 
+#' @title Calculate QC metrics from a Spectra or MsExperiment object
+#' 
+#' @description
+#' Calculate QC metrics from a \code{Spectra} or \code{MsExperiment} object. 
+#' \code{calculateMetrics} is a wrapper for the functions
+#' \code{calculateMetricsFromSpectra} and 
+#' \code{calculateMetricsFromMsExperiment}.
+#' 
+#' @details
+#' The metrics are defined by the argument \code{metrics}. Further arguments 
+#' passed to the quality metric functions can be specified by the \code{params}
+#' argument. \code{params} can contain named entries which are matched against 
 #' the formal arguments of the quality metric functions. 
 #' 
-#' @param object `Spectra` object
-#' @param metrics `character` specifying the quality metrics to be calculated
-#' on `object`
+#' @param object \code{Spectra} or \code{MsExperiment} object
+#' @param metrics \code{character} specifying the quality metrics to be 
+#' calculated on \code{object}
 #' @param ... arguments passed to the quality metrics functions defined in 
-#' `metrics`
+#' \code{metrics}
 #' 
-#' @return `data.frame` containing in the columns the metrics for the 
-#' different spectra (samples in row)
+#' @return \code{data.frame} containing in the columns the metrics for the 
+#' different spectra and in rows the samples
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -235,8 +330,10 @@ calculateMetrics <- function(object,
             metrics = metrics, ...)
     }
     
-    ## TODO: create if for MsExperiment class (to be included once MsExperiment
-    ## package is accepted in BioC)
+    if (is(object, "MsExperiment")) {
+      metrics_vals <- calculateMetricsFromMsExperiment(msexp = object, 
+            metrics = metrics, ...)
+    }
     
     ## return the object
     metrics_vals

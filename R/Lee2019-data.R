@@ -2,6 +2,8 @@
 #'
 #' @aliases sps_hilic
 #' @aliases sps_rplc
+#' @aliases msexp_hilic
+#' @aliases msexp_rplc
 #'
 #' @title Example data for \code{MsQuality}: data set of Lee et al. (2019)
 #'

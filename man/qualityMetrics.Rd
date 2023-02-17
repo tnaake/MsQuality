@@ -2,22 +2,22 @@
 % Please edit documentation in R/function_Spectra_qualityMetrics.R
 \name{qualityMetrics}
 \alias{qualityMetrics}
-\title{Get a vector of quality metrics than can be applied to `object`}
+\title{Get a vector of quality metrics than can be applied to \code{object}}
 \usage{
 qualityMetrics(object)
 }
 \arguments{
-\item{object}{object of type `Spectra`}
+\item{object}{object of type \code{Spectra} or \code{MsExperiment}}
 }
 \value{
-`character`
+\code{character}
 }
 \description{
-The function `qualityMetrics` returns a character vector with available
-quality metrics depending on `object`.
+The function \code{qualityMetrics} returns a character vector with available
+quality metrics depending on \code{object}.
 }
 \details{
-`object` is a `Spectra`.
+\code{object} is a \code{Spectra} or \code{MsExperiment}.
 }
 \examples{
 library(Spectra)

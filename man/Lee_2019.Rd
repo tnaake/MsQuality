@@ -5,6 +5,8 @@
 \alias{Lee_2019}
 \alias{sps_hilic}
 \alias{sps_rplc}
+\alias{msexp_hilic}
+\alias{msexp_rplc}
 \title{Example data for \code{MsQuality}: data set of Lee et al. (2019)}
 \format{
 \code{Spectra} and \code{MsExperiment}

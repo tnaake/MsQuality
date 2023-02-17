@@ -3,24 +3,26 @@
 #' @title Visualize a quality metric
 #'
 #' @description
-#' The function `plotMetric` visualizes the metric values per sample. The 
-#' function accepts the output of `calculateMetrics` or,
-#' `calculateMetricsFromSpectra` and
-#' a vector specifying the metric to display.
+#' The function \code{plotMetric} visualizes the metric values per sample. The 
+#' function accepts the output of \code{calculateMetrics} or,
+#' \code{calculateMetricsFromSpectra}, or 
+#' \code{calculateMetricsFromMsExperiment} and a vector specifying the metric 
+#' to display.
 #' 
 #' @details
-#' `plotMetric` will select all columns that start with
-#' `metric`. The different levels in the `name` column in the returned tibble 
-#' correspond to the columns that were selected and do not contain the
-#' `metric` prefix. In case there is no additional specification 
-#' (e.g. for the metric `rtDuration` only the column `rtDuration` will 
-#' be selected), the `name` column will include the `metric` (`rtDuration`).
+#' \code{plotMetric} will select all columns that start with
+#' \code{metric}. The different levels in the \code{name} column in the 
+#' returned tibble correspond to the columns that were selected and do not 
+#' contain the \code{metric} prefix. In case there is no additional specification 
+#' (e.g. for the metric \code{rtDuration} only the column \code{rtDuration} will 
+#' be selected), the \code{name} column will include the \code{metric} 
+#' (\code{rtDuration}).
 #' 
-#' @param qc `matrix`/`data.frame`
-#' @param metric `character`
-#' @param plotly logical(1)
+#' @param qc \code{matrix}/\code{data.frame}
+#' @param metric \code{character}
+#' @param plotly \code{logical(1)}
 #' 
-#' @return `gg` `plotly`
+#' @return \code{gg} \code{plotly}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -33,14 +35,20 @@
 #' 
 #' @examples 
 #' library(msdata)
+#' library(MsExperiment)
+#' library(S4Vectors)
+#' msexp <- MsExperiment()
+#' sd <- DataFrame(sample_id = c("QC1", "QC2"),
+#'     sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
+#' sampleData(msexp) <- sd
 #' 
 #' ## define file names containing spectra data for the samples and
 #' ## add them, along with other arbitrary files to the experiment
 #' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
 #' 
 #' library(Spectra)
-#' ## import the data
-#' sps <- Spectra(fls, backend = MsBackendMzR())
+#' ## import the data and add it to the msexp object
+#' spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 #' 
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
@@ -49,7 +57,7 @@
 #' ## additional parameters passed to the quality metrics functions
 #' ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 #' ## relativeTo is an argument of msSignal10xChange)
-#' qc <- calculateMetricsFromSpectra(spectra = sps, metrics = metrics, 
+#' qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
 #'     msLevel = 1, relativeTo = "Q1", change = "jump")
 #' rownames(qc) <- c("Sample 1", "Sample 2")
 #' 
@@ -82,41 +90,58 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
 #' @title Helper function for plotMetric
 #'
 #' @description
-#' The function `plotMetricTibble` is a helper function for the function
-#' `plotMetric`. It returns a tibble in long format that is interpretable
-#' by `ggplot2`.
+#' The function \code{plotMetricTibble} is a helper function for the function
+#' \code{plotMetric}. It returns a tibble in long format that is interpretable
+#' by \code{ggplot2}.
 #' 
 #' @details
-#' `plotMetricRibble` will select all columns that start with
-#' `metric`. The different levels in the `name` column in the returned tibble 
-#' correspond to the columns that were selected and do not contain the
-#' `metric` prefix. In case there is no additional specification 
-#' (e.g. for the metric `rtDuration` only the column `rtDuration` will 
-#' be selected), the `name` column will include the `metric` (`rtDuration`). 
+#' \code{plotMetricRibble} will select all columns that start with
+#' \code{metric}. The different levels in the \code{name} column in the returned 
+#' tibble correspond to the columns that were selected and do not contain the
+#' \code{metric} prefix. In case there is no additional specification 
+#' (e.g. for the metric \code{rtDuration} only the column \code{rtDuration} will 
+#' be selected), the \code{name} column will include the \code{metric} 
+#' (\code{rtDuration}). 
 #' 
-#' @param qc `data.frame`
-#' @param metric `character`
+#' @param qc \code{data.frame}
+#' @param metric \code{character}
 #' 
-#' @return `tibble`
+#' @return \code{tibble}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
 #' @importFrom stringr str_remove
 #' @importFrom tibble rownames_to_column
 #' @importFrom tidyr pivot_longer
+#' @importFrom ProtGenerics spectra
 #' 
 #' @export
 #' 
 #' @examples 
 #' library(msdata)
+#' library(MsExperiment)
+#' library(S4Vectors)
+#' msexp <- MsExperiment()
+#' sd <- DataFrame(sample_id = c("QC1", "QC2"),
+#'     sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
+#' sampleData(msexp) <- sd
 #' 
 #' ## define file names containing spectra data for the samples and
 #' ## add them, along with other arbitrary files to the experiment
 #' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+#' experimentFiles(msexp) <- MsExperimentFiles(
+#'     mzML_files = fls,
+#'     annotations = "internal_standards.txt")
+#' ## link samples to data files: first sample to first file in "mzML_files",
+#' ## second sample to second file in "mzML_files"
+#' msexp <- linkSampleData(msexp, with = "experimentFiles.mzML_files",
+#'     sampleIndex = c(1, 2), withIndex = c(1, 2))
+#' msexp <- linkSampleData(msexp, with = "experimentFiles.annotations",
+#'     sampleIndex = c(1, 2), withIndex = c(1, 1))
 #'
 #' library(Spectra)
 #' ## import the data and add it to the mse object
-#' sps <- Spectra(fls, backend = MsBackendMzR())
+#' spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 #' 
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
@@ -125,7 +150,7 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
 #' ## additional parameters passed to the quality metrics functions
 #' ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 #' ## relativeTo is an argument of msSignal10xChange)
-#' qc <- calculateMetricsFromSpectra(spectra = sps, metrics = metrics, 
+#' qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
 #'     msLevel = 1, relativeTo = "Q1", change = "jump")
 #' rownames(qc) <- c("Sample 1", "Sample 2")
 #' plotMetricTibble(qc, metric = "areaUnderTic")
@@ -162,21 +187,21 @@ plotMetricTibble <- function(qc, metric) {
 #' @title Shiny application to visualize quality metrics
 #'
 #' @description
-#' The function `shinyMsQuality` function starts a shiny application to 
+#' The function \code{shinyMsQuality} function starts a shiny application to 
 #' visualize the quality metrics interactively. It allows to display all metrics
-#' contained in `qc`. 
+#' contained in \code{qc}. 
 #' 
-#' The function accepts the output of `calculateMetrics` or
-#' `calculateMetricsFromSpectra`
+#' The function accepts the output of \code{calculateMetrics},
+#' \code{calculateMetricsFromSpectra}, or \code{calculateMetricsFromMsExperiment}
 #' 
 #' @details
 #' The plots within the shiny application can be saved by clicking on the 
 #' download button.
 #' 
-#' @param qc `matrix`, contains the calculated quality metrics, the columns
+#' @param qc \code{matrix}, contains the calculated quality metrics, the columns
 #' contain the metrics and the rows the samples
 #' 
-#' @return `shiny`
+#' @return \code{shiny}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -192,14 +217,29 @@ plotMetricTibble <- function(qc, metric) {
 #' 
 #' @examples
 #' library(msdata)
+#' library(MsExperiment)
+#' library(S4Vectors)
+#' msexp <- MsExperiment()
+#' sd <- DataFrame(sample_id = c("QC1", "QC2"),
+#'     sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
+#' sampleData(msexp) <- sd
 #' 
 #' ## define file names containing spectra data for the samples and
 #' ## add them, along with other arbitrary files to the experiment
 #' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+#' experimentFiles(msexp) <- MsExperimentFiles(
+#'     mzML_files = fls,
+#'     annotations = "internal_standards.txt")
+#' ## link samples to data files: first sample to first file in "mzML_files",
+#' ## second sample to second file in "mzML_files"
+#' msexp <- linkSampleData(msexp, with = "experimentFiles.mzML_files",
+#'     sampleIndex = c(1, 2), withIndex = c(1, 2))
+#' msexp <- linkSampleData(msexp, with = "experimentFiles.annotations",
+#'     sampleIndex = c(1, 2), withIndex = c(1, 1))
 #' 
 #' library(Spectra)
 #' ## import the data and add it to the mse object
-#' sps <- Spectra(fls, backend = MsBackendMzR())
+#' spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 #' 
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
@@ -208,7 +248,7 @@ plotMetricTibble <- function(qc, metric) {
 #' ## additional parameters passed to the quality metrics functions
 #' ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 #' ## relativeTo is an argument of msSignal10xChange)
-#' qc <- calculateMetricsFromSpectra(spectra = sps, metrics = metrics, 
+#' qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
 #'     msLevel = 1, relativeTo = "Q1", change = "jump")
 #' rownames(qc) <- c("Sample 1", "Sample 2")
 #' 

@@ -2,32 +2,33 @@
 % Please edit documentation in R/function_calculateMetrics_from_Spectra.R
 \name{calculateMetrics}
 \alias{calculateMetrics}
-\title{Calculate QC metrics from a Spectra object}
+\title{Calculate QC metrics from a Spectra or MsExperiment object}
 \usage{
 calculateMetrics(object, metrics = qualityMetrics(object), ...)
 }
 \arguments{
-\item{object}{`Spectra` object}
+\item{object}{\code{Spectra} or \code{MsExperiment} object}
 
-\item{metrics}{`character` specifying the quality metrics to be calculated
-on `object`}
+\item{metrics}{\code{character} specifying the quality metrics to be 
+calculated on \code{object}}
 
 \item{...}{arguments passed to the quality metrics functions defined in 
-`metrics`}
+\code{metrics}}
 }
 \value{
-`data.frame` containing in the columns the metrics for the 
-different spectra (samples in row)
+\code{data.frame} containing in the columns the metrics for the 
+different spectra and in rows the samples
 }
 \description{
-Calculate QC metrics from a `Spectra` object. 
-`calculateMetrics` is a wrapper for the function
-`calculateMetricsFromSpectra`.
+Calculate QC metrics from a \code{Spectra} or \code{MsExperiment} object. 
+\code{calculateMetrics} is a wrapper for the functions
+\code{calculateMetricsFromSpectra} and 
+\code{calculateMetricsFromMsExperiment}.
 }
 \details{
-The metrics are defined by the argument `metrics`. Further arguments 
-passed to the quality metric functions can be specified by the `params`
-argument. `params` can contain named entries which are matched against 
+The metrics are defined by the argument \code{metrics}. Further arguments 
+passed to the quality metric functions can be specified by the \code{params}
+argument. \code{params} can contain named entries which are matched against 
 the formal arguments of the quality metric functions.
 }
 \examples{

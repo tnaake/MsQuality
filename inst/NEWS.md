@@ -1,6 +1,5 @@
 # MsQuality 0.99
 
-
 ## Changes in version 0.99.9 (2023-09-16)
 - rename ticQuantileToQuantileLogRatio to ticQuartileToQuartileLogRatio
 - return quartiles instead of quantiles in precursorIntensityQuartiles

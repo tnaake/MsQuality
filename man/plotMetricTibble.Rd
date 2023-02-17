@@ -7,36 +7,52 @@
 plotMetricTibble(qc, metric)
 }
 \arguments{
-\item{qc}{`data.frame`}
+\item{qc}{\code{data.frame}}
 
-\item{metric}{`character`}
+\item{metric}{\code{character}}
 }
 \value{
-`tibble`
+\code{tibble}
 }
 \description{
-The function `plotMetricTibble` is a helper function for the function
-`plotMetric`. It returns a tibble in long format that is interpretable
-by `ggplot2`.
+The function \code{plotMetricTibble} is a helper function for the function
+\code{plotMetric}. It returns a tibble in long format that is interpretable
+by \code{ggplot2}.
 }
 \details{
-`plotMetricRibble` will select all columns that start with
-`metric`. The different levels in the `name` column in the returned tibble 
-correspond to the columns that were selected and do not contain the
-`metric` prefix. In case there is no additional specification 
-(e.g. for the metric `rtDuration` only the column `rtDuration` will 
-be selected), the `name` column will include the `metric` (`rtDuration`).
+\code{plotMetricRibble} will select all columns that start with
+\code{metric}. The different levels in the \code{name} column in the returned 
+tibble correspond to the columns that were selected and do not contain the
+\code{metric} prefix. In case there is no additional specification 
+(e.g. for the metric \code{rtDuration} only the column \code{rtDuration} will 
+be selected), the \code{name} column will include the \code{metric} 
+(\code{rtDuration}).
 }
 \examples{
 library(msdata)
+library(MsExperiment)
+library(S4Vectors)
+msexp <- MsExperiment()
+sd <- DataFrame(sample_id = c("QC1", "QC2"),
+    sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
+sampleData(msexp) <- sd
 
 ## define file names containing spectra data for the samples and
 ## add them, along with other arbitrary files to the experiment
 fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+experimentFiles(msexp) <- MsExperimentFiles(
+    mzML_files = fls,
+    annotations = "internal_standards.txt")
+## link samples to data files: first sample to first file in "mzML_files",
+## second sample to second file in "mzML_files"
+msexp <- linkSampleData(msexp, with = "experimentFiles.mzML_files",
+    sampleIndex = c(1, 2), withIndex = c(1, 2))
+msexp <- linkSampleData(msexp, with = "experimentFiles.annotations",
+    sampleIndex = c(1, 2), withIndex = c(1, 1))
 
 library(Spectra)
 ## import the data and add it to the mse object
-sps <- Spectra(fls, backend = MsBackendMzR())
+spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 
 ## define the quality metrics to be calculated
 metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
@@ -45,7 +61,7 @@ metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 ## relativeTo is an argument of msSignal10xChange)
-qc <- calculateMetricsFromSpectra(spectra = sps, metrics = metrics, 
+qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
     msLevel = 1, relativeTo = "Q1", change = "jump")
 rownames(qc) <- c("Sample 1", "Sample 2")
 plotMetricTibble(qc, metric = "areaUnderTic")

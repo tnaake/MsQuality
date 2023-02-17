@@ -7,39 +7,47 @@
 plotMetric(qc, metric = "areaUnderTic", plotly = TRUE)
 }
 \arguments{
-\item{qc}{`matrix`/`data.frame`}
+\item{qc}{\code{matrix}/\code{data.frame}}
 
-\item{metric}{`character`}
+\item{metric}{\code{character}}
 
-\item{plotly}{logical(1)}
+\item{plotly}{\code{logical(1)}}
 }
 \value{
-`gg` `plotly`
+\code{gg} \code{plotly}
 }
 \description{
-The function `plotMetric` visualizes the metric values per sample. The 
-function accepts the output of `calculateMetrics` or,
-`calculateMetricsFromSpectra` and
-a vector specifying the metric to display.
+The function \code{plotMetric} visualizes the metric values per sample. The 
+function accepts the output of \code{calculateMetrics} or,
+\code{calculateMetricsFromSpectra}, or 
+\code{calculateMetricsFromMsExperiment} and a vector specifying the metric 
+to display.
 }
 \details{
-`plotMetric` will select all columns that start with
-`metric`. The different levels in the `name` column in the returned tibble 
-correspond to the columns that were selected and do not contain the
-`metric` prefix. In case there is no additional specification 
-(e.g. for the metric `rtDuration` only the column `rtDuration` will 
-be selected), the `name` column will include the `metric` (`rtDuration`).
+\code{plotMetric} will select all columns that start with
+\code{metric}. The different levels in the \code{name} column in the 
+returned tibble correspond to the columns that were selected and do not 
+contain the \code{metric} prefix. In case there is no additional specification 
+(e.g. for the metric \code{rtDuration} only the column \code{rtDuration} will 
+be selected), the \code{name} column will include the \code{metric} 
+(\code{rtDuration}).
 }
 \examples{
 library(msdata)
+library(MsExperiment)
+library(S4Vectors)
+msexp <- MsExperiment()
+sd <- DataFrame(sample_id = c("QC1", "QC2"),
+    sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
+sampleData(msexp) <- sd
 
 ## define file names containing spectra data for the samples and
 ## add them, along with other arbitrary files to the experiment
 fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
 
 library(Spectra)
-## import the data
-sps <- Spectra(fls, backend = MsBackendMzR())
+## import the data and add it to the msexp object
+spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 
 ## define the quality metrics to be calculated
 metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
@@ -48,7 +56,7 @@ metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 ## relativeTo is an argument of msSignal10xChange)
-qc <- calculateMetricsFromSpectra(spectra = sps, metrics = metrics, 
+qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
     msLevel = 1, relativeTo = "Q1", change = "jump")
 rownames(qc) <- c("Sample 1", "Sample 2")
 
