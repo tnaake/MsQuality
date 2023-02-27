@@ -4,7 +4,12 @@
 \alias{calculateMetricsFromMsExperiment}
 \title{Calculate QC metrics from a MsExperiment object}
 \usage{
-calculateMetricsFromMsExperiment(msexp, metrics = qualityMetrics(msexp), ...)
+calculateMetricsFromMsExperiment(
+  msexp,
+  metrics = qualityMetrics(msexp),
+  ...,
+  BPPARAM = bpparam()
+)
 }
 \arguments{
 \item{msexp}{\code{MsExperiment} object}
@@ -14,6 +19,9 @@ calculated on \code{msexp}}
 
 \item{...}{arguments passed to the quality metrics functions defined in 
 \code{metrics}}
+
+\item{BPPARAM}{Parallel processing setup. Defaults to `BPPARAM = bpparam()`.
+See [bpparam()] for details on parallel processing with `BiocParallel`.}
 }
 \value{
 \code{data.frame} containing in the columns the metrics for the 
