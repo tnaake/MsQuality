@@ -7,8 +7,9 @@
 calculateMetricsFromSpectra(
   spectra,
   metrics = qualityMetrics(spectra),
-  f = spectra$dataOrigin,
-  ...
+  f = dataOrigin(spectra),
+  ...,
+  BPPARAM = bpparam()
 )
 }
 \arguments{
@@ -17,10 +18,16 @@ calculateMetricsFromSpectra(
 \item{metrics}{\code{character} specifying the quality metrics to be 
 calculated on \code{spectra}}
 
-\item{f}{\code{character}, grouping parameter for \code{spectra}}
+\item{f}{\code{character} defining which spectra in `spectra` belong to
+one sample. Defaults to `f = dataOrigin(spectra)`. Spectra from the
+same original data file are processed together (and in parallel for
+different files).}
 
 \item{...}{arguments passed to the quality metrics functions defined in 
 \code{metrics}}
+
+\item{BPPARAM}{Parallel processing setup. Defaults to `BPPARAM = bpparam()`.
+See [bpparam()] for details on parallel processing with `BiocParallel`.}
 }
 \value{
 \code{data.frame} containing in the columns the metrics for the 
@@ -30,7 +37,9 @@ different spectra (in rows)
 The function \code{calculateMetricsFromSpectra} calculates quality metrics 
 from a \code{Spectra} object. The function will calculate the 
 metrics per sample according to the grouping parameter \code{f}, 
-e.g. \code{dataOrigin} information.
+e.g. \code{dataOrigin} information. Samples will be processed in parallel
+using the default parallel processing setup ([bpparam()]) or with the
+parallel processing setup defined with parameter `BPPARAM`.
 }
 \details{
 The metrics are defined by the argument \code{metrics}. Further arguments 
@@ -61,5 +70,5 @@ calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
     msLevel = 1, change = "fall", relativeTo = "previous")
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake, \email{thomasnaake@googlemail.com}, Johannes Rainer
 }

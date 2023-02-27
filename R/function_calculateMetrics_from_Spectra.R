@@ -91,7 +91,9 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' The function \code{calculateMetricsFromSpectra} calculates quality metrics 
 #' from a \code{Spectra} object. The function will calculate the 
 #' metrics per sample according to the grouping parameter \code{f}, 
-#' e.g. \code{dataOrigin} information.
+#' e.g. \code{dataOrigin} information. Samples will be processed in parallel
+#' using the default parallel processing setup ([bpparam()]) or with the
+#' parallel processing setup defined with parameter `BPPARAM`.
 #' 
 #' @details
 #' The metrics are defined by the argument \code{metrics}. Further arguments 
@@ -102,19 +104,26 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' @param spectra \code{Spectra} object
 #' @param metrics \code{character} specifying the quality metrics to be 
 #' calculated on \code{spectra}
-#' @param f \code{character}, grouping parameter for \code{spectra}
+#' @param f \code{character} defining which spectra in `spectra` belong to
+#'     one sample. Defaults to `f = dataOrigin(spectra)`. Spectra from the
+#'     same original data file are processed together (and in parallel for
+#'     different files).
 #' @param ... arguments passed to the quality metrics functions defined in 
 #' \code{metrics}
+#' @param BPPARAM Parallel processing setup. Defaults to `BPPARAM = bpparam()`.
+#'     See [bpparam()] for details on parallel processing with `BiocParallel`.
 #' 
 #' @return \code{data.frame} containing in the columns the metrics for the 
 #' different spectra (in rows)
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}, Johannes Rainer
 #' 
 #' @export
 #' 
 #' @importFrom Spectra Spectra
 #' @importFrom methods is
+#' @importMethodsFrom Spectra dataOrigin
+#' @importFrom BiocParallel bplapply bpparam
 #' 
 #' @examples 
 #' library(msdata)
@@ -138,7 +147,8 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
 #'     msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromSpectra <- function(spectra, 
-    metrics = qualityMetrics(spectra), f = spectra$dataOrigin, ...) {
+    metrics = qualityMetrics(spectra), f = dataOrigin(spectra), ...,
+    BPPARAM = bpparam()) {
     
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(spectra), throw an error if there are metrics that 
@@ -156,11 +166,10 @@ calculateMetricsFromSpectra <- function(spectra,
     ## iterate through the different spectra per dataOrigin and calculate the 
     ## quality metrics using the calculateMetricsFromOneSampleSpectra
     ## the lapply loop returns list containing named numeric vectors
-    spectra_metrics <- lapply(f_unique, function(f_unique_i) {
-        spectra_i <- spectra[f == f_unique_i, ]
-        calculateMetricsFromOneSampleSpectra(spectra = spectra_i, 
-            metrics = metrics, ...)
-    })
+    spectra_metrics <- bplapply(f_unique, function(f_unique_i, ...) {
+        calculateMetricsFromOneSampleSpectra(
+            spectra = spectra[f == f_unique_i], metrics = metrics, ...)
+    }, ..., BPPARAM = BPPARAM)
     df <- do.call("rbind", spectra_metrics)
     rownames(df) <- f_unique
     
@@ -196,6 +205,8 @@ calculateMetricsFromSpectra <- function(spectra,
 #' 
 #' @return \code{data.frame} containing in the columns the metrics for the 
 #' different spectra (in rows)
+#'
+#' @inheritParams calculateMetricsFromSpectra
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -245,7 +256,7 @@ calculateMetricsFromSpectra <- function(spectra,
 #' calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
 #'     msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromMsExperiment <- function(msexp, 
-    metrics = qualityMetrics(msexp), ...) {
+    metrics = qualityMetrics(msexp), ..., BPPARAM = bpparam()) {
   
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(mse), throw an error if there are metrics that 
@@ -261,7 +272,8 @@ calculateMetricsFromMsExperiment <- function(msexp,
     ## metrics using the calculateMetricsFromSpectra function, the metrics
     ## will be stored in the data.frame df
     sps <- spectra(msexp)
-    df <- calculateMetricsFromSpectra(spectra = sps, metrics = metrics, ...)
+    df <- calculateMetricsFromSpectra(spectra = sps, metrics = metrics, ...,
+                                      BPPARAM = BPPARAM)
     
     ## return the data.frame
     df
