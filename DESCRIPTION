@@ -2,7 +2,7 @@ Package: MsQuality
 Type: Package
 Title: MsQuality - Quality metric calculation from Spectra and MsExperiment objects
 Version: 0.99.9
-Date: 2023-02-09
+Date: 2023-04-18
 Authors@R: c(person(given = "Thomas", family = "Naake", 
 		email = "thomasnaake@googlemail.com", role = c("aut", "cre"),
 		comment = c(ORCID = "0000-0001-7917-5580")),
@@ -47,6 +47,7 @@ Suggests:
 	dplyr (>= 1.0.5),
 	knitr (>= 1.11),
 	msdata (>= 0.32.0),
+	mzR (>= 2.32.0),
 	rmarkdown (>= 2.7),
 	S4Vectors (>= 0.29.17),
 	testthat (>= 2.2.1)

@@ -1,10 +1,11 @@
 # MsQuality 0.99
 
-## Changes in version 0.99.9 (2023-09-16)
+## Changes in version 0.99.9 (2023-04-18)
 - enable parallel processing in calculateMetricsFromSpectra.
 - rename ticQuantileToQuantileLogRatio to ticQuartileToQuartileLogRatio
 - rename rtOverTicQuantile to rtOverTicQuantiles
 - return quartiles instead of quantiles in precursorIntensityQuartiles
+- add mzR to Suggests in DESCRIPTION
 
 ## Changes in version 0.99.8 (2023-09-02)
 - adjust behaviour of metrics function when Spectra object of 
