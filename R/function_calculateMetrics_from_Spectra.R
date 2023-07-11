@@ -58,8 +58,10 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
         several.ok = TRUE)
 
     if(!is(spectra, "Spectra")) stop("'spectra' is not of class 'Spectra'")
+    
     if(length(unique(f)) != 1) 
         stop("'spectra' should only contain data from one origin")
+    
     dots <- list(...)
 
     ## prepare the argument for the metric functions by writing spectra to a 
@@ -74,10 +76,15 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
         do.call(metrics[i], args)
     })
     
-    ## add attributes 
+    ## add attributes (attributes of metrics_vals and dots)
     names(metrics_vals) <- metrics
+    metrics_vals_attributes <- lapply(metrics_vals, attributes)
+    names(metrics_vals_attributes) <- NULL
+    metrics_vals_attributes <- unlist(metrics_vals_attributes)
+    
     metrics_vals <- unlist(metrics_vals)
-    attributes(metrics_vals) <- c(attributes(metrics_vals), dots)
+    attributes(metrics_vals) <- c(attributes(metrics_vals), 
+        metrics_vals_attributes, dots)
 
     ## return the object
     metrics_vals
@@ -91,15 +98,25 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' The function \code{calculateMetricsFromSpectra} calculates quality metrics 
 #' from a \code{Spectra} object. The function will calculate the 
 #' metrics per sample according to the grouping parameter \code{f}, 
-#' e.g. \code{dataOrigin} information. Samples will be processed in parallel
-#' using the default parallel processing setup ([bpparam()]) or with the
-#' parallel processing setup defined with parameter `BPPARAM`.
+#' e.g. \code{dataOrigin} information. 
+#' 
+#' Two format options are available:
+#' 
+#' \begin{itemize}
+#'  \item \code{format = "data.frame"} returns the metrics as a \code{data.frame},
+#'  \item \code{format = "mzQC"} returns the metrics as a list of 
+#'      \code{MzQCmzQC} objects.
+#' \end{itemize}
 #' 
 #' @details
 #' The metrics are defined by the argument \code{metrics}. Further arguments 
-#' passed to the quality metric functions can be specified by the \code{params}
-#' argument. \code{params} can contain named entries which are matched against 
+#' passed to the quality metric functions can be specified by \code{...}. 
+#' The additional arguments \code{...} are matched against 
 #' the formal arguments of the quality metric functions. 
+#' 
+#' Samples will be processed in parallel
+#' using the default parallel processing setup ([bpparam()]) or with the
+#' parallel processing setup defined with parameter `BPPARAM`.
 #' 
 #' @param spectra \code{Spectra} object
 #' @param metrics \code{character} specifying the quality metrics to be 
@@ -108,13 +125,21 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #'     one sample. Defaults to `f = dataOrigin(spectra)`. Spectra from the
 #'     same original data file are processed together (and in parallel for
 #'     different files).
+#' @param format \code{character(1)} specifying if metrics are returned 
+#' as a \code{data.frame} (\code{format = "data.frame"}) or as a list of 
+#' \code{MzQCmzQC} objects (\code{format = "mzQC"})
 #' @param ... arguments passed to the quality metrics functions defined in 
 #' \code{metrics}
 #' @param BPPARAM Parallel processing setup. Defaults to `BPPARAM = bpparam()`.
 #'     See [bpparam()] for details on parallel processing with `BiocParallel`.
 #' 
-#' @return \code{data.frame} containing in the columns the metrics for the 
-#' different spectra (in rows)
+#' @return 
+#' In case of \code{format = "data.frame"}, a \code{data.frame} containing in 
+#' the columns the metrics for the different spectra of identical 
+#' \code{dataOrigin{spectra}} (in rows).
+#' In case of \code{format = "mzQC"}, a \code{list} of \code{MzQCmzQC} objects
+#' containing the metrics for the different spectra of identical 
+#' \code{dataOrigin{spectra}}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}, Johannes Rainer
 #' 
@@ -142,13 +167,24 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' ## additional parameters passed to the quality metrics functions
 #' ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 #' ## relativeTo is an argument of msSignal10xChange) passed to ...
+#' 
+#' ## format = "data.frame"
+#' calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
+#'     format = "data.frame", msLevel = 1, change = "jump", relativeTo = "Q1")
 #' calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
-#'     msLevel = 1, change = "jump", relativeTo = "Q1")
+#'     format = "data.frame", msLevel = 1, change = "fall", 
+#'     relativeTo = "previous")
+#'     
+#' ## format = "mzQC"
+#' calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
+#'     format = "mzQC", msLevel = 1, change = "jump", relativeTo = "Q1")
 #' calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
-#'     msLevel = 1, change = "fall", relativeTo = "previous")
+#'     format = "mzQC", msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromSpectra <- function(spectra, 
-    metrics = qualityMetrics(spectra), f = dataOrigin(spectra), ...,
+    metrics, f = dataOrigin(spectra), format = c("data.frame", "mzQC"), ...,
     BPPARAM = bpparam()) {
+    
+    format <- match.arg(format)
     
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(spectra), throw an error if there are metrics that 
@@ -170,15 +206,146 @@ calculateMetricsFromSpectra <- function(spectra,
         calculateMetricsFromOneSampleSpectra(
             spectra = spectra[f == f_unique_i], metrics = metrics, ...)
     }, ..., BPPARAM = BPPARAM)
-    df <- do.call("rbind", spectra_metrics)
-    rownames(df) <- f_unique
     
-    ## add attributes
-    dots <- list(...)
-    attributes(df) <- c(attributes(df), dots)
+    ## add file names as names of the list
+    names(spectra_metrics) <- f_unique
     
-    ## return the data.frame
-    df
+    ## if format == "data.frame"
+    if (format == "data.frame") {
+        obj_attributes <- lapply(spectra_metrics, attributes)[[1]]
+        obj <- do.call("rbind", spectra_metrics)
+        
+        ## add attributes
+        dots <- list(...)
+        attributes(obj) <- c(attributes(obj), obj_attributes, dots)
+    }
+    
+    if (format == "mzQC") {
+        obj <- transformIntoMzQC(spectra_metrics)
+    }
+    
+    ## return the data.frame or the list of mzQC
+    obj
+}
+
+#' @name transformIntoMzQC
+#' 
+#' @title Transform the metrics into a list of \code{MzQCmzQC} objects
+#' 
+#' @description
+#' The function \code{transformIntoMzQC} transfers the metrics stored in 
+#' \code{spectra_metrics} into a list of \code{MzQCmzQC} objects. Each list 
+#' entry will refer to the corresponding entry in \code{spectra_metrics}.
+#' As such, each entry contains information from a single \code{dataOrigin}
+#' of a \code{Spectra} object.
+#' 
+#' The function \code{transformIntoMzQC} is a helper function within
+#' \code{calculateMetricsFromSpectra}.
+#' 
+#' @details
+#' The \code{MzQCmzQC} object will only contain those quality metrics
+#' that have a corresponding attribute with a [PSI:MS] identifier. The 
+#' matching is done via the names of each vector in \code{spectra_metrics}.
+#' 
+#' The Field \code{"version"} is set to the current version of the \code{rmzqc}
+#' package.
+#' 
+#' The entry of \code{"MzQCanalysisSoftware"} is filled with the [PSI:MS] id
+#' of \code{MsQuality} ("MS:") and the version is taken from
+#' \code{packageDescription("MsQuality")[["Version"]]}.
+#' 
+#' @param spectra_metrics list of named vector
+#' 
+#' @return \code{list} containing as entries \code{MzQCmzQC} objects for each
+#' \code{Spectra} with same \code{dataOrigin}
+#' 
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}, Johannes Rainer
+#' 
+#' @importFrom rmzqc getCVTemplate filenameToCV toAnalysisSoftware toQCMetric
+#' @importFrom rmzqc basename getDefautCV
+#' @importFrom utils packageDescription
+#' 
+#' @examples 
+#' library(msdata)
+#' library(Spectra)
+#' 
+#' ## define file names containing spectra data for the samples
+#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+#' 
+#' ## import the data and add it to the spectra object
+#' spectra <- Spectra(fls, backend = MsBackendMzR())
+#' 
+#' ## define the quality metrics to be calculated
+#' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+#' 
+#' ## obtain the spectra_metrics object
+#' f <- dataOrigin(spectra)
+#' f_unique <- unique(f)
+#' spectra_metrics <- bplapply(f_unique, function(f_unique_i) {
+#' calculateMetricsFromOneSampleSpectra(
+#'     spectra = spectra[f == f_unique_i], metrics = metrics)
+#'     }, BPPARAM = bpparam())
+#' 
+#' ## transform into mzQC objects
+#' transformIntoMzQC(spectra_metrics)
+transformIntoMzQC <- function(spectra_metrics) {
+    
+    ## create mzQC objects per sample and return as a list
+    res <- lapply(seq_along(spectra_metrics), function(i) {
+        
+        ## obtain raw file and file format
+        raw_file <- names(spectra_metrics)[i]
+        file_format <- getCVTemplate(accession = filenameToCV(raw_file))
+        
+        ## obtain information on the MsQuality package
+        software <- toAnalysisSoftware(id = "MS:1003162", ####################################
+            version = packageDescription("MsQuality")$Version)
+        
+        ## obtain information on the run qualities
+        ## find first all metrics with "MS:NNNNNNN" attributes
+        spectra_metrics_i <- spectra_metrics[[i]]
+        spectra_metrics_names_i <- lapply(
+            strsplit(names(spectra_metrics_i), split = "[.]"), "[", 1) |>
+            unlist()
+        names(spectra_metrics_i) <- spectra_metrics_names_i
+        attributes_i <- attributes(spectra_metrics_i)[
+            names(attributes(spectra_metrics_i)) %in% spectra_metrics_names_i]
+        
+        ## iterate through all valid attributes, obtain the value of the metric,
+        ## and rename the entry
+        qc_metric_i <- lapply(seq_along(attributes_i)[1], function(j) { #######
+            id_j <- attr(x = spectra_metrics_i, 
+                which = names(attributes_i)[j], exact = TRUE)
+            value_j <- spectra_metrics_i[names(attributes_i)[j]] |>
+                as.numeric()
+            toQCMetric(id = id_j, value = value_j)
+        })
+        
+        
+        run_qc <- MzQCrunQuality$new(
+            metadata = MzQCmetadata$new(
+                label = raw_file,
+                inputFiles = list(MzQCinputFile$new(
+                    basename(raw_file), raw_file, file_format)),
+                analysisSoftware = list(software)),
+            qualityMetrics = qc_metric_i
+        )
+        
+        ## create the final object and return
+        MzQCmzQC$new(
+            version = packageDescription("rmzqc")$Version,
+            creationDate = MzQCDateTime$new(), 
+            contactName = Sys.info()[["user"]], 
+            #contactAddress = "test@user.info", 
+            description = paste("A mzQC document on the sample", basename(raw_file)),
+            runQualities = list(run_qc),
+            setQualities = list(), 
+            controlledVocabularies = list(getDefaultCV()))
+        
+        
+    })
+    
+    res
 }
 
 
