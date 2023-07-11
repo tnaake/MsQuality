@@ -44,7 +44,7 @@
 qualityMetrics <- function(object) {
     if (is(object, "Spectra"))
         .metrics <- c(
-            "rtDuration", "rtOverTicQuantiles", "rtOverMsQuarters",
+            "chromatographyDuration", "ticQuartersRtFraction", "rtOverMsQuarters",
             "ticQuartileToQuartileLogRatio", "numberSpectra", 
             "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic", 
             "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity",
@@ -58,7 +58,7 @@ qualityMetrics <- function(object) {
     
     if (is(object, "MsExperiment"))
         .metrics <-  c(
-            "rtDuration", "rtOverTicQuantiles", "rtOverMsQuarters",
+            "chromatographyDuration", "ticQuartersRtFraction", "rtOverMsQuarters",
             "ticQuartileToQuartileLogRatio", "numberSpectra", 
             "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic", 
             "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity", 

@@ -14,9 +14,9 @@
 #' \code{metric}. The different levels in the \code{name} column in the 
 #' returned tibble correspond to the columns that were selected and do not 
 #' contain the \code{metric} prefix. In case there is no additional specification 
-#' (e.g. for the metric \code{rtDuration} only the column \code{rtDuration} will 
+#' (e.g. for the metric \code{chromatographyDuration} only the column \code{chromatographyDuration} will 
 #' be selected), the \code{name} column will include the \code{metric} 
-#' (\code{rtDuration}).
+#' (\code{chromatographyDuration}).
 #' 
 #' @param qc \code{matrix}/\code{data.frame}
 #' @param metric \code{character}
@@ -51,7 +51,7 @@
 #' spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 #' 
 #' ## define the quality metrics to be calculated
-#' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+#' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 #'     
 #' ## calculate the metrics
 #' ## additional parameters passed to the quality metrics functions
@@ -99,9 +99,10 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
 #' \code{metric}. The different levels in the \code{name} column in the returned 
 #' tibble correspond to the columns that were selected and do not contain the
 #' \code{metric} prefix. In case there is no additional specification 
-#' (e.g. for the metric \code{rtDuration} only the column \code{rtDuration} will 
+#' (e.g. for the metric \code{chromatographyDuration} only the column 
+#' \code{chromatographyDuration} will 
 #' be selected), the \code{name} column will include the \code{metric} 
-#' (\code{rtDuration}). 
+#' (\code{chromatographyDuration}). 
 #' 
 #' @param qc \code{data.frame}
 #' @param metric \code{character}
@@ -144,7 +145,7 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
 #' spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 #' 
 #' ## define the quality metrics to be calculated
-#' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+#' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 #'
 #' ## calculate the metrics
 #' ## additional parameters passed to the quality metrics functions
@@ -165,7 +166,7 @@ plotMetricTibble <- function(qc, metric) {
     
     ## remove from the colnames the "metric" part and the first _ separator
     ## assign then the new colnames to qc_df (in case the metric doesn't have
-    ## any suffixes, e.g. "rtDuration", leave it as it is)
+    ## any suffixes, e.g. "chromatographyDuration", leave it as it is)
     colnames_df <- str_remove(colnames(qc_df), pattern = metric)
     colnames_df <- str_remove(colnames_df, pattern = "^_")
     
@@ -242,7 +243,7 @@ plotMetricTibble <- function(qc, metric) {
 #' spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 #' 
 #' ## define the quality metrics to be calculated
-#' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+#' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 #'     
 #' ## calculate the metrics
 #' ## additional parameters passed to the quality metrics functions

@@ -38,7 +38,7 @@
 #' spectra <- Spectra(fls, backend = MsBackendMzR())
 #' 
 #' ## define the quality metrics to be calculated
-#' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+#' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 #'     
 #' ## calculate the metrics
 #' ## additional parameters passed to the quality metrics functions
@@ -161,7 +161,7 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' spectra <- Spectra(fls, backend = MsBackendMzR())
 #' 
 #' ## define the quality metrics to be calculated
-#' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+#' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 #' 
 #' ## calculate the metrics
 #' ## additional parameters passed to the quality metrics functions
@@ -276,7 +276,7 @@ calculateMetricsFromSpectra <- function(spectra,
 #' spectra <- Spectra(fls, backend = MsBackendMzR())
 #' 
 #' ## define the quality metrics to be calculated
-#' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+#' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 #' 
 #' ## obtain the spectra_metrics object
 #' f <- dataOrigin(spectra)
@@ -298,7 +298,7 @@ transformIntoMzQC <- function(spectra_metrics) {
         file_format <- getCVTemplate(accession = filenameToCV(raw_file))
         
         ## obtain information on the MsQuality package
-        software <- toAnalysisSoftware(id = "MS:1003162", ####################################
+        software <- toAnalysisSoftware(id = "MS:4000151", 
             version = packageDescription("MsQuality")$Version)
         
         ## obtain information on the run qualities
@@ -412,7 +412,7 @@ transformIntoMzQC <- function(spectra_metrics) {
 #' spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 #' 
 #' ## define the quality metrics to be calculated
-#' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+#' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 #' 
 #' ## additional parameters passed to the quality metrics functions
 #' ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
@@ -485,7 +485,7 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #' spectra <- Spectra(fls, backend = MsBackendMzR())
 #' 
 #' ## define the quality metrics to be calculated
-#' metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+#' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 #'     
 #' #' ## calculate the metrics
 #' ## additional parameters passed to the quality metrics functions

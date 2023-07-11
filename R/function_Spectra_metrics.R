@@ -1,10 +1,9 @@
-#' @name rtDuration
+#' @name chromatographyDuration
 #' 
-#' @title RT duration (MS:4000053)
+#' @title chromatography duration (MS:4000053)
 #' 
 #' @description
 #' "The retention time duration of the chromatography in seconds." [PSI:MS]
-#' id: MS:4000053
 #' 
 #' The metric is calculated as follows:
 #' (1) the retention time associated to the individual Spectra is obtained,
@@ -15,6 +14,7 @@
 #' returned.
 #' 
 #' @details
+#' synonym: "RT-Duration" RELATED [PMID:24494671]
 #' is_a: MS:4000003 ! single value
 #' relationship: has_metric_category MS:4000009 ! ID free metric
 #' relationship: has_metric_category MS:4000012 ! single run based metric
@@ -58,19 +58,19 @@
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' rtDuration(spectra = sps)
-rtDuration <- function(spectra, ...) {  
+#' chromatographyDuration(spectra = sps)
+chromatographyDuration <- function(spectra, ...) {  
     RT <- rtime(object = spectra)
     res <- max(RT, na.rm = TRUE) - min(RT, na.rm = TRUE)
     
     ## add attributes and return
-    attributes(res) <- list(rtDuration = "MS:4000053")
+    attributes(res) <- list(chromatographyDuration = "MS:4000053")
     res
 }
 
-#' @name rtOverTicQuantiles
+#' @name ticQuartersRtFraction
 #' 
-#' @title RT over TIC quantile (MS:4000054)
+#' @title TIC quarters RT fraction (MS:4000054)
 #' 
 #' @description 
 #' "The interval when the respective quarter of the TIC accumulates divided by 
@@ -147,8 +147,8 @@ rtDuration <- function(spectra, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' rtOverTicQuantiles(spectra = sps, msLevel = 2L)
-rtOverTicQuantiles <- function(spectra, probs = seq(0, 1, 0.25),
+#' ticQuartersRtFraction(spectra = sps, msLevel = 2L)
+ticQuartersRtFraction <- function(spectra, probs = seq(0, 1, 0.25),
     msLevel = 1L, relative = TRUE, ...) {
     
     ## truncate spectra based on the MS level
@@ -174,8 +174,8 @@ rtOverTicQuantiles <- function(spectra, probs = seq(0, 1, 0.25),
     
     if (relative) {
         rtMin <- min(RT)
-        rtDuration <- rtDuration(spectra)
-        res <- (RT[idxs] - rtMin) / rtDuration  
+        chromatographyDuration <- chromatographyDuration(spectra)
+        res <- (RT[idxs] - rtMin) / chromatographyDuration  
     } else {
         res <- RT[idxs]
     }
@@ -283,7 +283,7 @@ rtOverTicQuantiles <- function(spectra, probs = seq(0, 1, 0.25),
 #' object has less than 4 scan events.
 #'
 #' @note
-#' `rtDuration` considers the total runtime (including MS1 and MS2 scans).
+#' `chromatographyDuration` considers the total runtime (including MS1 and MS2 scans).
 #' 
 #' @param spectra `Spectra` object
 #' @param msLevel `integer`
@@ -327,7 +327,7 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
     
     ## we assume that with RT duration the mzQC consortium means the run time 
     ## of the whole run, including MS1 and MS2
-    rtd <- rtDuration(spectra)
+    rtd <- chromatographyDuration(spectra)
 
     ## truncate spectra based on the msLevel
     spectra <- filterMsLevel(object = spectra, msLevel)
