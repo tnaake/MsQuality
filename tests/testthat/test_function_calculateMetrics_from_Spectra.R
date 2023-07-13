@@ -160,3 +160,7 @@ test_that("calculateMetrics", {
         "should be one of ")
 })
 ## END unit test calculateMetrics ## 
+
+
+
+######### TODO: write tests for rmzqc ##############################
