@@ -2,33 +2,40 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{rtAcquisitionRange}
 \alias{rtAcquisitionRange}
-\title{Retention time acquisition range (QC:4000139)}
+\title{retention time acquisition range (MS:4000070)}
 \usage{
 rtAcquisitionRange(spectra, msLevel = 1L, ...)
 }
 \arguments{
-\item{spectra}{`Spectra` object}
+\item{spectra}{\code{Spectra} object}
 
-\item{msLevel}{`integer`}
+\item{msLevel}{\code{integer}}
 
 \item{...}{not used here}
 }
 \value{
-`numeric(2)`
+\code{numeric(2)}
 }
 \description{
-"Upper and lower limit of time at which spectra are recorded." [PSI:QC]
-id: QC:4000139
+MS:4000070 \cr
+"Upper and lower limit of retention time at which spectra are recorded." 
+[PSI:MS] \cr
 
-#' The metric is calculated as follows:
-(1) the `Spectra` object is filtered according to the MS level,
-
-(2) the retention time values of the features within `spectra` are obtained,
-
-(3) the minimum and maximum retention time values are obtained and returned.
+#' The metric is calculated as follows: \cr
+(1) the \code{Spectra} object is filtered according to the MS level, \cr 
+(2) the retention time values of the features within \code{spectra} are 
+obtained, \cr 
+(3) the minimum and maximum retention time values are obtained and 
+returned. \cr
 }
 \details{
-is_a: QC:4000004 ! n-tuple
+MS:4000070 \cr
+is_a: MS:4000004 ! n-tuple \cr
+relationship: has_metric_category MS:4000009 ! ID free metric \cr
+relationship: has_metric_category MS:4000012 ! single run based metric \cr
+relationship: has_metric_category MS:4000016 ! retention time metric \cr
+relationship: has_units UO:0000010 ! second \cr
+relationship: has_value_concept STATO:0000035 ! range \cr
 }
 \examples{
 library(S4Vectors)

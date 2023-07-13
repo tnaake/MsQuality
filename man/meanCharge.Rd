@@ -2,44 +2,59 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{meanCharge}
 \alias{meanCharge}
-\title{Mean charge in identified spectra (QC:4000177) or mean precursor 
-charge in all MS2 (QC:4000182)}
+\title{Mean precursor charge in identified spectra (MS:4000173) or mean 
+precursor charge in all MS2 (MS:4000174)}
 \usage{
-meanCharge(spectra, msLevel = 1L, ...)
+meanCharge(
+  spectra,
+  msLevel = 1L,
+  identificationLevel = c("all", "identified", "unidentified"),
+  ...
+)
 }
 \arguments{
-\item{spectra}{`Spectra` object}
+\item{spectra}{\code{Spectra} object}
 
-\item{msLevel}{`integer`}
+\item{msLevel}{\code{integer}}
+
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
 }
 \value{
-`numeric(1)`
+\code{numeric(1)}
 }
 \description{
-"Mean charge in identified spectra" [PSI:QC]
-id: QC:4000177
+MS:4000173 \cr
+"Mean precursor charge in identified spectra" [PSI:MS] \cr
 
-"Mean precursor charge in all MS2" [PSI:QC]
-id: QC:4000182
+MS:4000174 \cr
+"Mean precursor charge in all MS2" [PSI:MS] \cr
 
-The metric is calculated as follows:
-(1) the `Spectra` object is filtered according to the MS level,
-
-(2) the precursor charge is obtained,
-
-(3) the mean of the precursor charge values is calculated and returned.
+The metric is calculated as follows: \cr
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the precursor charge is obtained, \cr
+(3) the mean of the precursor charge values is calculated and returned. \cr
 }
 \details{
-is_a: QC:4000003 ! single value
-is_a: QC:4000009 ! ID based
-is_a: QC:4000001 ! QC metric
+MS:4000173 \cr
+is_a: MS:4000003 ! single value \cr
+is_a: MS:4000008 ! ID based \cr
+is_a: MS:4000001 ! QC metric \cr
+
+MS:4000174 \cr
+is_a: MS:4000003 ! single value \cr
+is_a: MS:4000008 ! ID free metric \cr
+is_a: MS:4000001 ! QC metric \cr
+
+An attribute will only be returned if \code{identificationLevel} is either 
+\code{"all"} or \code{"identified"}.
 }
 \note{
-The `Spectra` object might contain features that were not identified. If
-the calculation needs to be done according to *QC:4000177*, the 
-`Spectra` object should be prepared accordingly.
+The \code{Spectra} object might contain features that were not identified. If
+the calculation needs to be done according to *MS:4000173*, the 
+\code{Spectra} object should be prepared accordingly.
 }
 \examples{
 library(S4Vectors)

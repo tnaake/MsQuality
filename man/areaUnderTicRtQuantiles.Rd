@@ -2,44 +2,41 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{areaUnderTicRtQuantiles}
 \alias{areaUnderTicRtQuantiles}
-\title{Area under TIC RT quantiles (QC:4000078)}
+\title{area under TIC RT quantiles (MS:4000156)}
 \usage{
 areaUnderTicRtQuantiles(spectra, msLevel = 1L, ...)
 }
 \arguments{
-\item{spectra}{`Spectra` object}
+\item{spectra}{\code{Spectra} object}
 
-\item{msLevel}{`integer`}
+\item{msLevel}{\code{integer}}
 
 \item{...}{not used here}
 }
 \value{
-`numeric(4)`
+\code{.numeric(4)}
 }
 \description{
+MS:4000156 \cr
 "The area under the total ion chromatogram of the retention time quantiles. 
-Number of quantiles are given by the n-tuple." [PSI:QC]
-id: QC:4000078
+Number of quantiles are given by the n-tuple." [PSI:MS] \cr
 
-The metric is calculated as follows:
-(1) the `Spectra` object is filtered according to the MS level,
-
-(2) the `Spectra` object is ordered according to the retention time,
-
+The metric is calculated as follows: \cr
+(1) the \code{Spectra} object is filtered according to the MS level, \cr 
+(2) the \code{Spectra} object is ordered according to the retention time, \cr 
 (3) the 0\%, 25\%, 50\%, 75\%, and 100\% quantiles of the retention time 
-values are obtained,
-
+values are obtained, \cr 
 (4) the ion count of the intervals between the 0\%/25\%, 25\%/50\%, 
-50\%/75\%, and 75\%/100\% are obtained 
-
-(5) the ion counts of the intervals are summed (TIC) and the values returned
+50\%/75\%, and 75\%/100\% are obtained, \cr 
+(5) the ion counts of the intervals are summed (TIC) and the values returned.
 }
 \details{
-is_a: QC:4000004 ! n-tuple
-is_a: QC:4000010 ! ID free
-is_a: QC:4000022 ! chromatogram metric
+MS:4000156 \cr
+is_a: MS:4000004 ! n-tuple \cr
+is_a: MS:4000009 ! ID free \cr
+is_a: MS:4000017 ! chromatogram metric \cr
 
-The sum of the TIC is returned as an equivalent to the area.
+The sum of the TIC is returned as an equivalent to the area. \cr
 }
 \note{
 This function interprets the *quantiles* from the [PSI:QC] definition as

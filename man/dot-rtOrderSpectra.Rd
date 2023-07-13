@@ -7,14 +7,14 @@
 .rtOrderSpectra(spectra)
 }
 \arguments{
-\item{spectra}{`Spectra` object}
+\item{spectra}{\code{Spectra} object}
 }
 \value{
-`Spectra` object with the features ordered according to the 
+\code{Spectra} object with the features ordered according to the 
 (increasing) retention time
 }
 \description{
-The function `.rtOrderSpectra` orders the features in a `Spectra` object
+The function \code{.rtOrderSpectra} orders the features in a \code{Spectra} object
 according to the (increasing) retention time values.
 }
 \details{

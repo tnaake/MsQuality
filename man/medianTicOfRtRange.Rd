@@ -2,56 +2,63 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{medianTicOfRtRange}
 \alias{medianTicOfRtRange}
-\title{Median of TIC values in the shortest RT range in which half of the 
-peptides are identified (QC:4000132)}
+\title{median of TIC values in the shortest RT range in which half of the 
+peptides are identified (MS:4000159)}
 \usage{
-medianTicOfRtRange(spectra, msLevel = 1L, ...)
+medianTicOfRtRange(
+  spectra,
+  msLevel = 1L,
+  identificationLevel = c("all", "identified", "unidentified"),
+  ...
+)
 }
 \arguments{
-\item{spectra}{`Spectra` object}
+\item{spectra}{\code{Spectra} object}
 
-\item{msLevel}{`integer`}
+\item{msLevel}{\code{integer}}
+
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
 }
 \value{
-`numeric(1)`
+\code{numeric(1)}
 }
 \description{
+MS:4000159 \cr
 "Median of TIC values in the shortest RT range in which half of the 
-peptides are identified"  [PSI:QC] 
-id: QC:4000132
+peptides are identified"  [PSI:MS] \cr
 
-The metric is calculated as follows:
-(1) the `Spectra` object is filtered according to the MS level,
-
-(2) the `Spectra` object is ordered according to the retention time,
-
-(3) the number of features in `spectra` is obtained and the number for 
-half of the features is calculated,
-
+The metric is calculated as follows: \cr
+(1) the \code{Spectra} object is filtered according to the MS level, \cr 
+(2) the \code{Spectra} object is ordered according to the retention time, \cr 
+(3) the number of features in \code{spectra} is obtained and the number for 
+half of the features is calculated, \cr 
 (4) iterate through the features (always by taking the neighbouring
 half of features) and calculate the retention time range of the
-set of features,
-
+set of features, \cr 
 (5) retrieve the set of features with the minimum retention time 
-range,
-
-(6) calculate from the set of (5) the median TIC (`NA` values are removed)
+range, \cr 
+(6) calculate from the set of (5) the median TIC (\code{NA} values are removed)
 and return it.
 }
 \details{
-is_a: QC:4000003 ! single value
-is_a: QC:4000009 ! ID based
-is_a: QC:4000001 ! QC metric
+MS:4000159 \cr
+is_a: MS:4000003 ! single value \cr
+is_a: MS:4000008 ! ID based \cr
+is_a: MS:4000001 ! QC metric \cr
 
-The function `medianTicOfRtRange` uses the function `ionCount` as an 
+The function \code{medianTicOfRtRange} uses the function \code{ionCount} as an 
 equivalent to the TIC.
+
+An attribute will only be returned if \code{identificationLevel} is 
+\code{"identified"}.
 }
 \note{
-The `Spectra` object might contain features that were not identified. If
-the calculation needs to be done according to *QC:4000132*, the 
-`Spectra` object should be prepared accordingly, i.e. being subsetted to
+The \code{Spectra} object might contain features that were not identified. If
+the calculation needs to be done according to *MS:4000159*, the 
+\code{Spectra} object should be prepared accordingly, i.e. being subsetted to
 spectra with identification data.
 }
 \examples{

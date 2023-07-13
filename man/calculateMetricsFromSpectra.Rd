@@ -6,8 +6,9 @@
 \usage{
 calculateMetricsFromSpectra(
   spectra,
-  metrics = qualityMetrics(spectra),
+  metrics,
   f = dataOrigin(spectra),
+  format = c("data.frame", "mzQC"),
   ...,
   BPPARAM = bpparam()
 )
@@ -18,34 +19,52 @@ calculateMetricsFromSpectra(
 \item{metrics}{\code{character} specifying the quality metrics to be 
 calculated on \code{spectra}}
 
-\item{f}{\code{character} defining which spectra in `spectra` belong to
-one sample. Defaults to `f = dataOrigin(spectra)`. Spectra from the
+\item{f}{\code{character} defining which spectra in \code{spectra} belong to
+one sample. Defaults to \code{f = dataOrigin(spectra)}. Spectra from the
 same original data file are processed together (and in parallel for
 different files).}
+
+\item{format}{\code{character(1)} specifying if metrics are returned 
+as a \code{data.frame} (\code{format = "data.frame"}) or as a list of 
+\code{MzQCmzQC} objects (\code{format = "mzQC"})}
 
 \item{...}{arguments passed to the quality metrics functions defined in 
 \code{metrics}}
 
-\item{BPPARAM}{Parallel processing setup. Defaults to `BPPARAM = bpparam()`.
-See [bpparam()] for details on parallel processing with `BiocParallel`.}
+\item{BPPARAM}{Parallel processing setup. Defaults to \code{BPPARAM = bpparam()}.
+See [bpparam()] for details on parallel processing with \code{BiocParallel}.}
 }
 \value{
-\code{data.frame} containing in the columns the metrics for the 
-different spectra (in rows)
+In case of \code{format = "data.frame"}, a \code{data.frame} containing in 
+the columns the metrics for the different spectra of identical 
+\code{dataOrigin{spectra}} (in rows).
+In case of \code{format = "mzQC"}, a \code{list} of \code{MzQCmzQC} objects
+containing the metrics for the different spectra of identical 
+\code{dataOrigin{spectra}}
 }
 \description{
 The function \code{calculateMetricsFromSpectra} calculates quality metrics 
 from a \code{Spectra} object. The function will calculate the 
 metrics per sample according to the grouping parameter \code{f}, 
-e.g. \code{dataOrigin} information. Samples will be processed in parallel
-using the default parallel processing setup ([bpparam()]) or with the
-parallel processing setup defined with parameter `BPPARAM`.
+e.g. \code{dataOrigin} information. 
+
+Two format options are available:
+
+\begin{itemize}
+ \item \code{format = "data.frame"} returns the metrics as a \code{data.frame},
+ \item \code{format = "mzQC"} returns the metrics as a list of 
+     \code{MzQCmzQC} objects.
+\end{itemize}
 }
 \details{
 The metrics are defined by the argument \code{metrics}. Further arguments 
-passed to the quality metric functions can be specified by the \code{params}
-argument. \code{params} can contain named entries which are matched against 
-the formal arguments of the quality metric functions.
+passed to the quality metric functions can be specified by \code{...}. 
+The additional arguments \code{...} are matched against 
+the formal arguments of the quality metric functions. 
+
+Samples will be processed in parallel
+using the default parallel processing setup ([bpparam()]) or with the
+parallel processing setup defined with parameter \code{BPPARAM}.
 }
 \examples{
 library(msdata)
@@ -58,16 +77,25 @@ fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
 spectra <- Spectra(fls, backend = MsBackendMzR())
 
 ## define the quality metrics to be calculated
-metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 
 ## calculate the metrics
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 ## relativeTo is an argument of msSignal10xChange) passed to ...
+
+## format = "data.frame"
+calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
+    format = "data.frame", msLevel = 1, change = "jump", relativeTo = "Q1")
 calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
-    msLevel = 1, change = "jump", relativeTo = "Q1")
+    format = "data.frame", msLevel = 1, change = "fall", 
+    relativeTo = "previous")
+    
+## format = "mzQC"
+calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
+    format = "mzQC", msLevel = 1, change = "jump", relativeTo = "Q1")
 calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
-    msLevel = 1, change = "fall", relativeTo = "previous")
+    format = "mzQC", msLevel = 1, change = "fall", relativeTo = "previous")
 }
 \author{
 Thomas Naake, \email{thomasnaake@googlemail.com}, Johannes Rainer

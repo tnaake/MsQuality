@@ -2,44 +2,58 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{medianCharge}
 \alias{medianCharge}
-\title{Median charge in identified spectra (QC:4000178) or median
-precursor charge in all MS2 (QC:4000183)}
+\title{median precursor charge in identified spectra (MS:4000175) or median
+precursor charge in all MS2 (MS:4000176)}
 \usage{
-medianCharge(spectra, msLevel = 1L, ...)
+medianCharge(
+  spectra,
+  msLevel = 1L,
+  identificationLevel = c("all", "identified", "unidentified"),
+  ...
+)
 }
 \arguments{
-\item{spectra}{`Spectra` object}
+\item{spectra}{\code{Spectra} object}
 
-\item{msLevel}{`integer`}
+\item{msLevel}{\code{integer}}
+
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
 }
 \value{
-`numeric(1)`
+\code{numeric(1)}
 }
 \description{
-"Median charge in identified spectra" [PSI:QC]
-id: QC:4000178
+MS:4000175 \cr
+"Median precursor charge in identified spectra" [PSI:MS] \cr
 
-"Median precursor charge in all MS2" [PSI:QC]
-id: QC:4000183
+MS:4000176 \cr
+"Median precursor charge in all MS2" [PSI:MS] \cr
 
-The metric is calculated as follows:
-(1) the `Spectra` object is filtered according to the MS level,
-
-(2) the precursor charge is obtained,
-
+The metric is calculated as follows: \cr
+(1) the \code{Spectra} object is filtered according to the MS level, \cr 
+(2) the precursor charge is obtained, \cr 
 (3) the median of the precursor charge values is calculated and returned.
 }
 \details{
-is_a: QC:4000003 ! single value
-is_a: QC:4000009 ! ID based
-is_a: QC:4000001 ! QC metric
+MS:4000175 \cr
+is_a: MS:4000003 ! single value \cr
+is_a: MS:4000008 ! ID based \cr
+is_a: MS:4000001 ! QC metric \cr
+
+MS:4000176 \cr
+is_a: MS:4000003 ! single value \cr
+is_a: MS:4000009 ! ID free metric \cr
+is_a: MS:4000001 ! QC metric \cr
+
+An attribute will only be returned if \code{msLevel} is either 1, 2, or 3.
 }
 \note{
-The `Spectra` object might contain features that were not identified. If
-the calculation needs to be done according to *QC:4000178*, the 
-`Spectra` object should be prepared accordingly.
+The \code{Spectra} object might contain features that were not identified. If
+the calculation needs to be done according to *MS:4000175*, the 
+\code{Spectra} object should be prepared accordingly.
 }
 \examples{
 library(S4Vectors)

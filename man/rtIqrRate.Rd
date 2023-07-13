@@ -2,54 +2,62 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{rtIqrRate}
 \alias{rtIqrRate}
-\title{Peptide identification rate of the interquartile RT period (QC:4000073)}
+\title{peptide identification rate of the interquartile RT period (MS:4000154)}
 \usage{
-rtIqrRate(spectra, msLevel = 1L, ...)
+rtIqrRate(
+  spectra,
+  msLevel = 1L,
+  identificationLevel = c("all", "identified", "unidentified"),
+  ...
+)
 }
 \arguments{
-\item{spectra}{`Spectra` object}
+\item{spectra}{\code{Spectra} object}
 
-\item{msLevel}{`integer`}
+\item{msLevel}{\code{integer}}
+
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
 }
 \value{
-`numeric(2)`
+\code{numeric(2)}
 }
 \description{
+MS:4000154 \cr
 "The identification rate of peptides for the interquartile retention time 
-period, in peptides per second." [PSI:QC]
-id: QC:4000073
+period, in peptides per second. Higher rates indicate efficient sampling 
+and identification." [PSI:MS] \cr
 
-The metric is calculated as follows:
-(1) the `Spectra` object is filtered according to the MS level,
-
-(2) the retention time values are obtained,
-
+The metric is calculated as follows: \cr
+(1) the \code{Spectra} object is filtered according to the MS level, \cr 
+(2) the retention time values are obtained, \cr 
 (3) the 25\% and 75\% quantiles are obtained from the retention time values
-(`NA` values are removed),
-
+(\code{NA} values are removed), \cr 
 (4) the number of eluted features between this 25\% and 75\% quantile is 
-calculated,
-
+calculated, \cr 
 (5) the number of features is divided by the interquartile range of the 
-retention time and returned.
+retention time and returned. \cr
 }
 \details{
-Higher rates indicate efficient sampling and identification.
-is_a: QC:4000003 ! single value
-is_a: QC:4000009 ! ID based
-is_a: QC:4000022 ! chromatogram metric
+MS:4000154 \cr
+is_a: MS:4000003 ! single value \cr
+is_a: MS:4000008 ! ID based \cr
+is_a: MS:4000017 ! chromatogram metric \cr
+
+An attribute will only be returned if \code{identificationLevel} is 
+\code{"identified"}.
 }
 \note{
-The `Spectra` object might contain features that were not identified. If
-the calculation needs to be done according to *QC:4000073*, the 
-`Spectra` object should be prepared accordingly, i.e. being subsetted to
-`spectra` with identification data.
+The \code{Spectra} object might contain features that were not identified. If
+the calculation needs to be done according to *MS:4000154*, the 
+\code{Spectra} object should be prepared accordingly, i.e. being subsetted to
+\code{spectra} with identification data.
 
-The stored retention time information in `spectra` might have a different
-unit than seconds. `rtIqr` will return the IQR based on the values stored
-in `spectra` and will not convert these values to seconds.
+The stored retention time information in \code{spectra} might have a different
+unit than seconds. \code{.rtIqr} will return the IQR based on the values stored
+in \code{spectra} and will not convert these values to seconds.
 }
 \examples{
 library(S4Vectors)

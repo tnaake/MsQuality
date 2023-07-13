@@ -2,56 +2,58 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{msSignal10xChange}
 \alias{msSignal10xChange}
-\title{MS1 signal jump/fall (10x) count (QC:4000172/QC:4000173)}
+\title{MS1 signal jump/fall (10x) count (MS:4000097/MS:4000098)}
 \usage{
 msSignal10xChange(spectra, change = "jump", msLevel = 1L, ...)
 }
 \arguments{
-\item{spectra}{`Spectra` object}
+\item{spectra}{\code{Spectra} object}
 
-\item{change}{`character(1)`, one of `"jump"` or `"fall"`}
+\item{change}{\code{character(1)}, one of \code{"jump"} or \code{"fall"}}
 
-\item{msLevel}{`integer`}
+\item{msLevel}{\code{integer}}
 
 \item{...}{not used here}
 }
 \value{
-`numeric(1)`
+\code{numeric(1)}
 }
 \description{
-"The count of MS1 signal jump (spectra sum) by a factor of ten or more (10x)
-between two subsequent scans" [PSI:QC]
-id: QC:4000172
+MS:4000097 \cr
+"The number of times where MS1 TIC increased more than 10-fold between 
+adjacent MS1 scans. An unusual high count of signal jumps or falls can 
+indicate ESI stability issues." [PSI:MS] \cr
 
-"The count of MS1 signal decline (spectra sum) by a factor of ten or more 
-(10x) between two subsequent scans" [PSI:QC]
-id: QC:4000173
+MS:4000098 \cr
+"The number of times where MS1 TIC decreased more than 10-fold between 
+adjacent MS1 scans. An unusual high count of signal jumps or falls can 
+indicate ESI stability issues." [PSI:MS] \cr
 
-#' The metric is calculated as follows:
-(1) the `Spectra` object is filtered according to the MS level,
-
-(2) the intensity of the precursor ions within `spectra` are obtained,
-
-(3) the intensity values of the features are obtained via the ion count,
-
+The metric is calculated as follows: \cr
+(1) the \code{Spectra} object is filtered according to the MS level, \cr 
+(2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
+(3) the intensity values of the features are obtained via the ion count, \cr 
 (4) the signal jumps/declines of the intensity values with the two 
-subsequent intensity values is calculated,
-
-(5) in the case of *QC:4000172*, the signal jumps by a factor of ten or more
-are counted and returned;
-in the case of *QC:4000173*, the signal declines by a factor of ten or more
-are counted and returned.
+subsequent intensity values is calculated, \cr 
+(5) in the case of *MS:4000097*, the signal jumps by a factor of ten or more
+are counted and returned; \cr
+in the case of *MS:4000098*, the signal declines by a factor of ten or more
+are counted and returned. \cr
 }
 \details{
-is_a: QC:4000003 ! single value
-is_a: QC:4000010 ! ID free
-is_a: QC:4000001 ! QC metric
-
-An unusual high count of signal jumps or falls can indicate ESI stability 
-issues.
-
-The function `msSignal10xChange` uses the function `ionCount` as an 
+MS:4000097 \cr
+is_a: MS:4000003 ! single value \cr
+relationship: has_metric_category MS:4000009 ! ID free metric \cr
+relationship: has_metric_category MS:4000021 ! MS1 metric \cr
+relationship: has_units UO:0000189 ! count unit \cr
+relationship: has_value_type xsd:integer ! The allowed value-type for this CV 
+term \cr
+synonym: "IS-1A"  RELATED [] \cr
+ 
+The function \code{msSignal10xChange} uses the function \code{ionCount} as an 
 equivalent to the TIC.
+
+An attribute will only be returned if \code{msLevel} is 1.
 }
 \examples{
 library(S4Vectors)

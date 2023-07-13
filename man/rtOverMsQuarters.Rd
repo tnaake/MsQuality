@@ -2,55 +2,76 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{rtOverMsQuarters}
 \alias{rtOverMsQuarters}
-\title{MS1/MS2 quantiles RT fraction (QC:4000055/QC:4000056)}
+\title{MS1 quarter RT fraction (MS:4000055) or 
+MS2 quarter RT fraction (MS:4000056)}
 \usage{
 rtOverMsQuarters(spectra, msLevel = 1L, ...)
 }
 \arguments{
-\item{spectra}{`Spectra` object}
+\item{spectra}{\code{Spectra} object}
 
-\item{msLevel}{`integer`}
+\item{msLevel}{\code{integer}}
 
 \item{...}{not used here}
 }
 \value{
-`numeric(4)`
+\code{numeric(4)}
 }
 \description{
+MS:4000055 \cr
 "The interval used for acquisition of the first, second, third, and fourth 
-quarter of all MS1 events divided by RT-Duration." [PSI:QC]
-id: QC:4000055
+quarter of all MS1 events divided by retention time duration." [PSI:MS] \cr
 
+MS:4000056 \cr
 "The interval used for acquisition of the first, second, third, and fourth 
-quarter of all MS2 events divided by RT-Duration." [PSI:QC]
-id: QC:4000056
+quarter of all MS2 events divided by retention time duration." [PSI:MS] \cr
 
-The metric is calculated as follows:
-(1) the retention time duration of the whole `Spectra` object is determined
-(taking into account all the MS levels),
-
-(2) the `Spectra` object is filtered according to the MS level and 
-subsequently ordered according to the retention time
-
-(3) the MS events are split into four (approximately) equal parts,
-
+The metric is calculated as follows: \cr
+(1) the retention time duration of the whole \code{Spectra} object is determined
+(taking into account all the MS levels), \cr 
+(2) the \code{Spectra} object is filtered according to the MS level and 
+subsequently ordered according to the retention time \cr 
+(3) the MS events are split into four (approximately) equal parts, \cr 
 (4) the relative retention time is calculated (using the retention time 
-duration from (1) and taking into account the minimum retention time),
-
+duration from (1) and taking into account the minimum retention time), \cr 
 (5) the relative retention time values associated to the MS event parts
 are returned.
 }
 \details{
-is_a: QC:4000004 ! n-tuple
-is_a: QC:4000010 ! ID free
-is_a: QC:4000021 ! retention time metric
-is_a: QC:4000023 ! MS1 metric
+MS:4000055 \cr
+synonym: "RT-MS-Q1" RELATED [PMID:24494671] \cr
+synonym: "RT-MS-Q2" RELATED [PMID:24494671] \cr
+synonym: "RT-MS-Q3" RELATED [PMID:24494671] \cr
+synonym: "RT-MS-Q4" RELATED [PMID:24494671] \cr
+is_a: MS:4000004 ! n-tuple \cr 
+relationship: has_metric_category MS:4000009 ! ID free metric \cr
+relationship: has_metric_category MS:4000012 ! single run based metric \cr
+relationship: has_metric_category MS:4000016 ! retention time metric \cr
+relationship: has_metric_category MS:4000021 ! MS1 metric \cr
+relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
+relationship: has_units UO:0000191 ! fraction \cr
 
-The function returns `c(NaN, NaN, NaN, NaN)` if the filtered `spectra` 
-object has less than 4 scan events.
+MS:4000056 \cr
+synonym: "RT-MSMS-Q1" RELATED [PMID:24494671] \cr
+synonym: "RT-MSMS-Q2" RELATED [PMID:24494671] \cr
+synonym: "RT-MSMS-Q3" RELATED [PMID:24494671] \cr
+synonym: "RT-MSMS-Q4" RELATED [PMID:24494671] \cr
+is_a: MS:4000004 ! n-tuple \cr
+relationship: has_metric_category MS:4000009 ! ID free metric \cr
+relationship: has_metric_category MS:4000012 ! single run based metric \cr
+relationship: has_metric_category MS:4000016 ! retention time metric \cr
+relationship: has_metric_category MS:4000022 ! MS2 metric \cr
+relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
+relationship: has_units UO:0000191 ! fraction \cr
+
+The function returns \code{c(NaN, NaN, NaN, NaN)} if the filtered 
+\code{spectra} object has less than 4 scan events.
+
+An attribute will only be returned if \code{msLevel} is 1 or 2.
 }
 \note{
-`rtDuration` considers the total runtime (including MS1 and MS2 scans).
+\code{chromatographyDuration} considers the total runtime (including MS1 
+and MS2 scans).
 }
 \examples{
 library(S4Vectors)

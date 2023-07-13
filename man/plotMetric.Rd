@@ -28,9 +28,9 @@ to display.
 \code{metric}. The different levels in the \code{name} column in the 
 returned tibble correspond to the columns that were selected and do not 
 contain the \code{metric} prefix. In case there is no additional specification 
-(e.g. for the metric \code{rtDuration} only the column \code{rtDuration} will 
+(e.g. for the metric \code{chromatographyDuration} only the column \code{chromatographyDuration} will 
 be selected), the \code{name} column will include the \code{metric} 
-(\code{rtDuration}).
+(\code{chromatographyDuration}).
 }
 \examples{
 library(msdata)
@@ -50,7 +50,7 @@ library(Spectra)
 spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 
 ## define the quality metrics to be calculated
-metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
     
 ## calculate the metrics
 ## additional parameters passed to the quality metrics functions

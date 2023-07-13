@@ -20,8 +20,8 @@ calculated on \code{msexp}}
 \item{...}{arguments passed to the quality metrics functions defined in 
 \code{metrics}}
 
-\item{BPPARAM}{Parallel processing setup. Defaults to `BPPARAM = bpparam()`.
-See [bpparam()] for details on parallel processing with `BiocParallel`.}
+\item{BPPARAM}{Parallel processing setup. Defaults to \code{BPPARAM = bpparam()}.
+See [bpparam()] for details on parallel processing with \code{BiocParallel}.}
 }
 \value{
 \code{data.frame} containing in the columns the metrics for the 
@@ -66,7 +66,7 @@ library(Spectra)
 spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 
 ## define the quality metrics to be calculated
-metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
+metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,

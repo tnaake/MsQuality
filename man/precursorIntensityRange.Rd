@@ -2,36 +2,35 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{precursorIntensityRange}
 \alias{precursorIntensityRange}
-\title{Precursor intensity range (QC:4000144)}
+\title{precursor intensity range (MS:4000160)}
 \usage{
 precursorIntensityRange(spectra, msLevel = 1, ...)
 }
 \arguments{
-\item{spectra}{`Spectra` object}
+\item{spectra}{\code{Spectra} object}
 
-\item{msLevel}{`integer`}
+\item{msLevel}{\code{integer}}
 
 \item{...}{not used here}
 }
 \value{
-`numeric(2)`
+\code{numeric(2)}
 }
 \description{
-"Minimum and maximum precursor intensity recorded." [PSI:QC]
-id: QC:4000144
+MS:4000160 \cr
+"Minimum and maximum precursor intensity recorded." [PSI:MS] \cr
 
-The metric is calculated as follows:
-(1) the `Spectra` object is filtered according to the MS level,
-
-(2) the intensity of the precursor ions within `spectra` are obtained,
-
+The metric is calculated as follows: \cr
+(1) the \code{Spectra} object is filtered according to the MS level, \cr 
+(2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
 (3) the minimum and maximum precursor intensity values are obtained and 
 returned.
 }
 \details{
-is_a: QC:4000010 ! ID free
-is_a: QC:4000001 ! QC metric
-is_a: QC:4000004 ! n-tuple
+MS:4000160 \cr
+is_a: MS:4000009 ! ID free \cr
+is_a: MS:4000001 ! QC metric \cr
+is_a: MS:4000004 ! n-tuple \cr
 
 The intensity range of the precursors informs about the dynamic range of 
 the acquisition.

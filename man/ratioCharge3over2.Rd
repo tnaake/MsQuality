@@ -2,48 +2,64 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{ratioCharge3over2}
 \alias{ratioCharge3over2}
-\title{Charged peptides ratio 3+ over 2+ (QC:4000175) or 
-charged spectra ratio 3+ over 2+ (QC:4000180)}
+\title{charged peptides ratio 3+ over 2+ (MS:4000169) or 
+charged spectra ratio 3+ over 2+ (MS:4000170)}
 \usage{
-ratioCharge3over2(spectra, msLevel = 1L, ...)
+ratioCharge3over2(
+  spectra,
+  msLevel = 1L,
+  identificationLevel = c("all", "identified", "unidentified"),
+  ...
+)
 }
 \arguments{
-\item{spectra}{`Spectra` object}
+\item{spectra}{\code{Spectra} object}
 
-\item{msLevel}{`integer`}
+\item{msLevel}{\code{integer}}
+
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
 }
 \value{
-`numeric(1)`
+\code{numeric(1)}
 }
 \description{
-"Ratio of 3+ peptide count over 2+ peptide count in identified spectra" [PSI:QC]
-id: QC:4000175
+MS:4000169 \cr
+"Ratio of 3+ peptide count over 2+ peptide count in identified spectra" 
+[PSI:QC] \cr
 
-"Ratio of 3+ peptide count over 2+ peptide count in all MS2" [PSI:QC]
-id: QC:4000180
+MS:4000170 \cr
+"Ratio of 3+ peptide count over 2+ peptide count in all MS2" [PSI:QC] \cr
 
-The metric is calculated as follows:
-(1) the `Spectra` object is filtered according to the MS level,
-
-(2) the precursor charge is obtained,
-
+The metric is calculated as follows: \cr
+(1) the \code{Spectra} object is filtered according to the MS level, \cr 
+(2) the precursor charge is obtained, \cr 
 (3) the number of precursors with charge 3+ is divided by the number of 
-precursors with charge 2+ and the ratio is returned.
+precursors with charge 2+ and the ratio is returned. \cr
 }
 \details{
-is_a: QC:4000003 ! single value
-is_a: QC:4000009 ! ID based
-is_a: QC:4000001 ! QC metric
+MS:4000169 \cr
+is_a: MS:4000003 ! single value \cr
+is_a: MS:4000008 ! ID based \cr
+is_a: MS:4000001 ! QC metric \cr
 
-`NA` is returned if there are no features with precursor charge of 2+ or 
+MS:4000170 \cr
+is_a: MS:4000003 ! single value \cr
+is_a: MS:4000009 ! ID free metric \cr
+is_a: MS:4000001 ! QC metric \cr
+
+\code{NA} is returned if there are no features with precursor charge of 2+ or 
 3+.
+
+An attribute will only be returned if \code{identificationLevel} is either 
+\code{"all"} or \code{"identified"}.
 }
 \note{
-The `Spectra` object might contain features that were not identified. If
-the calculation needs to be done according to *QC:4000175*, the 
-`Spectra` object should be prepared accordingly.
+The \code{Spectra} object might contain features that were not identified. If
+the calculation needs to be done according to *MS:4000169*, the 
+\code{Spectra} object should be prepared accordingly.
 }
 \examples{
 library(S4Vectors)

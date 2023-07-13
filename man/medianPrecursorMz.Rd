@@ -2,42 +2,52 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{medianPrecursorMz}
 \alias{medianPrecursorMz}
-\title{Precursor median m/z for IDs (QC:4000065)}
+\title{precursor median m/z for IDs (MS:4000152)}
 \usage{
-medianPrecursorMz(spectra, msLevel = 1L, ...)
+medianPrecursorMz(
+  spectra,
+  msLevel = 1L,
+  identificationLevel = c("all", "identified", "unidentified"),
+  ...
+)
 }
 \arguments{
-\item{spectra}{`Spectra` object}
+\item{spectra}{\code{Spectra} object}
 
-\item{msLevel}{`integer`}
+\item{msLevel}{\code{integer}}
+
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
 }
 \value{
-`numeric(1)`
+\code{numeric(1)}
 }
 \description{
+MS:4000152 \cr
 "Median m/z value for all identified peptides (unique ions) after 
-FDR." [PSI:QC]
-id: QC:4000065
+FDR." [PSI:MS] \cr
 
-The metric is calculated as follows:
-(1) the `Spectra` object is filtered according to the MS level,
-
-(2) the precursor m/z values are obtained,
-
-(3) the median value is returned (`NAs` are removed).
+The metric is calculated as follows: \cr
+(1) the \code{Spectra} object is filtered according to the MS level, \cr 
+(2) the precursor m/z values are obtained, \cr 
+(3) the median value is returned (\code{NA}s are removed). \cr
 }
 \details{
-is_a: QC:4000003 ! single value
-is_a: QC:4000009 ! ID based
-is_a: QC:4000023 ! MS1 metric
-is_a: QC:4000025 ! ion source metric
+MS:4000152 \cr
+is_a: MS:4000003 ! single value \cr
+is_a: MS:4000008 ! ID based \cr
+is_a: MS:4000021 ! MS1 metric \cr
+is_a: MS:4000020 ! ion source metric \cr
+
+An attribute will only be returned if \code{identificationLevel} is
+\code{"identified"} and \code{msLevel} is 1.
 }
 \note{
-`medianPrecursorMz` will calculate the *precursor* median m/z of all 
-Spectra within `spectra`. If the calculation needs be done according to
-*QC:4000065*, the `Spectra` object should be prepared accordingly, i.e.
+\code{medianPrecursorMz} will calculate the *precursor* median m/z of all 
+Spectra within \code{spectra}. If the calculation needs be done according to
+*MS:4000152*, the \code{Spectra} object should be prepared accordingly, i.e.
 filtered with e.g. [filterPrecursorMz()] or subsetted to spectra with
 identification data.
 }
@@ -65,5 +75,5 @@ sps <- Spectra(spd)
 medianPrecursorMz(spectra = sps, msLevel = 2L)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake
 }
