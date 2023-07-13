@@ -3,33 +3,33 @@
 #' @title chromatography duration (MS:4000053)
 #' 
 #' @description
-#' "The retention time duration of the chromatography in seconds." [PSI:MS]
+#' MS:4000053
+#' "The retention time duration of the chromatography in seconds." [PSI:MS] \cr 
 #' 
-#' The metric is calculated as follows:
-#' (1) the retention time associated to the individual Spectra is obtained,
-#' 
-#' (2) the maximum and the minimum of the retention time is obtained,
-#' 
+#' The metric is calculated as follows: \cr 
+#' (1) the retention time associated to the individual Spectra is obtained, \cr  
+#' (2) the maximum and the minimum of the retention time is obtained, \cr  
 #' (3) the difference between the maximum and the minimum is calculated and 
-#' returned.
+#' returned. \cr 
 #' 
 #' @details
-#' synonym: "RT-Duration" RELATED [PMID:24494671]
-#' is_a: MS:4000003 ! single value
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_metric_category MS:4000012 ! single run based metric
-#' relationship: has_metric_category MS:4000016 ! retention time metric
-#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term
-#' relationship: has_value_concept NCIT:C25330 ! Duration
-#' relationship: has_units UO:0000010 ! second
+#' MS:4000053
+#' synonym: "RT-Duration" RELATED [PMID:24494671] \cr
+#' is_a: MS:4000003 ! single value \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_metric_category MS:4000016 ! retention time metric \cr
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
+#' relationship: has_value_concept NCIT:C25330 ! Duration \cr
+#' relationship: has_units UO:0000010 ! second \cr
 #' 
-#' Retention time values that are `NA` are removed.
+#' Retention time values that are \code{NA} are removed.
 #' 
-#' @param spectra `Spectra` object
+#' @param spectra \code{Spectra} object
 #' 
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -72,49 +72,46 @@ chromatographyDuration <- function(spectra, ...) {
 #' 
 #' @title TIC quarters RT fraction (MS:4000054)
 #' 
-#' @description 
+#' @description
+#' MS:4000054
 #' "The interval when the respective quarter of the TIC accumulates divided by 
-#' retention time duration." [PSI:MS]
-#' id: MS:4000054
+#' retention time duration." [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is ordered according to the retention time,
-#' 
-#' (2) the cumulative sum of the ion count is calculated (TIC),
-#' 
-#' (3) the quantiles are calculated according to the `probs` argument, e.g.
-#' when `probs` is set to `c(0, 0.25, 0.5, 0.75, 1)` the 0\%, 25\%, 50\%, 75\% 
-#' and 100\% quantile is calculated,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is ordered according to the retention time, \cr 
+#' (2) the cumulative sum of the ion count is calculated (TIC), \cr 
+#' (3) the quantiles are calculated according to the \code{probs} argument, e.g.
+#' when \code{probs} is set to \code{c(0, 0.25, 0.5, 0.75, 1)} the 0\%, 25\%, 50\%, 75\% 
+#' and 100\% quantile is calculated, \cr 
 #' (4) the retention time/relative retention time (retention time divided by 
 #' the total run time taking into account the minimum retention time) is 
-#' calculated,
-#' 
+#' calculated, \cr 
 #' (5) the (relative) duration of the LC run after which the cumulative
-## TIC exceeds (for the first time) the respective quantile of the
-## cumulative TIC is calculated and returned.
+#' TIC exceeds (for the first time) the respective quantile of the
+#' cumulative TIC is calculated and returned. \cr
 #' 
 #' @details
-#' synonym: "RT-TIC-Q1" RELATED [PMID:24494671]
-#' synonym: "RT-TIC-Q2" RELATED [PMID:24494671]
-#' synonym: "RT-TIC-Q3" RELATED [PMID:24494671]
-#' synonym: "RT-TIC-Q4" RELATED [PMID:24494671]
-#' is_a: MS:4000004 ! n-tuple
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_metric_category MS:4000012 ! single run based metric
-#' relationship: has_metric_category MS:4000016 ! retention time metric
-#' relationship: has_metric_category MS:4000017 ! chromatogram metric
-#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term
-#' relationship: has_units UO:0000191 ! fraction
+#' MS:4000054
+#' synonym: "RT-TIC-Q1" RELATED [PMID:24494671] \cr
+#' synonym: "RT-TIC-Q2" RELATED [PMID:24494671] \cr
+#' synonym: "RT-TIC-Q3" RELATED [PMID:24494671] \cr
+#' synonym: "RT-TIC-Q4" RELATED [PMID:24494671] \cr
+#' is_a: MS:4000004 ! n-tuple \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_metric_category MS:4000016 ! retention time metric \cr
+#' relationship: has_metric_category MS:4000017 ! chromatogram metric \cr
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
+#' relationship: has_units UO:0000191 ! fraction \cr
 #' 
-#' @param spectra `Spectra` object
-#' @param probs `numeric` defining the quantiles. See `probs = seq(0, 1, 0.25)`.
-#' @param msLevel `integer`
-#' @param relative `logical`, if set to `TRUE` the relative retention time 
+#' @param spectra \code{Spectra} object
+#' @param probs \code{numeric} defining the quantiles. See \code{probs = seq(0, 1, 0.25)}.
+#' @param msLevel \code{integer}
+#' @param relative \code{logical}, if set to \code{TRUE} the relative retention time 
 #' will be returned instead of the abolute retention time
 #' @param ... not used here
 #' 
-#' @return `numeric` of length equal to length `probs` with the relative
+#' @return \code{numeric} of length equal to length \code{probs} with the relative
 #'    duration (duration divided by the total run time) after which the TIC
 #'    exceeds the respective quantile of the TIC.
 #' 
@@ -180,25 +177,24 @@ ticQuartersRtFraction <- function(spectra, probs = seq(0, 1, 0.25),
         res <- RT[idxs]
     }
     
-    names(res) <- paste0(probs * 100, "%")
-    
     ## add attributes and return
-    attributes(res) <- list(rtOverTicQuantiles = "MS:4000054")
+    attributes(res) <- list(names = paste0(probs * 100, "%"), 
+        ticQuartersRtFraction = "MS:4000054")
     res
 }
 
 #' @title Order Spectra according to increasing retention time
 #' 
 #' @description 
-#' The function `.rtOrderSpectra` orders the features in a `Spectra` object
+#' The function \code{.rtOrderSpectra} orders the features in a \code{Spectra} object
 #' according to the (increasing) retention time values. 
 #' 
 #' @details
 #' Internal function in quality metric functions.
 #' 
-#' @param spectra `Spectra` object
+#' @param spectra \code{Spectra} object
 #' 
-#' @return `Spectra` object with the features ordered according to the 
+#' @return \code{Spectra} object with the features ordered according to the 
 #' (increasing) retention time
 #' 
 #' @author Johannes Rainer
@@ -239,58 +235,71 @@ ticQuartersRtFraction <- function(spectra, probs = seq(0, 1, 0.25),
 
 #' @name rtOverMsQuarters
 #' 
-#' @title MS1/MS2 quantiles RT fraction (MS:4000055/MS:4000056)
+#' @title MS1 quarter RT fraction (MS:4000055) or 
+#' MS2 quarter RT fraction (MS:4000056)
 #' 
 #' @description
+#' MS:4000055 \cr
 #' "The interval used for acquisition of the first, second, third, and fourth 
-#' quarter of all MS1 events divided by RT-Duration." [PSI:MS]
-#' id: MS:4000055
-#'
+#' quarter of all MS1 events divided by retention time duration." [PSI:MS] \cr
+#' 
+#' MS:4000056 \cr
 #' "The interval used for acquisition of the first, second, third, and fourth 
-#' quarter of all MS2 events divided by RT-Duration." [PSI:MS]
-#' id: MS:4000056
+#' quarter of all MS2 events divided by retention time duration." [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the retention time duration of the whole `Spectra` object is determined
-#' (taking into account all the MS levels),
-#' 
-#' (2) the `Spectra` object is filtered according to the MS level and 
-#' subsequently ordered according to the retention time
-#' 
-#' (3) the MS events are split into four (approximately) equal parts,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the retention time duration of the whole \code{Spectra} object is determined
+#' (taking into account all the MS levels), \cr 
+#' (2) the \code{Spectra} object is filtered according to the MS level and 
+#' subsequently ordered according to the retention time \cr 
+#' (3) the MS events are split into four (approximately) equal parts, \cr 
 #' (4) the relative retention time is calculated (using the retention time 
-#' duration from (1) and taking into account the minimum retention time),
-#' 
+#' duration from (1) and taking into account the minimum retention time), \cr 
 #' (5) the relative retention time values associated to the MS event parts
 #' are returned.
 #' 
 #' @details
-#' synonym: "RT-MS-Q1" RELATED [PMID:24494671]
-#' synonym: "RT-MS-Q2" RELATED [PMID:24494671]
-#' synonym: "RT-MS-Q3" RELATED [PMID:24494671]
-#' synonym: "RT-MS-Q4" RELATED [PMID:24494671]
-#' is_a: MS:4000004 ! n-tuple
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_metric_category MS:4000012 ! single run based metric
-#' relationship: has_metric_category MS:4000016 ! retention time metric
-#' relationship: has_metric_category MS:4000021 ! MS1 metric
-#' relationship: has_metric_category MS:4000022 ! MS2 metric
-#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term
-#' relationship: has_units UO:0000191 ! fraction
-#' 
-#' The function returns `c(NaN, NaN, NaN, NaN)` if the filtered `spectra` 
-#' object has less than 4 scan events.
+#' MS:4000055 \cr
+#' synonym: "RT-MS-Q1" RELATED [PMID:24494671] \cr
+#' synonym: "RT-MS-Q2" RELATED [PMID:24494671] \cr
+#' synonym: "RT-MS-Q3" RELATED [PMID:24494671] \cr
+#' synonym: "RT-MS-Q4" RELATED [PMID:24494671] \cr
+#' is_a: MS:4000004 ! n-tuple \cr 
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_metric_category MS:4000016 ! retention time metric \cr
+#' relationship: has_metric_category MS:4000021 ! MS1 metric \cr
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
+#' relationship: has_units UO:0000191 ! fraction \cr
 #'
-#' @note
-#' `chromatographyDuration` considers the total runtime (including MS1 and MS2 scans).
+#' MS:4000056 \cr
+#' synonym: "RT-MSMS-Q1" RELATED [PMID:24494671] \cr
+#' synonym: "RT-MSMS-Q2" RELATED [PMID:24494671] \cr
+#' synonym: "RT-MSMS-Q3" RELATED [PMID:24494671] \cr
+#' synonym: "RT-MSMS-Q4" RELATED [PMID:24494671] \cr
+#' is_a: MS:4000004 ! n-tuple \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_metric_category MS:4000016 ! retention time metric \cr
+#' relationship: has_metric_category MS:4000022 ! MS2 metric \cr
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
+#' relationship: has_units UO:0000191 ! fraction \cr
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' The function returns \code{c(NaN, NaN, NaN, NaN)} if the filtered 
+#' \code{spectra} object has less than 4 scan events.
+#'
+#' An attribute will only be returned if \code{msLevel} is 1 or 2.
+#' 
+#' @note
+#' \code{chromatographyDuration} considers the total runtime (including MS1 
+#' and MS2 scans).
+#' 
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
 #' @param ... not used here
 #' @param ... not used here
 #'  
-#' @return `numeric(4)`
+#' @return \code{numeric(4)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}, Johannes Rainer
 #' 
@@ -355,7 +364,9 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
         ms_term <- "MS:4000055"
     if (msLevel == 2L) 
         ms_term <- "MS:4000056"
-    attributes(res) <- list(rtOverMsQuarters = ms_term)
+    if (msLevel %in% c(1L, 2L))
+        attributes(res) <- c(attributes(res), list(rtOverMsQuarters = ms_term))
+    
     res
 }
 
@@ -365,59 +376,74 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
 #' MS1 TIC quartile ratios (MS:4000058)
 #' 
 #' @description 
-#' For calculation of MS:400057 set \code{mode = "TIC_change"}.
-#' 
+#' MS:4000057 \cr
 #' "The log ratios of successive TIC-change quartiles. The TIC changes are 
 #' the list of MS1 total ion current (TIC) value changes from one to the next 
 #' scan, produced when each MS1 TIC is subtracted from the preceding MS1 TIC. 
 #' The metric's value triplet represents the log ratio of the TIC-change 
-#' Q2 to Q1, Q3 to Q2, TIC-change-max to Q3" [PSI:MS]
-#' id: MS:4000057
+#' Q2 to Q1, Q3 to Q2, TIC-change-max to Q3" [PSI:MS] \cr 
+#' For calculation of MS:400057 set \code{mode = "TIC_change"}. \cr
 #' 
-#' For calculation of MS:400058 set \code{mode = "TIC"}.
-#' 
+#' MS:4000058 \cr
 #' The log ratios of successive TIC quartiles. The metric's value triplet 
 #' represents the log ratios of TIC-Q2 to TIC-Q1, TIC-Q3 to TIC-Q2, 
-#' TIC-max to TIC-Q3." [PSI:MS]
-#' id: MS:4000058
+#' TIC-max to TIC-Q3." [PSI:MS] \cr
+#' For calculation of MS:400058 set \code{mode = "TIC"}. \cr
 #'
+#' The metric is calculated as follows: \cr
+#' (1) the TIC (\code{ionCount}) of the  \code{spectra} is calculated per scan
+#' event (with spectra ordered by retention time), \cr
+#' (2) for *MS:4000057*, the differences between TIC values are calculated 
+#' between subsequent scan events,
+#' for *MS:4000058*, the TIC values between subsequent scan events are taken
+#' as they are, \cr
+#' (3) for *MS:4000057* and *MS:4000058* the ratios between the 25\%, 50\%, 
+#' 75\%, and 100\% quantile to the 25% quantile of the values of (2) are 
+#' calculated.
+#' Alternatively, if \code{relativeTo = "Q1"}, the ratios are calculated 
+#' between the 50\%/25\%, 75\%/25\%, and 100\%/25\% quantiles, \cr
+#' (4) The \code{log} values of the ratios are returned. \cr
+#' 
 #' @note
 #' This function interprets the *quantiles* from the [PSI:QC] definition as
 #' *quartiles*, i.e. the 0, 25, 50, 75 and 100\% quantiles are used.
 #' 
 #' @details
-#' is_a: MS:4000004 ! n-tuple
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_metric_category MS:4000012 ! single run based metric
-#' relationship: has_metric_category MS:4000017 ! chromatogram metric
-#' relationship: has_metric_category MS:4000021 ! MS1 metric
-#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term
-#' relationship: has_value_concept STATO:0000105 ! log signal intensity ratio
-#'
-#' The metric is calculated as follows:
-#' (1) the TIC (`ionCount`) of the  `spectra` is calculated per scan
-#' event (with spectra ordered by retention time),
-#'
-#' (2) for *MS:4000057*, the differences between TIC values are calculated 
-#' between subsequent scan events,
-#' for *MS:4000058*, the TIC values between subsequent scan events are taken
-#' as they are,
+#' MS:4000057 \cr
+#' synonym: "MS1-TIC-Change-Q2" RELATED [PMID:24494671] \cr
+#' synonym: "MS1-TIC-Change-Q3" RELATED [PMID:24494671] \cr
+#' synonym: "MS1-TIC-Change-Q4" RELATED [PMID:24494671] \cr
+#' is_a: MS:4000004 ! n-tuple \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_metric_category MS:4000017 ! chromatogram metric \cr
+#' relationship: has_metric_category MS:4000021 ! MS1 metric \cr
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
+#' relationship: has_value_concept STATO:0000105 ! log signal intensity ratio \cr
 #' 
-#' (3) for *MS:4000057* and *MS:4000058* the ratios between the 25\%, 50\%, 
-#' 75\%, and 100\% quantile to the 25% quantile of the values of (2) are 
-#' calculated.
-#' Alternatively, if `relativeTo = "Q1"`, the ratios are calculated between the
-#' 50\%/25\%, 75\%/25\%, and 100\%/25\% quantiles.
+#' MS:4000058 \cr
+#' synonym: "MS1-TIC-Q2" RELATED [PMID:24494671] \cr
+#' synonym: "MS1-TIC-Q3" RELATED [PMID:24494671] \cr
+#' synonym: "MS1-TIC-Q4" RELATED [PMID:24494671] \cr
+#' is_a: MS:4000004 ! n-tuple \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_metric_category MS:4000017 ! chromatogram metric \cr
+#' relationship: has_metric_category MS:4000021 ! MS1 metric \cr
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
+#' relationship: has_value_concept STATO:0000105 ! log signal intensity ratio \cr
 #' 
-#' The `log` values of the ratios are returned.
-#' 
-#' @param spectra `Spectra` object
-#' @param relativeTo `character(1)`, one of `"Q1"` or `"previous"`
-#' @param mode `character(1)`, one of `"TIC_change"` or `"TIC"` 
-#' @param msLevel `integer`
+#' An attribute will only be returned if \code{relativeTo} is 
+#' \code{"previous"} and \code{msLevel} is 1. 
+#'  
+#' @param spectra \code{Spectra} object
+#' @param relativeTo \code{character(1)}, one of \code{"Q1"} or 
+#' \code{"previous"}
+#' @param mode \code{character(1)}, one of \code{"TIC_change"} or \code{"TIC"}
+#' @param msLevel \code{integer}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -520,47 +546,62 @@ ticQuartileToQuartileLogRatio <- function(spectra,
     res <- log(ratioQuantileTIC)
     
     ## add attributes and return
-    if (mode == "TIC_change") 
+    if (mode == "TIC_change" & msLevel == 1L) 
         ms_term <- "MS:4000057"
-    if (mode == "TIC") 
+    if (mode == "TIC" & msLevel == 1L) 
         ms_term <- "MS:4000058"
     
     ## add the attribute only in case of relativeTo = "previous"
-    if (relativeTo == "previous")
-        attributes(res) <- list(ticQuartileToQuartileLogRatio = ms_term)
+    if (relativeTo == "previous" & msLevel == 1L)
+        attributes(res) <- c(attributes(res), 
+            list(ticQuartileToQuartileLogRatio = ms_term))
     
     res
 }
 
 #' @name numberSpectra
 #'
-#' @title Number of MS1 or MS2 spectra (MS:4000059/MS:4000060)
+#' @title number of MS1 spectra (MS:4000059) or number of MS2 spectra 
+#' (MS:4000060)
 #'
 #' @description
-#' "The number of MS1 events in the run." [PSI:MS]
-#' id: MS:4000059
-#' "The number of MS2 events in the run." [PSI:MS]
-#' id: MS:4000060
+#' MS:4000059 \cr
+#' "The number of MS1 events in the run." [PSI:MS] \cr
+#' 
+#' MS:4000060 \cr
+#' "The number of MS2 events in the run." [PSI:MS] \cr
 #'
-#' For *MS:4000059*, `msLevel` is set to 1. For *MS:4000060*, `msLevel` is 
-#' set to 2.
+#' For *MS:4000059*, \code{msLevel} is set to 1. For *MS:4000060*, 
+#' \code{msLevel} is set to 2.
 #'
 #' @details
-#' is_a: MS:4000003 ! single value
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_metric_category MS:4000012 ! single run based metric
-#' relationship: has_metric_category MS:4000021 ! MS1 metric
-#' relationship: has_metric_category MS:4000022 ! MS2 metric
-#' relationship: has_value_type xsd:int ! The allowed value-type for this CV term
-#' relationship: has_units UO:0000189 ! count unit
-#'
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' MS:4000059 \cr
+#' synonym: "MS1-Count" EXACT [PMID:24494671] \cr
+#' is_a: MS:4000003 ! single value \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_metric_category MS:4000021 ! MS1 metric \cr
+#' relationship: has_value_type xsd:int ! The allowed value-type for this CV term \cr
+#' relationship: has_units UO:0000189 ! count unit \cr
+#' 
+#' MS:4000060 \cr
+#' synonym: "MS2-Count" EXACT [PMID:24494671] \cr
+#' is_a: MS:4000003 ! single value \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_metric_category MS:4000022 ! MS2 metric \cr
+#' relationship: has_value_type xsd:int ! The allowed value-type for this CV term \cr
+#' relationship: has_units UO:0000189 ! count unit \cr
+#' 
+#' An attribute will only be returned if \code{msLevel} is either 1 or 2.
+#' 
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
 #' @param ... not used here
 #'
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #'
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #'
 #' @export
 #'
@@ -601,48 +642,52 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
         ms_term <- "MS:4000059"
     if (msLevel == 2L) 
         ms_term <- "MS:4000060"
-    attributes(res) <- list(numberSpectra = ms_term)
+    if (msLevel %in% c(1L, 2L))
+        attributes(res) <- list(numberSpectra = ms_term)
+    
     res
 }
 
-
-################################################################################
 #' @name medianPrecursorMz
 #' 
-#' @title Precursor median m/z for IDs (QC:4000065)
+#' @title precursor median m/z for IDs (MS:4000152)
 #' 
 #' @description
+#' MS:4000152 \cr
 #' "Median m/z value for all identified peptides (unique ions) after 
-#' FDR." [PSI:QC]
-#' id: QC:4000065
+#' FDR." [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the precursor m/z values are obtained,
-#' 
-#' (3) the median value is returned (`NAs` are removed).
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the precursor m/z values are obtained, \cr 
+#' (3) the median value is returned (\code{NA}s are removed). \cr
 #' 
 #' @details
-#' is_a: MS:4000003 ! single value
-#' is_a: MS:4000008 ! ID based
-#' is_a: MS:4000021 ! MS1 metric
-#' is_a: QC:4000025 ! ion source metric
+#' MS:4000152 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' is_a: MS:4000021 ! MS1 metric \cr
+#' is_a: MS:4000020 ! ion source metric \cr
+#' 
+#' An attribute will only be returned if \code{identificationLevel} is
+#' \code{"identified"} and \code{msLevel} is 1.
 #' 
 #' @note
-#' `medianPrecursorMz` will calculate the *precursor* median m/z of all 
-#' Spectra within `spectra`. If the calculation needs be done according to
-#' *QC:4000065*, the `Spectra` object should be prepared accordingly, i.e.
+#' \code{medianPrecursorMz} will calculate the *precursor* median m/z of all 
+#' Spectra within \code{spectra}. If the calculation needs be done according to
+#' *MS:4000152*, the \code{Spectra} object should be prepared accordingly, i.e.
 #' filtered with e.g. [filterPrecursorMz()] or subsetted to spectra with
 #' identification data.
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -670,62 +715,73 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
 #' spd$precursorMz <- c(170.16, 170.16, 195.0876)
 #' sps <- Spectra(spd)
 #' medianPrecursorMz(spectra = sps, msLevel = 2L)
-medianPrecursorMz <- function(spectra, msLevel = 1L, ...) {  
+medianPrecursorMz <- function(spectra, msLevel = 1L, 
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
+    
+    identificationLevel <- match.arg(identificationLevel)
+    
     spectra <- filterMsLevel(object = spectra, msLevel)
+    
     if (length(spectra) == 0) {
-        medianMz <- NaN
+        res <- NaN
     } else {
-        ## FDR correction??
         mz <- precursorMz(spectra)
-        medianMz <- median(mz, na.rm = TRUE)    
+        res <- median(mz, na.rm = TRUE)    
     }
     
-    medianMz
+    ## add attributes and return
+    if (identificationLevel == "identified" & msLevel == 1L)
+        attributes(res) <- list(medianPrecursorMz = "MS:4000152")
+    
+    res
     
 }
-################################################################################
 
-################################################################################
 #' @name rtIqr
 #' 
-#' @title Interquartile RT period for peptide identifications (QC:4000072)
+#' @title interquartile retention time period for peptide identifications 
+#' (MS:4000153)
 #' 
 #' @description
+#' MS:4000153 \cr
 #' "The interquartile retention time period, in seconds, for all peptide 
-#' identifications over the complete run." [PSI:QC]
-#' id: QC:4000072
+#' identifications over the complete run. Longer times indicate better 
+#' chromatographic separation." [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the retention time values are obtained,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr
+#' (2) the retention time values are obtained, \cr
 #' (3) the interquartile range is obtained from the values and returned
-#' (`NA` values are removed).
+#' (\code{NA} values are removed). \cr
 #'
 #' @details
-#' Longer times indicate better chromatographic separation.
-#' is_a: MS:4000003 ! single value
-#' is_a: MS:4000008 ! ID based
-#' is_a: MS:4000017 ! chromatogram metric
+#' MS:4000153 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' is_a: MS:4000017 ! chromatogram metric \cr
 #' 
-#' Retention time values that are `NA` are removed.
+#' Retention time values that are \code{NA} are removed.
+#' 
+#' An attribute will only be returned if \code{identificationLevel} is
+#' \code{"identified"}.
 #' 
 #' @note 
-#' The `Spectra` object might contain features that were not identified. If
-#' the calculation needs to be done according to *QC:4000072*, the 
-#' `Spectra` object should be prepared accordingly, i.e. subsetted to spectra
-#' with identification data.
+#' The \code{Spectra} object might contain features that were not identified. If
+#' the calculation needs to be done according to *MS:4000153*, the 
+#' \code{Spectra} object should be prepared accordingly, i.e. subsetted to 
+#' \code{spectra} with identification data.
 #' 
-#' The stored retention time information in `spectra` might have a different
-#' unit than seconds. `rtIqr` will return the IQR based on the values stored
-#' in `spectra` and will not convert these values to seconds. 
+#' The stored retention time information in \code{spectra} might have a 
+#' different unit than seconds. \code{rtIqr} will return the IQR based on the 
+#' values stored in \code{spectra} and will not convert these values to seconds. 
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -756,69 +812,77 @@ medianPrecursorMz <- function(spectra, msLevel = 1L, ...) {
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
 #' rtIqr(spectra = sps, msLevel = 2L)
-rtIqr <- function(spectra, msLevel = 1L, ...) {
-    spectra <- filterMsLevel(object = spectra, msLevel)    
+rtIqr <- function(spectra, msLevel = 1L, 
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
+    
+    identificationLevel <- match.arg(identificationLevel)
+    
+    spectra <- filterMsLevel(object = spectra, msLevel) 
+    
     if (length(spectra) == 0) {
-        iqr <- NaN
+        res <- NaN
     } else {
         ## get the retention time
         rt <- rtime(spectra)
         
         ## remove the retention time values that are NA and return the interquartile 
         ## range 
-        iqr <- IQR(rt, na.rm = TRUE)    
+        res <- IQR(rt, na.rm = TRUE)    
     }
     
-    iqr
+    ## add attributes and return
+    if (identificationLevel == "identified")
+        attributes(res) <- list(rtIqr = "MS:4000153")
+    
+    res
 }
-################################################################################
 
-#############################################################################
 #' @name rtIqrRate
 #' 
-#' @title Peptide identification rate of the interquartile RT period (QC:4000073)
+#' @title peptide identification rate of the interquartile RT period (MS:4000154)
 #' 
 #' @description
+#' MS:4000154 \cr
 #' "The identification rate of peptides for the interquartile retention time 
-#' period, in peptides per second." [PSI:QC]
-#' id: QC:4000073
+#' period, in peptides per second. Higher rates indicate efficient sampling 
+#' and identification." [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the retention time values are obtained,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the retention time values are obtained, \cr 
 #' (3) the 25\% and 75\% quantiles are obtained from the retention time values
-#' (`NA` values are removed),
-#' 
+#' (\code{NA} values are removed), \cr 
 #' (4) the number of eluted features between this 25\% and 75\% quantile is 
-#' calculated,
-#' 
+#' calculated, \cr 
 #' (5) the number of features is divided by the interquartile range of the 
-#' retention time and returned.
-#' 
+#' retention time and returned. \cr 
 #' 
 #' @details
-#' Higher rates indicate efficient sampling and identification.
-#' is_a: MS:4000003 ! single value
-#' is_a: MS:4000008 ! ID based
-#' is_a: MS:4000017 ! chromatogram metric
+#' MS:4000154 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' is_a: MS:4000017 ! chromatogram metric \cr
+#' 
+#' An attribute will only be returned if \code{identificationLevel} is 
+#' \code{"identified"}.
 #' 
 #' @note 
-#' The `Spectra` object might contain features that were not identified. If
-#' the calculation needs to be done according to *QC:4000073*, the 
-#' `Spectra` object should be prepared accordingly, i.e. being subsetted to
-#' `spectra` with identification data.
+#' The \code{Spectra} object might contain features that were not identified. If
+#' the calculation needs to be done according to *MS:4000154*, the 
+#' \code{Spectra} object should be prepared accordingly, i.e. being subsetted to
+#' \code{spectra} with identification data.
 #' 
-#' The stored retention time information in `spectra` might have a different
-#' unit than seconds. `rtIqr` will return the IQR based on the values stored
-#' in `spectra` and will not convert these values to seconds. 
+#' The stored retention time information in \code{spectra} might have a different
+#' unit than seconds. \code{.rtIqr} will return the IQR based on the values stored
+#' in \code{spectra} and will not convert these values to seconds. 
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
-#' @return `numeric(2)`
+#' @return \code{numeric(2)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -849,10 +913,15 @@ rtIqr <- function(spectra, msLevel = 1L, ...) {
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
 #' rtIqrRate(spectra = sps, msLevel = 2L)
-rtIqrRate <- function(spectra, msLevel = 1L, ...) {
-    spectra <- filterMsLevel(object = spectra, msLevel)    
+rtIqrRate <- function(spectra, msLevel = 1L, 
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
+    
+    identificationLevel <- match.arg(identificationLevel)
+    
+    spectra <- filterMsLevel(object = spectra, msLevel)
+    
     if (length(spectra) == 0) {
-        rate <- NaN
+        res <- NaN
     } else {
         ## order spectra according to increasing retention time
         spectra <- .rtOrderSpectra(spectra)
@@ -870,39 +939,41 @@ rtIqrRate <- function(spectra, msLevel = 1L, ...) {
         
         ## divide the number of eluted features between the 25% and 75% quantile
         ## by the IQR to get the elution rate per second 
-        rate <- nFeatures / rtIqr(spectra, msLevel = msLevel)    
+        res <- nFeatures / rtIqr(spectra, msLevel = msLevel)    
     }
     
-    rate
+    ## add attributes and return
+    if (identificationLevel == "identified")
+        attributes(res) <- list(rtIqrRate = "MS:4000154")
+    
+    res
 }
-################################################################################
-
 
 #' @name areaUnderTic
 #' 
-#' @title Area under TIC (QC:4000077)
+#' @title area under TIC (MS:4000155)
 #' 
 #' @description 
-#' "The area under the total ion chromatogram." [PSI:QC]
-#' id: QC:4000077
+#' MS:4000155 \cr
+#' "The area under the total ion chromatogram." [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the sum of the ion counts are obtained and returned.
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the sum of the ion counts are obtained and returned. 
 #' 
 #' @details
-#' is_a: MS:4000003 ! single value
-#' is_a: MS:40000MS ! ID free
-#' is_a: MS:4000017 ! chromatogram metric
+#' MS:4000155 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:40000MS ! ID free \cr
+#' is_a: MS:4000017 ! chromatogram metric \cr
 #' 
-#' The sum of the TIC is returned as an equivalent to the area.
+#' The sum of the TIC is returned as an equivalent to the area. \cr
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -931,58 +1002,60 @@ rtIqrRate <- function(spectra, msLevel = 1L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' sps <- Spectra(spd)
 #' areaUnderTic(spectra = sps, msLevel = 2L)
-areaUnderTic <- function(spectra, msLevel = 1L, ...) {  
-    spectra <- filterMsLevel(object = spectra, msLevel)    
+areaUnderTic <- function(spectra, msLevel = 1L, ...) {
+    
+    spectra <- filterMsLevel(object = spectra, msLevel)
+    
     if (length(spectra) == 0) {
-        tic <- NaN
+        res <- NaN
     } else {
         TIC <- ionCount(spectra)
         
         ## sum up the TIC (equivalent to the area) and return
-        tic <- sum(TIC, na.rm = TRUE)
+        res <- sum(TIC, na.rm = TRUE)
     }
     
-    tic
+    ## add attributes and return
+    attributes(res) <- list(areaUnderTic = "MS:4000155")
+    
+    res
 }
 
 #' @name areaUnderTicRtQuantiles
 #' 
-#' @title Area under TIC RT quantiles (QC:4000078)
+#' @title area under TIC RT quantiles (MS:4000156)
 #' 
 #' @description 
+#' MS:4000156 \cr
 #' "The area under the total ion chromatogram of the retention time quantiles. 
-#' Number of quantiles are given by the n-tuple." [PSI:QC]
-#' id: QC:4000078
+#' Number of quantiles are given by the n-tuple." [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the `Spectra` object is ordered according to the retention time,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the \code{Spectra} object is ordered according to the retention time, \cr 
 #' (3) the 0\%, 25\%, 50\%, 75\%, and 100\% quantiles of the retention time 
-#' values are obtained,
-#' 
+#' values are obtained, \cr 
 #' (4) the ion count of the intervals between the 0\%/25\%, 25\%/50\%, 
-#' 50\%/75\%, and 75\%/100\% are obtained 
-#' 
-#' (5) the ion counts of the intervals are summed (TIC) and the values returned
+#' 50\%/75\%, and 75\%/100\% are obtained, \cr 
+#' (5) the ion counts of the intervals are summed (TIC) and the values returned.
 #' 
 #' @details
-#' is_a: QC:4000004 ! n-tuple
-#' is_a: MS:4000009 ! ID free
-#' is_a: MS:4000017 ! chromatogram metric
+#' MS:4000156 \cr
+#' is_a: MS:4000004 ! n-tuple \cr
+#' is_a: MS:4000009 ! ID free \cr
+#' is_a: MS:4000017 ! chromatogram metric \cr
 #' 
-#' The sum of the TIC is returned as an equivalent to the area.
+#' The sum of the TIC is returned as an equivalent to the area. \cr
 #' 
 #' @note
 #' This function interprets the *quantiles* from the [PSI:QC] definition as
 #' *quartiles*, i.e. the 0, 25, 50, 75 and 100\% quantiles are used.
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
 #' @param ... not used here
 #' 
-#' @return `numeric(4)`
+#' @return \code{.numeric(4)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -1014,9 +1087,11 @@ areaUnderTic <- function(spectra, msLevel = 1L, ...) {
 #' sps <- Spectra(spd)
 #' areaUnderTicRtQuantiles(spectra = sps, msLevel = 2L)
 areaUnderTicRtQuantiles <- function(spectra, msLevel = 1L, ...) {
+    
     spectra <- filterMsLevel(object = spectra, msLevel)
+    
     if (length(spectra) == 0) {
-        areaTic <- c(NaN, NaN, NaN, NaN)
+        res <- c(NaN, NaN, NaN, NaN)
     } else {
         ## order spectra according to increasing retention time
         spectra <- .rtOrderSpectra(spectra)
@@ -1039,54 +1114,59 @@ areaUnderTicRtQuantiles <- function(spectra, msLevel = 1L, ...) {
         areaTicQ4 <- sum(ticQ4, na.rm = TRUE)
         
         ## return the summed TICs as a named vector
-        areaTic <- c(areaTicQ1, areaTicQ2, areaTicQ3, areaTicQ4)   
+        res <- c(areaTicQ1, areaTicQ2, areaTicQ3, areaTicQ4)   
     }
     
-    ## add names
-    names(areaTic) <- c("25%", "50%", "75%", "100%")
+    ## add attributes and return
+    attributes(res) <- list(
+        names = names(res) <- c("25%", "50%", "75%", "100%"),
+        areaUnderTicRtQuantiles = "MS:4000156")
     
-    areaTic
+    res
 }
 
 #' @name extentIdentifiedPrecursorIntensity
 #' 
-#' @title Extent of identified precursor intensity (QC:4000125)
+#' @title extent of identified precursor intensity (MS:4000157)
 #' 
 #' @description 
+#' MS:4000157 \cr
 #' "Ratio of 95th over 5th percentile of precursor intensity for identified 
-#' peptides" [PSI:QC]
-#' id: QC:4000125
+#' peptides. Can be used to approximate the dynamic range of signal." 
+#' [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the intensities of the precursor ions are obtained,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the intensities of the precursor ions are obtained, \cr 
 #' (3) the 5\% and 95\% quantile of these intensities are obtained 
-#' (`NA` values are removed),
-#' 
+#' (\code{NA} values are removed), \cr 
 #' (4) the ratio between the 95\% and the 5\% intensity quantile is calculated
-#' and returned.
+#' and returned. \cr
 #' 
 #' @details
-#' Can be used to approximate the dynamic range of signal
-#' is_a: MS:4000003 ! single value
-#' is_a: MS:4000008 ! ID based
-#' is_a: MS:4000001 ! QC metric
+#' MS:4000157 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' is_a: MS:4000001 ! QC metric \cr
 #' 
-#' Precursor intensity values that are `NA` are removed.
+#' Precursor intensity values that are \code{NA} are removed. \cr
+#' 
+#' An attribute will only be returned if \code{identificationLevel} is
+#' \code{"identified"}.
 #' 
 #' @note 
-#' The `Spectra` object might contain features that were not identified. If
-#' the calculation needs to be done according to *QC:4000125*, the 
-#' `Spectra` object should be prepared accordingly, i.e. being subsetted to
+#' The \code{Spectra} object might contain features that were not identified. If
+#' the calculation needs to be done according to *MS:4000157*, the 
+#' \code{Spectra} object should be prepared accordingly, i.e. being subsetted to
 #' spectra with identification data.
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -1117,10 +1197,15 @@ areaUnderTicRtQuantiles <- function(spectra, msLevel = 1L, ...) {
 #' spd$precursorIntensity <- c(100, 100, 100)
 #' sps <- Spectra(spd)
 #' extentIdentifiedPrecursorIntensity(spectra = sps, msLevel = 2L)
-extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {  
+extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, 
+        identificationLevel = c("all", "identified", "unidentified"), ...) { 
+    
+    identificationLevel <- match.arg(identificationLevel)
+    
     spectra <- filterMsLevel(object = spectra, msLevel)
+    
     if (length(spectra) == 0) {
-        ratio <- NaN
+        res <- NaN
     } else {
         ## retrieve the precursorIntensity and calculate the 5% and 95% 
         ## quantile
@@ -1130,55 +1215,61 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {
         
         ## calculate the ratio between the 95% and 5% quantile and return the 
         ## value
-        ratio <- quantilePrecInt[["95%"]] / quantilePrecInt[["5%"]]
+        res <- quantilePrecInt[["95%"]] / quantilePrecInt[["5%"]]
     }
-        
-    ratio
+    
+    ## add attributes and return
+    if (identificationLevel == "identified")
+        attributes(res) <- list(extentIdentifiedPrecursorIntensity = "MS:4000157")
+    
+    res
 }
 
 #' @name medianTicRtIqr
 #' 
-#' @title Median of TIC values in the RT range in which the middle half of 
-#' peptides are identified (QC:4000130)
+#' @title median of TIC values in the RT range in which the middle half of 
+#' peptides are identified (MS:4000158)
 #' 
 #' @description
+#' MS:4000158 \cr
 #' "Median of TIC values in the RT range in which half of peptides are 
-#' identified (RT values of Q1 to Q3 of identifications)" [PSI:QC]
-#' id: QC:4000130
+#' identified (RT values of Q1 to Q3 of identifications)" [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the `Spectra` object is ordered according to the retention time,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the \code{Spectra} object is ordered according to the retention time, \cr 
 #' (3) the features between the 1st and 3rd quartile are obtained 
-#' (half of the features that are present in `spectra`),
-#' 
+#' (half of the features that are present in \code{spectra}), \cr 
 #' (4) the ion count of the features within the 1st and 3rd quartile is 
-#' obtained,
-#' 
-#' (5) the median value of the ion count is calculated (`NA` values are 
-#' removed) and the median value is returned.
+#' obtained, \cr 
+#' (5) the median value of the ion count is calculated (\code{NA} values are 
+#' removed) and the median value is returned. \cr
 #' 
 #' @details
-#' is_a: MS:4000003 ! single value
-#' is_a: MS:4000008 ! ID based
-#' is_a: MS:4000001 ! QC metric
+#' MS:4000158 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' is_a: MS:4000001 ! QC metric \cr
 #' 
-#' The function `medianTicRtIqr` uses the function [ionCount()] as an 
+#' The function \code{medianTicRtIqr} uses the function [ionCount()] as an 
 #' equivalent to the TIC.
 #' 
+#' An attribute will only be returned if \code{identificationLevel} is 
+#' \code{"identified"}.
+#' 
 #' @note 
-#' The `Spectra` object might contain features that were not identified. If
-#' the calculation needs to be done according to *QC:4000130*, the 
-#' `Spectra` object should be prepared accordingly, i.e. being subsetted to
+#' The \code{Spectra} object might contain features that were not identified. If
+#' the calculation needs to be done according to *MS:4000158*, the 
+#' \code{Spectra} object should be prepared accordingly, i.e. being subsetted to
 #' spectra with identification data.
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #'
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #'
@@ -1209,11 +1300,15 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L, ...) {
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
 #' medianTicRtIqr(spectra = sps, msLevel = 2L)
-medianTicRtIqr <- function(spectra, msLevel = 1L, ...) {
+medianTicRtIqr <- function(spectra, msLevel = 1L,
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
+    
+    identificationLevel <- match.arg(identificationLevel)
+    
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        medianTic <- NaN
+        res <- NaN
     } else {
     
         ## order spectra according to increasing retention time
@@ -1229,60 +1324,65 @@ medianTicRtIqr <- function(spectra, msLevel = 1L, ...) {
         ticQ1ToQ3 <- ionCount(Q1ToQ3)
         
         ## take the median value of the TIC within this interval and return it
-        medianTic <- median(ticQ1ToQ3, na.rm = TRUE)
+        res <- median(ticQ1ToQ3, na.rm = TRUE)
     }
     
-    medianTic
+    ## add attributes and return
+    if (identificationLevel == "identified")
+        attributes(res) <- list(medianTicRtIqr = "MS:4000158")
+    
+    res
 }
 
 #' @name medianTicOfRtRange
 #' 
-#' @title Median of TIC values in the shortest RT range in which half of the 
-#' peptides are identified (QC:4000132)
+#' @title median of TIC values in the shortest RT range in which half of the 
+#' peptides are identified (MS:4000159)
 #' 
 #' @description 
+#' MS:4000159 \cr
 #' "Median of TIC values in the shortest RT range in which half of the 
-#' peptides are identified"  [PSI:QC] 
-#' id: QC:4000132
+#' peptides are identified"  [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the `Spectra` object is ordered according to the retention time,
-#' 
-#' (3) the number of features in `spectra` is obtained and the number for 
-#' half of the features is calculated,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the \code{Spectra} object is ordered according to the retention time, \cr 
+#' (3) the number of features in \code{spectra} is obtained and the number for 
+#' half of the features is calculated, \cr 
 #' (4) iterate through the features (always by taking the neighbouring
 #' half of features) and calculate the retention time range of the
-#' set of features,
-#' 
+#' set of features, \cr 
 #' (5) retrieve the set of features with the minimum retention time 
-#' range,
-#' 
-#' (6) calculate from the set of (5) the median TIC (`NA` values are removed)
+#' range, \cr 
+#' (6) calculate from the set of (5) the median TIC (\code{NA} values are removed)
 #' and return it.
 #' 
 #' @details
-#' is_a: MS:4000003 ! single value
-#' is_a: MS:4000008 ! ID based
-#' is_a: MS:4000001 ! QC metric
+#' MS:4000159 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' is_a: MS:4000001 ! QC metric \cr
 #' 
-#' The function `medianTicOfRtRange` uses the function `ionCount` as an 
+#' The function \code{medianTicOfRtRange} uses the function \code{ionCount} as an 
 #' equivalent to the TIC.
 #' 
+#' An attribute will only be returned if \code{identificationLevel} is 
+#' \code{"identified"}.
+#' 
 #' @note 
-#' The `Spectra` object might contain features that were not identified. If
-#' the calculation needs to be done according to *QC:4000132*, the 
-#' `Spectra` object should be prepared accordingly, i.e. being subsetted to
+#' The \code{Spectra} object might contain features that were not identified. If
+#' the calculation needs to be done according to *MS:4000159*, the 
+#' \code{Spectra} object should be prepared accordingly, i.e. being subsetted to
 #' spectra with identification data. 
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
 #' @return
-#' `numeric(1)`
+#' \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -1313,12 +1413,15 @@ medianTicRtIqr <- function(spectra, msLevel = 1L, ...) {
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
 #' medianTicOfRtRange(spectra = sps, msLevel = 2L)
-medianTicOfRtRange <- function(spectra, msLevel = 1L, ...) {
+medianTicOfRtRange <- function(spectra, msLevel = 1L, 
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
+    
+    identificationLevel <- match.arg(identificationLevel)
   
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        medianTic <- NaN
+        res <- NaN
         
     } else {
     
@@ -1347,42 +1450,44 @@ medianTicOfRtRange <- function(spectra, msLevel = 1L, ...) {
         indMin <- which.min(rangeRT)
         ind <- seq(indMin, indMin - 1 + n_half)
         ticMin <- tic[ind]
-        medianTic <- median(ticMin, na.rm = TRUE)
+        res <- median(ticMin, na.rm = TRUE)
     }
     
-    medianTic
+    ## add attributes and return
+    if (identificationLevel == "identified")
+        attributes(res) <- list(medianTicOfRtRange = "MS:4000159")
+    
+    res
 }
 
 #' @name mzAcquisitionRange
 #' 
-#' @title m/z acquisition range (MS:4000070)
+#' @title m/z acquisition range (MS:4000069)
 #' 
 #' @description 
+#' MS:4000069 \cr
 #' "Upper and lower limit of m/z precursor values at which MSn spectra are 
-#' recorded." [PSI:MS]
-#' id: MS:4000070
+#' recorded." [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the m/z values of the peaks within `spectra` are obtained,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the m/z values of the peaks within \code{spectra} are obtained, \cr 
 #' (3) the minimum and maximum m/z values are obtained and returned. 
 #'
 #' @details
-#' is_a: MS:4000004 ! n-tuple
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_metric_category MS:4000012 ! single run based metric
-#' relationship: has_metric_category MS:4000019 ! MS metric
-#' relationship: has_units MS:1000040 ! m/z
-#' relationship: has_value_concept STATO:0000035 ! range
+#' MS:4000069 \cr
+#' is_a: MS:4000004 ! n-tuple \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_metric_category MS:4000019 ! MS metric \cr
+#' relationship: has_units MS:1000040 ! m/z \cr
+#' relationship: has_value_concept STATO:0000035 ! range \cr
 #'  
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
 #' @param ... not used here
 #' 
-#' @return
-#' `numeric(2)`
+#' @return \code{numeric(2)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -1423,44 +1528,44 @@ mzAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
         res <- range(mz)
     }
     
-    ## add names
-    names(res) <- c("min", "max")
-
     ## add attributes and return
-    attributes(res) <- list(mzAcquisitionRange = "MS:4000069")
+    attributes(res) <- list(names = c("min", "max"), 
+        mzAcquisitionRange = "MS:4000069")
     res
 }
 
+
 #' @name rtAcquisitionRange
 #' 
-#' @title Retention time acquisition range (MS:4000070)
+#' @title retention time acquisition range (MS:4000070)
 #' 
 #' @description 
+#' MS:4000070 \cr
 #' "Upper and lower limit of retention time at which spectra are recorded." 
-#' [PSI:MS]
-#' id: QC:4000070
+#' [PSI:MS] \cr
 #' 
-#' #' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the retention time values of the features within `spectra` are obtained,
-#' 
-#' (3) the minimum and maximum retention time values are obtained and returned. 
+#' #' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the retention time values of the features within \code{spectra} are 
+#' obtained, \cr 
+#' (3) the minimum and maximum retention time values are obtained and 
+#' returned. \cr
 #' 
 #' @details
-#' is_a: MS:4000004 ! n-tuple
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_metric_category MS:4000012 ! single run based metric
-#' relationship: has_metric_category MS:4000016 ! retention time metric
-#' relationship: has_units UO:0000010 ! second
-#' relationship: has_value_concept STATO:0000035 ! range
+#' MS:4000070 \cr
+#' is_a: MS:4000004 ! n-tuple \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_metric_category MS:4000016 ! retention time metric \cr
+#' relationship: has_units UO:0000010 ! second \cr
+#' relationship: has_value_concept STATO:0000035 ! range \cr
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
 #' @param ... not used here
 #' 
 #' @return
-#' `numeric(2)`
+#' \code{numeric(2)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -1501,44 +1606,41 @@ rtAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
         res <- range(rt)
     }
     
-    ## add names
-    names(res) <- c("min", "max") 
-    
     ## add attributes and return
-    attributes(res) <- list(mzAcquisitionRange = "MS:4000069")
+    attributes(res) <- list(names = c("min", "max"), 
+        rtAcquisitionRange = "MS:4000070")
     res
 }
 
 #' @name precursorIntensityRange
 #' 
-#' @title Precursor intensity range (QC:4000144)
+#' @title precursor intensity range (MS:4000160)
 #' 
 #' @description 
-#' "Minimum and maximum precursor intensity recorded." [PSI:QC]
-#' id: QC:4000144
+#' MS:4000160 \cr
+#' "Minimum and maximum precursor intensity recorded." [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the intensity of the precursor ions within `spectra` are obtained,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
 #' (3) the minimum and maximum precursor intensity values are obtained and 
 #' returned. 
 #' 
 #' @details
-#' is_a: MS:4000009 ! ID free
-#' is_a: MS:4000001 ! QC metric
-#' is_a: QC:4000004 ! n-tuple
+#' MS:4000160 \cr
+#' is_a: MS:4000009 ! ID free \cr
+#' is_a: MS:4000001 ! QC metric \cr
+#' is_a: MS:4000004 ! n-tuple \cr
 #' 
 #' The intensity range of the precursors informs about the dynamic range of 
 #' the acquisition. 
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
 #' @param ... not used here
 #' 
 #' @return
-#' `numeric(2)`
+#' \code{numeric(2)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -1573,72 +1675,91 @@ precursorIntensityRange <- function(spectra, msLevel = 1, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        rangeInt <- c(NaN, NaN)
+        res <- c(NaN, NaN)
     } else {
         int <- precursorIntensity(spectra)
-        rangeInt <- range(int)
+        res <- range(int)
     }
 
     ## add names
-    names(rangeInt) <- c("min", "max")
     
-    rangeInt
+    ## add attributes and return
+    attributes(res) <- list(names = c("min", "max"), 
+        precursorIntensityRange = "MS:4000160")
+    
+    res
 }
 
 #' @name precursorIntensityQuartiles
 #' 
 #' @title Precursor intensity distribution Q1, Q2, Q3 (MS:4000116), 
-#' Identified precursor intensity distribution Q1, Q2, Q3 (QC:4000228), or
-#' Unidentified precursor intensity distribution Q1, Q2, Q3 (QC:4000233)
+#' Identified precursor intensity distribution Q1, Q2, Q3 (MS:4000161), or
+#' Unidentified precursor intensity distribution Q1, Q2, Q3 (MS:4000162)
 #' 
 #' @description
+#' MS:4000116 \cr
 #' "From the distribution of precursor intensities, the quantiles. I.e. a value 
-#' triplet represents the quartiles Q1, Q2, Q3" [PSI:MS]
-#' id: MS:4000116
+#' triplet represents the quartiles Q1, Q2, Q3. The intensity distribution of 
+#' the precursors informs about the dynamic range of the acquisition." 
+#' [PSI:MS] \cr
 #' 
+#' MS:40000161 \cr
 #' "From the distribution of identified precursor intensities, the quartiles 
-#' Q1, Q2, Q3" [PSI:QC]
-#' id: QC:40000228
+#' Q1, Q2, Q3. The intensity distribution of the precursors informs about 
+#' the dynamic range of the acquisition in relation to identifiability." 
+#' [PSI:MS] \cr
 #' 
-#' "From the distribution of unidentified precursor intensities, the 
-#' quartiles Q1, Q2, Q3" [PSI:QC]
-#' id: QC:4000233
+#' id: MS:4000162 \cr
+#' "From the distribution of unidentified precursor intensities, the quartiles 
+#' Q1, Q2, Q3. The intensity distribution of the precursors informs about the 
+#' dynamic range of the acquisition in relation to identifiability." 
+#' [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the intensity of the precursor ions within `spectra` are obtained,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
 #' (3) the 25\%, 50\%, and 75\% quantile of the  precursor intensity values are 
-#' obtained (`NA` values are removed) and returned.
+#' obtained (\code{NA} values are removed) and returned. \cr
 #' 
 #' @details
-#' is_a: MS:4000004 ! n-tuple
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_metric_category MS:4000022 ! MS2 metric
-#' relationship: has_value_concept STATO:0000291 ! quantile
-#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term
-#' relationship: has_units MS:1000043 ! intensity unit
+#' id: MS:4000116 \cr
+#' is_a: MS:4000004 ! n-tuple \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000022 ! MS2 metric \cr
+#' relationship: has_value_concept STATO:0000291 ! quantile \cr
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV 
+#' term \cr
+#' relationship: has_units MS:1000043 ! intensity unit \cr
 #' 
-#' The intensity distribution of the precursors informs about the dynamic 
-#' range of the acquisition.
+#' MS:4000161 \cr
+#' is_a: MS:4000004 ! n-tuple \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' relationship: has_metric_category MS:4000022 ! MS2 metric \cr
+#' relationship: has_value_concept STATO:0000291 ! quantile \cr
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV 
+#' term \cr
+#' relationship: has_units MS:1000043 ! intensity unit \cr
 #' 
-#' The intensity distribution of the identified precursors informs about the 
-#' dynamic range of the acquisition in relation to identifiability.
-#' 
-#' The intensity distribution of the unidentified precursors informs about the 
-#' dynamic range of the acquisition in relation to identifiability.
-#' 
+#' id: MS:4000162 \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' relationship: has_metric_category MS:4000022 ! MS2 metric \cr
+#' relationship: has_value_concept STATO:0000291 ! quantile \cr
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV 
+#' term \cr
+#' relationship: has_units MS:1000043 ! intensity unit \cr
+#'  
 #' @note 
-#' The `Spectra` object might contain features that were (not) identified. If
-#' the calculation needs to be done according to *QC:4000228*/*QC:4000233*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' The \code{Spectra} object might contain features that were (not) identified. If
+#' the calculation needs to be done according to *MS:4000161*/*MS:4000162*, the 
+#' \code{Spectra} object should be prepared accordingly. 
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
-#' @return `numeric(3)`
+#' @return \code{numeric(3)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -1670,8 +1791,11 @@ precursorIntensityRange <- function(spectra, msLevel = 1, ...) {
 #' sps <- Spectra(spd)
 #' 
 #' precursorIntensityQuartiles(spectra = sps, msLevel = 2L)
-precursorIntensityQuartiles <- function(spectra, msLevel = 1L, ...) {
+precursorIntensityQuartiles <- function(spectra, msLevel = 1L, 
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
   
+    identificationLevel <- match.arg(identificationLevel)
+    
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
@@ -1680,67 +1804,85 @@ precursorIntensityQuartiles <- function(spectra, msLevel = 1L, ...) {
         int <- precursorIntensity(spectra)
         res <- quantile(int, probs = c(0.25, 0.50, 0.75), na.rm = TRUE)
     }
-    names(res) <- c("Q1", "Q2", "Q3")
     
     ## add attributes and return
-    attributes(res) <- list(precursorIntensityQuartiles = "MS:4000116")
+    if (identificationLevel == "all")
+        ms_term <- "MS:4000116"
+    if (identificationLevel == "identified")
+        ms_term <- "MS:4000161"
+    if (identificationLevel == "unidentified")
+        ms_term <- "MS:4000162"
+    
+    attributes(res) <- list(names = c("Q1", "Q2", "Q3"), 
+        precursorIntensityQuartiles = ms_term)
     res
 }
 
 
 #' @name precursorIntensityMean
 #' 
-#' @title Precursor intensity distribution mean (MS:4000117),
-#' Identified precursor intensity distribution mean (QC:4000229), or
-#' Unidentified precursor intensity distribution mean (QC:4000234)
+#' @title precursor intensity distribution mean (MS:4000117),
+#' identified precursor intensity distribution mean (MS:4000163), or
+#' unidentified precursor intensity distribution mean (MS:4000164)
 #' 
 #' @description
-#' "From the distribution of precursor intensities, the mean." [PSI:MS]
-#' id: MS:4000117
+#' MS:4000117 \cr
+#' "From the distribution of precursor intensities, the mean. The intensity 
+#' distribution of the precursors informs about the dynamic range of the 
+#' acquisition." [PSI:MS] \cr
 #' 
-#' "From the distribution of identified precursor intensities, the mean"
-#'  [PSI:QC]
-#' id: QC:4000229
+#' MS:4000163 \cr
+#' "From the distribution of identified precursor intensities, the mean. The 
+#' intensity distribution of the identified precursors informs about the dynamic 
+#' range of the acquisition in relation to identifiability." [PSI:MS] \cr
 #' 
-#' "From the distribution of unidentified precursor intensities, the mean" 
-#' [PSI:QC]
-#' id: QC:4000234
+#' MS:4000164 \cr
+#' "From the distribution of unidentified precursor intensities, the mean. The 
+#' intensity distribution of the unidentified precursors informs about the 
+#' dynamic range of the acquisition in relation to identifiability." 
+#' [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the intensity of the precursor ions within `spectra` are obtained,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
 #' (3) the mean of the precursor intensity values is obtained 
-#' (`NA` values are removed) and returned. 
+#' (\code{NA} values are removed) and returned. \cr
 #' 
 #' @details
-#' is_a: MS:4000003 ! single value
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_value_concept STATO:0000401 ! sample mean
-#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term
-#' relationship: has_units MS:1000043 ! intensity unit
+#' MS:4000117 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_value_concept STATO:0000401 ! sample mean \cr
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
+#' relationship: has_units MS:1000043 ! intensity unit \cr
 #' 
-#' The intensity distribution of the precursors informs about the dynamic 
-#' range of the acquisition.
+#' MS:4000163 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' relationship: has_value_concept STATO:0000401 ! sample mean \cr
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
+#' relationship: has_units MS:1000043 ! intensity unit \cr
 #' 
-#' The intensity distribution of the identified precursors informs about the 
-#' dynamic range of the acquisition in relation to identifiability.
-#' 
-#' The intensity distribution of the unidentified precursors informs about the 
-#' dynamic range of the acquisition in relation to identifiability.
+#' MS:4000164 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' relationship: has_value_concept STATO:0000401 ! sample mean \cr
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
+#' relationship: has_units MS:1000043 ! intensity unit \cr 
 #' 
 #' @note 
-#' The `Spectra` object might contain features that were (not) identified. If
-#' the calculation needs to be done according to *QC:4000229*/*QC:4000234*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' The \code{Spectra} object might contain features that were (not) identified. If
+#' the calculation needs to be done according to *MS:4000163*/*MS:4000164*, the 
+#' \code{Spectra} object should be prepared accordingly. 
 #' 
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -1770,7 +1912,10 @@ precursorIntensityQuartiles <- function(spectra, msLevel = 1L, ...) {
 #' spd$precursorIntensity <- c(100.0, 100.0, 100.0)     
 #' sps <- Spectra(spd)
 #' precursorIntensityMean(spectra = sps, msLevel = 2L)
-precursorIntensityMean <- function(spectra, msLevel = 1L, ...) {
+precursorIntensityMean <- function(spectra, msLevel = 1L, 
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
+    
+    identificationLevel <- match.arg(identificationLevel)
     
     spectra <- filterMsLevel(object = spectra, msLevel)
     
@@ -1782,62 +1927,85 @@ precursorIntensityMean <- function(spectra, msLevel = 1L, ...) {
     }
   
     ## add attributes and return
-    attributes(res) <- list(precursorIntensityMean = "MS:4000117")
+    if (identificationLevel == "all")
+        ms_term <- "MS:4000117"
+    if (identificationLevel == "identified")
+        ms_term <- "MS:4000163"
+    if (identificationLevel == "unidentified")
+        ms_term <- "MS:4000164"
+    
+    attributes(res) <- list(precursorIntensityMean = ms_term)
+    
     res
 }
 
 #' @name precursorIntensitySd
 #' 
-#' @title Precursor intensity distribution sigma (MS:4000118),
-#' Identified precursor intensity distribution sigma (QC:4000230), or 
-#' Unidentified precursor intensity distribution sigma (QC:4000235)
+#' @title precursor intensity distribution sigma (MS:4000118),
+#' identified precursor intensity distribution sigma (MS:4000165), or 
+#' unidentified precursor intensity distribution sigma (MS:4000166)
 #' 
 #' @description 
-#' "From the distribution of precursor intensities, the sigma value." [PSI:MS]
-#' id: QC:4000118
+#' MS:4000118 \cr
+#' "From the distribution of precursor intensities, the sigma value. The 
+#' intensity distribution of the precursors informs about the dynamic range 
+#' of the acquisition." [PSI:MS] \cr
 #' 
-#' "From the distribution of identified precursor intensities, the sigma 
-#' value" [PSI:QC]
-#' id: QC:4000230
+#' MS:4000165 \cr
+#' "From the distribution of identified precursor intensities, the sigma value. 
+#' The intensity distribution of the precursors informs about the dynamic range 
+#' of the acquisition in relation to identifiability." [PSI:MS] \cr
 #' 
-#' "From the distribution of unidentified precursor intensities, the 
-#' sigma value" [PSI:QC]
-#' id: QC:4000235
+#' MS:4000166 \cr
+#' "From the distribution of unidentified precursor intensities, the sigma value. 
+#' The intensity distribution of the precursors informs about the dynamic range 
+#' of the acquisition in relation to identifiability." [PSI:MS] \cr
+#' 
 #' 
 #' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
 #' 
-#' (2) the intensity of the precursor ions within `spectra` are obtained,
-#' 
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
 #' (3) the standard deviation of precursor intensity values is obtained 
-#' (`NA` values are removed) and returned. 
+#' (\code{NA} values are removed) and returned. 
 #' 
 #' @details
-#' is_a: MS:4000003 ! single value
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_value_concept STATO:0000237 ! standard deviation
-#' relationship: has_value_type xsd:float ! The allowed value-type for this CV term
-#' relationship: has_units MS:1000043 ! intensity unit
+#' MS:4000118 \cr 
+#' is_a: MS:4000003 ! single value \cr 
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr 
+#' relationship: has_value_concept STATO:0000237 ! standard deviation \cr 
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV 
+#' term \cr 
+#' relationship: has_units MS:1000043 ! intensity unit \cr 
 #' 
-#' The intensity distribution of the precursors informs about the dynamic 
-#' range of the acquisition.
+#' MS:4000165 \cr 
+#' is_a: MS:4000003 ! single value \cr 
+#' relationship: has_metric_category MS:4000008 ! ID based \cr 
+#' relationship: has_value_concept STATO:0000237 ! standard deviation \cr 
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV 
+#' term \cr 
+#' relationship: has_units MS:1000043 ! intensity unit \cr 
 #' 
-#' The intensity distribution of the identified precursors informs about the 
-#' dynamic range of the acquisition in relation to identifiability.
-#' 
-#' The intensity distribution of the unidentified precursors informs about the 
-#' dynamic range of the acquisition in relation to identifiability.
-#' 
+#' MS:4000166 \cr 
+#' is_a: MS:4000003 ! single value \cr 
+#' relationship: has_metric_category MS:4000008 ! ID based \cr 
+#' relationship: has_value_concept STATO:0000237 ! standard deviation \cr 
+#' relationship: has_value_type xsd:float ! The allowed value-type for this CV 
+#' term \cr 
+#' relationship: has_units MS:1000043 ! intensity unit \cr 
+#'  
 #' @note 
-#' The `Spectra` object might contain features that were (not) identified. If
-#' the calculation needs to be done according to *QC:4000230*/*QC:4000235*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' The \code{Spectra} object might contain features that were (not) identified. If
+#' the calculation needs to be done according to *MS:4000165*/*MS:4000166*, the 
+#' \code{Spectra} object should be prepared accordingly. 
 #'
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -1868,8 +2036,11 @@ precursorIntensityMean <- function(spectra, msLevel = 1L, ...) {
 #' spd$precursorIntensity <- c(100.0, 100.0, 100.0)
 #' sps <- Spectra(spd)
 #' precursorIntensitySd(spectra = sps, msLevel = 2L)
-precursorIntensitySd <- function(spectra, msLevel = 1L, ...) {
-  
+precursorIntensitySd <- function(spectra, msLevel = 1L, 
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
+    
+    identificationLevel <- match.arg(identificationLevel)
+    
     spectra <- filterMsLevel(object = spectra, msLevel)
   
     if (length(spectra) == 0) {
@@ -1878,9 +2049,18 @@ precursorIntensitySd <- function(spectra, msLevel = 1L, ...) {
         int <- precursorIntensity(spectra)
         res <- sd(int, na.rm = TRUE)
     }
+
     
     ## add attributes and return
-    attributes(res) <- list(precursorIntensitySd = "MS:4000118")
+    if (identificationLevel == "all")
+        ms_term <- "MS:4000118"
+    if (identificationLevel == "identified")
+        ms_term <- "MS:4000165"
+    if (identificationLevel == "unidentified")
+        ms_term <- "MS:4000166"
+    
+    attributes(res) <- list(precursorIntensitySd = ms_term)
+    
     res
 }
 
@@ -1889,51 +2069,48 @@ precursorIntensitySd <- function(spectra, msLevel = 1L, ...) {
 #' @title MS1 signal jump/fall (10x) count (MS:4000097/MS:4000098)
 #' 
 #' @description 
+#' MS:4000097 \cr
 #' "The number of times where MS1 TIC increased more than 10-fold between 
 #' adjacent MS1 scans. An unusual high count of signal jumps or falls can 
-#' indicate ESI stability issues." [PSI:MS]
-#' id: MS:4000097
+#' indicate ESI stability issues." [PSI:MS] \cr
 #' 
+#' MS:4000098 \cr
 #' "The number of times where MS1 TIC decreased more than 10-fold between 
 #' adjacent MS1 scans. An unusual high count of signal jumps or falls can 
-#' indicate ESI stability issues." [PSI:MS]
-#' id: MS:4000098
+#' indicate ESI stability issues." [PSI:MS] \cr
 #' 
-#' #' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the intensity of the precursor ions within `spectra` are obtained,
-#' 
-#' (3) the intensity values of the features are obtained via the ion count,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
+#' (3) the intensity values of the features are obtained via the ion count, \cr 
 #' (4) the signal jumps/declines of the intensity values with the two 
-#' subsequent intensity values is calculated,
-#' 
+#' subsequent intensity values is calculated, \cr 
 #' (5) in the case of *MS:4000097*, the signal jumps by a factor of ten or more
-#' are counted and returned;
+#' are counted and returned; \cr
 #' in the case of *MS:4000098*, the signal declines by a factor of ten or more
-#' are counted and returned.
+#' are counted and returned. \cr
 #' 
 #' @details
-#' is_a: MS:4000003 ! single value
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_metric_category MS:4000021 ! MS1 metric
-#' relationship: has_units UO:0000189 ! count unit
-#' relationship: has_value_type xsd:integer ! The allowed value-type for this CV term
-#' synonym: "IS-1A"  RELATED []
-#' 
-#' An unusual high count of signal jumps or falls can indicate ESI stability 
-#' issues.
-#' 
-#' The function `msSignal10xChange` uses the function `ionCount` as an 
+#' MS:4000097 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000021 ! MS1 metric \cr
+#' relationship: has_units UO:0000189 ! count unit \cr
+#' relationship: has_value_type xsd:integer ! The allowed value-type for this CV 
+#' term \cr
+#' synonym: "IS-1A"  RELATED [] \cr
+#'  
+#' The function \code{msSignal10xChange} uses the function \code{ionCount} as an 
 #' equivalent to the TIC.
 #' 
-#' @param spectra `Spectra` object
-#' @param change `character(1)`, one of `"jump"` or `"fall"`
-#' @param msLevel `integer`
+#' An attribute will only be returned if \code{msLevel} is 1.
+#' 
+#' @param spectra \code{Spectra} object
+#' @param change \code{character(1)}, one of \code{"jump"} or \code{"fall"}
+#' @param msLevel \code{integer}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -1996,52 +2173,177 @@ msSignal10xChange <- function(spectra, change = "jump", msLevel = 1L, ...) {
     }
     
     ## add attributes and return
-    if (change == "jump")
+    if (change == "jump" & msLevel == 1L)
         ms_term <- "MS:4000097"
-    if (change == "fall")
+    if (change == "fall" & msLevel == 1L)
         ms_term <- "MS:4000098"
-    attributes(res) <- list(msSignal10xChange = ms_term)
+    if (msLevel == 1L)
+        attributes(res) <- list(msSignal10xChange = ms_term)
+    
+    res
+}
+
+#' @name numberEmptyScans
+#'
+#' @title number of empty MS1 scans (MS:4000099), number of empty MS2 scans 
+#' (MS:4000100), or number of empty MS3 scans (MS:4000101)
+#'
+#' @description
+#' MS:4000099 \cr
+#' "Number of MS1 scans where the scans' peaks intensity sums to 0 
+#' (i.e. no peaks or only 0-intensity peaks)." [PSI:MS] \cr
+#' 
+#' MS:4000100 \cr
+#' "Number of MS2 scans where the scans' peaks intensity sums to 0 
+#' (i.e. no peaks or only 0-intensity peaks)." [PSI:MS] \cr
+#' 
+#' MS:4000101 \cr
+#' "Number of MS3 scans where the scans' peaks intensity sums to 0 
+#' (i.e. no peaks or only 0-intensity peaks)." [PSI:MS] \cr
+#'
+#' @details 
+#' MS:4000099 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_metric_category MS:4000021 ! MS1 metric \cr
+#' relationship: has_units UO:0000189 ! count unit \cr
+#' relationship: has_value_type xsd:integer ! The allowed value-type for this 
+#' CV term \cr
+#' 
+#' MS:4000100 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_metric_category MS:4000022 ! MS2 metric \cr
+#' relationship: has_units UO:0000189 ! count unit \cr
+#' relationship: has_value_type xsd:integer ! The allowed value-type for this 
+#' CV term \cr
+#' 
+#' MS:4000101 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_units UO:0000189 ! count unit \cr
+#' relationship: has_value_type xsd:integer ! The allowed value-type for this CV 
+#' term \cr
+#' 
+#' #' For *MS:4000099*, \code{msLevel} is set to 1. For *MS:4000100*, \code{msLevel} is 
+#' set to 2. For *MS:4000101*, \code{msLevel} is set to 3.
+#' 
+#' An attribute will only be returned if \code{msLevel} is either 1, 2, or 3.
+#' 
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param ... not used here
+#'
+#' @return \code{numeric(1)}
+#'
+#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#'
+#' @export
+#'
+#' @importFrom ProtGenerics filterMsLevel
+#' 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
+#' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' sps <- Spectra(spd)
+#' numberSpectra(spectra = sps, msLevel = 1L)
+#' numberSpectra(spectra = sps, msLevel = 2L)
+numberEmptyScans <- function(spectra, msLevel = 1L, ...) {
+    
+    if (length(msLevel) != 1)
+        stop("'msLevel' has to be of length 1")
+    
+    spectra <- filterMsLevel(object = spectra, msLevel)
+    
+    ## three cases to take into account: 1) entry is NULL, 2) entry is NA,
+    ## or 3) entry is of length 0; in all three cases set to TRUE, otherwise 
+    ## to FALSE
+    res <- intensity(spectra) |>
+        lapply(FUN = function(i) 
+            ifelse(is.null(i), TRUE, is.na(i) | length(i) == 0)) |> 
+        unlist() |>
+        sum()
+    
+    ## add attributes and return
+    if (msLevel == 1L) 
+        ms_term <- "MS:4000099"
+    if (msLevel == 2L) 
+        ms_term <- "MS:4000100"
+    if (msLevel == 3L) 
+        ms_term <- "MS:4000101"
+    if (msLevel %in% c(1L, 2L, 3L))
+        attributes(res) <- list(numberEmptyScans = ms_term)
+    
     res
 }
 
 #' @name ratioCharge1over2
 #' 
-#' @title Charged peptides ratio 1+ over 2+ (QC:4000174) or 
-#' Charged spectra ratio 1+ over 2+ (QC:4000179)
+#' @title charged peptides ratio 1+ over 2+ (MS:4000167) or 
+#' charged spectra ratio 1+ over 2+ (MS:4000168)
 #' 
 #' @description 
-#' "Ratio of 1+ peptide count over 2+ peptide count in identified spectra" [PSI:QC]
-#' id: QC:4000174
+#' MS:4000167 \cr
+#' "Ratio of 1+ peptide count over 2+ peptide count in identified spectra" 
+#' [PSI:MS] \cr
 #' 
-#' "Ratio of 1+ spectra count over 2+ spectra count in all MS2" [PSI:QC]
-#' id: QC:4000179
+#' MS:4000168 \cr
+#' "Ratio of 1+ spectra count over 2+ spectra count in all MS2" [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the precursor charge is obtained,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the precursor charge is obtained, \cr 
 #' (3) the number of precursors with charge 1+ is divided by the number of 
-#' precursors with charge 2+ and the ratio is returned.
+#' precursors with charge 2+ and the ratio is returned. \cr
 #' 
 #' @details
-#' is_a: MS:4000003 ! single value
-#' is_a: MS:4000008 ! ID based
-#' is_a: MS:4000001 ! QC metric
+#' MS:4000167 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' is_a: MS:4000001 ! QC metric \cr
 #' 
-#' `NA` is returned if there are no features with precursor charge of 1+ or 
-#' 2+.
+#' MS:4000168 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000009 ! ID free metric \cr
+#' is_a: MS:4000001 ! QC metric \cr
+#' 
+#' \code{NA} is returned if there are no features with precursor charge of 1+ or 
+#' 2+. \cr
+#' 
+#' An attribute will only be returned if \code{identificationLevel} is either 
+#' \code{"all"} or \code{"identified"}.
 #' 
 #' @note 
-#' The `Spectra` object might contain features that were not identified. If
-#' the calculation needs to be done according to *QC:4000174*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' The \code{Spectra} object might contain features that were not identified. If
+#' the calculation needs to be done according to *MS:4000167*, the 
+#' \code{Spectra} object should be prepared accordingly. 
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -2071,12 +2373,15 @@ msSignal10xChange <- function(spectra, change = "jump", msLevel = 1L, ...) {
 #' spd$precursorCharge <- c(1L, 1L, 1L)
 #' sps <- Spectra(spd)
 #' ratioCharge1over2(spectra = sps, msLevel = 2L)
-ratioCharge1over2 <- function(spectra, msLevel = 1L, ...) {
+ratioCharge1over2 <- function(spectra, msLevel = 1L, 
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
   
+    identificationLevel <- match.arg(identificationLevel)
+    
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        chargeRatio <- NaN
+        res <- NaN
     } else {
         ## is there a way to get charge of actual entries, not only of precursor?
         charge <- precursorCharge(spectra)
@@ -2085,53 +2390,72 @@ ratioCharge1over2 <- function(spectra, msLevel = 1L, ...) {
         chargeTable <- table(charge)
         
         if (all(c(1, 2) %in% names(chargeTable)))
-            chargeRatio <- chargeTable[["1"]] / chargeTable[["2"]]
+            res <- chargeTable[["1"]] / chargeTable[["2"]]
         else 
-            chargeRatio <- NaN
+            res <- NaN
     }
     
-    chargeRatio
+    ## add attributes and return
+    if (identificationLevel == "all")
+        ms_term <-  "MS:4000168"
+    if (identificationLevel == "identified")
+        ms_term <-  "MS:4000167"
+    
+    if (identificationLevel %in% c("all", "identified"))
+        attributes(res) <- list(ratioCharge1over2 = ms_term)
+    
+    res
     
 }
 
 #' @name ratioCharge3over2
 #' 
-#' @title Charged peptides ratio 3+ over 2+ (QC:4000175) or 
-#' charged spectra ratio 3+ over 2+ (QC:4000180)
+#' @title charged peptides ratio 3+ over 2+ (MS:4000169) or 
+#' charged spectra ratio 3+ over 2+ (MS:4000170)
 #' 
 #' @description 
-#' "Ratio of 3+ peptide count over 2+ peptide count in identified spectra" [PSI:QC]
-#' id: QC:4000175
+#' MS:4000169 \cr
+#' "Ratio of 3+ peptide count over 2+ peptide count in identified spectra" 
+#' [PSI:QC] \cr
 #' 
-#' "Ratio of 3+ peptide count over 2+ peptide count in all MS2" [PSI:QC]
-#' id: QC:4000180
+#' MS:4000170 \cr
+#' "Ratio of 3+ peptide count over 2+ peptide count in all MS2" [PSI:QC] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the precursor charge is obtained,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the precursor charge is obtained, \cr 
 #' (3) the number of precursors with charge 3+ is divided by the number of 
-#' precursors with charge 2+ and the ratio is returned.
+#' precursors with charge 2+ and the ratio is returned. \cr
 #' 
 #' @details
-#' is_a: MS:4000003 ! single value
-#' is_a: MS:4000008 ! ID based
-#' is_a: MS:4000001 ! QC metric
+#' MS:4000169 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' is_a: MS:4000001 ! QC metric \cr
 #' 
-#' `NA` is returned if there are no features with precursor charge of 2+ or 
+#' MS:4000170 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000009 ! ID free metric \cr
+#' is_a: MS:4000001 ! QC metric \cr
+#' 
+#' \code{NA} is returned if there are no features with precursor charge of 2+ or 
 #' 3+.
 #' 
-#' @note 
-#' The `Spectra` object might contain features that were not identified. If
-#' the calculation needs to be done according to *QC:4000175*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' An attribute will only be returned if \code{identificationLevel} is either 
+#' \code{"all"} or \code{"identified"}.
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @note 
+#' The \code{Spectra} object might contain features that were not identified. If
+#' the calculation needs to be done according to *MS:4000169*, the 
+#' \code{Spectra} object should be prepared accordingly. 
+#' 
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -2161,12 +2485,15 @@ ratioCharge1over2 <- function(spectra, msLevel = 1L, ...) {
 #' spd$precursorCharge <- c(1L, 1L, 1L)
 #' sps <- Spectra(spd)
 #' ratioCharge3over2(spectra = sps, msLevel = 2L)
-ratioCharge3over2 <- function(spectra, msLevel = 1L, ...) {
+ratioCharge3over2 <- function(spectra, msLevel = 1L, 
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
   
+    identificationLevel <- match.arg(identificationLevel)
+    
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        chargeRatio <- NaN
+        res <- NaN
     } else {
         ## is there a way to get charge of actual entries, not only of precursor?
         charge <- precursorCharge(spectra)
@@ -2175,53 +2502,70 @@ ratioCharge3over2 <- function(spectra, msLevel = 1L, ...) {
         chargeTable <- table(charge)
         
         if (all(c(2, 3) %in% names(chargeTable)))
-            chargeRatio <- chargeTable[["3"]] / chargeTable[["2"]]
+            res <- chargeTable[["3"]] / chargeTable[["2"]]
         else 
-            chargeRatio <- NaN
+            res <- NaN
     }
     
-    chargeRatio
+    ## add attributes and return
+    if (identificationLevel == "all")
+        ms_term <-  "MS:4000170"
+    if (identificationLevel == "identified")
+        ms_term <-  "MS:4000169"
+    if (identificationLevel %in% c("all", "identified"))
+        attributes(res) <- list(ratioCharge3over2 = ms_term)
+    
+    res
 }
 
 #' @name ratioCharge4over2
 #' 
-#' @title Charged peptides ratio 4+ over 2+ (QC:4000176) or charged spectra 
-#' ratio 4+ over 2+ (QC:4000181)
+#' @title charged peptides ratio 4+ over 2+ (MS:4000171) or charged spectra 
+#' ratio 4+ over 2+ (MS:4000172)
 #' 
 #' @description 
+#' MS:4000171 \cr
 #' "Ratio of 4+ peptide count  over 2+ peptide count in identified 
-#' spectra" [PSI:QC]
-#' id: QC:4000176
+#' spectra" [PSI:MS] \cr
 #' 
-#' "Ratio of 4+ peptide count over 2+ peptide count in all MS2" [PSI:QC]
-#' id: QC:4000181
-#' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the precursor charge is obtained,
-#' 
+#' MS:4000172 \cr
+#' "Ratio of 4+ peptide count over 2+ peptide count in all MS2" [PSI:MS] \cr
+#'  
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the precursor charge is obtained, \cr 
 #' (3) the number of precursors with charge 4+ is divided by the number of 
 #' precursors with charge 2+ and the ratio is returned.
 #' 
-#' @note 
-#' The `Spectra` object might contain features that were not identified. If
-#' the calculation needs to be done according to *QC:4000176*, the 
-#' `Spectra` object should be prepared accordingly.
+#' @details
+#' MS:4000171 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' is_a: MS:4000001 ! QC metric \cr
 #' 
-#' `NA` is returned if there are no features with precursor charge of 2+ or 
+#' MS:4000172 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000009 ! ID free metric \cr
+#' is_a: MS:4000001 ! QC metric \cr
+#' 
+#' An attribute will only be returned if \code{identificationLevel} is either 
+#' \code{"all"} or \code{"identified"}.
+#' 
+#' @note 
+#' The \code{Spectra} object might contain features that were not identified. If
+#' the calculation needs to be done according to *MS:4000171*, the 
+#' \code{Spectra} object should be prepared accordingly. \cr
+#' 
+#' \code{NA} is returned if there are no features with precursor charge of 2+ or 
 #' 3+.
 #' 
-#' @details
-#' is_a: MS:4000003 ! single value
-#' is_a: MS:4000008 ! ID based
-#' is_a: MS:4000001 ! QC metric
-#' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -2251,12 +2595,15 @@ ratioCharge3over2 <- function(spectra, msLevel = 1L, ...) {
 #' spd$precursorCharge <- c(1L, 1L, 1L)
 #' sps <- Spectra(spd)
 #' ratioCharge4over2(spectra = sps, msLevel = 2L)
-ratioCharge4over2 <- function(spectra, msLevel = 1L, ...) {
+ratioCharge4over2 <- function(spectra, msLevel = 1L,
+        identificationLevel = c("all", "identified"), ...) {
   
+    identificationLevel <- match.arg(identificationLevel)
+    
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        chargeRatio <- NaN
+        res <- NaN
     } else {
         ## is there a way to get charge of actual entries, not only of precursor?
         charge <- precursorCharge(spectra)
@@ -2265,50 +2612,67 @@ ratioCharge4over2 <- function(spectra, msLevel = 1L, ...) {
         chargeTable <- table(charge)
         
         if (all(c(2, 4) %in% names(chargeTable)))
-            chargeRatio <- chargeTable[["4"]] / chargeTable[["2"]]
+            res <- chargeTable[["4"]] / chargeTable[["2"]]
         else 
-            chargeRatio <- NaN
+            res <- NaN
     }
     
-    chargeRatio
+    ## add attributes and return
+    if (identificationLevel == "all")
+        ms_term <-  "MS:4000172"
+    if (identificationLevel == "identified")
+        ms_term <-  "MS:4000171"
+    if (identificationLevel %in% c("all", "identified"))
+        attributes(res) <- list(ratioCharge4over2 = ms_term)
+    
+    res
 }
 
 
 #' @name meanCharge
 #' 
-#' @title Mean charge in identified spectra (QC:4000177) or mean precursor 
-#' charge in all MS2 (QC:4000182)
+#' @title Mean precursor charge in identified spectra (MS:4000173) or mean 
+#' precursor charge in all MS2 (MS:4000174)
 #' 
 #' @description 
-#' "Mean charge in identified spectra" [PSI:QC]
-#' id: QC:4000177
+#' MS:4000173 \cr
+#' "Mean precursor charge in identified spectra" [PSI:MS] \cr
 #' 
-#' "Mean precursor charge in all MS2" [PSI:QC]
-#' id: QC:4000182
+#' MS:4000174 \cr
+#' "Mean precursor charge in all MS2" [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the precursor charge is obtained,
-#' 
-#' (3) the mean of the precursor charge values is calculated and returned.
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr
+#' (2) the precursor charge is obtained, \cr
+#' (3) the mean of the precursor charge values is calculated and returned. \cr
 #' 
 #'
 #' @details
-#' is_a: MS:4000003 ! single value
-#' is_a: MS:4000008 ! ID based
-#' is_a: MS:4000001 ! QC metric
+#' MS:4000173 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' is_a: MS:4000001 ! QC metric \cr
+#' 
+#' MS:4000174 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID free metric \cr
+#' is_a: MS:4000001 ! QC metric \cr
+#' 
+#' An attribute will only be returned if \code{identificationLevel} is either 
+#' \code{"all"} or \code{"identified"}.
 #' 
 #' @note 
-#' The `Spectra` object might contain features that were not identified. If
-#' the calculation needs to be done according to *QC:4000177*, the 
-#' `Spectra` object should be prepared accordingly. 
+#' The \code{Spectra} object might contain features that were not identified. If
+#' the calculation needs to be done according to *MS:4000173*, the 
+#' \code{Spectra} object should be prepared accordingly. 
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -2338,55 +2702,74 @@ ratioCharge4over2 <- function(spectra, msLevel = 1L, ...) {
 #' spd$precursorCharge <- c(1L, 1L, 1L)
 #' sps <- Spectra(spd)
 #' meanCharge(spectra = sps, msLevel = 2L)
-meanCharge <- function(spectra, msLevel = 1L, ...) {
+meanCharge <- function(spectra, msLevel = 1L, 
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
+    
+    identificationLevel <- match.arg(identificationLevel)
     
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        meanCharge <- NaN
+        res <- NaN
     } else {
         charge <- precursorCharge(spectra)
-        meanCharge <- mean(charge, na.rm = TRUE)   
+        res <- mean(charge, na.rm = TRUE)   
     }
     
-    meanCharge
+    ## add attributes and return
+    if (identificationLevel == "all")
+        ms_term <- "MS:4000174"
+    if (identificationLevel == "identified")
+        ms_term <- "MS:4000173"
+    if (identificationLevel %in% c("all", "identified"))
+        attributes(res) <- list(meanCharge = ms_term)
+    
+    res
     
 }
 
 #' @name medianCharge
 #' 
-#' @title Median charge in identified spectra (QC:4000178) or median
-#' precursor charge in all MS2 (QC:4000183)
+#' @title median precursor charge in identified spectra (MS:4000175) or median
+#' precursor charge in all MS2 (MS:4000176)
 #' 
 #' @description 
-#' "Median charge in identified spectra" [PSI:QC]
-#' id: QC:4000178
+#' MS:4000175 \cr
+#' "Median precursor charge in identified spectra" [PSI:MS] \cr
 #' 
-#' "Median precursor charge in all MS2" [PSI:QC]
-#' id: QC:4000183
+#' MS:4000176 \cr
+#' "Median precursor charge in all MS2" [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' (1) the `Spectra` object is filtered according to the MS level,
-#' 
-#' (2) the precursor charge is obtained,
-#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the precursor charge is obtained, \cr 
 #' (3) the median of the precursor charge values is calculated and returned.
 #' 
 #' @details
-#' is_a: MS:4000003 ! single value
-#' is_a: MS:4000008 ! ID based
-#' is_a: MS:4000001 ! QC metric
+#' MS:4000175 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000008 ! ID based \cr
+#' is_a: MS:4000001 ! QC metric \cr
+#' 
+#' MS:4000176 \cr
+#' is_a: MS:4000003 ! single value \cr
+#' is_a: MS:4000009 ! ID free metric \cr
+#' is_a: MS:4000001 ! QC metric \cr
+#' 
+#' An attribute will only be returned if \code{msLevel} is either 1, 2, or 3.
 #' 
 #' @note 
-#' The `Spectra` object might contain features that were not identified. If
-#' the calculation needs to be done according to *QC:4000178*, the 
-#' `Spectra` object should be prepared accordingly.
+#' The \code{Spectra} object might contain features that were not identified. If
+#' the calculation needs to be done according to *MS:4000175*, the 
+#' \code{Spectra} object should be prepared accordingly.
 #' 
-#' @param spectra `Spectra` object
-#' @param msLevel `integer`
+#' @param spectra \code{Spectra} object
+#' @param msLevel \code{integer}
+#' @param identificationLevel \code{character(1)}, one of \code{"all"}, 
+#' \code{"identified"}, or \code{"unidentified"}
 #' @param ... not used here
 #' 
-#' @return `numeric(1)`
+#' @return \code{numeric(1)}
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
@@ -2416,17 +2799,30 @@ meanCharge <- function(spectra, msLevel = 1L, ...) {
 #' sps <- Spectra(spd)
 #' spd$precursorCharge <- c(1L, 1L, 1L)
 #' medianCharge(spectra = sps, msLevel = 2L)
-medianCharge <- function(spectra, msLevel = 1L, ...) {
-  
+medianCharge <- function(spectra, msLevel = 1L, 
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
+
+    identificationLevel <- match.arg(identificationLevel)
+    
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
-        medianCharge <- NaN
+        res <- NaN
     } else {
         charge <- precursorCharge(spectra)
-        medianCharge <- median(charge, na.rm = TRUE)     
+        res <- median(charge, na.rm = TRUE)     
     }
     
-    medianCharge
+    ## add attributes and return
+    if (identificationLevel == "all")
+        attributes(res) <- "MS:4000176"
+    if (identificationLevel == "identified")
+        attributes(res) <- "MS:4000175"
+    
+    if (identificationLevel %in% c("all", "identified"))
+        attributes(res) <- list(medianCharge = ms_term)
+    
+    res
 }
+
 
