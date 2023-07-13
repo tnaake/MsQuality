@@ -116,13 +116,13 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' 
 #' Samples will be processed in parallel
 #' using the default parallel processing setup ([bpparam()]) or with the
-#' parallel processing setup defined with parameter `BPPARAM`.
+#' parallel processing setup defined with parameter \code{BPPARAM}.
 #' 
 #' @param spectra \code{Spectra} object
 #' @param metrics \code{character} specifying the quality metrics to be 
 #' calculated on \code{spectra}
-#' @param f \code{character} defining which spectra in `spectra` belong to
-#'     one sample. Defaults to `f = dataOrigin(spectra)`. Spectra from the
+#' @param f \code{character} defining which spectra in \code{spectra} belong to
+#'     one sample. Defaults to \code{f = dataOrigin(spectra)}. Spectra from the
 #'     same original data file are processed together (and in parallel for
 #'     different files).
 #' @param format \code{character(1)} specifying if metrics are returned 
@@ -130,8 +130,8 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' \code{MzQCmzQC} objects (\code{format = "mzQC"})
 #' @param ... arguments passed to the quality metrics functions defined in 
 #' \code{metrics}
-#' @param BPPARAM Parallel processing setup. Defaults to `BPPARAM = bpparam()`.
-#'     See [bpparam()] for details on parallel processing with `BiocParallel`.
+#' @param BPPARAM Parallel processing setup. Defaults to \code{BPPARAM = bpparam()}.
+#'     See [bpparam()] for details on parallel processing with \code{BiocParallel}.
 #' 
 #' @return 
 #' In case of \code{format = "data.frame"}, a \code{data.frame} containing in 
@@ -262,7 +262,7 @@ calculateMetricsFromSpectra <- function(spectra,
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}, Johannes Rainer
 #' 
 #' @importFrom rmzqc getCVTemplate filenameToCV toAnalysisSoftware toQCMetric
-#' @importFrom rmzqc basename getDefautCV
+#' @importFrom rmzqc getDefaultCV
 #' @importFrom utils packageDescription
 #' 
 #' @examples 
