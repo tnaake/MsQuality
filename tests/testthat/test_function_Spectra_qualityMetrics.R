@@ -31,7 +31,7 @@ library(Spectra)
 spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 
 
-qm_spectra <- c("rtDuration", "rtOverTicQuantiles", "rtOverMsQuarters",
+qm_spectra <- c("chromatographyDuration", "ticQuartersRtFraction", "rtOverMsQuarters",
     "ticQuartileToQuartileLogRatio", "numberSpectra", "medianPrecursorMz", 
     "rtIqr", "rtIqrRate", "areaUnderTic", "areaUnderTicRtQuantiles", 
     "extentIdentifiedPrecursorIntensity", "medianTicRtIqr", 
@@ -40,7 +40,7 @@ qm_spectra <- c("rtDuration", "rtOverTicQuantiles", "rtOverMsQuarters",
     "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange", 
     "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
     "medianCharge")
-qm_mse <- c("rtDuration", "rtOverTicQuantiles", "rtOverMsQuarters",
+qm_mse <- c("chromatographyDuration", "ticQuartersRtFraction", "rtOverMsQuarters",
     "ticQuartileToQuartileLogRatio", "numberSpectra", "medianPrecursorMz", 
     "rtIqr", "rtIqrRate", "areaUnderTic", "areaUnderTicRtQuantiles", 
     "extentIdentifiedPrecursorIntensity", "medianTicRtIqr", 
