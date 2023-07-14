@@ -2243,7 +2243,7 @@ msSignal10xChange <- function(spectra, change = "jump", msLevel = 1L, ...) {
 #'
 #' @export
 #'
-#' @importFrom ProtGenerics filterMsLevel
+#' @importFrom ProtGenerics filterMsLevel intensity
 #' 
 #' @examples
 #' library(S4Vectors)

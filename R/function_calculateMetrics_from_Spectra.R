@@ -280,12 +280,12 @@ calculateMetricsFromSpectra <- function(spectra,
 #' f <- dataOrigin(spectra)
 #' f_unique <- unique(f)
 #' spectra_metrics <- bplapply(f_unique, function(f_unique_i) {
-#' calculateMetricsFromOneSampleSpectra(
-#'     spectra = spectra[f == f_unique_i], metrics = metrics)
-#'     }, BPPARAM = bpparam())
+#' ##calculateMetricsFromOneSampleSpectra(
+#' ##    spectra = spectra[f == f_unique_i], metrics = metrics)
+#' ##    }, BPPARAM = bpparam())
 #' 
 #' ## transform into mzQC objects
-#' transformIntoMzQC(spectra_metrics)
+#' ##transformIntoMzQC(spectra_metrics)
 transformIntoMzQC <- function(spectra_metrics) {
     
     ## create mzQC objects per sample and return as a list
