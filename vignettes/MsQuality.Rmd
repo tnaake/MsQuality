@@ -462,7 +462,6 @@ metrics_sps_previous <- calculateMetrics(object = sps_comb_subset,
     metrics = qualityMetrics(sps_comb_subset),
     relativeTo = "previous", msLevel = 1L)
 metrics_sps_previous
-stop("runs until here")
 ```
 
 Alternatively, an `MsExperiment` object might be passed to 
