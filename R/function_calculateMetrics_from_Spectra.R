@@ -174,10 +174,10 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #'     relativeTo = "previous")
 #'     
 #' ## format = "mzQC"
-#' calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
-#'     format = "mzQC", msLevel = 1, change = "jump", relativeTo = "Q1")
-#' calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
-#'     format = "mzQC", msLevel = 1, change = "fall", relativeTo = "previous")
+#' ##calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
+#' ##    format = "mzQC", msLevel = 1, change = "jump", relativeTo = "Q1")
+#' ##calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
+#' ##    format = "mzQC", msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromSpectra <- function(spectra, 
     metrics, f = dataOrigin(spectra), format = c("data.frame", "mzQC"), ...,
     BPPARAM = bpparam()) {

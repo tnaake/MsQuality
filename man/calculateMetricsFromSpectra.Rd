@@ -90,10 +90,10 @@ calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
     relativeTo = "previous")
     
 ## format = "mzQC"
-calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
-    format = "mzQC", msLevel = 1, change = "jump", relativeTo = "Q1")
-calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
-    format = "mzQC", msLevel = 1, change = "fall", relativeTo = "previous")
+##calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
+##    format = "mzQC", msLevel = 1, change = "jump", relativeTo = "Q1")
+##calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
+##    format = "mzQC", msLevel = 1, change = "fall", relativeTo = "previous")
 }
 \author{
 Thomas Naake, Johannes Rainer
