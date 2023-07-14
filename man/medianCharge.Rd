@@ -79,5 +79,5 @@ spd$precursorCharge <- c(1L, 1L, 1L)
 medianCharge(spectra = sps, msLevel = 2L)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake
 }

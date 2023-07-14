@@ -59,5 +59,5 @@ MsQuality:::calculateMetricsFromOneSampleSpectra(spectra = spectra,
     metrics = metrics, msLevel = 1, change = "fall", relativeTo = "previous")
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake
 }

@@ -85,5 +85,5 @@ sps <- Spectra(spd)
 medianTicOfRtRange(spectra = sps, msLevel = 2L)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake
 }

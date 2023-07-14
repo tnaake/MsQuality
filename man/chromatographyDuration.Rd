@@ -61,5 +61,5 @@ sps <- Spectra(spd)
 chromatographyDuration(spectra = sps)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake
 }

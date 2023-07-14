@@ -85,5 +85,5 @@ sps <- Spectra(spd)
 ticQuartersRtFraction(spectra = sps, msLevel = 2L)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}, Johannes Rainer
+Thomas Naake, Johannes Rainer
 }

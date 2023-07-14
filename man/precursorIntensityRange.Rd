@@ -59,5 +59,5 @@ sps <- Spectra(spd)
 precursorIntensityRange(spectra = sps, msLevel = 2L)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake
 }

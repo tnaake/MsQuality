@@ -60,5 +60,5 @@ calculateMetricsFromOneSampleSpectra(
 transformIntoMzQC(spectra_metrics)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}, Johannes Rainer
+Thomas Naake, Johannes Rainer
 }

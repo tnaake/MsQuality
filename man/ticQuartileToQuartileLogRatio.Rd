@@ -123,5 +123,5 @@ ticQuartileToQuartileLogRatio(spectra = sps, relativeTo = "Q1",
     msLevel = 2L, mode = "TIC")
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake
 }

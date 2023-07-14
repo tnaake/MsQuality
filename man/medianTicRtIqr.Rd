@@ -82,5 +82,5 @@ sps <- Spectra(spd)
 medianTicRtIqr(spectra = sps, msLevel = 2L)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake
 }

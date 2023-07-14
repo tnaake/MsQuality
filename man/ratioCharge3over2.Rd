@@ -85,5 +85,5 @@ sps <- Spectra(spd)
 ratioCharge3over2(spectra = sps, msLevel = 2L)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake
 }

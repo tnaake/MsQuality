@@ -86,5 +86,5 @@ numberSpectra(spectra = sps, msLevel = 1L)
 numberSpectra(spectra = sps, msLevel = 2L)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake
 }

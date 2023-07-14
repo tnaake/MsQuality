@@ -42,5 +42,5 @@ sps <- Spectra(spd)
 qualityMetrics(object = sps)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake
 }

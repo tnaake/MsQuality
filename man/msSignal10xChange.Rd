@@ -80,5 +80,5 @@ msSignal10xChange(spectra = sps, change = "jump", msLevel = 2L)
 msSignal10xChange(spectra = sps, change = "fall", msLevel = 2L)
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}
+Thomas Naake
 }
