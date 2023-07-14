@@ -285,7 +285,11 @@ calculateMetricsFromSpectra <- function(spectra,
 #' 
 #' @importFrom rmzqc getCVTemplate filenameToCV toAnalysisSoftware toQCMetric
 #' @importFrom rmzqc getDefaultCV
-#' @importClassesFrom rmzqc MzQCrunQuality MzQCmetadata MzQCinputFile MzQCmzQC MzQCDateTime 
+#' @importClassesFrom rmzqc MzQCrunQuality 
+#' @importClassesFrom rmzqc MzQCmetadata 
+#' @importClassesFrom rmzqc MzQCinputFile 
+#' @importClassesFrom rmzqc MzQCmzQC
+#' @importClassesFrom rmzqc MzQCDateTime
 #' @importFrom utils packageDescription
 transformIntoMzQC <- function(spectra_metrics) {
     
