@@ -68,7 +68,7 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
     qc_tbl_l <- plotMetricTibble(qc = qc, metric = metric)
     
     g <- ggplot(qc_tbl_l) +
-        geom_point(aes(x = ~rowname, y = ~value, col = ~name)) +
+        geom_point(aes(x = get("rowname"), y = get("value"), col = get("name"))) +
         scale_colour_brewer(palette = "Set1") + theme_bw() +
         xlab("sample") + ggtitle(metric) +
         guides(shape = guide_legend(override.aes = list(size = 5))) +
