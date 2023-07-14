@@ -8,7 +8,7 @@ ratio 4+ over 2+ (MS:4000172)}
 ratioCharge4over2(
   spectra,
   msLevel = 1L,
-  identificationLevel = c("all", "identified"),
+  identificationLevel = c("all", "identified", "unidentified"),
   ...
 )
 }
