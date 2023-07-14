@@ -259,10 +259,6 @@ calculateMetricsFromSpectra <- function(spectra,
 #' 
 #' @author Thomas Naake, Johannes Rainer
 #' 
-#' @importFrom rmzqc getCVTemplate filenameToCV toAnalysisSoftware toQCMetric
-#' @importFrom rmzqc getDefaultCV
-#' @importFrom utils packageDescription
-#' 
 #' @examples 
 #' library(msdata)
 #' library(Spectra)
@@ -286,6 +282,11 @@ calculateMetricsFromSpectra <- function(spectra,
 #' 
 #' ## transform into mzQC objects
 #' ##transformIntoMzQC(spectra_metrics)
+#' 
+#' @importFrom rmzqc getCVTemplate filenameToCV toAnalysisSoftware toQCMetric
+#' @importFrom rmzqc getDefaultCV
+#' @importClassesFrom rmzqc MzQCrunQuality
+#' @importFrom utils packageDescription
 transformIntoMzQC <- function(spectra_metrics) {
     
     ## create mzQC objects per sample and return as a list
