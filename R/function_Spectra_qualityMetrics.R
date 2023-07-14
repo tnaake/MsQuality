@@ -13,7 +13,7 @@
 #' 
 #' @return \code{character}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @importFrom Spectra Spectra
 #' @importFrom MsExperiment MsExperiment
