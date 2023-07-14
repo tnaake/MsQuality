@@ -317,14 +317,14 @@ transformIntoMzQC <- function(spectra_metrics) {
                 which = names(attributes_i)[j], exact = TRUE)
             value_j <- spectra_metrics_i[names(attributes_i)[j]] |>
                 as.numeric()
-            rmzqc::toQCMetric(id = id_j, value = value_j)
+            toQCMetric(id = id_j, value = value_j)
         })
         
         
-        run_qc <- MzQCrunQuality$new(
-            metadata = MzQCmetadata$new(
+        run_qc <- MzQCrunQuality(
+            metadata = MzQCmetadata(
                 label = raw_file,
-                inputFiles = list(MzQCinputFile$new(
+                inputFiles = list(MzQCinputFile(
                     basename(raw_file), raw_file, file_format)),
                 analysisSoftware = list(software)),
             qualityMetrics = qc_metric_i
