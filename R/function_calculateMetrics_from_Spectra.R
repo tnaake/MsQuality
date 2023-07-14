@@ -26,7 +26,7 @@
 #' 
 #' @return named \code{numeric} vector
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @importFrom methods is
 #' @importFrom Spectra Spectra
@@ -102,11 +102,9 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' 
 #' Two format options are available:
 #' 
-#' \begin{itemize}
-#'  \item \code{format = "data.frame"} returns the metrics as a \code{data.frame},
-#'  \item \code{format = "mzQC"} returns the metrics as a list of 
-#'      \code{MzQCmzQC} objects.
-#' \end{itemize}
+#' - \code{format = "data.frame"} returns the metrics as a \code{data.frame}, \cr
+#' - \code{format = "mzQC"} returns the metrics as a list of \code{MzQCmzQC} 
+#'   objects. \cr
 #' 
 #' @details
 #' The metrics are defined by the argument \code{metrics}. Further arguments 
@@ -128,10 +126,10 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' @param format \code{character(1)} specifying if metrics are returned 
 #' as a \code{data.frame} (\code{format = "data.frame"}) or as a list of 
 #' \code{MzQCmzQC} objects (\code{format = "mzQC"})
-#' @param ... arguments passed to the quality metrics functions defined in 
-#' \code{metrics}
 #' @param BPPARAM Parallel processing setup. Defaults to \code{BPPARAM = bpparam()}.
 #'     See [bpparam()] for details on parallel processing with \code{BiocParallel}.
+#' @param ... arguments passed to the quality metrics functions defined in 
+#' \code{metrics}
 #' 
 #' @return 
 #' In case of \code{format = "data.frame"}, a \code{data.frame} containing in 
@@ -141,7 +139,7 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' containing the metrics for the different spectra of identical 
 #' \code{dataOrigin{spectra}}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}, Johannes Rainer
+#' @author Thomas Naake, Johannes Rainer
 #' 
 #' @export
 #' 
@@ -259,7 +257,7 @@ calculateMetricsFromSpectra <- function(spectra,
 #' @return \code{list} containing as entries \code{MzQCmzQC} objects for each
 #' \code{Spectra} with same \code{dataOrigin}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}, Johannes Rainer
+#' @author Thomas Naake, Johannes Rainer
 #' 
 #' @importFrom rmzqc getCVTemplate filenameToCV toAnalysisSoftware toQCMetric
 #' @importFrom rmzqc getDefaultCV
@@ -375,7 +373,7 @@ transformIntoMzQC <- function(spectra_metrics) {
 #'
 #' @inheritParams calculateMetricsFromSpectra
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -471,7 +469,7 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #' @return \code{data.frame} containing in the columns the metrics for the 
 #' different spectra and in rows the samples
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
