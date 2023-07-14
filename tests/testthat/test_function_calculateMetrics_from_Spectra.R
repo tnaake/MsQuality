@@ -64,10 +64,6 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     expect_error(
         calculateMetricsFromOneSampleSpectra(spectra_1, metrics = "foo"),
         "should be one of")
-    expect_error(
-        calculateMetricsFromOneSampleSpectra(spectra_1, 
-        metrics = "ticQuartileToQuartileLogRatio", 
-        relativeTo = c("Q1", "previous")), "'relativeTo' has to be of length 1")
     expect_error(calculateMetricsFromOneSampleSpectra(spectra_1, 
         metrics = "msSignal10xChange", change = c("jump", "fall")), 
         "'change' has to be of length 1")
@@ -81,9 +77,6 @@ test_that("calculateMetricsFromOneSampleSpectra", {
         tolerance = 1e-06)
     expect_error(calculateMetricsFromOneSampleSpectra(NULL, metrics = metrics),
         "object '.metrics' not found")
-    expect_error(calculateMetricsFromOneSampleSpectra(spectra_2,
-        metrics = "ticQuartileToQuartileLogRatio",
-        relativeTo = c("Q1", "previous")), "'relativeTo' has to be of length 1")
     expect_error(calculateMetricsFromOneSampleSpectra(spectra_2,
         metrics = "msSignal10xChange", change = c("jump", "fall")),
         "'change' has to be of length 1")
@@ -132,9 +125,6 @@ test_that("calculateMetricsFromSpectra", {
         "object '.metrics' not found")
     expect_error(calculateMetricsFromSpectra(spectra, metrics = "foo"),
         "should be one of ")
-    expect_error(calculateMetricsFromSpectra(spectra, 
-        metrics = "ticQuartileToQuartileLogRatio",
-        relativeTo = c("Q1", "previous")), "'relativeTo' has to be of length 1")
     expect_error(calculateMetricsFromSpectra(spectra, 
         metrics = "msSignal10xChange", change = c("jump", "fall")), 
         "'change' has to be of length 1")

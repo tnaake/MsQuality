@@ -482,19 +482,14 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
 #' ticQuartileToQuartileLogRatio(spectra = sps, relativeTo = "Q1",
 #'     msLevel = 2L, mode = "TIC")
 ticQuartileToQuartileLogRatio <- function(spectra, 
-    relativeTo = c("previous", "Q1"), mode = "TIC_change", msLevel = 1L, ...) {
+    relativeTo = c("previous", "Q1"), mode = c("TIC_change", "TIC"), msLevel = 1L, ...) {
 
-    if (length(relativeTo) != 1)
-        stop("'relativeTo' has to be of length 1")
-    else
-        relativeTo <- match.arg(relativeTo)
+    relativeTo <- match.arg(relativeTo)
     
-    if (length(mode) != 1)
-        stop("'relativeTo' has to be of length 1")
-    else
-        mode <- match.arg(mode, choices = c("TIC_change", "TIC"))
+    mode <- match.arg(mode)
     
-    spectra <- filterMsLevel(object = spectra, msLevel)    
+    spectra <- filterMsLevel(object = spectra, msLevel)  
+    
     if (length(spectra) == 0) {
         
         ratioQuantileTIC <- c(NaN, NaN, NaN)
