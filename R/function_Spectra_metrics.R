@@ -2596,7 +2596,7 @@ ratioCharge3over2 <- function(spectra, msLevel = 1L,
 #' sps <- Spectra(spd)
 #' ratioCharge4over2(spectra = sps, msLevel = 2L)
 ratioCharge4over2 <- function(spectra, msLevel = 1L,
-        identificationLevel = c("all", "identified"), ...) {
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
   
     identificationLevel <- match.arg(identificationLevel)
     
