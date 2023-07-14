@@ -285,7 +285,7 @@ calculateMetricsFromSpectra <- function(spectra,
 #' 
 #' @importFrom rmzqc getCVTemplate filenameToCV toAnalysisSoftware toQCMetric
 #' @importFrom rmzqc getDefaultCV
-#' @importClassesFrom rmzqc MzQCrunQuality
+#' @importClassesFrom rmzqc MzQCrunQuality MzQCinputFile MzQCmzQC MzQCDateTime
 #' @importFrom utils packageDescription
 transformIntoMzQC <- function(spectra_metrics) {
     
@@ -294,10 +294,10 @@ transformIntoMzQC <- function(spectra_metrics) {
         
         ## obtain raw file and file format
         raw_file <- names(spectra_metrics)[i]
-        file_format <- getCVTemplate(accession = filenameToCV(raw_file))
+        file_format <- rmzqc::getCVTemplate(accession = rmzqc::filenameToCV(raw_file))
         
         ## obtain information on the MsQuality package
-        software <- toAnalysisSoftware(id = "MS:4000151", 
+        software <- rmzqc::toAnalysisSoftware(id = "MS:4000151", 
             version = packageDescription("MsQuality")$Version)
         
         ## obtain information on the run qualities
@@ -317,7 +317,7 @@ transformIntoMzQC <- function(spectra_metrics) {
                 which = names(attributes_i)[j], exact = TRUE)
             value_j <- spectra_metrics_i[names(attributes_i)[j]] |>
                 as.numeric()
-            toQCMetric(id = id_j, value = value_j)
+            rmzqc::toQCMetric(id = id_j, value = value_j)
         })
         
         
