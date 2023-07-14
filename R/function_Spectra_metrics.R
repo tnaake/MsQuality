@@ -31,7 +31,7 @@
 #' 
 #' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -115,7 +115,7 @@ chromatographyDuration <- function(spectra, ...) {
 #'    duration (duration divided by the total run time) after which the TIC
 #'    exceeds the respective quantile of the TIC.
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}, Johannes Rainer
+#' @author Thomas Naake, Johannes Rainer
 #' 
 #' @export 
 #' 
@@ -301,7 +301,7 @@ ticQuartersRtFraction <- function(spectra, probs = seq(0, 1, 0.25),
 #'  
 #' @return \code{numeric(4)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}, Johannes Rainer
+#' @author Thomas Naake, Johannes Rainer
 #' 
 #' @export
 #' 
@@ -445,7 +445,7 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -783,7 +783,7 @@ medianPrecursorMz <- function(spectra, msLevel = 1L,
 #' 
 #' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -884,7 +884,7 @@ rtIqr <- function(spectra, msLevel = 1L,
 #' 
 #' @return \code{numeric(2)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -975,7 +975,7 @@ rtIqrRate <- function(spectra, msLevel = 1L,
 #' 
 #' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -1057,7 +1057,7 @@ areaUnderTic <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' @return \code{.numeric(4)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -1168,7 +1168,7 @@ areaUnderTicRtQuantiles <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -1271,7 +1271,7 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L,
 #' 
 #' @return \code{numeric(1)}
 #'
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #'
 #' @export
 #' 
@@ -1384,7 +1384,7 @@ medianTicRtIqr <- function(spectra, msLevel = 1L,
 #' @return
 #' \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -1489,7 +1489,7 @@ medianTicOfRtRange <- function(spectra, msLevel = 1L,
 #' 
 #' @return \code{numeric(2)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -1567,7 +1567,7 @@ mzAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
 #' @return
 #' \code{numeric(2)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -1642,7 +1642,7 @@ rtAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
 #' @return
 #' \code{numeric(2)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -1761,7 +1761,7 @@ precursorIntensityRange <- function(spectra, msLevel = 1, ...) {
 #' 
 #' @return \code{numeric(3)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -1884,7 +1884,7 @@ precursorIntensityQuartiles <- function(spectra, msLevel = 1L,
 #' 
 #' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -2007,7 +2007,7 @@ precursorIntensityMean <- function(spectra, msLevel = 1L,
 #' 
 #' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -2112,7 +2112,7 @@ precursorIntensitySd <- function(spectra, msLevel = 1L,
 #' 
 #' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -2239,7 +2239,7 @@ msSignal10xChange <- function(spectra, change = "jump", msLevel = 1L, ...) {
 #'
 #' @return \code{numeric(1)}
 #'
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #'
 #' @export
 #'
@@ -2345,7 +2345,7 @@ numberEmptyScans <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -2457,7 +2457,7 @@ ratioCharge1over2 <- function(spectra, msLevel = 1L,
 #' 
 #' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -2567,7 +2567,7 @@ ratioCharge3over2 <- function(spectra, msLevel = 1L,
 #' 
 #' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -2674,7 +2674,7 @@ ratioCharge4over2 <- function(spectra, msLevel = 1L,
 #' 
 #' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
@@ -2771,7 +2771,7 @@ meanCharge <- function(spectra, msLevel = 1L,
 #' 
 #' @return \code{numeric(1)}
 #' 
-#' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
+#' @author Thomas Naake
 #' 
 #' @export
 #' 
