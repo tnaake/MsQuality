@@ -2815,9 +2815,9 @@ medianCharge <- function(spectra, msLevel = 1L,
     
     ## add attributes and return
     if (identificationLevel == "all")
-        attributes(res) <- "MS:4000176"
+        ms_term <- "MS:4000176"
     if (identificationLevel == "identified")
-        attributes(res) <- "MS:4000175"
+        ms_term <- "MS:4000175"
     
     if (identificationLevel %in% c("all", "identified"))
         attributes(res) <- list(medianCharge = ms_term)
