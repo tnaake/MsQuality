@@ -57,10 +57,6 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     expect_true(is.numeric(metrics_spectra_1))
     expect_equal(as.numeric(metrics_spectra_1), metrics_spectra_1_vals, 
         tolerance = 1e-06)
-    expect_equal(attributes(metrics_spectra_1)$names, colnames_metrics)
-    expect_equal(attributes(metrics_spectra_1)$msLevel, 1)
-    expect_equal(attributes(metrics_spectra_1)$relativeTo, "Q1")
-    expect_equal(attributes(metrics_spectra_1)$change, "jump")
     expect_error(calculateMetricsFromOneSampleSpectra(NULL, metrics = metrics),
         "object '.metrics' not found")
     expect_error(calculateMetricsFromOneSampleSpectra("foo", metrics = metrics),
@@ -83,10 +79,6 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     expect_true(is.numeric(metrics_spectra_2))
     expect_equal(as.numeric(metrics_spectra_2), metrics_spectra_2_vals, 
         tolerance = 1e-06)
-    expect_equal(attributes(metrics_spectra_2)$names, colnames_metrics)
-    expect_equal(attributes(metrics_spectra_2)$msLevel, 1)
-    expect_equal(attributes(metrics_spectra_2)$relativeTo, "Q1")
-    expect_equal(attributes(metrics_spectra_2)$change, "jump")
     expect_error(calculateMetricsFromOneSampleSpectra(NULL, metrics = metrics),
         "object '.metrics' not found")
     expect_error(calculateMetricsFromOneSampleSpectra(spectra_2,
@@ -95,6 +87,29 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     expect_error(calculateMetricsFromOneSampleSpectra(spectra_2,
         metrics = "msSignal10xChange", change = c("jump", "fall")),
         "'change' has to be of length 1")
+    
+    ## test attributes
+    expect_equal(attr(metrics_spectra_1, "names"), colnames_metrics)
+    expect_equal(attr(metrics_spectra_1, "chromatographyDuration"), "MS:4000053")
+    expect_equal(attr(metrics_spectra_1, "ticQuartersRtFraction"), "MS:4000054")
+    expect_equal(attr(metrics_spectra_1, "numberSpectra"), "MS:4000059")
+    expect_equal(attr(metrics_spectra_1, "areaUnderTic"), "MS:4000155")
+    expect_equal(attr(metrics_spectra_1, "msSignal10xChange"), "MS:4000097")
+    expect_equal(attr(metrics_spectra_1, "msLevel"), 1)
+    expect_equal(attr(metrics_spectra_1, "relativeTo"), "Q1")
+    expect_equal(attr(metrics_spectra_1, "mode"), "TIC")
+    expect_equal(attr(metrics_spectra_1, "change"), "jump")
+    expect_equal(attr(metrics_spectra_2, "names"), colnames_metrics)
+    expect_equal(attr(metrics_spectra_2, "chromatographyDuration"), "MS:4000053")
+    expect_equal(attr(metrics_spectra_2, "ticQuartersRtFraction"), "MS:4000054")
+    expect_equal(attr(metrics_spectra_2, "numberSpectra"), "MS:4000059")
+    expect_equal(attr(metrics_spectra_2, "areaUnderTic"), "MS:4000155")
+    expect_equal(attr(metrics_spectra_2, "msSignal10xChange"), "MS:4000097")
+    expect_equal(attr(metrics_spectra_2, "msLevel"), 1)
+    expect_equal(attr(metrics_spectra_2, "relativeTo"), "Q1")
+    expect_equal(attr(metrics_spectra_2, "mode"), "TIC")
+    expect_equal(attr(metrics_spectra_2, "change"), "jump")
+    
 })
 ## END unit test calculateMetricsFromOneSampleSpectra
 
@@ -112,10 +127,6 @@ test_that("calculateMetricsFromSpectra", {
         metrics_spectra_1_vals, tolerance = 1e-06)
     expect_equal(as.numeric(metrics_spectra[2, ]), 
         metrics_spectra_2_vals, tolerance = 1e-06)
-    expect_equal(attributes(metrics_spectra)$dimnames[[2]], colnames_metrics)
-    expect_equal(attributes(metrics_spectra)$msLevel, 1)
-    expect_equal(attributes(metrics_spectra)$relativeTo, "Q1")
-    expect_equal(attributes(metrics_spectra)$change, "jump")
     
     expect_error(calculateMetricsFromSpectra("foo", metrics = metrics),
         "object '.metrics' not found")
@@ -128,6 +139,17 @@ test_that("calculateMetricsFromSpectra", {
         metrics = "msSignal10xChange", change = c("jump", "fall")), 
         "'change' has to be of length 1")
     
+    ## test attributes
+    expect_equal(attr(metrics_spectra, "names")[1:12], colnames_metrics)
+    expect_equal(attr(metrics_spectra, "chromatographyDuration"), "MS:4000053")
+    expect_equal(attr(metrics_spectra, "ticQuartersRtFraction"), "MS:4000054")
+    expect_equal(attr(metrics_spectra, "numberSpectra"), "MS:4000059")
+    expect_equal(attr(metrics_spectra, "areaUnderTic"), "MS:4000155")
+    expect_equal(attr(metrics_spectra, "msSignal10xChange"), "MS:4000097")
+    expect_equal(attr(metrics_spectra, "msLevel"), 1)
+    expect_equal(attr(metrics_spectra, "relativeTo"), "Q1")
+    expect_equal(attr(metrics_spectra, "mode"), "TIC")
+    expect_equal(attr(metrics_spectra, "change"), "jump")
 })
 ## END unit test calculateMetricsFromSpectra ##
 
@@ -147,11 +169,6 @@ test_that("calculateMetrics", {
         metrics_spectra_1_vals,  tolerance = 1e-06)
     expect_equal(as.numeric(metrics_spectra_wrapper[2, ]), 
         metrics_spectra_2_vals,  tolerance = 1e-06)
-    expect_equal(attributes(metrics_spectra_wrapper)$dimnames[[2]], 
-        colnames_metrics)
-    expect_equal(attributes(metrics_spectra_wrapper)$msLevel, 1)
-    expect_equal(attributes(metrics_spectra_wrapper)$relativeTo, "Q1")
-    expect_equal(attributes(metrics_spectra_wrapper)$change, "jump")
     
     expect_error(calculateMetrics(NULL, metrics = metrics),
         "object '.metrics' not found")
@@ -159,6 +176,20 @@ test_that("calculateMetrics", {
         "object '.metrics' not found")
     expect_error(calculateMetrics(spectra, metrics = "foo"),
         "should be one of ")
+    
+    ## test attributes
+    expect_equal(attributes(metrics_spectra_wrapper)$dimnames[[2]], 
+        colnames_metrics)
+    expect_equal(attr(metrics_spectra_wrapper, "names")[1:12], colnames_metrics)
+    expect_equal(attr(metrics_spectra_wrapper, "chromatographyDuration"), "MS:4000053")
+    expect_equal(attr(metrics_spectra_wrapper, "ticQuartersRtFraction"), "MS:4000054")
+    expect_equal(attr(metrics_spectra_wrapper, "numberSpectra"), "MS:4000059")
+    expect_equal(attr(metrics_spectra_wrapper, "areaUnderTic"), "MS:4000155")
+    expect_equal(attr(metrics_spectra_wrapper, "msSignal10xChange"), "MS:4000097")
+    expect_equal(attr(metrics_spectra_wrapper, "msLevel"), 1)
+    expect_equal(attr(metrics_spectra_wrapper, "relativeTo"), "Q1")
+    expect_equal(attr(metrics_spectra_wrapper, "mode"), "TIC")
+    expect_equal(attr(metrics_spectra_wrapper, "change"), "jump")
 })
 ## END unit test calculateMetrics ## 
 
