@@ -34,7 +34,7 @@ Imports:
 	MsExperiment (>= 0.99.0),
 	plotly (>= 4.9.4.1),
 	ProtGenerics (>= 1.24.0),
-	rmzqc (>= 0.5.1),
+	rmzqc (>= 0.5.0),
 	shiny (>= 1.6.0),
 	shinydashboard (>= 0.7.1),
 	Spectra (>= 1.2.0),
