@@ -50,11 +50,9 @@ e.g. \code{dataOrigin} information.
 
 Two format options are available:
 
-\begin{itemize}
- \item \code{format = "data.frame"} returns the metrics as a \code{data.frame},
- \item \code{format = "mzQC"} returns the metrics as a list of 
-     \code{MzQCmzQC} objects.
-\end{itemize}
+- \code{format = "data.frame"} returns the metrics as a \code{data.frame}, \cr
+- \code{format = "mzQC"} returns the metrics as a list of \code{MzQCmzQC} 
+  objects. \cr
 }
 \details{
 The metrics are defined by the argument \code{metrics}. Further arguments 
@@ -98,5 +96,5 @@ calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
     format = "mzQC", msLevel = 1, change = "fall", relativeTo = "previous")
 }
 \author{
-Thomas Naake, \email{thomasnaake@googlemail.com}, Johannes Rainer
+Thomas Naake, Johannes Rainer
 }
