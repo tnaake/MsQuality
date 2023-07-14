@@ -298,10 +298,10 @@ transformIntoMzQC <- function(spectra_metrics) {
         
         ## obtain raw file and file format
         raw_file <- names(spectra_metrics)[i]
-        file_format <- rmzqc::getCVTemplate(accession = rmzqc::filenameToCV(raw_file))
+        file_format <- getCVTemplate(accession = filenameToCV(raw_file))
         
         ## obtain information on the MsQuality package
-        software <- rmzqc::toAnalysisSoftware(id = "MS:4000151", 
+        software <- toAnalysisSoftware(id = "MS:4000151", 
             version = packageDescription("MsQuality")$Version)
         
         ## obtain information on the run qualities
