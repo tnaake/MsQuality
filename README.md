@@ -47,6 +47,7 @@ in one `Spectra` object. The `MsExperiment` serves as a container to
 store the mass spectral data of multiple samples. `MsQuality` enables the user
 to calculate quality metrics both on `Spectra` and `MsExperiment` objects. 
 
+
 ## Contact 
 
 You are welcome to 
@@ -56,6 +57,12 @@ You are welcome to
  * send a pull request: <https://github.com/tnaake/MsQuality/issues> 
 
 ## Install
+
+`MsQuality` is available via Bioconductor. To install the package, users can
+either install from the 
+[devel branch](https://bioconductor.org/packages/devel/bioc/html/MsQuality.html) 
+or from the current 
+[RELEASE branch](https://bioconductor.org/packages/release/bioc/html/MsQuality.html).
 
 To install `MsQuality`, you have first to install the 
 [`BiocManager`](https://www.bioconductor.org/install/) and
@@ -76,7 +83,7 @@ Install the `MsQuality` package then via
 ## to install from Bioconductor
 BiocManager::install("MsQuality")
 
-## to install from GitHub
+## to install the development version from GitHub
 BiocManager::install("tnaake/MsQuality")
 ```
 
