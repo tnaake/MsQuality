@@ -8,7 +8,7 @@ MS1 TIC quartile ratios (MS:4000058)}
 ticQuartileToQuartileLogRatio(
   spectra,
   relativeTo = c("previous", "Q1"),
-  mode = "TIC_change",
+  mode = c("TIC_change", "TIC"),
   msLevel = 1L,
   ...
 )
