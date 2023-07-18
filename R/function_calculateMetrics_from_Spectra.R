@@ -216,7 +216,7 @@ calculateMetricsFromSpectra <- function(spectra,
         ## add attributes
         dots <- list(...)
         attributes(obj) <- c(attributes(obj), obj_attributes, dots)
-        attributes(obj)[["names"]] <- NULL
+        names(obj) <- NULL
     }
     
     if (format == "mzQC") {
