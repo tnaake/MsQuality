@@ -82,7 +82,7 @@ test_that("calculateMetricsFromOneSampleSpectra", {
         "'change' has to be of length 1")
     
     ## test attributes
-    expect_equal(attr(metrics_spectra_1, "names")[1:12], colnames_metrics)
+    expect_equal(attr(metrics_spectra_1, "names"), colnames_metrics)
     expect_equal(attr(metrics_spectra_1, "chromatographyDuration"), "MS:4000053")
     expect_equal(attr(metrics_spectra_1, "ticQuartersRtFraction"), "MS:4000054")
     expect_equal(attr(metrics_spectra_1, "numberSpectra"), "MS:4000059")
@@ -92,7 +92,7 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     expect_equal(attr(metrics_spectra_1, "relativeTo"), "Q1")
     expect_equal(attr(metrics_spectra_1, "mode"), "TIC")
     expect_equal(attr(metrics_spectra_1, "change"), "jump")
-    expect_equal(attr(metrics_spectra_2, "names")[1:12], colnames_metrics)
+    expect_equal(attr(metrics_spectra_2, "names"), colnames_metrics)
     expect_equal(attr(metrics_spectra_2, "chromatographyDuration"), "MS:4000053")
     expect_equal(attr(metrics_spectra_2, "ticQuartersRtFraction"), "MS:4000054")
     expect_equal(attr(metrics_spectra_2, "numberSpectra"), "MS:4000059")
