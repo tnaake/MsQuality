@@ -49,6 +49,15 @@ relationship: has_units UO:0000189 ! count unit \cr
 relationship: has_value_type xsd:integer ! The allowed value-type for this CV 
 term \cr
 synonym: "IS-1A"  RELATED [] \cr
+
+MS:4000098 \cr
+is_a: MS:4000003 ! single value \cr
+relationship: has_metric_category MS:4000009 ! ID free metric \cr
+relationship: has_metric_category MS:4000021 ! MS1 metric \cr
+relationship: has_units UO:0000189 ! count unit \cr
+relationship: has_value_type xsd:integer ! The allowed value-type for this CV
+term \cr
+synonym: "IS-1B"  RELATED [] \cr
  
 The function \code{msSignal10xChange} uses the function \code{ionCount} as an 
 equivalent to the TIC.

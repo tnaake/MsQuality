@@ -2,9 +2,9 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{precursorIntensityQuartiles}
 \alias{precursorIntensityQuartiles}
-\title{Precursor intensity distribution Q1, Q2, Q3 (MS:4000116), 
-Identified precursor intensity distribution Q1, Q2, Q3 (MS:4000161), or
-Unidentified precursor intensity distribution Q1, Q2, Q3 (MS:4000162)}
+\title{MS2 precursor intensity distribution Q1, Q2, Q3 (MS:4000116), 
+identified MS2 precursor intensity distribution Q1, Q2, Q3 (MS:4000161), or
+unidentified MS2 precursor intensity distribution Q1, Q2, Q3 (MS:4000162)}
 \usage{
 precursorIntensityQuartiles(
   spectra,
@@ -28,22 +28,28 @@ precursorIntensityQuartiles(
 }
 \description{
 MS:4000116 \cr
-"From the distribution of precursor intensities, the quantiles. I.e. a value 
-triplet represents the quartiles Q1, Q2, Q3. The intensity distribution of 
-the precursors informs about the dynamic range of the acquisition." 
+"From the distribution of MS2 precursor intensities, the quartiles 
+Q1, Q2, Q3. The intensity distribution of the precursors informs about the 
+dynamic range of the acquisition." [PSI:MS]
 [PSI:MS] \cr
 
 MS:40000161 \cr
-"From the distribution of identified precursor intensities, the quartiles 
+"From the distribution of identified MS2 precursor intensities, the quartiles 
 Q1, Q2, Q3. The intensity distribution of the precursors informs about 
-the dynamic range of the acquisition in relation to identifiability." 
-[PSI:MS] \cr
+the dynamic range of the acquisition in relation to identifiability. 
+The used type of identification should be noted in the metadata or analysis 
+methods section of the recording file for the respective run. In case of 
+multiple acceptance criteria (FDR) available in proteomics, PSM-level FDR 
+should be used for better comparability." [PSI:MS]" \cr
 
 id: MS:4000162 \cr
-"From the distribution of unidentified precursor intensities, the quartiles 
+"From the distribution of unidentified MS2 precursor intensities, the quartiles 
 Q1, Q2, Q3. The intensity distribution of the precursors informs about the 
-dynamic range of the acquisition in relation to identifiability." 
-[PSI:MS] \cr
+dynamic range of the acquisition in relation to identifiability. The used 
+type of identification should be noted in the metadata or analysis methods 
+section of the recording file for the respective run. In case of multiple 
+acceptance criteria (FDR) available in proteomics, PSM-level FDR should be 
+used for better comparability." [PSI:MS]" \cr
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 

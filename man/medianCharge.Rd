@@ -2,8 +2,8 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{medianCharge}
 \alias{medianCharge}
-\title{median precursor charge in identified spectra (MS:4000175) or median
-precursor charge in all MS2 (MS:4000176)}
+\title{median MS2 precursor charge in all spectra (MS:4000175) or median MS2 
+precursor charge in identified spectra (MS:4000176)}
 \usage{
 medianCharge(
   spectra,
@@ -27,10 +27,14 @@ medianCharge(
 }
 \description{
 MS:4000175 \cr
-"Median precursor charge in identified spectra" [PSI:MS] \cr
+"Median MS2 precursor charge in all spectra" [PSI:MS] \cr
 
 MS:4000176 \cr
-"Median precursor charge in all MS2" [PSI:MS] \cr
+"Median MS2 precursor charge in identified spectra. The used type of 
+identification should be noted in the metadata or analysis methods section 
+of the recording file for the respective run. In case of multiple acceptance
+criteria (FDR) available in proteomics, PSM-level FDR should be used for 
+better comparability." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
@@ -39,20 +43,41 @@ The metric is calculated as follows: \cr
 }
 \details{
 MS:4000175 \cr
-is_a: MS:4000003 ! single value \cr
-is_a: MS:4000008 ! ID based \cr
 is_a: MS:4000001 ! QC metric \cr
-
-MS:4000176 \cr
 is_a: MS:4000003 ! single value \cr
 is_a: MS:4000009 ! ID free metric \cr
-is_a: MS:4000001 ! QC metric \cr
+relationship: has_metric_category MS:4000012 ! single run based metric \cr
+relationship: has_metric_category MS:4000020 ! ion source metric \cr
+relationship: has_metric_category MS:4000022 ! MS2 metric \cr
+synonym: "MS2 known precursor charges fractions"  RELATED [] \cr
+synonym: "MS2-PrecZ-1" RELATED [PMID:24494671] \cr
+synonym: "MS2-PrecZ-2" RELATED [PMID:24494671] \cr
+synonym: "MS2-PrecZ-3" RELATED [PMID:24494671] \cr
+synonym: "MS2-PrecZ-4" RELATED [PMID:24494671] \cr
+synonym: "MS2-PrecZ-5" RELATED [PMID:24494671] \cr
+synonym: "MS2-PrecZ-more" RELATED [PMID:24494671] \cr
 
-An attribute will only be returned if \code{msLevel} is either 1, 2, or 3.
+MS:4000176 \cr
+is_a: MS:4000001 ! QC metric \cr
+is_a: MS:4000003 ! single value \cr
+is_a: MS:4000008 ! ID based \cr
+relationship: has_metric_category MS:4000012 ! single run based metric \cr
+relationship: has_metric_category MS:4000020 ! ion source metric \cr
+relationship: has_metric_category MS:4000022 ! MS2 metric \cr
+synonym: "MS2 known precursor charges fractions"  RELATED [] \cr
+synonym: "MS2-PrecZ-1" RELATED [PMID:24494671] \cr
+synonym: "MS2-PrecZ-2" RELATED [PMID:24494671] \cr
+synonym: "MS2-PrecZ-3" RELATED [PMID:24494671] \cr
+synonym: "MS2-PrecZ-4" RELATED [PMID:24494671] \cr
+synonym: "MS2-PrecZ-5" RELATED [PMID:24494671] \cr
+synonym: "MS2-PrecZ-more" RELATED [PMID:24494671] \cr
+
+An attribute will only be returned if \code{identificationLevel} is either 
+\code{"all"} or \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If
-the calculation needs to be done according to *MS:4000175*, the 
+the calculation needs to be done according to *MS:4000176*, the 
 \code{Spectra} object should be prepared accordingly.
 }
 \examples{

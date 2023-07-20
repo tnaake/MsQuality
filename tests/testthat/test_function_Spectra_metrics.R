@@ -164,6 +164,281 @@ test_that("numberSpectra works properly.", {
 })
 ## END unit test numberSpectra ##
 
+## START unit test mzAcquisitionRange ##
+test_that("mzAcquisitionRange works properly.", {
+    expect_error(mzAcquisitionRange(NULL), "unable to find an inherited method")
+    expect_error(mzAcquisitionRange(1:10), "unable to find an inherited method")
+    tmp <- mzAcquisitionRange(sps_sciex, msLevel = 1L)
+    expect_equal(as.numeric(tmp), c(105, 134), tolerance = 1e-06)
+    expect_equal(names(tmp), c("min", "max"))
+    tmp <- mzAcquisitionRange(sps_sciex, msLevel = 2L)
+    expect_equal(as.numeric(tmp), c(NaN, NaN))
+    expect_equal(names(tmp), c("min", "max"))
+    
+    ## test attributes
+    tmp <- suppressWarnings(mzAcquisitionRange(sps_sciex[1:10,], msLevel = 1L))
+    expect_equal(names(attributes(tmp)), c("names", "mzAcquisitionRange"))
+    expect_equal(names(tmp), c("min", "max"))
+    expect_equal(attr(tmp, "mzAcquisitionRange"), "MS:4000069")
+    tmp <- suppressWarnings(mzAcquisitionRange(sps_sciex[1:10,], msLevel = 2L))
+    expect_equal(names(attributes(tmp)), c("names", "mzAcquisitionRange"))
+    expect_equal(names(tmp), c("min", "max"))
+    expect_equal(attr(tmp, "mzAcquisitionRange"), "MS:4000069")
+})
+## END unit test mzAcquisitionRange ##
+
+## START unit test rtAcquisitionRange ##
+test_that("rtAcquisitionRange works properly.", {
+    expect_error(rtAcquisitionRange(NULL), "unable to find an inherited method")
+    expect_error(rtAcquisitionRange(1:10), "unable to find an inherited method")
+    tmp <- rtAcquisitionRange(sps_sciex, msLevel = 1L)
+    expect_equal(as.numeric(tmp), c(0.275, 259.757))
+    expect_equal(names(tmp), c("min", "max"))
+    tmp <- rtAcquisitionRange(sps_sciex, msLevel = 2L)
+    expect_equal(as.numeric(tmp), c(NaN, NaN))
+    expect_equal(names(tmp), c("min", "max"))
+    
+    ## test attributes
+    tmp <- suppressWarnings(rtAcquisitionRange(sps_sciex[1:10,], msLevel = 1L))
+    expect_equal(names(attributes(tmp)), c("names", "rtAcquisitionRange"))
+    expect_equal(names(tmp), c("min", "max"))
+    expect_equal(attr(tmp, "rtAcquisitionRange"), "MS:4000070")
+    tmp <- suppressWarnings(rtAcquisitionRange(sps_sciex[1:10,], msLevel = 2L))
+    expect_equal(names(attributes(tmp)), c("names", "rtAcquisitionRange"))
+    expect_equal(names(tmp), c("min", "max"))
+    expect_equal(attr(tmp, "rtAcquisitionRange"), "MS:4000070")
+})
+## END unit test rtAcquisitionRange ##
+
+## START unit test msSignal10xChange ##
+test_that("msSignal10xChange works properly.", {
+    expect_error(msSignal10xChange(NULL), "unable to find an inherited method")
+    expect_error(msSignal10xChange(1:10), "unable to find an inherited method")
+    expect_equal(as.numeric(suppressWarnings(
+        msSignal10xChange(sps_sciex, change = "jump", msLevel = 1L))), 0)
+    expect_equal(as.numeric(suppressWarnings(
+        msSignal10xChange(sps_sciex, change = "fall", msLevel = 1L))), 0)
+    expect_equal(as.numeric(msSignal10xChange(sps_sciex, change = "jump", 
+        msLevel = 2L)), NaN)
+    expect_equal(as.numeric(msSignal10xChange(sps_sciex, change = "fall", 
+        msLevel = 2L)), NaN)
+    
+    ## test attributes
+    tmp <- suppressWarnings(
+        msSignal10xChange(sps_sciex[1:2, ], change = "jump", msLevel = 1L))
+    expect_equal(names(attributes(tmp)), c("msSignal10xChange"))
+    expect_equal(attr(tmp, "msSignal10xChange"), "MS:4000097")
+    tmp <- suppressWarnings(
+        msSignal10xChange(sps_sciex[1:2, ], change = "fall", msLevel = 1L))
+    expect_equal(names(attributes(tmp)), c("msSignal10xChange"))
+    expect_equal(attr(tmp, "msSignal10xChange"), "MS:4000098")
+    tmp <- suppressWarnings(
+        msSignal10xChange(sps_sciex[1:2, ], change = "jump", msLevel = 2L))
+    expect_equal(names(attributes(tmp)), NULL)
+    tmp <- suppressWarnings(
+        msSignal10xChange(sps_sciex[1:2, ], change = "fall", msLevel = 2L))
+    expect_equal(names(attributes(tmp)), NULL)
+})
+## END unit test msSignal10xChange ##
+
+## START unit test numberEmptyScans ##
+test_that("numberEmptyScans works properly.", {
+    expect_error(numberEmptyScans(NULL), "unable to find an inherited method")
+    expect_error(numberEmptyScans(1:10), "unable to find an inherited method")
+    expect_equal(as.numeric(numberEmptyScans(sps_sciex, msLevel = 1L)), 0)
+    expect_equal(as.numeric(numberEmptyScans(sps_sciex, msLevel = 2L)), 0)
+    expect_equal(as.numeric(numberEmptyScans(sps_sciex, msLevel = 3L)), 0)
+    
+    ## create one Spectra object with one missing entry
+    spd <- DataFrame(
+        msLevel = c(2L, 2L), polarity = c(1L, 1L),
+        id = c("unknown", "HMDB0000001"), 
+        name = c("unknown", "1-Methylhistidine"))
+    ## Assign m/z and intensity values
+    spd$mz <- list(
+        c(NaN), c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16))
+    spd$intensity <- list(
+        c(NaN), c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643))
+    sps_tmp <- Spectra(spd)
+    expect_equal(as.numeric(numberEmptyScans(sps_tmp, msLevel = 2L)), 1)
+    
+    ## test attributes
+    tmp <- numberEmptyScans(sps_sciex, msLevel = 1L)
+    expect_equal(names(attributes(tmp)), "numberEmptyScans")
+    expect_equal(attr(tmp, "numberEmptyScans"), "MS:4000099")
+    tmp <- numberEmptyScans(sps_sciex, msLevel = 2L)
+    expect_equal(names(attributes(tmp)), "numberEmptyScans")
+    expect_equal(attr(tmp, "numberEmptyScans"), "MS:4000100")
+    tmp <- numberEmptyScans(sps_sciex, msLevel = 3L)
+    expect_equal(names(attributes(tmp)), "numberEmptyScans")
+    expect_equal(attr(tmp, "numberEmptyScans"), "MS:4000101")
+})
+## END unit test numberEmptyScans ##
+
+
+
+## START unit test precursorIntensityQuartiles ##
+test_that("precursorIntensityQuartiles works properly.", {
+    expect_error(precursorIntensityQuartiles(NULL), "unable to find an inherited method")
+    expect_error(precursorIntensityQuartiles(1:10), "unable to find an inherited method")
+    tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 1L, 
+        identificationLevel = "all")
+    expect_equal(as.numeric(tmp), c(9934, 9999, 10067))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
+    tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 1L, 
+        identificationLevel = "identified")
+    expect_equal(as.numeric(tmp), c(9934, 9999, 10067))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
+    tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 1L, 
+        identificationLevel = "unidentified")
+    expect_equal(as.numeric(tmp), c(9934, 9999, 10067))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
+    tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 2L,
+        identificationLevel = "all")
+    expect_equal(as.numeric(tmp), c(NaN, NaN, NaN))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
+    tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 2L,
+        identificationLevel = "identified")
+    expect_equal(as.numeric(tmp), c(NaN, NaN, NaN))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
+    tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 2L,
+        identificationLevel = "unidentified")
+    expect_equal(as.numeric(tmp), c(NaN, NaN, NaN))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
+    
+    ## test attributes
+    tmp <- suppressWarnings(precursorIntensityQuartiles(sps_sciex[1:10,], 
+        msLevel = 1L, identificationLevel = "all"))
+    expect_equal(names(attributes(tmp)), 
+        c("names", "precursorIntensityQuartiles"))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
+    expect_equal(attr(tmp, "precursorIntensityQuartiles"), "MS:4000116")
+    tmp <- suppressWarnings(precursorIntensityQuartiles(sps_sciex[1:10,], 
+        msLevel = 1L, identificationLevel = "identified"))
+    expect_equal(names(attributes(tmp)), 
+        c("names", "precursorIntensityQuartiles"))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
+    expect_equal(attr(tmp, "precursorIntensityQuartiles"), "MS:4000161")
+    tmp <- suppressWarnings(precursorIntensityQuartiles(sps_sciex[1:10,], 
+        msLevel = 1L, identificationLevel = "unidentified"))
+    expect_equal(names(attributes(tmp)), 
+        c("names", "precursorIntensityQuartiles"))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
+    expect_equal(attr(tmp, "precursorIntensityQuartiles"), "MS:4000162")
+    tmp <- suppressWarnings(precursorIntensityQuartiles(sps_sciex[1:10,], 
+        msLevel = 2L, identificationLevel = "all"))
+    expect_equal(names(attributes(tmp)), 
+        c("names", "precursorIntensityQuartiles"))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
+    expect_equal(attr(tmp, "precursorIntensityQuartiles"), "MS:4000116")
+    tmp <- suppressWarnings(precursorIntensityQuartiles(sps_sciex[1:10,], 
+        msLevel = 2L, identificationLevel = "identified"))
+    expect_equal(names(attributes(tmp)), 
+        c("names", "precursorIntensityQuartiles"))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
+    expect_equal(attr(tmp, "precursorIntensityQuartiles"), "MS:4000161")
+    tmp <- suppressWarnings(precursorIntensityQuartiles(sps_sciex[1:10,], 
+        msLevel = 2L, identificationLevel = "unidentified"))
+    expect_equal(names(attributes(tmp)), 
+        c("names", "precursorIntensityQuartiles"))
+    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
+    expect_equal(attr(tmp, "precursorIntensityQuartiles"), "MS:4000162")
+})
+## END unit test precursorIntensityQuartiles ##
+
+## START unit test precursorIntensityMean ##
+test_that("precursorIntensityMean works properly.", {
+    expect_error(precursorIntensityMean(NULL), "unable to find an inherited method")
+    expect_error(precursorIntensityMean(1:10), "unable to find an inherited method")
+    expect_equal(as.numeric(precursorIntensityMean(sps_sciex, msLevel = 1L, 
+        identificationLevel = "all")), 
+        9999.646, tolerance = 1e-06)
+    expect_equal(as.numeric(precursorIntensityMean(sps_sciex, msLevel = 1L, 
+        identificationLevel = "identified")), 
+        9999.646, tolerance = 1e-06)
+    expect_equal(as.numeric(precursorIntensityMean(sps_sciex, msLevel = 1L, 
+        identificationLevel = "unidentified")), 
+        9999.646, tolerance = 1e-06)
+    expect_equal(as.numeric(precursorIntensityMean(sps_sciex, msLevel = 2L, 
+        identificationLevel = "all")), NaN)
+    expect_equal(as.numeric(precursorIntensityMean(sps_sciex, msLevel = 2L, 
+        identificationLevel = "identified")), NaN)
+    expect_equal(as.numeric(precursorIntensityMean(sps_sciex, msLevel = 2L, 
+        identificationLevel = "unidentified")), NaN)
+    
+    ## test attributes
+    tmp <- suppressWarnings(precursorIntensityMean(sps_sciex[1:10,], 
+        msLevel = 1L, identificationLevel = "all"))
+    expect_equal(names(attributes(tmp)), c("precursorIntensityMean"))
+    expect_equal(attr(tmp, "precursorIntensityMean"), "MS:4000117")
+    tmp <- suppressWarnings(precursorIntensityMean(sps_sciex[1:10,], 
+        msLevel = 1L, identificationLevel = "identified"))
+    expect_equal(names(attributes(tmp)), c("precursorIntensityMean"))
+    expect_equal(attr(tmp, "precursorIntensityMean"), "MS:4000163")
+    tmp <- suppressWarnings(precursorIntensityMean(sps_sciex[1:10,], 
+        msLevel = 1L, identificationLevel = "unidentified"))
+    expect_equal(names(attributes(tmp)), c("precursorIntensityMean"))
+    expect_equal(attr(tmp, "precursorIntensityMean"), "MS:4000164")
+    tmp <- suppressWarnings(precursorIntensityMean(sps_sciex[1:10,], 
+        msLevel = 2L, identificationLevel = "all"))
+    expect_equal(names(attributes(tmp)), c("precursorIntensityMean"))
+    expect_equal(attr(tmp, "precursorIntensityMean"), "MS:4000117")
+    tmp <- suppressWarnings(precursorIntensityMean(sps_sciex[1:10,], 
+        msLevel = 2L, identificationLevel = "identified"))
+    expect_equal(names(attributes(tmp)), c("precursorIntensityMean"))
+    expect_equal(attr(tmp, "precursorIntensityMean"), "MS:4000163")
+    tmp <- suppressWarnings(precursorIntensityMean(sps_sciex[1:10,], 
+        msLevel = 2L, identificationLevel = "unidentified"))
+    expect_equal(names(attributes(tmp)), c("precursorIntensityMean"))
+    expect_equal(attr(tmp, "precursorIntensityMean"), "MS:4000164")
+})
+## END unit test precursorIntensityMean ##
+
+## START unit test precursorIntensitySd ##
+test_that("precursorIntensitySd works properly.", {
+    expect_error(precursorIntensitySd(NULL), "unable to find an inherited method")
+    expect_error(precursorIntensitySd(1:10), "unable to find an inherited method")
+    expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 1L, 
+        identificationLevel = "all")), 101.0341, tolerance = 1e-06)
+    expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 1L, 
+        identificationLevel = "identified")), 101.0341, tolerance = 1e-06)
+    expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 1L, 
+        identificationLevel = "unidentified")), 101.0341, tolerance = 1e-06)
+    expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 2L, 
+        identificationLevel = "all")), NaN)
+    expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 2L, 
+        identificationLevel = "identified")), NaN)
+    expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 2L, 
+        identificationLevel = "unidentified")), NaN)
+    
+    ## test attributes
+    tmp <- suppressWarnings(precursorIntensitySd(sps_sciex[1:10,], 
+        msLevel = 1L, identificationLevel = "all"))
+    expect_equal(names(attributes(tmp)), c("precursorIntensitySd"))
+    expect_equal(attr(tmp, "precursorIntensitySd"), "MS:4000118")
+    tmp <- suppressWarnings(precursorIntensitySd(sps_sciex[1:10,], 
+        msLevel = 1L, identificationLevel = "identified"))
+    expect_equal(names(attributes(tmp)), c("precursorIntensitySd"))
+    expect_equal(attr(tmp, "precursorIntensitySd"), "MS:4000165")
+    tmp <- suppressWarnings(precursorIntensitySd(sps_sciex[1:10,], 
+        msLevel = 1L, identificationLevel = "unidentified"))
+    expect_equal(names(attributes(tmp)), c("precursorIntensitySd"))
+    expect_equal(attr(tmp, "precursorIntensitySd"), "MS:4000166")
+    tmp <- suppressWarnings(precursorIntensitySd(sps_sciex[1:10,], 
+        msLevel = 2L, identificationLevel = "all"))
+    expect_equal(names(attributes(tmp)), c("precursorIntensitySd"))
+    expect_equal(attr(tmp, "precursorIntensitySd"), "MS:4000118")
+    tmp <- suppressWarnings(precursorIntensitySd(sps_sciex[1:10,], 
+        msLevel = 2L, identificationLevel = "identified"))
+    expect_equal(names(attributes(tmp)), c("precursorIntensitySd"))
+    expect_equal(attr(tmp, "precursorIntensitySd"), "MS:4000165")
+    tmp <- suppressWarnings(precursorIntensitySd(sps_sciex[1:10,], 
+        msLevel = 2L, identificationLevel = "unidentified"))
+    expect_equal(names(attributes(tmp)), c("precursorIntensitySd"))
+    expect_equal(attr(tmp, "precursorIntensitySd"), "MS:4000166")
+})
+## END unit test precursorIntensitySd ##
+
 ## START unit test medianPrecursorMz ##
 test_that("medianPrecursorMz works properly.", {
     expect_error(medianPrecursorMz(NULL), "unable to find an inherited method")
@@ -417,52 +692,6 @@ test_that("medianTicOfRtRange works properly.", {
 })
 ## END unit test medianTicOfRtRange ##
 
-## START unit test mzAcquisitionRange ##
-test_that("mzAcquisitionRange works properly.", {
-    expect_error(mzAcquisitionRange(NULL), "unable to find an inherited method")
-    expect_error(mzAcquisitionRange(1:10), "unable to find an inherited method")
-    tmp <- mzAcquisitionRange(sps_sciex, msLevel = 1L)
-    expect_equal(as.numeric(tmp), c(105, 134), tolerance = 1e-06)
-    expect_equal(names(tmp), c("min", "max"))
-    tmp <- mzAcquisitionRange(sps_sciex, msLevel = 2L)
-    expect_equal(as.numeric(tmp), c(NaN, NaN))
-    expect_equal(names(tmp), c("min", "max"))
-    
-    ## test attributes
-    tmp <- suppressWarnings(mzAcquisitionRange(sps_sciex[1:10,], msLevel = 1L))
-    expect_equal(names(attributes(tmp)), c("names", "mzAcquisitionRange"))
-    expect_equal(names(tmp), c("min", "max"))
-    expect_equal(attr(tmp, "mzAcquisitionRange"), "MS:4000069")
-    tmp <- suppressWarnings(mzAcquisitionRange(sps_sciex[1:10,], msLevel = 2L))
-    expect_equal(names(attributes(tmp)), c("names", "mzAcquisitionRange"))
-    expect_equal(names(tmp), c("min", "max"))
-    expect_equal(attr(tmp, "mzAcquisitionRange"), "MS:4000069")
-})
-## END unit test mzAcquisitionRange ##
-
-## START unit test rtAcquisitionRange ##
-test_that("rtAcquisitionRange works properly.", {
-    expect_error(rtAcquisitionRange(NULL), "unable to find an inherited method")
-    expect_error(rtAcquisitionRange(1:10), "unable to find an inherited method")
-    tmp <- rtAcquisitionRange(sps_sciex, msLevel = 1L)
-    expect_equal(as.numeric(tmp), c(0.275, 259.757))
-    expect_equal(names(tmp), c("min", "max"))
-    tmp <- rtAcquisitionRange(sps_sciex, msLevel = 2L)
-    expect_equal(as.numeric(tmp), c(NaN, NaN))
-    expect_equal(names(tmp), c("min", "max"))
-    
-    ## test attributes
-    tmp <- suppressWarnings(rtAcquisitionRange(sps_sciex[1:10,], msLevel = 1L))
-    expect_equal(names(attributes(tmp)), c("names", "rtAcquisitionRange"))
-    expect_equal(names(tmp), c("min", "max"))
-    expect_equal(attr(tmp, "rtAcquisitionRange"), "MS:4000070")
-    tmp <- suppressWarnings(rtAcquisitionRange(sps_sciex[1:10,], msLevel = 2L))
-    expect_equal(names(attributes(tmp)), c("names", "rtAcquisitionRange"))
-    expect_equal(names(tmp), c("min", "max"))
-    expect_equal(attr(tmp, "rtAcquisitionRange"), "MS:4000070")
-})
-## END unit test rtAcquisitionRange ##
-
 ## START unit test precursorIntensityRange ##
 test_that("precursorIntensityRange works properly.", {
     expect_error(precursorIntensityRange(NULL), "unable to find an inherited method")
@@ -485,233 +714,6 @@ test_that("precursorIntensityRange works properly.", {
     expect_equal(attr(tmp, "precursorIntensityRange"), "MS:4000160")
 })
 ## END unit test precursorIntensityRange ##
-
-## START unit test precursorIntensityQuartiles ##
-test_that("precursorIntensityQuartiles works properly.", {
-    expect_error(precursorIntensityQuartiles(NULL), "unable to find an inherited method")
-    expect_error(precursorIntensityQuartiles(1:10), "unable to find an inherited method")
-    tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 1L, 
-        identificationLevel = "all")
-    expect_equal(as.numeric(tmp), c(9934, 9999, 10067))
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
-    tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 1L, 
-        identificationLevel = "identified")
-    expect_equal(as.numeric(tmp), c(9934, 9999, 10067))
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
-    tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 1L, 
-        identificationLevel = "unidentified")
-    expect_equal(as.numeric(tmp), c(9934, 9999, 10067))
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
-    tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 2L,
-        identificationLevel = "all")
-    expect_equal(as.numeric(tmp), c(NaN, NaN, NaN))
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
-    tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 2L,
-        identificationLevel = "identified")
-    expect_equal(as.numeric(tmp), c(NaN, NaN, NaN))
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
-    tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 2L,
-        identificationLevel = "unidentified")
-    expect_equal(as.numeric(tmp), c(NaN, NaN, NaN))
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
-    
-    ## test attributes
-    tmp <- suppressWarnings(precursorIntensityQuartiles(sps_sciex[1:10,], 
-        msLevel = 1L, identificationLevel = "all"))
-    expect_equal(names(attributes(tmp)), 
-        c("names", "precursorIntensityQuartiles"))
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
-    expect_equal(attr(tmp, "precursorIntensityQuartiles"), "MS:4000116")
-    tmp <- suppressWarnings(precursorIntensityQuartiles(sps_sciex[1:10,], 
-        msLevel = 1L, identificationLevel = "identified"))
-    expect_equal(names(attributes(tmp)), 
-        c("names", "precursorIntensityQuartiles"))
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
-    expect_equal(attr(tmp, "precursorIntensityQuartiles"), "MS:4000161")
-    tmp <- suppressWarnings(precursorIntensityQuartiles(sps_sciex[1:10,], 
-        msLevel = 1L, identificationLevel = "unidentified"))
-    expect_equal(names(attributes(tmp)), 
-        c("names", "precursorIntensityQuartiles"))
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
-    expect_equal(attr(tmp, "precursorIntensityQuartiles"), "MS:4000162")
-    tmp <- suppressWarnings(precursorIntensityQuartiles(sps_sciex[1:10,], 
-        msLevel = 2L, identificationLevel = "all"))
-    expect_equal(names(attributes(tmp)), 
-        c("names", "precursorIntensityQuartiles"))
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
-    expect_equal(attr(tmp, "precursorIntensityQuartiles"), "MS:4000116")
-    tmp <- suppressWarnings(precursorIntensityQuartiles(sps_sciex[1:10,], 
-        msLevel = 2L, identificationLevel = "identified"))
-    expect_equal(names(attributes(tmp)), 
-        c("names", "precursorIntensityQuartiles"))
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
-    expect_equal(attr(tmp, "precursorIntensityQuartiles"), "MS:4000161")
-    tmp <- suppressWarnings(precursorIntensityQuartiles(sps_sciex[1:10,], 
-        msLevel = 2L, identificationLevel = "unidentified"))
-    expect_equal(names(attributes(tmp)), 
-        c("names", "precursorIntensityQuartiles"))
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3"))
-    expect_equal(attr(tmp, "precursorIntensityQuartiles"), "MS:4000162")
-})
-## END unit test precursorIntensityQuartiles ##
-
-## START unit test precursorIntensityMean ##
-test_that("precursorIntensityMean works properly.", {
-    expect_error(precursorIntensityMean(NULL), "unable to find an inherited method")
-    expect_error(precursorIntensityMean(1:10), "unable to find an inherited method")
-    expect_equal(as.numeric(precursorIntensityMean(sps_sciex, msLevel = 1L, 
-            identificationLevel = "all")), 
-        9999.646, tolerance = 1e-06)
-    expect_equal(as.numeric(precursorIntensityMean(sps_sciex, msLevel = 1L, 
-            identificationLevel = "identified")), 
-        9999.646, tolerance = 1e-06)
-    expect_equal(as.numeric(precursorIntensityMean(sps_sciex, msLevel = 1L, 
-            identificationLevel = "unidentified")), 
-        9999.646, tolerance = 1e-06)
-    expect_equal(as.numeric(precursorIntensityMean(sps_sciex, msLevel = 2L, 
-            identificationLevel = "all")), NaN)
-    expect_equal(as.numeric(precursorIntensityMean(sps_sciex, msLevel = 2L, 
-            identificationLevel = "identified")), NaN)
-    expect_equal(as.numeric(precursorIntensityMean(sps_sciex, msLevel = 2L, 
-            identificationLevel = "unidentified")), NaN)
-    
-    ## test attributes
-    tmp <- suppressWarnings(precursorIntensityMean(sps_sciex[1:10,], 
-        msLevel = 1L, identificationLevel = "all"))
-    expect_equal(names(attributes(tmp)), c("precursorIntensityMean"))
-    expect_equal(attr(tmp, "precursorIntensityMean"), "MS:4000117")
-    tmp <- suppressWarnings(precursorIntensityMean(sps_sciex[1:10,], 
-        msLevel = 1L, identificationLevel = "identified"))
-    expect_equal(names(attributes(tmp)), c("precursorIntensityMean"))
-    expect_equal(attr(tmp, "precursorIntensityMean"), "MS:4000163")
-    tmp <- suppressWarnings(precursorIntensityMean(sps_sciex[1:10,], 
-        msLevel = 1L, identificationLevel = "unidentified"))
-    expect_equal(names(attributes(tmp)), c("precursorIntensityMean"))
-    expect_equal(attr(tmp, "precursorIntensityMean"), "MS:4000164")
-    tmp <- suppressWarnings(precursorIntensityMean(sps_sciex[1:10,], 
-        msLevel = 2L, identificationLevel = "all"))
-    expect_equal(names(attributes(tmp)), c("precursorIntensityMean"))
-    expect_equal(attr(tmp, "precursorIntensityMean"), "MS:4000117")
-    tmp <- suppressWarnings(precursorIntensityMean(sps_sciex[1:10,], 
-        msLevel = 2L, identificationLevel = "identified"))
-    expect_equal(names(attributes(tmp)), c("precursorIntensityMean"))
-    expect_equal(attr(tmp, "precursorIntensityMean"), "MS:4000163")
-    tmp <- suppressWarnings(precursorIntensityMean(sps_sciex[1:10,], 
-        msLevel = 2L, identificationLevel = "unidentified"))
-    expect_equal(names(attributes(tmp)), c("precursorIntensityMean"))
-    expect_equal(attr(tmp, "precursorIntensityMean"), "MS:4000164")
-})
-## END unit test precursorIntensityMean ##
-
-## START unit test precursorIntensitySd ##
-test_that("precursorIntensitySd works properly.", {
-    expect_error(precursorIntensitySd(NULL), "unable to find an inherited method")
-    expect_error(precursorIntensitySd(1:10), "unable to find an inherited method")
-    expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 1L, 
-        identificationLevel = "all")), 101.0341, tolerance = 1e-06)
-    expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 1L, 
-        identificationLevel = "identified")), 101.0341, tolerance = 1e-06)
-    expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 1L, 
-        identificationLevel = "unidentified")), 101.0341, tolerance = 1e-06)
-    expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 2L, 
-        identificationLevel = "all")), NaN)
-    expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 2L, 
-        identificationLevel = "identified")), NaN)
-    expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 2L, 
-        identificationLevel = "unidentified")), NaN)
-    
-    ## test attributes
-    tmp <- suppressWarnings(precursorIntensitySd(sps_sciex[1:10,], 
-        msLevel = 1L, identificationLevel = "all"))
-    expect_equal(names(attributes(tmp)), c("precursorIntensitySd"))
-    expect_equal(attr(tmp, "precursorIntensitySd"), "MS:4000118")
-    tmp <- suppressWarnings(precursorIntensitySd(sps_sciex[1:10,], 
-        msLevel = 1L, identificationLevel = "identified"))
-    expect_equal(names(attributes(tmp)), c("precursorIntensitySd"))
-    expect_equal(attr(tmp, "precursorIntensitySd"), "MS:4000165")
-    tmp <- suppressWarnings(precursorIntensitySd(sps_sciex[1:10,], 
-        msLevel = 1L, identificationLevel = "unidentified"))
-    expect_equal(names(attributes(tmp)), c("precursorIntensitySd"))
-    expect_equal(attr(tmp, "precursorIntensitySd"), "MS:4000166")
-    tmp <- suppressWarnings(precursorIntensitySd(sps_sciex[1:10,], 
-        msLevel = 2L, identificationLevel = "all"))
-    expect_equal(names(attributes(tmp)), c("precursorIntensitySd"))
-    expect_equal(attr(tmp, "precursorIntensitySd"), "MS:4000118")
-    tmp <- suppressWarnings(precursorIntensitySd(sps_sciex[1:10,], 
-        msLevel = 2L, identificationLevel = "identified"))
-    expect_equal(names(attributes(tmp)), c("precursorIntensitySd"))
-    expect_equal(attr(tmp, "precursorIntensitySd"), "MS:4000165")
-    tmp <- suppressWarnings(precursorIntensitySd(sps_sciex[1:10,], 
-        msLevel = 2L, identificationLevel = "unidentified"))
-    expect_equal(names(attributes(tmp)), c("precursorIntensitySd"))
-    expect_equal(attr(tmp, "precursorIntensitySd"), "MS:4000166")
-})
-## END unit test precursorIntensitySd ##
-
-## START unit test msSignal10xChange ##
-test_that("msSignal10xChange works properly.", {
-    expect_error(msSignal10xChange(NULL), "unable to find an inherited method")
-    expect_error(msSignal10xChange(1:10), "unable to find an inherited method")
-    expect_equal(as.numeric(suppressWarnings(
-        msSignal10xChange(sps_sciex, change = "jump", msLevel = 1L))), 0)
-    expect_equal(as.numeric(suppressWarnings(
-        msSignal10xChange(sps_sciex, change = "fall", msLevel = 1L))), 0)
-    expect_equal(as.numeric(msSignal10xChange(sps_sciex, change = "jump", 
-        msLevel = 2L)), NaN)
-    expect_equal(as.numeric(msSignal10xChange(sps_sciex, change = "fall", 
-        msLevel = 2L)), NaN)
-    
-    ## test attributes
-    tmp <- suppressWarnings(
-        msSignal10xChange(sps_sciex[1:2, ], change = "jump", msLevel = 1L))
-    expect_equal(names(attributes(tmp)), c("msSignal10xChange"))
-    expect_equal(attr(tmp, "msSignal10xChange"), "MS:4000097")
-    tmp <- suppressWarnings(
-        msSignal10xChange(sps_sciex[1:2, ], change = "fall", msLevel = 1L))
-    expect_equal(names(attributes(tmp)), c("msSignal10xChange"))
-    expect_equal(attr(tmp, "msSignal10xChange"), "MS:4000098")
-    tmp <- suppressWarnings(
-        msSignal10xChange(sps_sciex[1:2, ], change = "jump", msLevel = 2L))
-    expect_equal(names(attributes(tmp)), NULL)
-    tmp <- suppressWarnings(
-        msSignal10xChange(sps_sciex[1:2, ], change = "fall", msLevel = 2L))
-    expect_equal(names(attributes(tmp)), NULL)
-})
-## END unit test msSignal10xChange ##
-
-## START unit test numberEmptyScans ##
-test_that("numberEmptyScans works properly.", {
-    expect_error(numberEmptyScans(NULL), "unable to find an inherited method")
-    expect_error(numberEmptyScans(1:10), "unable to find an inherited method")
-    expect_equal(as.numeric(numberEmptyScans(sps_sciex, msLevel = 1L)), 0)
-    expect_equal(as.numeric(numberEmptyScans(sps_sciex, msLevel = 2L)), 0)
-    expect_equal(as.numeric(numberEmptyScans(sps_sciex, msLevel = 3L)), 0)
-    
-    ## create one Spectra object with one missing entry
-    spd <- DataFrame(
-        msLevel = c(2L, 2L), polarity = c(1L, 1L),
-        id = c("unknown", "HMDB0000001"), 
-        name = c("unknown", "1-Methylhistidine"))
-    ## Assign m/z and intensity values
-    spd$mz <- list(
-        c(NaN), c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16))
-    spd$intensity <- list(
-        c(NaN), c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643))
-    sps_tmp <- Spectra(spd)
-    expect_equal(as.numeric(numberEmptyScans(sps_tmp, msLevel = 2L)), 1)
-                 
-    ## test attributes
-    tmp <- numberEmptyScans(sps_sciex, msLevel = 1L)
-    expect_equal(names(attributes(tmp)), "numberEmptyScans")
-    expect_equal(attr(tmp, "numberEmptyScans"), "MS:4000099")
-    tmp <- numberEmptyScans(sps_sciex, msLevel = 2L)
-    expect_equal(names(attributes(tmp)), "numberEmptyScans")
-    expect_equal(attr(tmp, "numberEmptyScans"), "MS:4000100")
-    tmp <- numberEmptyScans(sps_sciex, msLevel = 3L)
-    expect_equal(names(attributes(tmp)), "numberEmptyScans")
-    expect_equal(attr(tmp, "numberEmptyScans"), "MS:4000101")
-})
-## END unit test numberEmptyScans ##
 
 ## START unit test ratioCharge1over2 ##
 test_that("ratioCharge1over2 works properly.", {
@@ -742,10 +744,10 @@ test_that("ratioCharge1over2 works properly.", {
     ## test attributes
     tmp <- ratioCharge1over2(sps_sciex, identificationLevel = "all")
     expect_equal(names(attributes(tmp)), "ratioCharge1over2")
-    expect_equal(attr(tmp, "ratioCharge1over2"), "MS:4000168")
+    expect_equal(attr(tmp, "ratioCharge1over2"), "MS:4000167")
     tmp <- ratioCharge1over2(sps_sciex, identificationLevel = "identified")
     expect_equal(names(attributes(tmp)), "ratioCharge1over2")
-    expect_equal(attr(tmp, "ratioCharge1over2"), "MS:4000167")
+    expect_equal(attr(tmp, "ratioCharge1over2"), "MS:4000168")
     tmp <- ratioCharge1over2(sps_sciex, identificationLevel = "unidentified")
     expect_equal(names(attributes(tmp)), NULL)
 })
@@ -780,10 +782,10 @@ test_that("ratioCharge3over2 works properly.", {
     ## test attributes
     tmp <- ratioCharge3over2(sps_sciex, identificationLevel = "all")
     expect_equal(names(attributes(tmp)), "ratioCharge3over2")
-    expect_equal(attr(tmp, "ratioCharge3over2"), "MS:4000170")
+    expect_equal(attr(tmp, "ratioCharge3over2"), "MS:4000169")
     tmp <- ratioCharge3over2(sps_sciex, identificationLevel = "identified")
     expect_equal(names(attributes(tmp)), "ratioCharge3over2")
-    expect_equal(attr(tmp, "ratioCharge3over2"), "MS:4000169")
+    expect_equal(attr(tmp, "ratioCharge3over2"), "MS:4000170")
     tmp <- ratioCharge3over2(sps_sciex, identificationLevel = "unidentified")
     expect_equal(names(attributes(tmp)), NULL)
 })
@@ -818,10 +820,10 @@ test_that("ratioCharge4over2 works properly.", {
     ## test attributes
     tmp <- ratioCharge4over2(sps_sciex, identificationLevel = "all")
     expect_equal(names(attributes(tmp)), "ratioCharge4over2")
-    expect_equal(attr(tmp, "ratioCharge4over2"), "MS:4000172")
+    expect_equal(attr(tmp, "ratioCharge4over2"), "MS:4000171")
     tmp <- ratioCharge4over2(sps_sciex, identificationLevel = "identified")
     expect_equal(names(attributes(tmp)), "ratioCharge4over2")
-    expect_equal(attr(tmp, "ratioCharge4over2"), "MS:4000171")
+    expect_equal(attr(tmp, "ratioCharge4over2"), "MS:4000172")
     tmp <- ratioCharge4over2(sps_sciex, identificationLevel = "unidentified")
     expect_equal(names(attributes(tmp)), NULL)
 })
@@ -854,18 +856,18 @@ test_that("meanCharge works properly.", {
     ## test attributes
     tmp <- meanCharge(sps_sciex, msLevel = 1, identificationLevel = "all")
     expect_equal(names(attributes(tmp)), "meanCharge")
-    expect_equal(attr(tmp, "meanCharge"), "MS:4000174")
+    expect_equal(attr(tmp, "meanCharge"), "MS:4000173")
     tmp <- meanCharge(sps_sciex, msLevel = 1, identificationLevel = "identified")
     expect_equal(names(attributes(tmp)), "meanCharge")
-    expect_equal(attr(tmp, "meanCharge"), "MS:4000173")
+    expect_equal(attr(tmp, "meanCharge"), "MS:4000174")
     tmp <- meanCharge(sps_sciex, msLevel = 1, identificationLevel = "unidentified")
     expect_equal(names(attributes(tmp)), NULL)
     tmp <- meanCharge(sps_sciex, msLevel = 2, identificationLevel = "all")
     expect_equal(names(attributes(tmp)), "meanCharge")
-    expect_equal(attr(tmp, "meanCharge"), "MS:4000174")
+    expect_equal(attr(tmp, "meanCharge"), "MS:4000173")
     tmp <- meanCharge(sps_sciex, msLevel = 2, identificationLevel = "identified")
     expect_equal(names(attributes(tmp)), "meanCharge")
-    expect_equal(attr(tmp, "meanCharge"), "MS:4000173")
+    expect_equal(attr(tmp, "meanCharge"), "MS:4000174")
     tmp <- meanCharge(sps_sciex, msLevel = 2, identificationLevel = "unidentified")
     expect_equal(names(attributes(tmp)), NULL)
 })
@@ -898,18 +900,18 @@ test_that("medianCharge works properly.", {
     ## test attributes
     tmp <- medianCharge(sps_sciex, msLevel = 1, identificationLevel = "all")
     expect_equal(names(attributes(tmp)), "medianCharge")
-    expect_equal(attr(tmp, "medianCharge"), "MS:4000176")
+    expect_equal(attr(tmp, "medianCharge"), "MS:4000175")
     tmp <- medianCharge(sps_sciex, msLevel = 1, identificationLevel = "identified")
     expect_equal(names(attributes(tmp)), "medianCharge")
-    expect_equal(attr(tmp, "medianCharge"), "MS:4000175")
+    expect_equal(attr(tmp, "medianCharge"), "MS:4000176")
     tmp <- medianCharge(sps_sciex, msLevel = 1, identificationLevel = "unidentified")
     expect_equal(names(attributes(tmp)), NULL)
     tmp <- medianCharge(sps_sciex, msLevel = 2, identificationLevel = "all")
     expect_equal(names(attributes(tmp)), "medianCharge")
-    expect_equal(attr(tmp, "medianCharge"), "MS:4000176")
+    expect_equal(attr(tmp, "medianCharge"), "MS:4000175")
     tmp <- medianCharge(sps_sciex, msLevel = 2, identificationLevel = "identified")
     expect_equal(names(attributes(tmp)), "medianCharge")
-    expect_equal(attr(tmp, "medianCharge"), "MS:4000175")
+    expect_equal(attr(tmp, "medianCharge"), "MS:4000176")
     tmp <- medianCharge(sps_sciex, msLevel = 2, identificationLevel = "unidentified")
     expect_equal(names(attributes(tmp)), NULL)
 })

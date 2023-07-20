@@ -2,7 +2,8 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{rtIqrRate}
 \alias{rtIqrRate}
-\title{peptide identification rate of the interquartile RT period (MS:4000154)}
+\title{rate of the interquartile RT period for identified quantification 
+data points (MS:4000154)}
 \usage{
 rtIqrRate(
   spectra,
@@ -26,9 +27,14 @@ rtIqrRate(
 }
 \description{
 MS:4000154 \cr
-"The identification rate of peptides for the interquartile retention time 
-period, in peptides per second. Higher rates indicate efficient sampling 
-and identification." [PSI:MS] \cr
+"The rate of identified quantification data points for the interquartile 
+retention time period, in identified quantification data points per second. 
+Higher rates indicate efficient sampling and identification. These data 
+points may be for example XIC profiles, isotopic pattern areas, or reporter 
+ions (see MS:1001805). The used type should be noted in the metadata or 
+analysis methods section of the recording file for the respective run. In 
+case of multiple acceptance criteria (FDR) available in proteomics, PSM-level 
+FDR should be used for better comparability." [PSI:MS]\cr
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
@@ -45,6 +51,7 @@ MS:4000154 \cr
 is_a: MS:4000003 ! single value \cr
 is_a: MS:4000008 ! ID based \cr
 is_a: MS:4000017 ! chromatogram metric \cr
+synonym: "C-2B"  RELATED [PMID:19837981] \cr
 
 An attribute will only be returned if \code{identificationLevel} is 
 \code{"identified"}.

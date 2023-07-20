@@ -2,9 +2,9 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{precursorIntensityMean}
 \alias{precursorIntensityMean}
-\title{precursor intensity distribution mean (MS:4000117),
-identified precursor intensity distribution mean (MS:4000163), or
-unidentified precursor intensity distribution mean (MS:4000164)}
+\title{MS2 precursor intensity distribution mean (MS:4000117),
+identified MS2 precursor intensity distribution mean (MS:4000163), or
+unidentified MS2 precursor intensity distribution mean (MS:4000164)}
 \usage{
 precursorIntensityMean(
   spectra,
@@ -33,12 +33,12 @@ distribution of the precursors informs about the dynamic range of the
 acquisition." [PSI:MS] \cr
 
 MS:4000163 \cr
-"From the distribution of identified precursor intensities, the mean. The 
+"From the distribution of identified MS2 precursor intensities, the mean. The 
 intensity distribution of the identified precursors informs about the dynamic 
 range of the acquisition in relation to identifiability." [PSI:MS] \cr
 
 MS:4000164 \cr
-"From the distribution of unidentified precursor intensities, the mean. The 
+"From the distribution of unidentified MS2 precursor intensities, the mean. The 
 intensity distribution of the unidentified precursors informs about the 
 dynamic range of the acquisition in relation to identifiability." 
 [PSI:MS] \cr
@@ -53,6 +53,7 @@ The metric is calculated as follows: \cr
 MS:4000117 \cr
 is_a: MS:4000003 ! single value \cr
 relationship: has_metric_category MS:4000009 ! ID free metric \cr
+relationship: has_metric_category MS:4000022 ! MS2 metric \cr
 relationship: has_value_concept STATO:0000401 ! sample mean \cr
 relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
 relationship: has_units MS:1000043 ! intensity unit \cr
@@ -60,6 +61,7 @@ relationship: has_units MS:1000043 ! intensity unit \cr
 MS:4000163 \cr
 is_a: MS:4000003 ! single value \cr
 is_a: MS:4000008 ! ID based \cr
+relationship: has_metric_category MS:4000022 ! MS2 metric \cr
 relationship: has_value_concept STATO:0000401 ! sample mean \cr
 relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
 relationship: has_units MS:1000043 ! intensity unit \cr
@@ -67,6 +69,7 @@ relationship: has_units MS:1000043 ! intensity unit \cr
 MS:4000164 \cr
 is_a: MS:4000003 ! single value \cr
 is_a: MS:4000008 ! ID based \cr
+relationship: has_metric_category MS:4000022 ! MS2 metric \cr
 relationship: has_value_concept STATO:0000401 ! sample mean \cr
 relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
 relationship: has_units MS:1000043 ! intensity unit \cr

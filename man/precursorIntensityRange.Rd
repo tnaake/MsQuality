@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{precursorIntensityRange}
 \alias{precursorIntensityRange}
-\title{precursor intensity range (MS:4000160)}
+\title{MS2 precursor intensity range (MS:4000160)}
 \usage{
 precursorIntensityRange(spectra, msLevel = 1, ...)
 }
@@ -18,7 +18,9 @@ precursorIntensityRange(spectra, msLevel = 1, ...)
 }
 \description{
 MS:4000160 \cr
-"Minimum and maximum precursor intensity recorded." [PSI:MS] \cr
+"Minimum and maximum MS2 precursor intensity recorded. The intensity range 
+of the precursors informs about the dynamic range of the acquisition." 
+[PSI:MS] \cr
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
@@ -28,12 +30,10 @@ returned.
 }
 \details{
 MS:4000160 \cr
-is_a: MS:4000009 ! ID free \cr
 is_a: MS:4000001 ! QC metric \cr
 is_a: MS:4000004 ! n-tuple \cr
-
-The intensity range of the precursors informs about the dynamic range of 
-the acquisition.
+is_a: MS:4000009 ! ID free \cr
+relationship: has_metric_category MS:4000022 ! MS2 metric
 }
 \examples{
 library(S4Vectors)

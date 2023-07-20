@@ -3,7 +3,7 @@
 \name{medianTicOfRtRange}
 \alias{medianTicOfRtRange}
 \title{median of TIC values in the shortest RT range in which half of the 
-peptides are identified (MS:4000159)}
+quantification data points are identified (MS:4000159)}
 \usage{
 medianTicOfRtRange(
   spectra,
@@ -28,7 +28,12 @@ medianTicOfRtRange(
 \description{
 MS:4000159 \cr
 "Median of TIC values in the shortest RT range in which half of the 
-peptides are identified"  [PSI:MS] \cr
+quantification data points are identified. These data points may be for 
+example XIC profiles, isotopic pattern areas, or reporter ions 
+(see MS:1001805). The used type should be noted in the metadata or analysis 
+methods section of the recording file for the respective run. In case of 
+multiple acceptance criteria (FDR) available in proteomics, PSM-level FDR 
+should be used for better comparability." [PSI:MS]  \cr
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
@@ -45,9 +50,10 @@ and return it.
 }
 \details{
 MS:4000159 \cr
+is_a: MS:4000001 ! QC metric \cr
 is_a: MS:4000003 ! single value \cr
 is_a: MS:4000008 ! ID based \cr
-is_a: MS:4000001 ! QC metric \cr
+synonym: "MS1-2B"  RELATED [PMID:19837981]
 
 The function \code{medianTicOfRtRange} uses the function \code{ionCount} as an 
 equivalent to the TIC.

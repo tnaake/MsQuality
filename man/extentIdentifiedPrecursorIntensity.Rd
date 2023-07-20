@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{extentIdentifiedPrecursorIntensity}
 \alias{extentIdentifiedPrecursorIntensity}
-\title{extent of identified precursor intensity (MS:4000157)}
+\title{extent of identified MS2 precursor intensity (MS:4000157)}
 \usage{
 extentIdentifiedPrecursorIntensity(
   spectra,
@@ -26,8 +26,13 @@ extentIdentifiedPrecursorIntensity(
 }
 \description{
 MS:4000157 \cr
-"Ratio of 95th over 5th percentile of precursor intensity for identified 
-peptides. Can be used to approximate the dynamic range of signal." 
+"Ratio of 95th over 5th percentile of MS2 precursor intensity for all 
+quantification data points after user-defined acceptance criteria are 
+applied. Can be used to approximate the dynamic range of signal. The used 
+type of identification should be noted in the metadata or analysis methods 
+section of the recording file for the respective run. In case of multiple 
+acceptance criteria (FDR) available in proteomics, PSM-level FDR should 
+be used for better comparability." [PSI:MS] 
 [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
@@ -40,9 +45,11 @@ and returned. \cr
 }
 \details{
 MS:4000157 \cr
+is_a: MS:4000001 ! QC metric \cr
 is_a: MS:4000003 ! single value \cr
 is_a: MS:4000008 ! ID based \cr
-is_a: MS:4000001 ! QC metric \cr
+relationship: has_metric_category MS:4000022 ! MS2 metric \cr
+synonym: "MS1-3A"  RELATED [PMID:19837981] \cr
 
 Precursor intensity values that are \code{NA} are removed. \cr
 

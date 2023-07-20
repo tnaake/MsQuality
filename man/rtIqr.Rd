@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{rtIqr}
 \alias{rtIqr}
-\title{interquartile retention time period for peptide identifications 
+\title{interquartile RT period for identified quantification data points
 (MS:4000153)}
 \usage{
 rtIqr(
@@ -27,9 +27,14 @@ rtIqr(
 }
 \description{
 MS:4000153 \cr
-"The interquartile retention time period, in seconds, for all peptide 
-identifications over the complete run. Longer times indicate better 
-chromatographic separation." [PSI:MS] \cr
+The interquartile retention time period, in seconds, for all quantification 
+data points after user-defined acceptance criteria are applied over the 
+complete run. Longer times indicate better chromatographic separation. 
+These data points may be for example XIC profiles, isotopic pattern areas, 
+or reporter ions (see MS:1001805). The used type should be noted in the 
+metadata or analysis methods section of the recording file for the respective 
+run. In case of multiple acceptance criteria (FDR) available in proteomics, 
+PSM-level FDR should be used for better comparability." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr
@@ -42,6 +47,7 @@ MS:4000153 \cr
 is_a: MS:4000003 ! single value \cr
 is_a: MS:4000008 ! ID based \cr
 is_a: MS:4000017 ! chromatogram metric \cr
+synonym: "C-2A"  RELATED [PMID:19837981] \cr
 
 Retention time values that are \code{NA} are removed.
 

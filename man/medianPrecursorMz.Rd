@@ -2,7 +2,8 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{medianPrecursorMz}
 \alias{medianPrecursorMz}
-\title{precursor median m/z for IDs (MS:4000152)}
+\title{MS2 precursor median m/z of identified quantification data points
+(MS:4000152)}
 \usage{
 medianPrecursorMz(
   spectra,
@@ -26,8 +27,13 @@ medianPrecursorMz(
 }
 \description{
 MS:4000152 \cr
-"Median m/z value for all identified peptides (unique ions) after 
-FDR." [PSI:MS] \cr
+Median m/z value for MS2 precursors of all quantification data points after 
+user-defined acceptance criteria are applied. These data points may be for 
+example XIC profiles, isotopic pattern areas, or reporter ions 
+(see MS:1001805). The used type should be noted in the metadata or 
+analysis methods section of the recording file for the respective run. In 
+case of multiple acceptance criteria (FDR) available in proteomics, PSM-level 
+FDR should be used for better comparability." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
@@ -38,7 +44,7 @@ The metric is calculated as follows: \cr
 MS:4000152 \cr
 is_a: MS:4000003 ! single value \cr
 is_a: MS:4000008 ! ID based \cr
-is_a: MS:4000021 ! MS1 metric \cr
+relationship: has_metric_category MS:4000022 ! MS2 metric
 is_a: MS:4000020 ! ion source metric \cr
 
 An attribute will only be returned if \code{identificationLevel} is

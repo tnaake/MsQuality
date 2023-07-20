@@ -3,7 +3,7 @@
 \name{medianTicRtIqr}
 \alias{medianTicRtIqr}
 \title{median of TIC values in the RT range in which the middle half of 
-peptides are identified (MS:4000158)}
+quantification data points are identified (MS:4000158)}
 \usage{
 medianTicRtIqr(
   spectra,
@@ -27,8 +27,13 @@ medianTicRtIqr(
 }
 \description{
 MS:4000158 \cr
-"Median of TIC values in the RT range in which half of peptides are 
-identified (RT values of Q1 to Q3 of identifications)" [PSI:MS] \cr
+"Median of TIC values in the RT range in which half of quantification data 
+points are identified (RT values of Q1 to Q3 of identifications). These 
+data points may be for example XIC profiles, isotopic pattern areas, or 
+reporter ions (see MS:1001805). The used type should be noted in the metadata 
+or analysis methods section of the recording file for the respective run. 
+In case of multiple acceptance criteria (FDR) available in proteomics, 
+PSM-level FDR should be used for better comparability." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
@@ -42,9 +47,9 @@ removed) and the median value is returned. \cr
 }
 \details{
 MS:4000158 \cr
+is_a: MS:4000001 ! QC metric \cr
 is_a: MS:4000003 ! single value \cr
 is_a: MS:4000008 ! ID based \cr
-is_a: MS:4000001 ! QC metric \cr
 
 The function \code{medianTicRtIqr} uses the function [ionCount()] as an 
 equivalent to the TIC.

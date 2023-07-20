@@ -57,8 +57,8 @@ relationship: has_units UO:0000189 ! count unit \cr
 relationship: has_value_type xsd:integer ! The allowed value-type for this CV 
 term \cr
 
-#' For *MS:4000099*, \code{msLevel} is set to 1. For *MS:4000100*, \code{msLevel} is 
-set to 2. For *MS:4000101*, \code{msLevel} is set to 3.
+#' For *MS:4000099*, \code{msLevel} is set to 1. For *MS:4000100*, 
+\code{msLevel} is set to 2. For *MS:4000101*, \code{msLevel} is set to 3.
 
 An attribute will only be returned if \code{msLevel} is either 1, 2, or 3.
 }

@@ -27,7 +27,7 @@ The metric is calculated as follows: \cr
 \details{
 MS:4000155 \cr
 is_a: MS:4000003 ! single value \cr
-is_a: MS:40000MS ! ID free \cr
+is_a: MS:4000009 ! ID free \cr
 is_a: MS:4000017 ! chromatogram metric \cr
 
 The sum of the TIC is returned as an equivalent to the area. \cr
