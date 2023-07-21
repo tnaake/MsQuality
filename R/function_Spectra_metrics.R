@@ -7,7 +7,7 @@
 #' "The retention time duration of the chromatography in seconds." [PSI:MS] \cr 
 #' 
 #' The metric is calculated as follows: \cr 
-#' (1) the retention time associated to the individual Spectra is obtained, \cr  
+#' (1) the retention time associated to the \code{Spectra} object is obtained, \cr  
 #' (2) the maximum and the minimum of the retention time is obtained, \cr  
 #' (3) the difference between the maximum and the minimum is calculated and 
 #' returned. \cr 
@@ -81,8 +81,8 @@ chromatographyDuration <- function(spectra, ...) {
 #' (1) the \code{Spectra} object is ordered according to the retention time, \cr 
 #' (2) the cumulative sum of the ion count is calculated (TIC), \cr 
 #' (3) the quantiles are calculated according to the \code{probs} argument, e.g.
-#' when \code{probs} is set to \code{c(0, 0.25, 0.5, 0.75, 1)} the 0\%, 25\%, 50\%, 75\% 
-#' and 100\% quantile is calculated, \cr 
+#' when \code{probs} is set to \code{c(0, 0.25, 0.5, 0.75, 1)} the 0\%, 25\%, 
+#' 50\%, 75\%, and 100\% quantile is calculated, \cr 
 #' (4) the retention time/relative retention time (retention time divided by 
 #' the total run time taking into account the minimum retention time) is 
 #' calculated, \cr 
@@ -385,20 +385,20 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
 #' For calculation of MS:400057 set \code{mode = "TIC_change"}. \cr
 #' 
 #' MS:4000058 \cr
-#' The log ratios of successive TIC quartiles. The metric's value triplet 
+#' "The log ratios of successive TIC quartiles. The metric's value triplet 
 #' represents the log ratios of TIC-Q2 to TIC-Q1, TIC-Q3 to TIC-Q2, 
 #' TIC-max to TIC-Q3." [PSI:MS] \cr
 #' For calculation of MS:400058 set \code{mode = "TIC"}. \cr
 #'
 #' The metric is calculated as follows: \cr
-#' (1) the TIC (\code{ionCount}) of the  \code{spectra} is calculated per scan
-#' event (with spectra ordered by retention time), \cr
+#' (1) the TIC (\code{ionCount}) of the \code{Spectra} object is calculated 
+#' per scan event (with spectra ordered by retention time), \cr
 #' (2) for *MS:4000057*, the differences between TIC values are calculated 
 #' between subsequent scan events,
 #' for *MS:4000058*, the TIC values between subsequent scan events are taken
 #' as they are, \cr
 #' (3) for *MS:4000057* and *MS:4000058* the ratios between the 25\%, 50\%, 
-#' 75\%, and 100\% quantile to the 25% quantile of the values of (2) are 
+#' 75\%, and 100\% quantile to the 25\% quantile of the values of (2) are 
 #' calculated.
 #' Alternatively, if \code{relativeTo = "Q1"}, the ratios are calculated 
 #' between the 50\%/25\%, 75\%/25\%, and 100\%/25\% quantiles, \cr
@@ -568,6 +568,11 @@ ticQuartileToQuartileLogRatio <- function(spectra,
 #'
 #' For *MS:4000059*, \code{msLevel} is set to 1. For *MS:4000060*, 
 #' \code{msLevel} is set to 2.
+#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr
+#' (2) the number of the spectra are obtained (\code{length} of \code{Spectra})
+#' and returned.  
 #'
 #' @details
 #' MS:4000059 \cr
@@ -654,7 +659,7 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' The metric is calculated as follows: \cr
 #' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-#' (2) the m/z values of the peaks within \code{spectra} are obtained, \cr 
+#' (2) the m/z values of the peaks within the \code{Spectra} object are obtained, \cr 
 #' (3) the minimum and maximum m/z values are obtained and returned. 
 #'
 #' @details
@@ -726,10 +731,10 @@ mzAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
 #' "Upper and lower limit of retention time at which spectra are recorded." 
 #' [PSI:MS] \cr
 #' 
-#' #' The metric is calculated as follows: \cr
+#' The metric is calculated as follows: \cr
 #' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-#' (2) the retention time values of the features within \code{spectra} are 
-#' obtained, \cr 
+#' (2) the retention time values of the features within the \code{Spectra} 
+#' object are obtained, \cr 
 #' (3) the minimum and maximum retention time values are obtained and 
 #' returned. \cr
 #' 
@@ -796,7 +801,8 @@ rtAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
 
 #' @name msSignal10xChange
 #' 
-#' @title MS1 signal jump/fall (10x) count (MS:4000097/MS:4000098)
+#' @title MS1 signal jump (10x) count (MS:4000097) or MS1 signal fall (10x) 
+#' count (MS:4000098)
 #' 
 #' @description 
 #' MS:4000097 \cr
@@ -811,7 +817,8 @@ rtAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' The metric is calculated as follows: \cr
 #' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-#' (2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
+#' (2) the intensity of the precursor ions within the \code{Spectra} object are 
+#' obtained, \cr 
 #' (3) the intensity values of the features are obtained via the ion count, \cr 
 #' (4) the signal jumps/declines of the intensity values with the two 
 #' subsequent intensity values is calculated, \cr 
@@ -939,7 +946,14 @@ msSignal10xChange <- function(spectra, change = "jump", msLevel = 1L, ...) {
 #' MS:4000101 \cr
 #' "Number of MS3 scans where the scans' peaks intensity sums to 0 
 #' (i.e. no peaks or only 0-intensity peaks)." [PSI:MS] \cr
-#'
+#' 
+#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
+#' (2) the intensities per entry are obtained, \cr
+#' (3) the number of intensity entries that are \code{NULL}, \code{NA}, or 
+#' that have a sum of \code{0} are obtained and returned. 
+#' 
 #' @details 
 #' MS:4000099 \cr
 #' is_a: MS:4000003 ! single value \cr
@@ -1068,7 +1082,8 @@ numberEmptyScans <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' The metric is calculated as follows: \cr
 #' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-#' (2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
+#' (2) the intensity of the precursor ions within the \code{Spectra} object 
+#' are obtained, \cr 
 #' (3) the 25\%, 50\%, and 75\% quantile of the  precursor intensity values are 
 #' obtained (\code{NA} values are removed) and returned. \cr
 #' 
@@ -1177,7 +1192,7 @@ precursorIntensityQuartiles <- function(spectra, msLevel = 1L,
 #' 
 #' @description
 #' MS:4000117 \cr
-#' "From the distribution of precursor intensities, the mean. The intensity 
+#' "From the distribution of MS2 precursor intensities, the mean. The intensity 
 #' distribution of the precursors informs about the dynamic range of the 
 #' acquisition." [PSI:MS] \cr
 #' 
@@ -1194,7 +1209,7 @@ precursorIntensityQuartiles <- function(spectra, msLevel = 1L,
 #' 
 #' The metric is calculated as follows: \cr
 #' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-#' (2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
+#' (2) the intensity of the precursor ions within the \code{Spectra} object are obtained, \cr 
 #' (3) the mean of the precursor intensity values is obtained 
 #' (\code{NA} values are removed) and returned. \cr
 #' 
@@ -1321,10 +1336,9 @@ precursorIntensityMean <- function(spectra, msLevel = 1L,
 #' acceptance criteria (FDR) available in proteomics, PSM-level FDR should be 
 #' used for better comparability." [PSI:MS] \cr
 #' 
-#' The metric is calculated as follows:
-#' 
+#' The metric is calculated as follows: \cr
 #' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-#' (2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
+#' (2) the intensity of the precursor ions within the \code{Spectra} object are obtained, \cr 
 #' (3) the standard deviation of precursor intensity values is obtained 
 #' (\code{NA} values are removed) and returned. 
 #' 
@@ -2288,7 +2302,7 @@ medianTicOfRtRange <- function(spectra, msLevel = 1L,
 #' 
 #' The metric is calculated as follows: \cr
 #' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-#' (2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
+#' (2) the intensity of the precursor ions within the \code{Spectra} object are obtained, \cr 
 #' (3) the minimum and maximum precursor intensity values are obtained and 
 #' returned. 
 #' 
