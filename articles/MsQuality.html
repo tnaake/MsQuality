@@ -325,189 +325,787 @@ functions.</p>
 <p>The following list gives a brief explanation for these metrics.
 Further information may be found at the <a href="https://github.com/HUPO-PSI/mzQC" class="external-link">HUPO-PSI mzQC project page</a>
 or in the respective help file for the quality metric (accessible by
-e.g. entering <code><a href="../reference/chromatographyDuration.html">?chromatographyDuration</a></code> to the R console).
-Currently, all quality metrics can be calculated for both
-<code>Spectra</code> and <code>MsExperiment</code> objects.</p>
+e.g. entering <code><a href="../reference/chromatographyDuration.html">?chromatographyDuration</a></code> to the R console). We
+also give explanation on how the metric is calculated in
+<code>MsQuality</code>. Currently, all quality metrics can be calculated
+for both <code>Spectra</code> and <code>MsExperiment</code> objects.</p>
 <ul>
-<li><p><em>chromatographyDuration</em>, <strong>chromatography
+<li>
+<em>chromatographyDuration</em>, <strong>chromatography
 duration</strong> (MS:4000053), “The retention time duration of the
-chromatography in seconds.” [PSI:MS];</p></li>
-<li><p><em>ticQuartersRtFraction</em>, <strong>TIC quarters RT
+chromatography in seconds.” [PSI:MS]; The metric is calculated as
+follows:
+<ol style="list-style-type: decimal">
+<li>the retention time associated to the <code>Spectra</code> object is
+obtained,</li>
+<li>the maximum and the minimum of the retention time is obtained,</li>
+<li>the difference between the maximum and the minimum is calculated and
+returned.</li>
+</ol>
+</li>
+<li>
+<em>ticQuartersRtFraction</em>, <strong>TIC quarters RT
 fraction</strong> (MS:4000054), “The interval when the respective
 quarter of the TIC accumulates divided by retention time duration.”
-[PSI:MS];</p></li>
-<li><p><em>rtOverMsQuarters</em>, <strong>MS1 quarter RT
-fraction</strong> (MS:4000055), “The interval used for acquisition of
-the first, second, third, and fourth quarter of all MS1 events divided
-by retention time duration.” [PSI:MS];</p></li>
-<li><p><em>rtOverMsQuarters</em>, <strong>MS2 quarter RT
-fraction</strong> (MS:4000056), “The interval used for acquisition of
-the first, second, third, and fourth quarter of all MS2 events divided
-by retention time duration.” [PSI:MS];</p></li>
-<li><p><em>ticQuartileToQuartileLogRatio</em>, <strong>MS1 TIC-change
-quartile ratios</strong> (MS:4000057), “The log ratios of successive
+[PSI:MS]; The metric is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is ordered according to the
+retention time,<br>
+</li>
+<li>the cumulative sum of the ion count is calculated (TIC),</li>
+<li>the quantiles are calculated according to the <code>probs</code>
+argument, e.g. when <code>probs</code> is set to
+<code>c(0, 0.25, 0.5, 0.75, 1)</code> the 0%, 25%, 50%, 75%, and 100%
+quantile is calculated,</li>
+<li>the retention time/relative retention time (retention time divided
+by the total run time taking into account the minimum retention time) is
+calculated,</li>
+<li>the (relative) duration of the LC run after which the cumulative TIC
+exceeds (for the first time) the respective quantile of the cumulative
+TIC is calculated and returned.</li>
+</ol>
+</li>
+<li>
+<em>rtOverMsQuarters</em>, <strong>MS1 quarter RT fraction</strong>
+(MS:4000055), “The interval used for acquisition of the first, second,
+third, and fourth quarter of all MS1 events divided by retention time
+duration.” [PSI:MS], <code>msLevel = 1L</code>; The metric is calculated
+as follows:
+<ol style="list-style-type: decimal">
+<li>the retention time duration of the whole <code>Spectra</code> object
+is determined (taking into account all the MS levels),</li>
+<li>the <code>Spectra</code> object is filtered according to the MS
+level and subsequently ordered according to the retention time<br>
+</li>
+<li>the MS events are split into four (approximately) equal parts,</li>
+<li>the relative retention time is calculated (using the retention time
+duration from (1) and taking into account the minimum retention
+time),</li>
+<li>the relative retention time values associated to the MS event parts
+are returned.</li>
+</ol>
+</li>
+<li>
+<em>rtOverMsQuarters</em>, <strong>MS2 quarter RT fraction</strong>
+(MS:4000056), “The interval used for acquisition of the first, second,
+third, and fourth quarter of all MS2 events divided by retention time
+duration.” [PSI:MS], <code>msLevel = 2L</code>; The metric is calculated
+as follows:
+<ol style="list-style-type: decimal">
+<li>the retention time duration of the whole <code>Spectra</code> object
+is determined (taking into account all the MS levels),</li>
+<li>the <code>Spectra</code> object is filtered according to the MS
+level and subsequently ordered according to the retention time<br>
+</li>
+<li>the MS events are split into four (approximately) equal parts,</li>
+<li>the relative retention time is calculated (using the retention time
+duration from (1) and taking into account the minimum retention
+time),</li>
+<li>the relative retention time values associated to the MS event parts
+are returned.</li>
+</ol>
+</li>
+<li>
+<em>ticQuartileToQuartileLogRatio</em>, <strong>MS1 TIC-change
+quartile ratios</strong> (MS:4000057), ““The log ratios of successive
 TIC-change quartiles. The TIC changes are the list of MS1 total ion
 current (TIC) value changes from one to the next scan, produced when
 each MS1 TIC is subtracted from the preceding MS1 TIC. The metric’s
 value triplet represents the log ratio of the TIC-change Q2 to Q1, Q3 to
-Q2, TIC-change-max to Q3” [PSI:MS],
-<code>mode = "TIC_change"</code>;</p></li>
-<li><p><em>ticQuartileToQuartileLogRatio</em>, <strong>MS1 TIC quartile
-ratios</strong> (MS:4000058), The log ratios of successive TIC
-quartiles. The metric’s value triplet represents the log ratios of
-TIC-Q2 to TIC-Q1, TIC-Q3 to TIC-Q2, TIC-max to TIC-Q3.” [PSI:MS], `mode
-= “TIC”;</p></li>
-<li><p><em>numberSpectra</em>, <strong>number of MS1 spectra</strong>
-MS:4000059), “The number of MS1 events in the run.” [PSI:MS];</p></li>
+Q2, TIC-change-max to Q3” [PSI:MS], <code>mode = "TIC_change"</code>,
+<code>relativeTo = "previous"</code>, <code>msLevel = 1L</code>; The
+metric is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the TIC (<code>ionCount</code>) of the <code>Spectra</code> object
+is calculated per scan event (with spectra ordered by retention
+time),</li>
+<li>the differences between TIC values are calculated between subsequent
+scan events,</li>
+<li>the ratios between the 25%, 50%, 75%, and 100% quantile to the 25%
+quantile of the values of (2) are calculated,</li>
+<li>the <code>log</code> values of the ratios are returned.</li>
+</ol>
+</li>
 <li>
-<p><em>numberSpectra</em>, <strong>number of MS2 spectra</strong>
-(MS:4000060), “The number of MS2 events in the run.” [PSI:MS];</p>
-<ul>
+<em>ticQuartileToQuartileLogRatio</em>, <strong>MS1 TIC quartile
+ratios</strong> (MS:4000058), “The log ratios of successive TIC
+quartiles. The metric’s value triplet represents the log ratios of
+TIC-Q2 to TIC-Q1, TIC-Q3 to TIC-Q2, TIC-max to TIC-Q3.” [PSI:MS],
+<code>mode = "TIC"</code>, <code>relativeTo = "previous"</code>,
+<code>msLevel = 1L</code>; The metric is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the TIC (<code>ionCount</code>) of the <code>Spectra</code> object
+is calculated per scan event (with spectra ordered by retention
+time),</li>
+<li>the TIC values between subsequent scan events are taken as they
+are,</li>
+<li>the ratios between the 25%, 50%, 75%, and 100% quantile to the 25%
+quantile of the values of (2) are calculated.</li>
+<li>The <code>log</code> values of the ratios are returned.</li>
+</ol>
+</li>
+<li>
+<em>numberSpectra</em>, <strong>number of MS1 spectra</strong>
+MS:4000059), “The number of MS1 events in the run.” [PSI:MS],
+<code>msLevel = 1L</code>; The metric is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the number of the spectra are obtained (<code>length</code> of
+<code>Spectra</code>) and returned.</li>
+</ol>
+</li>
+<li>
+<em>numberSpectra</em>, <strong>number of MS2 spectra</strong>
+(MS:4000060), “The number of MS2 events in the run.” [PSI:MS],
+<code>msLevel = 2L</code>; The metric is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the number of the spectra are obtained (<code>length</code> of
+<code>Spectra</code>) and returned.</li>
+</ol>
+</li>
 <li>
 <em>mzAcquisitionRange</em>, <strong>m/z acquisition range</strong>
-(MS:4000069), “Upper and lower limit of m/z values at which spectra are
-recorded.” [PSI:MS];</li>
-</ul>
+(MS:4000069), “Upper and lower limit of m/z precursor values at which
+MSn spectra are recorded.” [PSI:MS]; The metric is calculated as
+follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the m/z values of the peaks within the <code>Spectra</code> object
+are obtained,</li>
+<li>the minimum and maximum m/z values are obtained and returned.</li>
+</ol>
 </li>
-<li><p><em>rtAcquisitionRange</em>, <strong>Retention time acquisition
-range</strong> (MS:4000070), “Upper and lower limit of time at which
-spectra are recorded.” [PSI:MS];</p></li>
-<li><p><em>medianPrecursorMz</em>, <strong>precursor median m/z for
-IDs</strong> (MS:4000152), “Median m/z value for all identified peptides
-(unique ions) after FDR.” [PSI:MS];</p></li>
-<li><p>numberEmptyScans</p></li>
-<li><p><em>rtIqr</em>, <strong>interquartile RT period for peptide
-identifications</strong> (MS:4000153), “The interquartile retention time
-period, in seconds, for all peptide identifications over the complete
-run. Longer times indicate better chromatographic separation.”
-[PSI:MS];</p></li>
-<li><p><em>rtIqrRate</em>, <strong>Peptide identification rate of the
-interquartile RT period</strong> (MS:4000154), “The identification rate
-of peptides for the interquartile retention time period, in peptides per
-second. Higher rates indicate efficient sampling and identification.”
-[PSI:MS];</p></li>
-<li><p><em>areaUnderTic</em>, <strong>area under TIC</strong>
-(MS:4000155), “The area under the total ion chromatogram.”
-[PSI:MS];</p></li>
-<li><p><em>areaUnderTicRtQuantiles</em>, <strong>area under TIC RT
-quantiles</strong> (MS:4000156), “The area under the total ion
-chromatogram of the retention time quantiles. Number of quantiles are
-given by the n-tuple.” [PSI:MS];</p></li>
-<li><p><em>extentIdentifiedPrecursorIntensity</em>, <strong>extent of
-identified precursor intensity</strong> (MS:4000157), “Ratio of 95th
-over 5th percentile of precursor intensity for identified peptides. Can
-be used to approximate the dynamic range of signal.” [PSI:MS]</p></li>
-<li><p><em>medianTicRtIqr</em>, <strong>median of TIC values in the RT
-range in which the middle half of peptides are identified</strong>
-(MS:4000158), “Median of TIC values in the RT range in which half of
-peptides are identified (RT values of Q1 to Q3 of identifications)”
-[PSI:MS];</p></li>
-<li><p><em>medianTicOfRtRange</em>, <strong>Median of TIC values in the
-shortest RT range in which half of the peptides are identified</strong>
-(MS:4000159), “Median of TIC values in the shortest RT range in which
-half of the peptides are identified” [PSI:MS]</p></li>
-<li><p><em>precursorIntensityRange</em>, <strong>Precursor intensity
-range</strong> (MS:4000160), “Minimum and maximum precursor intensity
-recorded.” [PSI:MS];</p></li>
-<li><p><em>precursorIntensityQuartiles</em>, <strong>precursor intensity
-distribution Q1, Q2, Q3</strong> (MS:4000116), “From the distribution of
-precursor intensities, the quartiles Q1, Q2, Q3. The intensity
-distribution of the precursors informs about the dynamic range of the
-acquisition.” [PSI:MS];</p></li>
-<li><p><em>precursorIntensityQuartiles</em>, <strong>identified
-precursor intensity distribution Q1, Q2, Q3</strong> (MS:4000161), “From
-the distribution of identified precursor intensities, the quartiles Q1,
-Q2, Q3. The intensity distribution of the precursors informs about the
-dynamic range of the acquisition in relation to identifiability.”
-[PSI:MS];</p></li>
-<li><p><em>precursorIntensityQuartiles</em>, <strong>unidentified
-precursor intensity distribution Q1, Q2, Q3</strong> (MS:4000162), “From
-the distribution of unidentified precursor intensities, the quartiles
-Q1, Q2, Q3. The intensity distribution of the precursors informs about
-the dynamic range of the acquisition in relation to identifiability.”
-[PSI:MS];</p></li>
-<li><p><em>precursorIntensityMean</em>, <strong>precursor intensity
-distribution mean</strong> (MS:4000117), “From the distribution of
+<li>
+<em>rtAcquisitionRange</em>, <strong>retention time acquisition
+range</strong> (MS:4000070), “Upper and lower limit of retention time at
+which spectra are recorded.” [PSI:MS]; The metric is calculated as
+follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the retention time values of the features within the
+<code>Spectra</code> object are obtained,</li>
+<li>the minimum and maximum retention time values are obtained and
+returned.</li>
+</ol>
+</li>
+<li>
+<em>msSignal10xChange</em>, <strong>MS1 signal jump (10x)
+count</strong> (MS:4000097), “The number of times where MS1 TIC
+increased more than 10-fold between adjacent MS1 scans. An unusual high
+count of signal jumps or falls can indicate ESI stability issues.”
+[PSI:MS], <code>change = "jump"</code>, <code>msLevel = 1L</code>; The
+metric is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the intensity of the precursor ions within the <code>Spectra</code>
+object are obtained,</li>
+<li>the intensity values of the features are obtained via the ion
+count,<br>
+</li>
+<li>the signal jumps/declines of the intensity values with the two
+subsequent intensity values is calculated,</li>
+<li>the signal jumps by a factor of ten or more are counted and
+returned.</li>
+</ol>
+</li>
+<li>
+<em>msSignal10xChange</em>, <strong>MS1 signal fall (10x)
+count</strong> (MS:4000098), “The number of times where MS1 TIC
+decreased more than 10-fold between adjacent MS1 scans. An unusual high
+count of signal jumps or falls can indicate ESI stability issues.”
+[PSI:MS], <code>change = "fall"</code>, <code>msLevel = 1L</code>; The
+metric is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the intensity of the precursor ions within the <code>Spectra</code>
+object are obtained,</li>
+<li>the intensity values of the features are obtained via the ion
+count,</li>
+<li>the signal jumps/declines of the intensity values with the two
+subsequent intensity values is calculated,</li>
+<li>the signal declines by a factor of ten or more are counted and
+returned.</li>
+</ol>
+</li>
+<li>
+<em>numberEmptyScans</em>, <strong>number of empty MS1
+scans</strong> (MS:4000099), “Number of MS1 scans where the scans’ peaks
+intensity sums to 0 (i.e. no peaks or only 0-intensity peaks).”
+[PSI:MS], <code>msLevel = 1L</code>; The metric is calculated as
+follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the intensities per entry are obtained,</li>
+<li>the number of intensity entries that are <code>NULL</code>,
+<code>NA</code>, or that have a sum of <code>0</code> are obtained and
+returned.</li>
+</ol>
+</li>
+<li>
+<em>numberEmptyScans</em>, <strong>number of empty MS2
+scans</strong> (MS:4000100), “Number of MS2 scans where the scans’ peaks
+intensity sums to 0 (i.e. no peaks or only 0-intensity peaks).”
+[PSI:MS], <code>msLevel = 2L</code>; The metric is calculated as
+follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the intensities per entry are obtained,</li>
+<li>the number of intensity entries that are <code>NULL</code>,
+<code>NA</code>, or that have a sum of <code>0</code> are obtained and
+returned.</li>
+</ol>
+</li>
+<li>
+<em>numberEmptyScans</em>, <strong>number of empty MS3
+scans</strong> (MS:4000101), “Number of MS3 scans where the scans’ peaks
+intensity sums to 0 (i.e. no peaks or only 0-intensity peaks).”
+[PSI:MS], <code>msLevel = 3L</code>; The metric is calculated as
+follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the intensities per entry are obtained,</li>
+<li>the number of intensity entries that are <code>NULL</code>,
+<code>NA</code>, or that have a sum of <code>0</code> are obtained and
+returned.</li>
+</ol>
+</li>
+<li>
+<em>precursorIntensityQuartiles</em>, <strong>MS2 precursor
+intensity distribution Q1, Q2, Q3</strong> (MS:4000116), “From the
+distribution of MS2 precursor intensities, the quartiles Q1, Q2, Q3. The
+intensity distribution of the precursors informs about the dynamic range
+of the acquisition.” [PSI:MS], <code>identificationLevel = "all"</code>;
+The metric is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the intensity of the precursor ions within the <code>Spectra</code>
+object are obtained,</li>
+<li>the 25%, 50%, and 75% quantile of the precursor intensity values are
+obtained (<code>NA</code> values are removed) and returned.</li>
+</ol>
+</li>
+<li>
+<em>precursorIntensityMean</em>, <strong>MS2 precursor intensity
+distribution mean</strong> (MS:4000117), “From the distribution of MS2
 precursor intensities, the mean. The intensity distribution of the
 precursors informs about the dynamic range of the acquisition.”
-[PSI:MS];</p></li>
-<li><p><em>precursorIntensityMean</em>, <strong>identified precursor
-intensity distribution mean</strong> (MS:4000163), “From the
-distribution of identified precursor intensities, the mean. The
-intensity distribution of the precursors informs about the dynamic range
-of the acquisition in relation to identifiability.” [PSI:MS];</p></li>
-<li><p><em>precursorIntensityMean</em>, <strong>unidentified precursor
-intensity distribution mean</strong> (MS:4000164), “From the
-distribution of unidentified precursor intensities, the mean. The
-intensity distribution of the precursors informs about the dynamic range
-of the acquisition in relation to identifiability.” [PSI:MS];</p></li>
-<li><p><em>precursorIntensitySd</em>, <strong>precursor intensity
-distribution sigma</strong> (MS:4000118), “From the distribution of
+[PSI:MS], <code>identificationLevel = "all"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,<br>
+</li>
+<li>the intensity of the precursor ions within the <code>Spectra</code>
+object are obtained,</li>
+<li>the mean of the precursor intensity values is obtained
+(<code>NA</code> values are removed) and returned.</li>
+</ol>
+</li>
+<li>
+<em>precursorIntensitySd</em>, <strong>MS2 precursor intensity
+distribution sigma</strong> (MS:4000118), “From the distribution of MS2
 precursor intensities, the sigma value. The intensity distribution of
 the precursors informs about the dynamic range of the acquisition.”
-[PSI:MS];</p></li>
-<li><p><em>precursorIntensitySd</em>, <strong>identified precursor
+[PSI:MS], <code>identificationLevel = "all"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,<br>
+</li>
+<li>the intensity of the precursor ions within the <code>Spectra</code>
+object are obtained,</li>
+<li>the standard deviation of precursor intensity values is obtained
+(<code>NA</code> values are removed) and returned.</li>
+</ol>
+</li>
+<li>
+<em>medianPrecursorMz</em>, <strong>MS2 precursor median m/z of
+identified quantification data points</strong> (MS:4000152), “Median m/z
+value for MS2 precursors of all quantification data points after
+user-defined acceptance criteria are applied. These data points may be
+for example XIC profiles, isotopic pattern areas, or reporter ions (see
+MS:1001805). The used type should be noted in the metadata or analysis
+methods section of the recording file for the respective run. In case of
+multiple acceptance criteria (FDR) available in proteomics, PSM-level
+FDR should be used for better comparability.” [PSI:MS],
+<code>identificationLevel = "identified"</code>,
+<code>msLevel = 1L</code>; The metric is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the precursor m/z values are obtained,</li>
+<li>the median value is returned (<code>NA</code>s are removed).</li>
+</ol>
+</li>
+<li>
+<em>rtIqr</em>, <strong>interquartile RT period for identified
+quantification data points</strong> (MS:4000153), “The interquartile
+retention time period, in seconds, for all quantification data points
+after user-defined acceptance criteria are applied over the complete
+run. Longer times indicate better chromatographic separation. These data
+points may be for example XIC profiles, isotopic pattern areas, or
+reporter ions (see MS:1001805). The used type should be noted in the
+metadata or analysis methods section of the recording file for the
+respective run. In case of multiple acceptance criteria (FDR) available
+in proteomics, PSM-level FDR should be used for better comparability.”
+[PSI:MS], <code>identificationLevel = "identified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the retention time values are obtained,</li>
+<li>the interquartile range is obtained from the values and returned
+(<code>NA</code> values are removed).</li>
+</ol>
+</li>
+<li>
+<em>rtIqrRate</em>, <strong>rate of the interquartile RT period for
+identified quantification data points</strong> (MS:4000154), “The rate
+of identified quantification data points for the interquartile retention
+time period, in identified quantification data points per second. Higher
+rates indicate efficient sampling and identification. These data points
+may be for example XIC profiles, isotopic pattern areas, or reporter
+ions (see MS:1001805). The used type should be noted in the metadata or
+analysis methods section of the recording file for the respective run.
+In case of multiple acceptance criteria (FDR) available in proteomics,
+PSM-level FDR should be used for better comparability.” [PSI:MS],
+<code>identificationLevel = "identified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the retention time values are obtained,</li>
+<li>the 25% and 75% quantiles are obtained from the retention time
+values (<code>NA</code> values are removed),</li>
+<li>the number of eluted features between this 25% and 75% quantile is
+calculated,</li>
+<li>the number of features is divided by the interquartile range of the
+retention time and returned.</li>
+</ol>
+</li>
+<li>
+<em>areaUnderTic</em>, <strong>area under TIC</strong> (MS:4000155),
+“The area under the total ion chromatogram.” [PSI:MS]; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the sum of the ion counts are obtained and returned.</li>
+</ol>
+</li>
+<li>
+<em>areaUnderTicRtQuantiles</em>, <strong>area under TIC RT
+quantiles</strong> (MS:4000156), “The area under the total ion
+chromatogram of the retention time quantiles. Number of quantiles are
+given by the n-tuple.” [PSI:MS]; The metric is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,<br>
+</li>
+<li>the <code>Spectra</code> object is ordered according to the
+retention time,</li>
+<li>the 0%, 25%, 50%, 75%, and 100% quantiles of the retention time
+values are obtained,</li>
+<li>the ion count of the intervals between the 0%/25%, 25%/50%, 50%/75%,
+and 75%/100% are obtained,<br>
+</li>
+<li>the ion counts of the intervals are summed (TIC) and the values
+returned.</li>
+</ol>
+</li>
+<li>
+<em>extentIdentifiedPrecursorIntensity</em>, <strong>extent of
+identified MS2 precursor intensity</strong> (MS:4000157), “Ratio of 95th
+over 5th percentile of MS2 precursor intensity for all quantification
+data points after user-defined acceptance criteria are applied. Can be
+used to approximate the dynamic range of signal. The used type of
+identification should be noted in the metadata or analysis methods
+section of the recording file for the respective run. In case of
+multiple acceptance criteria (FDR) available in proteomics, PSM-level
+FDR should be used for better comparability.” [PSI:MS],
+<code>identificationLevel = "identified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the intensities of the precursor ions are obtained,</li>
+<li>the 5% and 95% quantile of these intensities are obtained (1NA1
+values are removed),</li>
+<li>the ratio between the 95% and the 5% intensity quantile is
+calculated and returned.</li>
+</ol>
+</li>
+<li>
+<em>medianTicRtIqr</em>, <strong>median of TIC values in the RT
+range in which the middle half of quantification data points are
+identified</strong> (MS:4000158), “Median of TIC values in the RT range
+in which half of quantification data points are identified (RT values of
+Q1 to Q3 of identifications). These data points may be for example XIC
+profiles, isotopic pattern areas, or reporter ions (see MS:1001805). The
+used type should be noted in the metadata or analysis methods section of
+the recording file for the respective run. In case of multiple
+acceptance criteria (FDR) available in proteomics, PSM-level FDR should
+be used for better comparability.” [PSI:MS],
+<code>identificationLevel = "identified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the <code>Spectra</code> object is ordered according to the
+retention time,</li>
+<li>the features between the 1st and 3rd quartile are obtained (half of
+the features that are present in the <code>Spectra</code> object),</li>
+<li>the ion count of the features within the 1st and 3rd quartile is
+obtained,</li>
+<li>the median value of the ion count is calculated (<code>NA</code>
+values are removed) and the median value is returned.</li>
+</ol>
+</li>
+<li>
+<em>medianTicOfRtRange</em>, <strong>median of TIC values in the
+shortest RT range in which half of the quantification data points are
+identified</strong> (MS:4000159), “Median of TIC values in the shortest
+RT range in which half of the quantification data points are identified.
+These data points may be for example XIC profiles, isotopic pattern
+areas, or reporter ions (see MS:1001805). The used type should be noted
+in the metadata or analysis methods section of the recording file for
+the respective run. In case of multiple acceptance criteria (FDR)
+available in proteomics, PSM-level FDR should be used for better
+comparability.” [PSI:MS],
+<code>identificationLevel = "identified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the <code>Spectra</code> object is ordered according to the
+retention time,<br>
+</li>
+<li>the number of features in the <code>Spectra</code> object is
+obtained and the number for half of the features is calculated,</li>
+<li>iterate through the features (always by taking the neighbouring half
+of features) and calculate the retention time range of the set of
+features,</li>
+<li>retrieve the set of features with the minimum retention time
+range,</li>
+<li>calculate from the set of (5) the median TIC (<code>NA</code> values
+are removed) and return it.</li>
+</ol>
+</li>
+<li>
+<em>precursorIntensityRange</em>, <strong>MS2 precursor intensity
+range</strong> (MS:4000160), “Minimum and maximum MS2 precursor
+intensity recorded. The intensity range of the precursors informs about
+the dynamic range of the acquisition.” [PSI:MS]; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the intensity of the precursor ions within the <code>Spectra</code>
+object are obtained,</li>
+<li>the minimum and maximum precursor intensity values are obtained and
+returned.</li>
+</ol>
+</li>
+<li>
+<em>precursorIntensityQuartiles</em>, <strong>identified MS2
+precursor intensity distribution Q1, Q2, Q3</strong> (MS:4000161), “From
+the distribution of identified MS2 precursor intensities, the quartiles
+Q1, Q2, Q3. The intensity distribution of the precursors informs about
+the dynamic range of the acquisition in relation to identifiability. The
+used type of identification should be noted in the metadata or analysis
+methods section of the recording file for the respective run. In case of
+multiple acceptance criteria (FDR) available in proteomics, PSM-level
+FDR should be used for better comparability.” [PSI:MS],
+<code>identificationLevel = "identified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the intensity of the precursor ions within the <code>Spectra</code>
+object are obtained,</li>
+<li>the 25%, 50%, and 75% quantile of the precursor intensity values are
+obtained (<code>NA</code> values are removed) and returned.</li>
+</ol>
+</li>
+<li>
+<em>precursorIntensityQuartiles</em>, <strong>unidentified MS2
+precursor intensity distribution Q1, Q2, Q3</strong> (MS:4000162), “From
+the distribution of unidentified MS2 precursor intensities, the
+quartiles Q1, Q2, Q3. The intensity distribution of the precursors
+informs about the dynamic range of the acquisition in relation to
+identifiability. The used type of identification should be noted in the
+metadata or analysis methods section of the recording file for the
+respective run. In case of multiple acceptance criteria (FDR) available
+in proteomics, PSM-level FDR should be used for better comparability.”
+[PSI:MS], <code>identificationLevel = "unidentified"</code>; The metric
+is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the intensity of the precursor ions within the <code>Spectra</code>
+object are obtained,</li>
+<li>the 25%, 50%, and 75% quantile of the precursor intensity values are
+obtained (<code>NA</code> values are removed) and returned.</li>
+</ol>
+</li>
+<li>
+<em>precursorIntensityMean</em>, <strong>identified MS2 precursor
+intensity distribution mean</strong> (MS:4000163), “From the
+distribution of identified MS2 precursor intensities, the mean. The
+intensity distribution of the identified precursors informs about the
+dynamic range of the acquisition in relation to identifiability.”
+[PSI:MS], <code>identificationLevel = "identified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,<br>
+</li>
+<li>the intensity of the precursor ions within the <code>Spectra</code>
+object are obtained,</li>
+<li>the mean of the precursor intensity values is obtained
+(<code>NA</code> values are removed) and returned.</li>
+</ol>
+</li>
+<li>
+<em>precursorIntensityMean</em>, <strong>unidentified MS2 precursor
+intensity distribution mean</strong> (MS:4000164), “From the
+distribution of unidentified MS2 precursor intensities, the mean. The
+intensity distribution of the unidentified precursors informs about the
+dynamic range of the acquisition in relation to identifiability.”
+[PSI:MS], <code>identificationLevel = "unidentified"</code>; The metric
+is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,<br>
+</li>
+<li>the intensity of the precursor ions within the <code>Spectra</code>
+object are obtained,</li>
+<li>the mean of the precursor intensity values is obtained
+(<code>NA</code> values are removed) and returned.</li>
+</ol>
+</li>
+<li>
+<em>precursorIntensitySd</em>, <strong>identified MS2 precursor
 intensity distribution sigma</strong> (MS:4000165), “From the
-distribution of identified precursor intensities, the sigma value. The
-intensity distribution of the precursors informs about the dynamic range
-of the acquisition in relation to identifiability.” [PSI:MS];</p></li>
-<li><p><em>precursorIntensitySD</em>, <strong>unidentified precursor
+distribution of identified MS2 precursor intensities, the sigma value.
+The intensity distribution of the precursors informs about the dynamic
+range of the acquisition in relation to identifiability. The used type
+of identification should be noted in the metadata or analysis methods
+section of the recording file for the respective run. In case of
+multiple acceptance criteria (FDR) available in proteomics, PSM-level
+FDR should be used for better comparability.” [PSI:MS],
+<code>identificationLevel = "identified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,<br>
+</li>
+<li>the intensity of the precursor ions within the <code>Spectra</code>
+object are obtained,</li>
+<li>the standard deviation of precursor intensity values is obtained
+(<code>NA</code> values are removed) and returned.</li>
+</ol>
+</li>
+<li>
+<em>precursorIntensitySD</em>, <strong>unidentified MS2 precursor
 intensity distribution sigma</strong> (MS:4000166), “From the
-distribution of unidentified precursor intensities, the sigma value. The
-intensity distribution of the precursors informs about the dynamic range
-of the acquisition in relation to identifiability.” [PSI:MS];</p></li>
-<li><p><em>msSignal10xChange</em>, <strong>MS1 signal jump (10x)
-count</strong> (MS:4000097), The number of times where MS1 TIC increased
-more than 10-fold between adjacent MS1 scans. An unusual high count of
-signal jumps or falls can indicate ESI stability issues.”
-[PSI:MS];</p></li>
-<li><p><em>msSignal10xChange</em>, <strong>MS1 signal fall (10x)
-count</strong> (MS:4000098), The number of times where MS1 TIC decreased
-more than 10-fold between adjacent MS1 scans. An unusual high count of
-signal jumps or falls can indicate ESI stability issues.”
-[PSI:MS];</p></li>
-<li><p><em>numberEmptyScans</em>, <strong>number of empty MS1
-scans</strong> (MS:4000099), Number of MS1 scans where the scans’ peaks
-intensity sums to 0 (i.e. no peaks or only 0-intensity peaks).”
-[PSI:MS];</p></li>
-<li><p><em>numberEmptyScans</em>, <strong>number of empty MS2
-scans</strong> (MS:4000100), Number of MS2 scans where the scans’ peaks
-intensity sums to 0 (i.e. no peaks or only 0-intensity peaks).”
-[PSI:MS];</p></li>
-<li><p><em>numberEmptyScans</em>, <strong>number of empty MS3
-scans</strong> (MS:4000101), Number of MS3 scans where the scans’ peaks
-intensity sums to 0 (i.e. no peaks or only 0-intensity peaks).”
-[PSI:MS];</p></li>
-<li><p><em>ratioCharge1over2</em>, <strong>charged peptides ratio 1+
-over 2+</strong> (MS:4000167), “Ratio of 1+ peptide count over 2+
-peptide count in identified spectra” [PSI:MS];</p></li>
-<li><p><em>ratioCharge1over2</em>, <strong>charged spectra ratio 1+ over
-2+</strong> (MS:4000168), “Ratio of 1+ spectra count over 2+ spectra
-count in all MS2” [PSI:MS];</p></li>
-<li><p><em>ratioCharge3over2</em>, <strong>charged peptides ratio 3+
-over 2+</strong> (MS:4000169), “Ratio of 3+ peptide count over 2+
-peptide count in identified spectra” [PSI:MS];</p></li>
-<li><p><em>ratioCharge3over2</em>, <strong>charged spectra ratio 3+ over
-2+</strong> (MS:4000170), “Ratio of 3+ peptide count over 2+ peptide
-count in all MS2” [PSI:MS];</p></li>
-<li><p><em>ratioCharge4over2</em>, <strong>charged peptides ratio 4+
-over 2+</strong> (MS:4000171), “Ratio of 4+ peptide count over 2+
-peptide count in identified spectra” [PSI:MS];</p></li>
-<li><p><em>ratioCharge4over2</em>, <strong>charged spectra ratio 4+ over
-2+</strong> (MS:4000172), “Ratio of 4+ peptide count over 2+ peptide
-count in all MS2” [PSI:MS];</p></li>
-<li><p><em>meanCharge</em>, <strong>mean charge in identified
-spectra</strong> (MS:4000173), “Mean charge in identified spectra”
-[PSI:MS];</p></li>
-<li><p><em>meanCharge</em>, <strong>mean precursor charge in all
-MS2</strong> (MS:4000174), “Mean precursor charge in all MS2”
-[PSI:MS];</p></li>
-<li><p><em>medianCharge</em>, <strong>median charge in identified
-spectra</strong> (MS:4000175), “Median charge in identified spectra”
-[PSI:MS];</p></li>
-<li><p><em>medianCharge</em>, <strong>median precursor charge in all
-MS2</strong> (MS:4000176), “Median precursor charge in all MS2”
-[PSI:MS].</p></li>
+distribution of unidentified MS2 precursor intensities, the sigma value.
+The intensity distribution of the precursors informs about the dynamic
+range of the acquisition in relation to identifiability. The used type
+of identification should be noted in the metadata or analysis methods
+section of the recording file for the respective run. In case of
+multiple acceptance criteria (FDR) available in proteomics, PSM-level
+FDR should be used for better comparability.” [PSI:MS],
+<code>identificationLevel = "unidentified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,<br>
+</li>
+<li>the intensity of the precursor ions within the <code>Spectra</code>
+object are obtained,</li>
+<li>the standard deviation of precursor intensity values is obtained
+(<code>NA</code> values are removed) and returned.</li>
+</ol>
+</li>
+<li>
+<em>ratioCharge1over2</em>, <strong>ratio of 1+ over 2+ of all MS2
+known precursor charges</strong> (MS:4000167), “The ratio of 1+ over 2+
+MS2 precursor charge count of all spectra. High ratios of 1+/2+ MS2
+precursor charge count may indicate inefficient ionization.” [PSI:MS],
+<code>identificationLevel = "all"</code>; The metric is calculated as
+follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the precursor charge is obtained,</li>
+<li>the number of precursors with charge 1+ is divided by the number of
+precursors with charge 2+ and the ratio is returned.</li>
+</ol>
+</li>
+<li>
+<em>ratioCharge1over2</em>, <strong>ratio of 1+ over 2+ of
+identified MS2 known precursor charges</strong> (MS:4000168), “The ratio
+of 1+ over 2+ MS2 precursor charge count of identified spectra. High
+ratios of 1+/2+ MS2 precursor charge count may indicate inefficient
+ionization. The used type of identification should be noted in the
+metadata or analysis methods section of the recording file for the
+respective run. In case of multiple acceptance criteria (FDR) available
+in proteomics, PSM-level FDR should be used for better comparability.”
+[PSI:MS], <code>identificationLevel = "identified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the precursor charge is obtained,</li>
+<li>the number of precursors with charge 1+ is divided by the number of
+precursors with charge 2+ and the ratio is returned.</li>
+</ol>
+</li>
+<li>
+<em>ratioCharge3over2</em>, <strong>ratio of 3+ over 2+ of all MS2
+known precursor charges</strong> (MS:4000169), “The ratio of 3+ over 2+
+MS2 precursor charge count of all spectra. Higher ratios of 3+/2+ MS2
+precursor charge count may preferentially favor longer e.g. peptides.”
+[PSI:MS], <code>identificationLevel = "all"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,<br>
+</li>
+<li>the precursor charge is obtained,<br>
+</li>
+<li>the number of precursors with charge 3+ is divided by the number of
+precursors with charge 2+ and the ratio is returned.</li>
+</ol>
+</li>
+<li>
+<em>ratioCharge3over2</em>, <strong>ratio of 3+ over 2+ of
+identified MS2 known precursor charges</strong> (MS:4000170), “The ratio
+of 3+ over 2+ MS2 precursor charge count of identified spectra. Higher
+ratios of 3+/2+ MS2 precursor charge count may preferentially favor
+longer e.g. peptides. The used type of identification should be noted in
+the metadata or analysis methods section of the recording file for the
+respective run. In case of multiple acceptance criteria (FDR) available
+in proteomics, PSM-level FDR should be used for better comparability.”
+[PSI:MS], <code>identificationLevel = "identified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,<br>
+</li>
+<li>the precursor charge is obtained,<br>
+</li>
+<li>the number of precursors with charge 3+ is divided by the number of
+precursors with charge 2+ and the ratio is returned.</li>
+</ol>
+</li>
+<li>
+<em>ratioCharge4over2</em>, <strong>ratio of 4+ over 2+ of all MS2
+known precursor charges</strong> (MS:4000171), “The ratio of 4+ over 2+
+MS2 precursor charge count of all spectra. Higher ratios of 4+/2+ MS2
+precursor charge count may preferentially favor longer e.g. peptides.”
+[PSI:MS], <code>identificationLevel = "all"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the precursor charge is obtained,</li>
+<li>the number of precursors with charge 4+ is divided by the number of
+precursors with charge 2+ and the ratio is returned.</li>
+</ol>
+</li>
+<li>
+<em>ratioCharge4over2</em>, <strong>ratio of 4+ over 2+ of
+identified MS2 known precursor charges</strong> (MS:4000172), “The ratio
+of 4+ over 2+ MS2 precursor charge count of identified spectra. Higher
+ratios of 4+/2+ MS2 precursor charge count may preferentially favor
+longer e.g. peptides. The used type of identification should be noted in
+the metadata or analysis methods section of the recording file for the
+respective run. In case of multiple acceptance criteria (FDR) available
+in proteomics, PSM-level FDR should be used for better comparability.”
+[PSI:MS], <code>identificationLevel = "identified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the precursor charge is obtained,</li>
+<li>the number of precursors with charge 4+ is divided by the number of
+precursors with charge 2+ and the ratio is returned.</li>
+</ol>
+</li>
+<li>
+<em>meanCharge</em>, <strong>mean MS2 precursor charge in all
+spectra</strong> (MS:4000173), “Mean MS2 precursor charge in all
+spectra” [PSI:MS], <code>identificationLevel = "all"</code>; The metric
+is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the precursor charge is obtained,</li>
+<li>the mean of the precursor charge values is calculated and
+returned.</li>
+</ol>
+</li>
+<li>
+<em>meanCharge</em>, <strong>mean MS2 precursor charge in identified
+spectra</strong> (MS:4000174), “Mean MS2 precursor charge in identified
+spectra. The used type of identification should be noted in the metadata
+or analysis methods section of the recording file for the respective
+run. In case of multiple acceptance criteria (FDR) available in
+proteomics, PSM-level FDR should be used for better comparability.”
+[PSI:MS], <code>identificationLevel = "identified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the precursor charge is obtained,</li>
+<li>the mean of the precursor charge values is calculated and
+returned.</li>
+</ol>
+</li>
+<li>
+<em>medianCharge</em>, <strong>median MS2 precursor charge in all
+spectra</strong> (MS:4000175), “Median MS2 precursor charge in all
+spectra” [PSI:MS], <code>identificationLevel = "all"</code>; The metric
+is calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the precursor charge is obtained,</li>
+<li>the median of the precursor charge values is calculated and
+returned.</li>
+</ol>
+</li>
+<li>
+<em>medianCharge</em>, <strong>median MS2 precursor charge in
+identified spectra</strong> (MS:4000176), “Median MS2 precursor charge
+in identified spectra. The used type of identification should be noted
+in the metadata or analysis methods section of the recording file for
+the respective run. In case of multiple acceptance criteria (FDR)
+available in proteomics, PSM-level FDR should be used for better
+comparability.” [PSI:MS],
+<code>identificationLevel = "identified"</code>; The metric is
+calculated as follows:
+<ol style="list-style-type: decimal">
+<li>the <code>Spectra</code> object is filtered according to the MS
+level,</li>
+<li>the precursor charge is obtained,</li>
+<li>the median of the precursor charge values is calculated and
+returned.</li>
+</ol>
+</li>
 </ul>
 <p>The most important function to assess the data quality and to
 calculate the metrics is the <code>calculateMetrics</code> function. The
@@ -848,15 +1446,15 @@ compared to adjust for sample type-specific effects.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metrics_msexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">metrics_rplc_msexp</span>, <span class="va">metrics_hilic_msexp</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotMetric.html">plotMetric</a></span><span class="op">(</span>qc <span class="op">=</span> <span class="va">metrics_msexp</span>, metric <span class="op">=</span> <span class="st">"numberSpectra"</span><span class="op">)</span></span></code></pre></div>
-<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-60f22a21d7f44813785c" style="width:700px;height:432.632880098888px;"></div>
-<script type="application/json" data-for="htmlwidget-60f22a21d7f44813785c">{"x":{"data":[{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[190,187,174,185,195,188,157,190,190,195,190,195,183,192,183,195,183,180,177,184,165,155,157,172,192,173,132,174,176,191,160,179,153,180,99,189,96,117,162,150],"text":["get(\"rowname\"): Sample.1_RPLC<br />get(\"value\"): 190","get(\"rowname\"): Sample.2_RPLC<br />get(\"value\"): 187","get(\"rowname\"): Sample.3_RPLC<br />get(\"value\"): 174","get(\"rowname\"): Sample.4_RPLC<br />get(\"value\"): 185","get(\"rowname\"): Sample.5_RPLC<br />get(\"value\"): 195","get(\"rowname\"): Sample.7_RPLC<br />get(\"value\"): 188","get(\"rowname\"): Sample.8_RPLC<br />get(\"value\"): 157","get(\"rowname\"): Sample.10_RPLC<br />get(\"value\"): 190","get(\"rowname\"): Sample.11_RPLC<br />get(\"value\"): 190","get(\"rowname\"): Sample.12_RPLC<br />get(\"value\"): 195","get(\"rowname\"): Sample.14_RPLC<br />get(\"value\"): 190","get(\"rowname\"): Sample.15_RPLC<br />get(\"value\"): 195","get(\"rowname\"): Sample.16_RPLC<br />get(\"value\"): 183","get(\"rowname\"): Sample.17_RPLC<br />get(\"value\"): 192","get(\"rowname\"): Sample.18_RPLC<br />get(\"value\"): 183","get(\"rowname\"): Sample.19_RPLC<br />get(\"value\"): 195","get(\"rowname\"): Sample.20_RPLC<br />get(\"value\"): 183","get(\"rowname\"): Sample.21_RPLC<br />get(\"value\"): 180","get(\"rowname\"): Sample.22_RPLC<br />get(\"value\"): 177","get(\"rowname\"): Sample.23_RPLC<br />get(\"value\"): 184","get(\"rowname\"): Sample.1_HILIC<br />get(\"value\"): 165","get(\"rowname\"): Sample.2_HILIC<br />get(\"value\"): 155","get(\"rowname\"): Sample.3_HILIC<br />get(\"value\"): 157","get(\"rowname\"): Sample.4_HILIC<br />get(\"value\"): 172","get(\"rowname\"): Sample.5_HILIC<br />get(\"value\"): 192","get(\"rowname\"): Sample.7_HILIC<br />get(\"value\"): 173","get(\"rowname\"): Sample.8_HILIC<br />get(\"value\"): 132","get(\"rowname\"): Sample.10_HILIC<br />get(\"value\"): 174","get(\"rowname\"): Sample.11_HILIC<br />get(\"value\"): 176","get(\"rowname\"): Sample.12_HILIC<br />get(\"value\"): 191","get(\"rowname\"): Sample.14_HILIC<br />get(\"value\"): 160","get(\"rowname\"): Sample.15_HILIC<br />get(\"value\"): 179","get(\"rowname\"): Sample.16_HILIC<br />get(\"value\"): 153","get(\"rowname\"): Sample.17_HILIC<br />get(\"value\"): 180","get(\"rowname\"): Sample.18_HILIC<br />get(\"value\"):  99","get(\"rowname\"): Sample.19_HILIC<br />get(\"value\"): 189","get(\"rowname\"): Sample.20_HILIC<br />get(\"value\"):  96","get(\"rowname\"): Sample.21_HILIC<br />get(\"value\"): 117","get(\"rowname\"): Sample.22_HILIC<br />get(\"value\"): 162","get(\"rowname\"): Sample.23_HILIC<br />get(\"value\"): 150"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(228,26,28,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(228,26,28,1)"}},"hoveron":"points","name":"numberSpectra","legendgroup":"numberSpectra","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":45.358882994166862,"r":7.3059360730593621,"b":129.71587759773678,"l":43.105022831050235},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"numberSpectra","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.40000000000000002,40.600000000000001],"tickmode":"array","ticktext":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"categoryorder":"array","categoryarray":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.283520132835198},"tickangle":-90,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"sample","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[91.049999999999997,199.94999999999999],"tickmode":"array","ticktext":["100","125","150","175"],"tickvals":[100,125,150,175],"categoryorder":"array","categoryarray":["100","125","150","175"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"get(\"value\")","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"get(\"name\")","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"20bfaa551d8":{"x":{},"y":{},"colour":{},"type":"scatter"}},"cur_data":"20bfaa551d8","visdat":{"20bfaa551d8":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p>Similarly, we are able to display the area under the TIC for the
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-fce63cab6dcdf74213e5" style="width:700px;height:432.632880098888px;"></div>
+<script type="application/json" data-for="htmlwidget-fce63cab6dcdf74213e5">{"x":{"data":[{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[190,187,174,185,195,188,157,190,190,195,190,195,183,192,183,195,183,180,177,184,165,155,157,172,192,173,132,174,176,191,160,179,153,180,99,189,96,117,162,150],"text":["get(\"rowname\"): Sample.1_RPLC<br />get(\"value\"): 190","get(\"rowname\"): Sample.2_RPLC<br />get(\"value\"): 187","get(\"rowname\"): Sample.3_RPLC<br />get(\"value\"): 174","get(\"rowname\"): Sample.4_RPLC<br />get(\"value\"): 185","get(\"rowname\"): Sample.5_RPLC<br />get(\"value\"): 195","get(\"rowname\"): Sample.7_RPLC<br />get(\"value\"): 188","get(\"rowname\"): Sample.8_RPLC<br />get(\"value\"): 157","get(\"rowname\"): Sample.10_RPLC<br />get(\"value\"): 190","get(\"rowname\"): Sample.11_RPLC<br />get(\"value\"): 190","get(\"rowname\"): Sample.12_RPLC<br />get(\"value\"): 195","get(\"rowname\"): Sample.14_RPLC<br />get(\"value\"): 190","get(\"rowname\"): Sample.15_RPLC<br />get(\"value\"): 195","get(\"rowname\"): Sample.16_RPLC<br />get(\"value\"): 183","get(\"rowname\"): Sample.17_RPLC<br />get(\"value\"): 192","get(\"rowname\"): Sample.18_RPLC<br />get(\"value\"): 183","get(\"rowname\"): Sample.19_RPLC<br />get(\"value\"): 195","get(\"rowname\"): Sample.20_RPLC<br />get(\"value\"): 183","get(\"rowname\"): Sample.21_RPLC<br />get(\"value\"): 180","get(\"rowname\"): Sample.22_RPLC<br />get(\"value\"): 177","get(\"rowname\"): Sample.23_RPLC<br />get(\"value\"): 184","get(\"rowname\"): Sample.1_HILIC<br />get(\"value\"): 165","get(\"rowname\"): Sample.2_HILIC<br />get(\"value\"): 155","get(\"rowname\"): Sample.3_HILIC<br />get(\"value\"): 157","get(\"rowname\"): Sample.4_HILIC<br />get(\"value\"): 172","get(\"rowname\"): Sample.5_HILIC<br />get(\"value\"): 192","get(\"rowname\"): Sample.7_HILIC<br />get(\"value\"): 173","get(\"rowname\"): Sample.8_HILIC<br />get(\"value\"): 132","get(\"rowname\"): Sample.10_HILIC<br />get(\"value\"): 174","get(\"rowname\"): Sample.11_HILIC<br />get(\"value\"): 176","get(\"rowname\"): Sample.12_HILIC<br />get(\"value\"): 191","get(\"rowname\"): Sample.14_HILIC<br />get(\"value\"): 160","get(\"rowname\"): Sample.15_HILIC<br />get(\"value\"): 179","get(\"rowname\"): Sample.16_HILIC<br />get(\"value\"): 153","get(\"rowname\"): Sample.17_HILIC<br />get(\"value\"): 180","get(\"rowname\"): Sample.18_HILIC<br />get(\"value\"):  99","get(\"rowname\"): Sample.19_HILIC<br />get(\"value\"): 189","get(\"rowname\"): Sample.20_HILIC<br />get(\"value\"):  96","get(\"rowname\"): Sample.21_HILIC<br />get(\"value\"): 117","get(\"rowname\"): Sample.22_HILIC<br />get(\"value\"): 162","get(\"rowname\"): Sample.23_HILIC<br />get(\"value\"): 150"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(228,26,28,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(228,26,28,1)"}},"hoveron":"points","name":"numberSpectra","legendgroup":"numberSpectra","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":45.358882994166862,"r":7.3059360730593621,"b":129.71587759773678,"l":43.105022831050235},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"numberSpectra","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.40000000000000002,40.600000000000001],"tickmode":"array","ticktext":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"categoryorder":"array","categoryarray":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.283520132835198},"tickangle":-90,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"sample","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[91.049999999999997,199.94999999999999],"tickmode":"array","ticktext":["100","125","150","175"],"tickvals":[100,125,150,175],"categoryorder":"array","categoryarray":["100","125","150","175"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"get(\"value\")","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"get(\"name\")","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"20bb61f81215":{"x":{},"y":{},"colour":{},"type":"scatter"}},"cur_data":"20bb61f81215","visdat":{"20bb61f81215":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p>Similarly, we are able to display the area under the TIC for the
 retention time quantiles. This plot gives information on the perceived
 signal (TIC) for the differnt retention time quantiles and could
 indicate drifts or interruptions of sensitivity during the run.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotMetric.html">plotMetric</a></span><span class="op">(</span>qc <span class="op">=</span> <span class="va">metrics_msexp</span>, metric <span class="op">=</span> <span class="st">"ticQuartileToQuartileLogRatio"</span><span class="op">)</span></span></code></pre></div>
-<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-41303090584e472f7216" style="width:700px;height:432.632880098888px;"></div>
-<script type="application/json" data-for="htmlwidget-41303090584e472f7216">{"x":{"data":[{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[null,-6.247847415939181,null,-5.2131404597468967,-4.8189305255858423,-7.8755700833394746,-5.0346787478350885,null,null,-7.6561514260073897,-7.4593845701252368,-7.5256935216518626,-6.580914449316742,null,-8.6969814566978805,null,-4.6441652702008565,null,-6.2206957660759947,null,null,-4.5894835136640397,-9.6572149221986443,null,-6.5658029807260272,-6.3882805958497846,-4.8439058320621369,-4.816047130432378,null,null,-4.0471782006449688,null,-5.8730296615302056,-8.7942147376256123,-4.9904150526104418,-7.4015692099381489,-3.8818310959632596,-7.2903214507605476,null,-4.847856197124675],"text":["get(\"rowname\"): Sample.1_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.2_RPLC<br />get(\"value\"): -6.247847","get(\"rowname\"): Sample.3_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.4_RPLC<br />get(\"value\"): -5.213140","get(\"rowname\"): Sample.5_RPLC<br />get(\"value\"): -4.818931","get(\"rowname\"): Sample.7_RPLC<br />get(\"value\"): -7.875570","get(\"rowname\"): Sample.8_RPLC<br />get(\"value\"): -5.034679","get(\"rowname\"): Sample.10_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.11_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.12_RPLC<br />get(\"value\"): -7.656151","get(\"rowname\"): Sample.14_RPLC<br />get(\"value\"): -7.459385","get(\"rowname\"): Sample.15_RPLC<br />get(\"value\"): -7.525694","get(\"rowname\"): Sample.16_RPLC<br />get(\"value\"): -6.580914","get(\"rowname\"): Sample.17_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.18_RPLC<br />get(\"value\"): -8.696981","get(\"rowname\"): Sample.19_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.20_RPLC<br />get(\"value\"): -4.644165","get(\"rowname\"): Sample.21_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.22_RPLC<br />get(\"value\"): -6.220696","get(\"rowname\"): Sample.23_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.1_HILIC<br />get(\"value\"):      -Inf","get(\"rowname\"): Sample.2_HILIC<br />get(\"value\"): -4.589484","get(\"rowname\"): Sample.3_HILIC<br />get(\"value\"): -9.657215","get(\"rowname\"): Sample.4_HILIC<br />get(\"value\"):      -Inf","get(\"rowname\"): Sample.5_HILIC<br />get(\"value\"): -6.565803","get(\"rowname\"): Sample.7_HILIC<br />get(\"value\"): -6.388281","get(\"rowname\"): Sample.8_HILIC<br />get(\"value\"): -4.843906","get(\"rowname\"): Sample.10_HILIC<br />get(\"value\"): -4.816047","get(\"rowname\"): Sample.11_HILIC<br />get(\"value\"):      -Inf","get(\"rowname\"): Sample.12_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.14_HILIC<br />get(\"value\"): -4.047178","get(\"rowname\"): Sample.15_HILIC<br />get(\"value\"):      -Inf","get(\"rowname\"): Sample.16_HILIC<br />get(\"value\"): -5.873030","get(\"rowname\"): Sample.17_HILIC<br />get(\"value\"): -8.794215","get(\"rowname\"): Sample.18_HILIC<br />get(\"value\"): -4.990415","get(\"rowname\"): Sample.19_HILIC<br />get(\"value\"): -7.401569","get(\"rowname\"): Sample.20_HILIC<br />get(\"value\"): -3.881831","get(\"rowname\"): Sample.21_HILIC<br />get(\"value\"): -7.290321","get(\"rowname\"): Sample.22_HILIC<br />get(\"value\"):      -Inf","get(\"rowname\"): Sample.23_HILIC<br />get(\"value\"): -4.847856"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(228,26,28,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(228,26,28,1)"}},"hoveron":"points","name":".Q2/Q1","legendgroup":".Q2/Q1","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"text":["get(\"rowname\"): Sample.1_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.2_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.3_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.4_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.5_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.7_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.8_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.10_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.11_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.12_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.14_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.15_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.16_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.17_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.18_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.19_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.20_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.21_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.22_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.23_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.1_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.2_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.3_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.4_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.5_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.7_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.8_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.10_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.11_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.12_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.14_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.15_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.16_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.17_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.18_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.19_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.20_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.21_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.22_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.23_HILIC<br />get(\"value\"):       NaN"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(55,126,184,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(55,126,184,1)"}},"hoveron":"points","name":".Q3/Q1","legendgroup":".Q3/Q1","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"text":["get(\"rowname\"): Sample.1_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.2_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.3_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.4_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.5_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.7_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.8_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.10_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.11_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.12_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.14_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.15_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.16_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.17_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.18_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.19_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.20_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.21_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.22_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.23_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.1_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.2_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.3_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.4_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.5_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.7_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.8_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.10_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.11_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.12_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.14_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.15_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.16_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.17_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.18_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.19_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.20_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.21_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.22_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.23_HILIC<br />get(\"value\"):       NaN"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(77,175,74,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(77,175,74,1)"}},"hoveron":"points","name":".Q4/Q1","legendgroup":".Q4/Q1","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":45.358882994166862,"r":7.3059360730593621,"b":129.71587759773678,"l":37.260273972602747},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"ticQuartileToQuartileLogRatio","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.40000000000000002,40.600000000000001],"tickmode":"array","ticktext":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"categoryorder":"array","categoryarray":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.283520132835198},"tickangle":-90,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"sample","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-9.9459841135104128,-3.5930619046514902],"tickmode":"array","ticktext":["-8","-6","-4"],"tickvals":[-8,-6,-4],"categoryorder":"array","categoryarray":["-8","-6","-4"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"get(\"value\")","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"get(\"name\")","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"20bf20d1575f":{"x":{},"y":{},"colour":{},"type":"scatter"}},"cur_data":"20bf20d1575f","visdat":{"20bf20d1575f":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p>Alternatively, to browse through all metrics that were calculated in
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-9e2c6d3908e0325fc0fc" style="width:700px;height:432.632880098888px;"></div>
+<script type="application/json" data-for="htmlwidget-9e2c6d3908e0325fc0fc">{"x":{"data":[{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[null,-6.247847415939181,null,-5.2131404597468967,-4.8189305255858423,-7.8755700833394746,-5.0346787478350885,null,null,-7.6561514260073897,-7.4593845701252368,-7.5256935216518626,-6.580914449316742,null,-8.6969814566978805,null,-4.6441652702008565,null,-6.2206957660759947,null,null,-4.5894835136640397,-9.6572149221986443,null,-6.5658029807260272,-6.3882805958497846,-4.8439058320621369,-4.816047130432378,null,null,-4.0471782006449688,null,-5.8730296615302056,-8.7942147376256123,-4.9904150526104418,-7.4015692099381489,-3.8818310959632596,-7.2903214507605476,null,-4.847856197124675],"text":["get(\"rowname\"): Sample.1_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.2_RPLC<br />get(\"value\"): -6.247847","get(\"rowname\"): Sample.3_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.4_RPLC<br />get(\"value\"): -5.213140","get(\"rowname\"): Sample.5_RPLC<br />get(\"value\"): -4.818931","get(\"rowname\"): Sample.7_RPLC<br />get(\"value\"): -7.875570","get(\"rowname\"): Sample.8_RPLC<br />get(\"value\"): -5.034679","get(\"rowname\"): Sample.10_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.11_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.12_RPLC<br />get(\"value\"): -7.656151","get(\"rowname\"): Sample.14_RPLC<br />get(\"value\"): -7.459385","get(\"rowname\"): Sample.15_RPLC<br />get(\"value\"): -7.525694","get(\"rowname\"): Sample.16_RPLC<br />get(\"value\"): -6.580914","get(\"rowname\"): Sample.17_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.18_RPLC<br />get(\"value\"): -8.696981","get(\"rowname\"): Sample.19_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.20_RPLC<br />get(\"value\"): -4.644165","get(\"rowname\"): Sample.21_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.22_RPLC<br />get(\"value\"): -6.220696","get(\"rowname\"): Sample.23_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.1_HILIC<br />get(\"value\"):      -Inf","get(\"rowname\"): Sample.2_HILIC<br />get(\"value\"): -4.589484","get(\"rowname\"): Sample.3_HILIC<br />get(\"value\"): -9.657215","get(\"rowname\"): Sample.4_HILIC<br />get(\"value\"):      -Inf","get(\"rowname\"): Sample.5_HILIC<br />get(\"value\"): -6.565803","get(\"rowname\"): Sample.7_HILIC<br />get(\"value\"): -6.388281","get(\"rowname\"): Sample.8_HILIC<br />get(\"value\"): -4.843906","get(\"rowname\"): Sample.10_HILIC<br />get(\"value\"): -4.816047","get(\"rowname\"): Sample.11_HILIC<br />get(\"value\"):      -Inf","get(\"rowname\"): Sample.12_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.14_HILIC<br />get(\"value\"): -4.047178","get(\"rowname\"): Sample.15_HILIC<br />get(\"value\"):      -Inf","get(\"rowname\"): Sample.16_HILIC<br />get(\"value\"): -5.873030","get(\"rowname\"): Sample.17_HILIC<br />get(\"value\"): -8.794215","get(\"rowname\"): Sample.18_HILIC<br />get(\"value\"): -4.990415","get(\"rowname\"): Sample.19_HILIC<br />get(\"value\"): -7.401569","get(\"rowname\"): Sample.20_HILIC<br />get(\"value\"): -3.881831","get(\"rowname\"): Sample.21_HILIC<br />get(\"value\"): -7.290321","get(\"rowname\"): Sample.22_HILIC<br />get(\"value\"):      -Inf","get(\"rowname\"): Sample.23_HILIC<br />get(\"value\"): -4.847856"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(228,26,28,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(228,26,28,1)"}},"hoveron":"points","name":".Q2/Q1","legendgroup":".Q2/Q1","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"text":["get(\"rowname\"): Sample.1_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.2_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.3_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.4_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.5_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.7_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.8_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.10_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.11_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.12_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.14_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.15_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.16_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.17_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.18_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.19_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.20_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.21_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.22_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.23_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.1_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.2_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.3_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.4_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.5_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.7_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.8_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.10_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.11_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.12_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.14_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.15_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.16_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.17_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.18_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.19_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.20_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.21_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.22_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.23_HILIC<br />get(\"value\"):       NaN"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(55,126,184,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(55,126,184,1)"}},"hoveron":"points","name":".Q3/Q1","legendgroup":".Q3/Q1","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"text":["get(\"rowname\"): Sample.1_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.2_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.3_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.4_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.5_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.7_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.8_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.10_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.11_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.12_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.14_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.15_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.16_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.17_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.18_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.19_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.20_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.21_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.22_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.23_RPLC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.1_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.2_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.3_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.4_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.5_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.7_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.8_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.10_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.11_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.12_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.14_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.15_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.16_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.17_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.18_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.19_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.20_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.21_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.22_HILIC<br />get(\"value\"):       NaN","get(\"rowname\"): Sample.23_HILIC<br />get(\"value\"):       NaN"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(77,175,74,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(77,175,74,1)"}},"hoveron":"points","name":".Q4/Q1","legendgroup":".Q4/Q1","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":45.358882994166862,"r":7.3059360730593621,"b":129.71587759773678,"l":37.260273972602747},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"ticQuartileToQuartileLogRatio","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.40000000000000002,40.600000000000001],"tickmode":"array","ticktext":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"categoryorder":"array","categoryarray":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.283520132835198},"tickangle":-90,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"sample","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-9.9459841135104128,-3.5930619046514902],"tickmode":"array","ticktext":["-8","-6","-4"],"tickvals":[-8,-6,-4],"categoryorder":"array","categoryarray":["-8","-6","-4"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"get(\"value\")","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"get(\"name\")","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"20bb308db602":{"x":{},"y":{},"colour":{},"type":"scatter"}},"cur_data":"20bb308db602","visdat":{"20bb308db602":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p>Alternatively, to browse through all metrics that were calculated in
 an interactive way, we can use the <code>shinyMsQuality</code>
 function.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
