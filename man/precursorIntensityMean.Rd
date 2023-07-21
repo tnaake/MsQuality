@@ -28,7 +28,7 @@ precursorIntensityMean(
 }
 \description{
 MS:4000117 \cr
-"From the distribution of precursor intensities, the mean. The intensity 
+"From the distribution of MS2 precursor intensities, the mean. The intensity 
 distribution of the precursors informs about the dynamic range of the 
 acquisition." [PSI:MS] \cr
 
@@ -45,7 +45,7 @@ dynamic range of the acquisition in relation to identifiability."
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
+(2) the intensity of the precursor ions within the \code{Spectra} object are obtained, \cr 
 (3) the mean of the precursor intensity values is obtained 
 (\code{NA} values are removed) and returned. \cr
 }

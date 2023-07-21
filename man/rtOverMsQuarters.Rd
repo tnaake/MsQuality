@@ -67,7 +67,8 @@ relationship: has_units UO:0000191 ! fraction \cr
 The function returns \code{c(NaN, NaN, NaN, NaN)} if the filtered 
 \code{spectra} object has less than 4 scan events.
 
-An attribute will only be returned if \code{msLevel} is 1 or 2.
+An attribute containing the PSI:MS term will only be returned if 
+\code{msLevel} is 1 or 2.
 }
 \note{
 \code{chromatographyDuration} considers the total runtime (including MS1 

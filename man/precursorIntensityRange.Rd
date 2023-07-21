@@ -24,7 +24,7 @@ of the precursors informs about the dynamic range of the acquisition."
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
+(2) the intensity of the precursor ions within the \code{Spectra} object are obtained, \cr 
 (3) the minimum and maximum precursor intensity values are obtained and 
 returned.
 }

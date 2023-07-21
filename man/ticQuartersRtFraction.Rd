@@ -38,8 +38,8 @@ The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is ordered according to the retention time, \cr 
 (2) the cumulative sum of the ion count is calculated (TIC), \cr 
 (3) the quantiles are calculated according to the \code{probs} argument, e.g.
-when \code{probs} is set to \code{c(0, 0.25, 0.5, 0.75, 1)} the 0\%, 25\%, 50\%, 75\% 
-and 100\% quantile is calculated, \cr 
+when \code{probs} is set to \code{c(0, 0.25, 0.5, 0.75, 1)} the 0\%, 25\%, 
+50\%, 75\%, and 100\% quantile is calculated, \cr 
 (4) the retention time/relative retention time (retention time divided by 
 the total run time taking into account the minimum retention time) is 
 calculated, \cr 

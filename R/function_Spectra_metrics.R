@@ -288,7 +288,8 @@ ticQuartersRtFraction <- function(spectra, probs = seq(0, 1, 0.25),
 #' The function returns \code{c(NaN, NaN, NaN, NaN)} if the filtered 
 #' \code{spectra} object has less than 4 scan events.
 #'
-#' An attribute will only be returned if \code{msLevel} is 1 or 2.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{msLevel} is 1 or 2.
 #' 
 #' @note
 #' \code{chromatographyDuration} considers the total runtime (including MS1 
@@ -405,7 +406,7 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
 #' (4) The \code{log} values of the ratios are returned. \cr
 #' 
 #' @note
-#' This function interprets the *quantiles* from the [PSI:QC] definition as
+#' This function interprets the *quantiles* from the [PSI:MS] definition as
 #' *quartiles*, i.e. the 0, 25, 50, 75 and 100\% quantiles are used.
 #' 
 #' @details
@@ -433,8 +434,8 @@ rtOverMsQuarters <- function(spectra, msLevel = 1L, ...) {
 #' relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
 #' relationship: has_value_concept STATO:0000105 ! log signal intensity ratio \cr
 #' 
-#' An attribute will only be returned if \code{relativeTo} is 
-#' \code{"previous"} and \code{msLevel} is 1. 
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{relativeTo} is \code{"previous"} and \code{msLevel} is 1. 
 #'  
 #' @param spectra \code{Spectra} object
 #' @param relativeTo \code{character(1)}, one of \code{"Q1"} or 
@@ -593,7 +594,8 @@ ticQuartileToQuartileLogRatio <- function(spectra,
 #' relationship: has_value_type xsd:int ! The allowed value-type for this CV term \cr
 #' relationship: has_units UO:0000189 ! count unit \cr
 #' 
-#' An attribute will only be returned if \code{msLevel} is either 1 or 2.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{msLevel} is either 1 or 2.
 #' 
 #' @param spectra \code{Spectra} object
 #' @param msLevel \code{integer}
@@ -849,7 +851,8 @@ rtAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
 #' The function \code{msSignal10xChange} uses the function \code{ionCount} as an 
 #' equivalent to the TIC.
 #' 
-#' An attribute will only be returned if \code{msLevel} is 1.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{msLevel} is 1.
 #' 
 #' @param spectra \code{Spectra} object
 #' @param change \code{character(1)}, one of \code{"jump"} or \code{"fall"}
@@ -984,7 +987,8 @@ msSignal10xChange <- function(spectra, change = "jump", msLevel = 1L, ...) {
 #' #' For *MS:4000099*, \code{msLevel} is set to 1. For *MS:4000100*, 
 #' \code{msLevel} is set to 2. For *MS:4000101*, \code{msLevel} is set to 3.
 #' 
-#' An attribute will only be returned if \code{msLevel} is either 1, 2, or 3.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{msLevel} is either 1, 2, or 3.
 #' 
 #' @param spectra \code{Spectra} object
 #' @param msLevel \code{integer}
@@ -1448,7 +1452,7 @@ precursorIntensitySd <- function(spectra, msLevel = 1L,
 #' 
 #' @description
 #' MS:4000152 \cr
-#' Median m/z value for MS2 precursors of all quantification data points after 
+#' "Median m/z value for MS2 precursors of all quantification data points after 
 #' user-defined acceptance criteria are applied. These data points may be for 
 #' example XIC profiles, isotopic pattern areas, or reporter ions 
 #' (see MS:1001805). The used type should be noted in the metadata or 
@@ -1468,8 +1472,8 @@ precursorIntensitySd <- function(spectra, msLevel = 1L,
 #' relationship: has_metric_category MS:4000022 ! MS2 metric
 #' is_a: MS:4000020 ! ion source metric \cr
 #' 
-#' An attribute will only be returned if \code{identificationLevel} is
-#' \code{"identified"} and \code{msLevel} is 1.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{identificationLevel} is \code{"identified"} and \code{msLevel} is 1.
 #' 
 #' @note
 #' \code{medianPrecursorMz} will calculate the *precursor* median m/z of all 
@@ -1543,7 +1547,7 @@ medianPrecursorMz <- function(spectra, msLevel = 1L,
 #' 
 #' @description
 #' MS:4000153 \cr
-#' The interquartile retention time period, in seconds, for all quantification 
+#' "The interquartile retention time period, in seconds, for all quantification 
 #' data points after user-defined acceptance criteria are applied over the 
 #' complete run. Longer times indicate better chromatographic separation. 
 #' These data points may be for example XIC profiles, isotopic pattern areas, 
@@ -1567,8 +1571,8 @@ medianPrecursorMz <- function(spectra, msLevel = 1L,
 #' 
 #' Retention time values that are \code{NA} are removed.
 #' 
-#' An attribute will only be returned if \code{identificationLevel} is
-#' \code{"identified"}.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{identificationLevel} is \code{"identified"}.
 #' 
 #' @note 
 #' The \code{Spectra} object might contain features that were not identified. If
@@ -1675,8 +1679,8 @@ rtIqr <- function(spectra, msLevel = 1L,
 #' is_a: MS:4000017 ! chromatogram metric \cr
 #' synonym: "C-2B"  RELATED [PMID:19837981] \cr
 #' 
-#' An attribute will only be returned if \code{identificationLevel} is 
-#' \code{"identified"}.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{identificationLevel} is \code{"identified"}.
 #' 
 #' @note 
 #' The \code{Spectra} object might contain features that were not identified. If
@@ -1860,7 +1864,7 @@ areaUnderTic <- function(spectra, msLevel = 1L, ...) {
 #' The sum of the TIC is returned as an equivalent to the area. \cr
 #' 
 #' @note
-#' This function interprets the *quantiles* from the [PSI:QC] definition as
+#' This function interprets the *quantiles* from the [PSI:MS] definition as
 #' *quartiles*, i.e. the 0, 25, 50, 75 and 100\% quantiles are used.
 #' 
 #' @param spectra \code{Spectra} object
@@ -1949,8 +1953,7 @@ areaUnderTicRtQuantiles <- function(spectra, msLevel = 1L, ...) {
 #' type of identification should be noted in the metadata or analysis methods 
 #' section of the recording file for the respective run. In case of multiple 
 #' acceptance criteria (FDR) available in proteomics, PSM-level FDR should 
-#' be used for better comparability." [PSI:MS] 
-#' [PSI:MS] \cr
+#' be used for better comparability." [PSI:MS] \cr
 #' 
 #' The metric is calculated as follows: \cr
 #' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
@@ -1970,8 +1973,8 @@ areaUnderTicRtQuantiles <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' Precursor intensity values that are \code{NA} are removed. \cr
 #' 
-#' An attribute will only be returned if \code{identificationLevel} is
-#' \code{"identified"}.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{identificationLevel} is \code{"identified"}.
 #' 
 #' @note 
 #' The \code{Spectra} object might contain features that were not identified. If
@@ -2063,7 +2066,7 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L,
 #' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
 #' (2) the \code{Spectra} object is ordered according to the retention time, \cr 
 #' (3) the features between the 1st and 3rd quartile are obtained 
-#' (half of the features that are present in \code{spectra}), \cr 
+#' (half of the features that are present in the \code{Spectra} object), \cr 
 #' (4) the ion count of the features within the 1st and 3rd quartile is 
 #' obtained, \cr 
 #' (5) the median value of the ion count is calculated (\code{NA} values are 
@@ -2078,8 +2081,8 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L,
 #' The function \code{medianTicRtIqr} uses the function [ionCount()] as an 
 #' equivalent to the TIC.
 #' 
-#' An attribute will only be returned if \code{identificationLevel} is 
-#' \code{"identified"}.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{identificationLevel} is \code{"identified"}.
 #' 
 #' @note 
 #' The \code{Spectra} object might contain features that were not identified. If
@@ -2176,8 +2179,8 @@ medianTicRtIqr <- function(spectra, msLevel = 1L,
 #' The metric is calculated as follows: \cr
 #' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
 #' (2) the \code{Spectra} object is ordered according to the retention time, \cr 
-#' (3) the number of features in \code{spectra} is obtained and the number for 
-#' half of the features is calculated, \cr 
+#' (3) the number of features in the \code{Spectra} object is obtained and 
+#' the number for half of the features is calculated, \cr 
 #' (4) iterate through the features (always by taking the neighbouring
 #' half of features) and calculate the retention time range of the
 #' set of features, \cr 
@@ -2196,8 +2199,8 @@ medianTicRtIqr <- function(spectra, msLevel = 1L,
 #' The function \code{medianTicOfRtRange} uses the function \code{ionCount} as an 
 #' equivalent to the TIC.
 #' 
-#' An attribute will only be returned if \code{identificationLevel} is 
-#' \code{"identified"}.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{identificationLevel} is \code{"identified"}.
 #' 
 #' @note 
 #' The \code{Spectra} object might contain features that were not identified. If
@@ -2422,8 +2425,8 @@ precursorIntensityRange <- function(spectra, msLevel = 1, ...) {
 #' \code{NA} is returned if there are no features with precursor charge of 1+ or 
 #' 2+. \cr
 #' 
-#' An attribute will only be returned if \code{identificationLevel} is either 
-#' \code{"all"} or \code{"identified"}.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{identificationLevel} is either \code{"all"} or \code{"identified"}.
 #' 
 #' @note 
 #' The \code{Spectra} object might contain features that were not identified. If
@@ -2553,8 +2556,8 @@ ratioCharge1over2 <- function(spectra, msLevel = 1L,
 #' \code{NA} is returned if there are no features with precursor charge of 2+ or 
 #' 3+.
 #' 
-#' An attribute will only be returned if \code{identificationLevel} is either 
-#' \code{"all"} or \code{"identified"}.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{identificationLevel} is either \code{"all"} or \code{"identified"}.
 #' 
 #' @note 
 #' The \code{Spectra} object might contain features that were not identified. If
@@ -2680,8 +2683,8 @@ ratioCharge3over2 <- function(spectra, msLevel = 1L,
 #' synonym: "MS2-PrecZ-2" RELATED [PMID:24494671] \cr
 #' synonym: "MS2-PrecZ-4" RELATED [PMID:24494671] \cr
 #' 
-#' An attribute will only be returned if \code{identificationLevel} is either 
-#' \code{"all"} or \code{"identified"}.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{identificationLevel} is either \code{"all"} or \code{"identified"}.
 #' 
 #' @note 
 #' The \code{Spectra} object might contain features that were not identified. If
@@ -2813,8 +2816,8 @@ ratioCharge4over2 <- function(spectra, msLevel = 1L,
 #' synonym: "MS2-PrecZ-5" RELATED [PMID:24494671] \cr
 #' synonym: "MS2-PrecZ-more" RELATED [PMID:24494671] \cr
 #' 
-#' An attribute will only be returned if \code{identificationLevel} is either 
-#' \code{"all"} or \code{"identified"}.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{identificationLevel} is either \code{"all"} or \code{"identified"}.
 #' 
 #' @note 
 #' The \code{Spectra} object might contain features that were not identified. If
@@ -2935,8 +2938,8 @@ meanCharge <- function(spectra, msLevel = 1L,
 #' synonym: "MS2-PrecZ-5" RELATED [PMID:24494671] \cr
 #' synonym: "MS2-PrecZ-more" RELATED [PMID:24494671] \cr
 #' 
-#' An attribute will only be returned if \code{identificationLevel} is either 
-#' \code{"all"} or \code{"identified"}.
+#' An attribute containing the PSI:MS term will only be returned if 
+#' \code{identificationLevel} is either \code{"all"} or \code{"identified"}.
 #' 
 #' @note 
 #' The \code{Spectra} object might contain features that were not identified. If

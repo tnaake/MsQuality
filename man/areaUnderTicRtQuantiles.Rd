@@ -39,7 +39,7 @@ is_a: MS:4000017 ! chromatogram metric \cr
 The sum of the TIC is returned as an equivalent to the area. \cr
 }
 \note{
-This function interprets the *quantiles* from the [PSI:QC] definition as
+This function interprets the *quantiles* from the [PSI:MS] definition as
 *quartiles*, i.e. the 0, 25, 50, 75 and 100\% quantiles are used.
 }
 \examples{

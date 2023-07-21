@@ -2,7 +2,8 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{msSignal10xChange}
 \alias{msSignal10xChange}
-\title{MS1 signal jump/fall (10x) count (MS:4000097/MS:4000098)}
+\title{MS1 signal jump (10x) count (MS:4000097) or MS1 signal fall (10x) 
+count (MS:4000098)}
 \usage{
 msSignal10xChange(spectra, change = "jump", msLevel = 1L, ...)
 }
@@ -31,7 +32,8 @@ indicate ESI stability issues." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
+(2) the intensity of the precursor ions within the \code{Spectra} object are 
+obtained, \cr 
 (3) the intensity values of the features are obtained via the ion count, \cr 
 (4) the signal jumps/declines of the intensity values with the two 
 subsequent intensity values is calculated, \cr 
@@ -62,7 +64,8 @@ synonym: "IS-1B"  RELATED [] \cr
 The function \code{msSignal10xChange} uses the function \code{ionCount} as an 
 equivalent to the TIC.
 
-An attribute will only be returned if \code{msLevel} is 1.
+An attribute containing the PSI:MS term will only be returned if 
+\code{msLevel} is 1.
 }
 \examples{
 library(S4Vectors)

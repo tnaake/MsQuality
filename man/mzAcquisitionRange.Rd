@@ -23,7 +23,7 @@ recorded." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the m/z values of the peaks within \code{spectra} are obtained, \cr 
+(2) the m/z values of the peaks within the \code{Spectra} object are obtained, \cr 
 (3) the minimum and maximum m/z values are obtained and returned.
 }
 \details{

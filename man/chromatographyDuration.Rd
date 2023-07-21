@@ -19,7 +19,7 @@ MS:4000053
 "The retention time duration of the chromatography in seconds." [PSI:MS] \cr 
 
 The metric is calculated as follows: \cr 
-(1) the retention time associated to the individual Spectra is obtained, \cr  
+(1) the retention time associated to the \code{Spectra} object is obtained, \cr  
 (2) the maximum and the minimum of the retention time is obtained, \cr  
 (3) the difference between the maximum and the minimum is calculated and 
 returned. \cr

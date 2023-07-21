@@ -26,6 +26,11 @@ MS:4000060 \cr
 
 For *MS:4000059*, \code{msLevel} is set to 1. For *MS:4000060*, 
 \code{msLevel} is set to 2.
+
+The metric is calculated as follows: \cr
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the number of the spectra are obtained (\code{length} of \code{Spectra})
+and returned.
 }
 \details{
 MS:4000059 \cr
@@ -46,7 +51,8 @@ relationship: has_metric_category MS:4000022 ! MS2 metric \cr
 relationship: has_value_type xsd:int ! The allowed value-type for this CV term \cr
 relationship: has_units UO:0000189 ! count unit \cr
 
-An attribute will only be returned if \code{msLevel} is either 1 or 2.
+An attribute containing the PSI:MS term will only be returned if 
+\code{msLevel} is either 1 or 2.
 }
 \examples{
 library(S4Vectors)

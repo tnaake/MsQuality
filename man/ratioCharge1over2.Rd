@@ -74,8 +74,8 @@ synonym: "MS2-PrecZ-2" RELATED [PMID:24494671] \cr
 \code{NA} is returned if there are no features with precursor charge of 1+ or 
 2+. \cr
 
-An attribute will only be returned if \code{identificationLevel} is either 
-\code{"all"} or \code{"identified"}.
+An attribute containing the PSI:MS term will only be returned if 
+\code{identificationLevel} is either \code{"all"} or \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If

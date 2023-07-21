@@ -21,10 +21,10 @@ MS:4000070 \cr
 "Upper and lower limit of retention time at which spectra are recorded." 
 [PSI:MS] \cr
 
-#' The metric is calculated as follows: \cr
+The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the retention time values of the features within \code{spectra} are 
-obtained, \cr 
+(2) the retention time values of the features within the \code{Spectra} 
+object are obtained, \cr 
 (3) the minimum and maximum retention time values are obtained and 
 returned. \cr
 }

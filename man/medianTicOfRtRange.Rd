@@ -38,8 +38,8 @@ should be used for better comparability." [PSI:MS]  \cr
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
 (2) the \code{Spectra} object is ordered according to the retention time, \cr 
-(3) the number of features in \code{spectra} is obtained and the number for 
-half of the features is calculated, \cr 
+(3) the number of features in the \code{Spectra} object is obtained and 
+the number for half of the features is calculated, \cr 
 (4) iterate through the features (always by taking the neighbouring
 half of features) and calculate the retention time range of the
 set of features, \cr 
@@ -58,8 +58,8 @@ synonym: "MS1-2B"  RELATED [PMID:19837981]
 The function \code{medianTicOfRtRange} uses the function \code{ionCount} as an 
 equivalent to the TIC.
 
-An attribute will only be returned if \code{identificationLevel} is 
-\code{"identified"}.
+An attribute containing the PSI:MS term will only be returned if 
+\code{identificationLevel} is \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If

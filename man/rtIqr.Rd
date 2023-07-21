@@ -27,7 +27,7 @@ rtIqr(
 }
 \description{
 MS:4000153 \cr
-The interquartile retention time period, in seconds, for all quantification 
+"The interquartile retention time period, in seconds, for all quantification 
 data points after user-defined acceptance criteria are applied over the 
 complete run. Longer times indicate better chromatographic separation. 
 These data points may be for example XIC profiles, isotopic pattern areas, 
@@ -51,8 +51,8 @@ synonym: "C-2A"  RELATED [PMID:19837981] \cr
 
 Retention time values that are \code{NA} are removed.
 
-An attribute will only be returned if \code{identificationLevel} is
-\code{"identified"}.
+An attribute containing the PSI:MS term will only be returned if 
+\code{identificationLevel} is \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If

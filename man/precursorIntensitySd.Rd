@@ -50,10 +50,9 @@ section of the recording file for the respective run. In case of multiple
 acceptance criteria (FDR) available in proteomics, PSM-level FDR should be 
 used for better comparability." [PSI:MS] \cr
 
-The metric is calculated as follows:
-
+The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the intensity of the precursor ions within \code{spectra} are obtained, \cr 
+(2) the intensity of the precursor ions within the \code{Spectra} object are obtained, \cr 
 (3) the standard deviation of precursor intensity values is obtained 
 (\code{NA} values are removed) and returned.
 }

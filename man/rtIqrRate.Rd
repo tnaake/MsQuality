@@ -53,8 +53,8 @@ is_a: MS:4000008 ! ID based \cr
 is_a: MS:4000017 ! chromatogram metric \cr
 synonym: "C-2B"  RELATED [PMID:19837981] \cr
 
-An attribute will only be returned if \code{identificationLevel} is 
-\code{"identified"}.
+An attribute containing the PSI:MS term will only be returned if 
+\code{identificationLevel} is \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If

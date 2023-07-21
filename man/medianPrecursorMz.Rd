@@ -27,7 +27,7 @@ medianPrecursorMz(
 }
 \description{
 MS:4000152 \cr
-Median m/z value for MS2 precursors of all quantification data points after 
+"Median m/z value for MS2 precursors of all quantification data points after 
 user-defined acceptance criteria are applied. These data points may be for 
 example XIC profiles, isotopic pattern areas, or reporter ions 
 (see MS:1001805). The used type should be noted in the metadata or 
@@ -47,8 +47,8 @@ is_a: MS:4000008 ! ID based \cr
 relationship: has_metric_category MS:4000022 ! MS2 metric
 is_a: MS:4000020 ! ion source metric \cr
 
-An attribute will only be returned if \code{identificationLevel} is
-\code{"identified"} and \code{msLevel} is 1.
+An attribute containing the PSI:MS term will only be returned if 
+\code{identificationLevel} is \code{"identified"} and \code{msLevel} is 1.
 }
 \note{
 \code{medianPrecursorMz} will calculate the *precursor* median m/z of all 

@@ -29,6 +29,13 @@ MS:4000100 \cr
 MS:4000101 \cr
 "Number of MS3 scans where the scans' peaks intensity sums to 0 
 (i.e. no peaks or only 0-intensity peaks)." [PSI:MS] \cr
+
+
+The metric is calculated as follows: \cr
+(1) the \code{Spectra} object is filtered according to the MS level, \cr 
+(2) the intensities per entry are obtained, \cr
+(3) the number of intensity entries that are \code{NULL}, \code{NA}, or 
+that have a sum of \code{0} are obtained and returned.
 }
 \details{
 MS:4000099 \cr
@@ -60,7 +67,8 @@ term \cr
 #' For *MS:4000099*, \code{msLevel} is set to 1. For *MS:4000100*, 
 \code{msLevel} is set to 2. For *MS:4000101*, \code{msLevel} is set to 3.
 
-An attribute will only be returned if \code{msLevel} is either 1, 2, or 3.
+An attribute containing the PSI:MS term will only be returned if 
+\code{msLevel} is either 1, 2, or 3.
 }
 \examples{
 library(S4Vectors)

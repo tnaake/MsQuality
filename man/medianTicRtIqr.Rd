@@ -39,7 +39,7 @@ The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
 (2) the \code{Spectra} object is ordered according to the retention time, \cr 
 (3) the features between the 1st and 3rd quartile are obtained 
-(half of the features that are present in \code{spectra}), \cr 
+(half of the features that are present in the \code{Spectra} object), \cr 
 (4) the ion count of the features within the 1st and 3rd quartile is 
 obtained, \cr 
 (5) the median value of the ion count is calculated (\code{NA} values are 
@@ -54,8 +54,8 @@ is_a: MS:4000008 ! ID based \cr
 The function \code{medianTicRtIqr} uses the function [ionCount()] as an 
 equivalent to the TIC.
 
-An attribute will only be returned if \code{identificationLevel} is 
-\code{"identified"}.
+An attribute containing the PSI:MS term will only be returned if 
+\code{identificationLevel} is \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If

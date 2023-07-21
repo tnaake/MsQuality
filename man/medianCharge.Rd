@@ -72,8 +72,8 @@ synonym: "MS2-PrecZ-4" RELATED [PMID:24494671] \cr
 synonym: "MS2-PrecZ-5" RELATED [PMID:24494671] \cr
 synonym: "MS2-PrecZ-more" RELATED [PMID:24494671] \cr
 
-An attribute will only be returned if \code{identificationLevel} is either 
-\code{"all"} or \code{"identified"}.
+An attribute containing the PSI:MS term will only be returned if 
+\code{identificationLevel} is either \code{"all"} or \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If

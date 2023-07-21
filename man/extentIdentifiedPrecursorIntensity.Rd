@@ -32,8 +32,7 @@ applied. Can be used to approximate the dynamic range of signal. The used
 type of identification should be noted in the metadata or analysis methods 
 section of the recording file for the respective run. In case of multiple 
 acceptance criteria (FDR) available in proteomics, PSM-level FDR should 
-be used for better comparability." [PSI:MS] 
-[PSI:MS] \cr
+be used for better comparability." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
@@ -53,8 +52,8 @@ synonym: "MS1-3A"  RELATED [PMID:19837981] \cr
 
 Precursor intensity values that are \code{NA} are removed. \cr
 
-An attribute will only be returned if \code{identificationLevel} is
-\code{"identified"}.
+An attribute containing the PSI:MS term will only be returned if 
+\code{identificationLevel} is \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If
