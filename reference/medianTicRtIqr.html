@@ -13,7 +13,7 @@ The metric is calculated as follows:
 (1) the Spectra object is filtered according to the MS level,  
 (2) the Spectra object is ordered according to the retention time,  
 (3) the features between the 1st and 3rd quartile are obtained 
-(half of the features that are present in spectra),  
+(half of the features that are present in the Spectra object),  
 (4) the ion count of the features within the 1st and 3rd quartile is 
 obtained,  
 (5) the median value of the ion count is calculated (NA values are 
@@ -74,7 +74,7 @@ PSM-level FDR should be used for better comparability." [PSI:MS] <br></p>
 (1) the <code>Spectra</code> object is filtered according to the MS level, <br> 
 (2) the <code>Spectra</code> object is ordered according to the retention time, <br> 
 (3) the features between the 1st and 3rd quartile are obtained 
-(half of the features that are present in <code>spectra</code>), <br> 
+(half of the features that are present in the <code>Spectra</code> object), <br> 
 (4) the ion count of the features within the 1st and 3rd quartile is 
 obtained, <br> 
 (5) the median value of the ion count is calculated (<code>NA</code> values are 
@@ -125,8 +125,8 @@ is_a: MS:4000003 ! single value <br>
 is_a: MS:4000008 ! ID based <br></p>
 <p>The function <code>medianTicRtIqr</code> uses the function [ionCount()] as an 
 equivalent to the TIC.</p>
-<p>An attribute will only be returned if <code>identificationLevel</code> is 
-<code>"identified"</code>.</p>
+<p>An attribute containing the PSI:MS term will only be returned if 
+<code>identificationLevel</code> is <code>"identified"</code>.</p>
     </div>
     <div id="note">
     <h2>Note</h2>

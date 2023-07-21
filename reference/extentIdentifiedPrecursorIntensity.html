@@ -7,7 +7,6 @@ type of identification should be noted in the metadata or analysis methods
 section of the recording file for the respective run. In case of multiple 
 acceptance criteria (FDR) available in proteomics, PSM-level FDR should 
 be used for better comparability." [PSI:MS] 
-[PSI:MS] 
 The metric is calculated as follows: 
 (1) the Spectra object is filtered according to the MS level,  
 (2) the intensities of the precursor ions are obtained,  
@@ -65,8 +64,7 @@ applied. Can be used to approximate the dynamic range of signal. The used
 type of identification should be noted in the metadata or analysis methods 
 section of the recording file for the respective run. In case of multiple 
 acceptance criteria (FDR) available in proteomics, PSM-level FDR should 
-be used for better comparability." [PSI:MS] 
-[PSI:MS] <br></p>
+be used for better comparability." [PSI:MS] <br></p>
 <p>The metric is calculated as follows: <br>
 (1) the <code>Spectra</code> object is filtered according to the MS level, <br> 
 (2) the intensities of the precursor ions are obtained, <br> 
@@ -121,8 +119,8 @@ is_a: MS:4000008 ! ID based <br>
 relationship: has_metric_category MS:4000022 ! MS2 metric <br>
 synonym: "MS1-3A"  RELATED [PMID:19837981] <br></p>
 <p>Precursor intensity values that are <code>NA</code> are removed. <br></p>
-<p>An attribute will only be returned if <code>identificationLevel</code> is
-<code>"identified"</code>.</p>
+<p>An attribute containing the PSI:MS term will only be returned if 
+<code>identificationLevel</code> is <code>"identified"</code>.</p>
     </div>
     <div id="note">
     <h2>Note</h2>

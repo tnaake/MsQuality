@@ -6,7 +6,11 @@
 MS:4000060 
 "The number of MS2 events in the run." [PSI:MS] 
 For *MS:4000059*, msLevel is set to 1. For *MS:4000060*, 
-msLevel is set to 2.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+msLevel is set to 2.
+The metric is calculated as follows: 
+(1) the Spectra object is filtered according to the MS level, 
+(2) the number of the spectra are obtained (length of Spectra)
+and returned.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
@@ -57,6 +61,10 @@ msLevel is set to 2.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
 "The number of MS2 events in the run." [PSI:MS] <br></p>
 <p>For *MS:4000059*, <code>msLevel</code> is set to 1. For *MS:4000060*, 
 <code>msLevel</code> is set to 2.</p>
+<p>The metric is calculated as follows: <br>
+(1) the <code>Spectra</code> object is filtered according to the MS level, <br>
+(2) the number of the spectra are obtained (<code>length</code> of <code>Spectra</code>)
+and returned.</p>
     </div>
 
     <div id="ref-usage">
@@ -103,7 +111,8 @@ relationship: has_metric_category MS:4000012 ! single run based metric <br>
 relationship: has_metric_category MS:4000022 ! MS2 metric <br>
 relationship: has_value_type xsd:int ! The allowed value-type for this CV term <br>
 relationship: has_units UO:0000189 ! count unit <br></p>
-<p>An attribute will only be returned if <code>msLevel</code> is either 1 or 2.</p>
+<p>An attribute containing the PSI:MS term will only be returned if 
+<code>msLevel</code> is either 1 or 2.</p>
     </div>
     <div id="author">
     <h2>Author</h2>

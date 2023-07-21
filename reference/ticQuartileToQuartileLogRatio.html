@@ -9,19 +9,19 @@ The metric's value triplet represents the log ratio of the TIC-change
 Q2 to Q1, Q3 to Q2, TIC-change-max to Q3&quot; [PSI:MS]  
 For calculation of MS:400057 set mode = &quot;TIC_change&quot;. 
 MS:4000058 
-The log ratios of successive TIC quartiles. The metric's value triplet 
+&quot;The log ratios of successive TIC quartiles. The metric's value triplet 
 represents the log ratios of TIC-Q2 to TIC-Q1, TIC-Q3 to TIC-Q2, 
 TIC-max to TIC-Q3.&quot; [PSI:MS] 
 For calculation of MS:400058 set mode = &quot;TIC&quot;. 
 The metric is calculated as follows: 
-(1) the TIC (ionCount) of the  spectra is calculated per scan
-event (with spectra ordered by retention time), 
+(1) the TIC (ionCount) of the Spectra object is calculated 
+per scan event (with spectra ordered by retention time), 
 (2) for *MS:4000057*, the differences between TIC values are calculated 
 between subsequent scan events,
 for *MS:4000058*, the TIC values between subsequent scan events are taken
 as they are, 
 (3) for *MS:4000057* and *MS:4000058* the ratios between the 25%, 50%, 
-75%, and 100% quantile to the 25
+75%, and 100% quantile to the 25% quantile of the values of (2) are 
 calculated.
 Alternatively, if relativeTo = &quot;Q1&quot;, the ratios are calculated 
 between the 50%/25%, 75%/25%, and 100%/25% quantiles, 
@@ -78,19 +78,19 @@ The metric's value triplet represents the log ratio of the TIC-change
 Q2 to Q1, Q3 to Q2, TIC-change-max to Q3" [PSI:MS] <br> 
 For calculation of MS:400057 set <code>mode = "TIC_change"</code>. <br></p>
 <p>MS:4000058 <br>
-The log ratios of successive TIC quartiles. The metric's value triplet 
+"The log ratios of successive TIC quartiles. The metric's value triplet 
 represents the log ratios of TIC-Q2 to TIC-Q1, TIC-Q3 to TIC-Q2, 
 TIC-max to TIC-Q3." [PSI:MS] <br>
 For calculation of MS:400058 set <code>mode = "TIC"</code>. <br></p>
 <p>The metric is calculated as follows: <br>
-(1) the TIC (<code>ionCount</code>) of the  <code>spectra</code> is calculated per scan
-event (with spectra ordered by retention time), <br>
+(1) the TIC (<code>ionCount</code>) of the <code>Spectra</code> object is calculated 
+per scan event (with spectra ordered by retention time), <br>
 (2) for *MS:4000057*, the differences between TIC values are calculated 
 between subsequent scan events,
 for *MS:4000058*, the TIC values between subsequent scan events are taken
 as they are, <br>
 (3) for *MS:4000057* and *MS:4000058* the ratios between the 25%, 50%, 
-75%, and 100% quantile to the 25<!-- % quantile of the values of (2) are  -->
+75%, and 100% quantile to the 25% quantile of the values of (2) are 
 calculated.
 Alternatively, if <code>relativeTo = "Q1"</code>, the ratios are calculated 
 between the 50%/25%, 75%/25%, and 100%/25% quantiles, <br>
@@ -162,12 +162,12 @@ relationship: has_metric_category MS:4000017 ! chromatogram metric <br>
 relationship: has_metric_category MS:4000021 ! MS1 metric <br>
 relationship: has_value_type xsd:float ! The allowed value-type for this CV term <br>
 relationship: has_value_concept STATO:0000105 ! log signal intensity ratio <br></p>
-<p>An attribute will only be returned if <code>relativeTo</code> is 
-<code>"previous"</code> and <code>msLevel</code> is 1.</p>
+<p>An attribute containing the PSI:MS term will only be returned if 
+<code>relativeTo</code> is <code>"previous"</code> and <code>msLevel</code> is 1.</p>
     </div>
     <div id="note">
     <h2>Note</h2>
-    <p>This function interprets the *quantiles* from the [PSI:QC] definition as
+    <p>This function interprets the *quantiles* from the [PSI:MS] definition as
 *quartiles*, i.e. the 0, 25, 50, 75 and 100% quantiles are used.</p>
     </div>
     <div id="author">

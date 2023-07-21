@@ -12,8 +12,8 @@ should be used for better comparability." [PSI:MS]
 The metric is calculated as follows: 
 (1) the Spectra object is filtered according to the MS level,  
 (2) the Spectra object is ordered according to the retention time,  
-(3) the number of features in spectra is obtained and the number for 
-half of the features is calculated,  
+(3) the number of features in the Spectra object is obtained and 
+the number for half of the features is calculated,  
 (4) iterate through the features (always by taking the neighbouring
 half of features) and calculate the retention time range of the
 set of features,  
@@ -76,8 +76,8 @@ should be used for better comparability." [PSI:MS]  <br></p>
 <p>The metric is calculated as follows: <br>
 (1) the <code>Spectra</code> object is filtered according to the MS level, <br> 
 (2) the <code>Spectra</code> object is ordered according to the retention time, <br> 
-(3) the number of features in <code>spectra</code> is obtained and the number for 
-half of the features is calculated, <br> 
+(3) the number of features in the <code>Spectra</code> object is obtained and 
+the number for half of the features is calculated, <br> 
 (4) iterate through the features (always by taking the neighbouring
 half of features) and calculate the retention time range of the
 set of features, <br> 
@@ -132,8 +132,8 @@ is_a: MS:4000008 ! ID based <br>
 synonym: "MS1-2B"  RELATED [PMID:19837981]</p>
 <p>The function <code>medianTicOfRtRange</code> uses the function <code>ionCount</code> as an 
 equivalent to the TIC.</p>
-<p>An attribute will only be returned if <code>identificationLevel</code> is 
-<code>"identified"</code>.</p>
+<p>An attribute containing the PSI:MS term will only be returned if 
+<code>identificationLevel</code> is <code>"identified"</code>.</p>
     </div>
     <div id="note">
     <h2>Note</h2>
