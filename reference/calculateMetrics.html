@@ -53,7 +53,12 @@ calculateMetricsFromMsExperiment."><!-- mathjax --><script src="https://cdnjs.cl
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calculateMetrics</span><span class="op">(</span><span class="va">object</span>, metrics <span class="op">=</span> <span class="fu"><a href="qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calculateMetrics</span><span class="op">(</span></span>
+<span>  <span class="va">object</span>,</span>
+<span>  metrics <span class="op">=</span> <span class="fu"><a href="qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span>,</span>
+<span>  filterEmptySpectra <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -65,6 +70,11 @@ calculateMetricsFromMsExperiment."><!-- mathjax --><script src="https://cdnjs.cl
 <dt>metrics</dt>
 <dd><p><code>character</code> specifying the quality metrics to be 
 calculated on <code>object</code></p></dd>
+
+
+<dt>filterEmptySpectra</dt>
+<dd><p><code>logical(1)</code> specifying if empty entries and
+entries with intensity zero of the <code>Spectra</code> object will be removed</p></dd>
 
 
 <dt>...</dt>

@@ -64,6 +64,7 @@ e.g. <code>dataOrigin</code> information.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calculateMetricsFromSpectra</span><span class="op">(</span></span>
 <span>  <span class="va">spectra</span>,</span>
 <span>  <span class="va">metrics</span>,</span>
+<span>  filterEmptySpectra <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  f <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">dataOrigin</a></span><span class="op">(</span><span class="va">spectra</span><span class="op">)</span>,</span>
 <span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"data.frame"</span>, <span class="st">"mzQC"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span>,</span>
@@ -80,6 +81,11 @@ e.g. <code>dataOrigin</code> information.</p>
 <dt>metrics</dt>
 <dd><p><code>character</code> specifying the quality metrics to be 
 calculated on <code>spectra</code></p></dd>
+
+
+<dt>filterEmptySpectra</dt>
+<dd><p><code>logical(1)</code> specifying if empty entries and
+entries with intensity zero of the <code>Spectra</code> object will be removed</p></dd>
 
 
 <dt>f</dt>

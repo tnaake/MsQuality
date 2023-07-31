@@ -54,6 +54,7 @@ metrics from a <code>MsExperiment</code> object. Each spectra in the
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calculateMetricsFromMsExperiment</span><span class="op">(</span></span>
 <span>  <span class="va">msexp</span>,</span>
 <span>  metrics <span class="op">=</span> <span class="fu"><a href="qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">msexp</span><span class="op">)</span>,</span>
+<span>  filterEmptySpectra <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">bpparam</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -68,6 +69,11 @@ metrics from a <code>MsExperiment</code> object. Each spectra in the
 <dt>metrics</dt>
 <dd><p><code>character</code> specifying the quality metrics to be 
 calculated on <code>msexp</code></p></dd>
+
+
+<dt>filterEmptySpectra</dt>
+<dd><p><code>logical(1)</code> specifying if empty entries and
+entries with intensity zero of the <code>Spectra</code> object will be removed</p></dd>
 
 
 <dt>...</dt>

@@ -55,6 +55,7 @@ metrics from a <code>Spectra</code> containing spectral data from one sample.</p
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calculateMetricsFromOneSampleSpectra</span><span class="op">(</span></span>
 <span>  <span class="va">spectra</span>,</span>
 <span>  metrics <span class="op">=</span> <span class="fu"><a href="qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">spectra</span><span class="op">)</span>,</span>
+<span>  filterEmptySpectra <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  f <span class="op">=</span> <span class="va">spectra</span><span class="op">$</span><span class="va">dataOrigin</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -69,6 +70,11 @@ metrics from a <code>Spectra</code> containing spectral data from one sample.</p
 <dt>metrics</dt>
 <dd><p><code>character</code> specifying the quality metrics to be 
 calculated on <code>spectra</code></p></dd>
+
+
+<dt>filterEmptySpectra</dt>
+<dd><p><code>logical(1)</code> specifying if empty entries and
+entries with intensity zero of the <code>Spectra</code> object will be removed</p></dd>
 
 
 <dt>f</dt>
