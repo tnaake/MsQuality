@@ -51,7 +51,7 @@
 #' MsQuality:::calculateMetricsFromOneSampleSpectra(spectra = spectra, 
 #'     metrics = metrics, msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromOneSampleSpectra <- function(spectra, 
-    metrics = qualityMetrics(spectra), filterEmptySpectra = c(FALSE, TRUE), 
+    metrics = qualityMetrics(spectra), filterEmptySpectra = FALSE, 
     f = spectra$dataOrigin, ...) {
     
     ## match metrics against the possible quality metrics defined in 
@@ -195,7 +195,7 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' ##calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
 #' ##    format = "mzQC", msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromSpectra <- function(spectra, metrics, 
-    filterEmptySpectra = c(FALSE, TRUE), f = dataOrigin(spectra), 
+    filterEmptySpectra = FALSE, f = dataOrigin(spectra), 
     format = c("data.frame", "mzQC"), ..., BPPARAM = bpparam()) {
     
     ## match metrics against the possible quality metrics defined in 
@@ -222,7 +222,7 @@ calculateMetricsFromSpectra <- function(spectra, metrics,
     spectra_metrics <- bplapply(f_unique, function(f_unique_i, ...) {
         calculateMetricsFromOneSampleSpectra(
             spectra = spectra[f == f_unique_i], metrics = metrics, 
-            filterEmptySpectra = c(FALSE, TRUE), ...)
+            filterEmptySpectra = FALSE, ...)
     }, ..., BPPARAM = BPPARAM)
     
     ## add file names as names of the list
@@ -449,7 +449,7 @@ transformIntoMzQC <- function(spectra_metrics) {
 #' calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
 #'     msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromMsExperiment <- function(msexp, 
-    metrics = qualityMetrics(msexp), filterEmptySpectra = c(FALSE, TRUE),
+    metrics = qualityMetrics(msexp), filterEmptySpectra = FALSE,
     ..., BPPARAM = bpparam()) {
   
     ## match metrics against the possible quality metrics defined in 
@@ -528,7 +528,7 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #' calculateMetrics(object = spectra, metrics = metrics, 
 #'     msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetrics <- function(object, 
-        metrics = qualityMetrics(object), filterEmptySpectra = c(FALSE, TRUE), 
+        metrics = qualityMetrics(object), filterEmptySpectra = FALSE, 
         ...) {
     
     ## match metrics against the possible quality metrics defined in 
