@@ -59,7 +59,7 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
     metrics <- match.arg(metrics, choices = qualityMetrics(spectra), 
         several.ok = TRUE)
     
-    if (length(filterEmptySpectra) != 1 & !is.logical(filterEmptySpectra))
+    if (length(filterEmptySpectra) != 1 | !is.logical(filterEmptySpectra))
         stop("'filterEmptySpectra' has to be either TRUE or FALSE")
 
     if(!is(spectra, "Spectra")) stop("'spectra' is not of class 'Spectra'")
@@ -72,7 +72,7 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
     if (filterEmptySpectra) {
         spectra <- spectra |>
             filterIntensity(intensity = c(0, Inf)) |>
-            filterEmptySpectra(spectra)
+            filterEmptySpectra()
     }
     
     dots <- list(...)
@@ -203,7 +203,7 @@ calculateMetricsFromSpectra <- function(spectra, metrics,
     metrics <- match.arg(metrics, choices = qualityMetrics(spectra), 
         several.ok = TRUE)
     
-    if (length(filterEmptySpectra) != 1 & !is.logical(filterEmptySpectra))
+    if (length(filterEmptySpectra) != 1 | !is.logical(filterEmptySpectra))
         stop("'filterEmptySpectra' has to be either TRUE or FALSE")
     
     format <- match.arg(format)
@@ -457,7 +457,7 @@ calculateMetricsFromMsExperiment <- function(msexp,
     metrics <- match.arg(metrics, choices = qualityMetrics(msexp), 
         several.ok = TRUE)
     
-    if (length(filterEmptySpectra) != 1 & !is.logical(filterEmptySpectra))
+    if (length(filterEmptySpectra) != 1 | !is.logical(filterEmptySpectra))
         stop("'filterEmptySpectra' has to be either TRUE or FALSE")
     
     if(!is(msexp, "MsExperiment")) 
@@ -536,7 +536,7 @@ calculateMetrics <- function(object,
     metrics <- match.arg(metrics, choices = qualityMetrics(object), 
         several.ok = TRUE)
     
-    if (length(filterEmptySpectra) != 1 & !is.logical(filterEmptySpectra))
+    if (length(filterEmptySpectra) != 1 | !is.logical(filterEmptySpectra))
         stop("'filterEmptySpectra' has to be either TRUE or FALSE")
     
     if (is(object, "Spectra")) {
