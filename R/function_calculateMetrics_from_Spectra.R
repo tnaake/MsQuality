@@ -31,8 +31,7 @@
 #' @author Thomas Naake
 #' 
 #' @importFrom methods is
-#' @importFrom Spectra Spectra
-#' 
+#' @importFrom Spectra Spectra filterIntensity filterEmptySpectra
 #' @examples
 #' library(msdata)
 #' library(Spectra)

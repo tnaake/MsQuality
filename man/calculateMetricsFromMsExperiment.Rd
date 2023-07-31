@@ -7,7 +7,7 @@
 calculateMetricsFromMsExperiment(
   msexp,
   metrics = qualityMetrics(msexp),
-  filterEmptySpectra = c(FALSE, TRUE),
+  filterEmptySpectra = FALSE,
   ...,
   BPPARAM = bpparam()
 )

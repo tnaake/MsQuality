@@ -7,7 +7,7 @@
 calculateMetrics(
   object,
   metrics = qualityMetrics(object),
-  filterEmptySpectra = c(FALSE, TRUE),
+  filterEmptySpectra = FALSE,
   ...
 )
 }

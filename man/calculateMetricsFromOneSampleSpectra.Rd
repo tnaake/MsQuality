@@ -8,7 +8,7 @@ data from one sample}
 calculateMetricsFromOneSampleSpectra(
   spectra,
   metrics = qualityMetrics(spectra),
-  filterEmptySpectra = c(FALSE, TRUE),
+  filterEmptySpectra = FALSE,
   f = spectra$dataOrigin,
   ...
 )

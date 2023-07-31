@@ -7,7 +7,7 @@
 calculateMetricsFromSpectra(
   spectra,
   metrics,
-  filterEmptySpectra = c(FALSE, TRUE),
+  filterEmptySpectra = FALSE,
   f = dataOrigin(spectra),
   format = c("data.frame", "mzQC"),
   ...,
