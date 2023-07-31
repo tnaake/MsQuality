@@ -27,6 +27,7 @@ Description:
 Depends:
 	R (>= 4.2.0)
 Imports:
+    BiocParallel (>= 1.32.0),
 	ggplot2 (>= 3.3.5),
 	htmlwidgets (>= 1.5.3),
 	methods (>= 4.2.0),
@@ -42,7 +43,7 @@ Imports:
 	stringr (>= 1.4.0),
 	tibble (>= 3.1.4),
 	tidyr (>= 1.1.3),
-	BiocParallel
+    utils (>= 4.2.0)
 Suggests:
 	BiocGenerics (>= 0.24.0),
 	BiocStyle (>= 2.6.1),

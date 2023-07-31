@@ -32,6 +32,8 @@
 #' 
 #' @importFrom methods is
 #' @importFrom Spectra Spectra filterIntensity filterEmptySpectra
+#' @import msdata
+#' 
 #' @examples
 #' library(msdata)
 #' library(Spectra)
@@ -162,6 +164,7 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' @importFrom methods is
 #' @importMethodsFrom Spectra dataOrigin
 #' @importFrom BiocParallel bplapply bpparam
+#' @import msdata
 #' 
 #' @examples 
 #' library(msdata)
@@ -408,6 +411,7 @@ transformIntoMzQC <- function(spectra_metrics) {
 #' @importFrom ProtGenerics spectra
 #' @importFrom MsExperiment MsExperiment sampleData
 #' @importFrom methods is
+#' @import msdata
 #' 
 #' @examples 
 #' library(msdata)
@@ -508,6 +512,7 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #' 
 #' @importFrom methods is
 #' @importFrom Spectra Spectra
+#' @import msdata
 #' 
 #' @examples
 #' library(msdata)

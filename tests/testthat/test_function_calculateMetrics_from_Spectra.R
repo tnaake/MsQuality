@@ -38,7 +38,6 @@ suppressWarnings(
         spectra = spectra_2, metrics = metrics, filterEmptySpectra = TRUE, 
         msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
 
-
 ## START unit test calculateMetricsFromOneSampleSpectra ## 
 colnames_metrics <- c("chromatographyDuration", "ticQuartersRtFraction.0%",                  
     "ticQuartersRtFraction.25%", "ticQuartersRtFraction.50%",
