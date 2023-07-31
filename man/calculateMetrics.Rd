@@ -4,13 +4,21 @@
 \alias{calculateMetrics}
 \title{Calculate QC metrics from a Spectra or MsExperiment object}
 \usage{
-calculateMetrics(object, metrics = qualityMetrics(object), ...)
+calculateMetrics(
+  object,
+  metrics = qualityMetrics(object),
+  filterEmptySpectra = c(FALSE, TRUE),
+  ...
+)
 }
 \arguments{
 \item{object}{\code{Spectra} or \code{MsExperiment} object}
 
 \item{metrics}{\code{character} specifying the quality metrics to be 
 calculated on \code{object}}
+
+\item{filterEmptySpectra}{\code{logical(1)} specifying if empty entries and
+entries with intensity zero of the \code{Spectra} object will be removed}
 
 \item{...}{arguments passed to the quality metrics functions defined in 
 \code{metrics}}

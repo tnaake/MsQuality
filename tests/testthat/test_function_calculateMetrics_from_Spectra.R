@@ -10,24 +10,43 @@ metrics <- c("chromatographyDuration", "ticQuartersRtFraction",
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTIC and msSignal10XChange,
 ## relativeTo is an argument of msSignal10XChange)
-suppressWarnings(metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra,
-    metrics = metrics, msLevel = 1, relativeTo = "Q1", mode = "TIC", 
-    change = "jump"))
+suppressWarnings(
+    metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra,
+        metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1, 
+        relativeTo = "Q1", mode = "TIC", change = "jump"))
+suppressWarnings(
+    metrics_spectra_filtered <- calculateMetricsFromSpectra(spectra = spectra,
+        metrics = metrics, filterEmptySpectra = TRUE, msLevel = 1, 
+        relativeTo = "Q1", mode = "TIC", change = "jump"))
 
 ## calculate the metrics from Spectra
 dO <- unique(spectra$dataOrigin)
 spectra_1 <- spectra[spectra$dataOrigin == dO[1], ]
 spectra_2 <- spectra[spectra$dataOrigin == dO[2], ]
 suppressWarnings(metrics_spectra_1 <- calculateMetricsFromOneSampleSpectra(
-    spectra = spectra_1, metrics = metrics, msLevel = 1, 
-    relativeTo = "Q1", mode = "TIC", change = "jump"))
+    spectra = spectra_1, metrics = metrics, filterEmptySpectra = FALSE, 
+    msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
+suppressWarnings(
+    metrics_spectra_1_filtered <- calculateMetricsFromOneSampleSpectra(
+        spectra = spectra_1, metrics = metrics, filterEmptySpectra = TRUE, 
+        msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(metrics_spectra_2 <- calculateMetricsFromOneSampleSpectra(
-    spectra = spectra_2, metrics = metrics, msLevel = 1, 
-    relativeTo = "Q1", mode = "TIC", change = "jump"))
+    spectra = spectra_2, metrics = metrics, filterEmptySpectra = FALSE, 
+    msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
+suppressWarnings(
+    metrics_spectra_2_filtered <- calculateMetricsFromOneSampleSpectra(
+        spectra = spectra_2, metrics = metrics, filterEmptySpectra = TRUE, 
+        msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
 
 ## calculate the metrics by the wrapper function
-suppressWarnings(metrics_spectra_wrapper <- calculateMetrics(object = spectra,
-    metrics = metrics, msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
+suppressWarnings(
+    metrics_spectra_wrapper <- calculateMetrics(object = spectra,
+    metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1, 
+    relativeTo = "Q1", mode = "TIC", change = "jump"))
+suppressWarnings(
+    metrics_spectra_wrapper_filtered <- calculateMetrics(object = spectra,
+    metrics = metrics, filteredEmptySpectra = TRUE, msLevel = 1, 
+    relativeTo = "Q1", mode = "TIC", change = "jump"))
 
 ## START unit test calculateMetricsFromOneSampleSpectra ## 
 colnames_metrics <- c("chromatographyDuration", "ticQuartersRtFraction.0%",                  
@@ -57,10 +76,15 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     expect_true(is.numeric(metrics_spectra_1))
     expect_equal(as.numeric(metrics_spectra_1), metrics_spectra_1_vals, 
         tolerance = 1e-06)
+    expect_equal(as.numeric(metrics_spectra_1_filtered), metrics_spectra_1_vals, 
+        tolerance = 1e-06)
     expect_error(calculateMetricsFromOneSampleSpectra(NULL, metrics = metrics),
         "object '.metrics' not found")
     expect_error(calculateMetricsFromOneSampleSpectra("foo", metrics = metrics),
         "object '.metrics' not found")
+    expect_error(calculateMetricsFromOneSampleSpectra(spectra_1, 
+        metrics = metrics, filterEmptySpectra = "foo"),
+        "'filterEmptySpectra' has to be either TRUE or FALSE")
     expect_error(
         calculateMetricsFromOneSampleSpectra(spectra_1, metrics = "foo"),
         "should be one of")
@@ -70,116 +94,226 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     
     ## spectra_2
     expect_true(is.numeric(metrics_spectra_2))
+    expect_true(is.numeric(metrics_spectra_2_filtered))
     expect_equal(length(metrics_spectra_2), 12)
+    expect_equal(length(metrics_spectra_2_filtered), 12)
     expect_equal(names(metrics_spectra_2), colnames_metrics)
+    expect_equal(names(metrics_spectra_2_filtered), colnames_metrics)
     expect_true(is.numeric(metrics_spectra_2))
+    expect_true(is.numeric(metrics_spectra_2_filtered))
     expect_equal(as.numeric(metrics_spectra_2), metrics_spectra_2_vals, 
+        tolerance = 1e-06)
+    expect_equal(as.numeric(metrics_spectra_2_filtered), metrics_spectra_2_vals, 
         tolerance = 1e-06)
     expect_error(calculateMetricsFromOneSampleSpectra(NULL, metrics = metrics),
         "object '.metrics' not found")
+    expect_error(calculateMetricsFromOneSampleSpectra(spectra_2, 
+        metrics = metrics, filterEmptySpectra = "foo"),
+        "'filterEmptySpectra' has to be either TRUE or FALSE")
     expect_error(calculateMetricsFromOneSampleSpectra(spectra_2,
         metrics = "msSignal10xChange", change = c("jump", "fall")),
         "'change' has to be of length 1")
     
     ## test attributes
     expect_equal(attr(metrics_spectra_1, "names"), colnames_metrics)
+    expect_equal(attr(metrics_spectra_1_filtered, "names"), colnames_metrics)
     expect_equal(attr(metrics_spectra_1, "chromatographyDuration"), "MS:4000053")
+    expect_equal(attr(metrics_spectra_1_filtered, "chromatographyDuration"), 
+        "MS:4000053")
     expect_equal(attr(metrics_spectra_1, "ticQuartersRtFraction"), "MS:4000054")
+    expect_equal(attr(metrics_spectra_1_filtered, "ticQuartersRtFraction"), 
+        "MS:4000054")
     expect_equal(attr(metrics_spectra_1, "numberSpectra"), "MS:4000059")
-    expect_equal(attr(metrics_spectra_1, "areaUnderTic"), "MS:4000155")
-    expect_equal(attr(metrics_spectra_1, "msSignal10xChange"), "MS:4000097")
+    expect_equal(attr(metrics_spectra_1_filtered, "numberSpectra"), 
+        "MS:4000059")
+    expect_equal(attr(metrics_spectra_1, "areaUnderTic"), 
+        "MS:4000155")
+    expect_equal(attr(metrics_spectra_1_filtered, "areaUnderTic"), 
+        "MS:4000155")
+    expect_equal(attr(metrics_spectra_1, "msSignal10xChange"), 
+        "MS:4000097")
+    expect_equal(attr(metrics_spectra_1_filtered, "msSignal10xChange"), 
+        "MS:4000097")
     expect_equal(attr(metrics_spectra_1, "msLevel"), 1)
+    expect_equal(attr(metrics_spectra_1_filtered, "msLevel"), 1)
     expect_equal(attr(metrics_spectra_1, "relativeTo"), "Q1")
+    expect_equal(attr(metrics_spectra_1_filtered, "relativeTo"), "Q1")
     expect_equal(attr(metrics_spectra_1, "mode"), "TIC")
+    expect_equal(attr(metrics_spectra_1_filtered, "mode"), "TIC")
     expect_equal(attr(metrics_spectra_1, "change"), "jump")
+    expect_equal(attr(metrics_spectra_1_filtered, "change"), "jump")
     expect_equal(attr(metrics_spectra_2, "names"), colnames_metrics)
-    expect_equal(attr(metrics_spectra_2, "chromatographyDuration"), "MS:4000053")
-    expect_equal(attr(metrics_spectra_2, "ticQuartersRtFraction"), "MS:4000054")
-    expect_equal(attr(metrics_spectra_2, "numberSpectra"), "MS:4000059")
+    expect_equal(attr(metrics_spectra_2_filtered, "names"), colnames_metrics)
+    expect_equal(attr(metrics_spectra_2, "chromatographyDuration"), 
+        "MS:4000053")
+    expect_equal(attr(metrics_spectra_2_filtered, "chromatographyDuration"), 
+        "MS:4000053")
+    expect_equal(attr(metrics_spectra_2, "ticQuartersRtFraction"), 
+        "MS:4000054")
+    expect_equal(attr(metrics_spectra_2_filtered, "ticQuartersRtFraction"), 
+        "MS:4000054")
+    expect_equal(attr(metrics_spectra_2, "numberSpectra"), 
+        "MS:4000059")
+    expect_equal(attr(metrics_spectra_2_filtered, "numberSpectra"), 
+        "MS:4000059")
     expect_equal(attr(metrics_spectra_2, "areaUnderTic"), "MS:4000155")
-    expect_equal(attr(metrics_spectra_2, "msSignal10xChange"), "MS:4000097")
+    expect_equal(attr(metrics_spectra_2_filtered, "areaUnderTic"), "MS:4000155")
+    expect_equal(attr(metrics_spectra_2, "msSignal10xChange"), 
+        "MS:4000097")
+    expect_equal(attr(metrics_spectra_2_filtered, "msSignal10xChange"), 
+        "MS:4000097")
     expect_equal(attr(metrics_spectra_2, "msLevel"), 1)
+    expect_equal(attr(metrics_spectra_2_filtered, "msLevel"), 1)
     expect_equal(attr(metrics_spectra_2, "relativeTo"), "Q1")
+    expect_equal(attr(metrics_spectra_2_filtered, "relativeTo"), "Q1")
     expect_equal(attr(metrics_spectra_2, "mode"), "TIC")
+    expect_equal(attr(metrics_spectra_2_filtered, "mode"), "TIC")
     expect_equal(attr(metrics_spectra_2, "change"), "jump")
-    
+    expect_equal(attr(metrics_spectra_2_filtered, "change"), "jump")
 })
 ## END unit test calculateMetricsFromOneSampleSpectra
 
 ## START unit test calculateMetricsFromSpectra ##
 test_that("calculateMetricsFromSpectra", {
     expect_equal(dim(metrics_spectra), c(2, 12))
+    expect_equal(dim(metrics_spectra_filtered), c(2, 12))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra), "sciex"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, 
         c("20171016_POOL_POS_1_105-134.mzML", 
           "20171016_POOL_POS_3_105-134.mzML"))
+    dirs <- unlist(lapply(
+        strsplit(rownames(metrics_spectra_filtered), "sciex"), "[", 2))
+    dirs <- gsub("[\\]|[/]", "", dirs)
+    expect_equal(dirs, 
+        c("20171016_POOL_POS_1_105-134.mzML", 
+            "20171016_POOL_POS_3_105-134.mzML"))
     expect_equal(colnames(metrics_spectra), colnames_metrics)
+    expect_equal(colnames(metrics_spectra_filtered), colnames_metrics)
     expect_equal(as.numeric(metrics_spectra[1, ]), 
         metrics_spectra_1_vals, tolerance = 1e-06)
+    expect_equal(as.numeric(metrics_spectra_filtered[1, ]), 
+        metrics_spectra_1_vals, tolerance = 1e-06)
     expect_equal(as.numeric(metrics_spectra[2, ]), 
+        metrics_spectra_2_vals, tolerance = 1e-06)
+    expect_equal(as.numeric(metrics_spectra_filtered[2, ]), 
         metrics_spectra_2_vals, tolerance = 1e-06)
     
     expect_error(calculateMetricsFromSpectra("foo", metrics = metrics),
         "object '.metrics' not found")
     expect_error(calculateMetricsFromSpectra(spectra, metrics = "foo"),
         "should be one of ")
+    expect_error(calculateMetricsFromOneSampleSpectra(spectra, 
+        metrics = metrics, filterEmptySpectra = "foo"),
+        "'filterEmptySpectra' has to be either TRUE or FALSE")
     expect_error(calculateMetricsFromSpectra(spectra, 
         metrics = "msSignal10xChange", change = c("jump", "fall")), 
         "'change' has to be of length 1")
     
     ## test attributes
     expect_equal(attr(metrics_spectra, "names"), NULL)
+    expect_equal(attr(metrics_spectra_filtered, "names"), NULL)
     expect_equal(attr(metrics_spectra, "chromatographyDuration"), "MS:4000053")
+    expect_equal(attr(metrics_spectra_filtered, "chromatographyDuration"), 
+        "MS:4000053")
     expect_equal(attr(metrics_spectra, "ticQuartersRtFraction"), "MS:4000054")
+    expect_equal(attr(metrics_spectra_filtered, "ticQuartersRtFraction"), 
+        "MS:4000054")
     expect_equal(attr(metrics_spectra, "numberSpectra"), "MS:4000059")
+    expect_equal(attr(metrics_spectra_filtered, "numberSpectra"), "MS:4000059")
     expect_equal(attr(metrics_spectra, "areaUnderTic"), "MS:4000155")
+    expect_equal(attr(metrics_spectra_filtered, "areaUnderTic"), "MS:4000155")
     expect_equal(attr(metrics_spectra, "msSignal10xChange"), "MS:4000097")
+    expect_equal(attr(metrics_spectra_filtered, "msSignal10xChange"), 
+        "MS:4000097")
     expect_equal(attr(metrics_spectra, "msLevel"), 1)
+    expect_equal(attr(metrics_spectra_filtered, "msLevel"), 1)
     expect_equal(attr(metrics_spectra, "relativeTo"), "Q1")
+    expect_equal(attr(metrics_spectra_filtered, "relativeTo"), "Q1")
     expect_equal(attr(metrics_spectra, "mode"), "TIC")
+    expect_equal(attr(metrics_spectra_filtered, "mode"), "TIC")
     expect_equal(attr(metrics_spectra, "change"), "jump")
+    expect_equal(attr(metrics_spectra_filtered, "change"), "jump")
 })
 ## END unit test calculateMetricsFromSpectra ##
 
 ## START unit test calculateMetrics ##
 test_that("calculateMetrics", {
     expect_equal(dim(metrics_spectra_wrapper), c(2, 12))
+    expect_equal(dim(metrics_spectra_wrapper_filtered), c(2, 12))
     dirs <- unlist(lapply(
-        strsplit(rownames(metrics_spectra), "sciex"), "[", 2))
+        strsplit(rownames(metrics_spectra_wrapper), "sciex"), "[", 2))
+    dirs <- gsub("[\\]|[/]", "", dirs)
+    expect_equal(dirs, 
+        c("20171016_POOL_POS_1_105-134.mzML", 
+            "20171016_POOL_POS_3_105-134.mzML"))
+    dirs <- unlist(lapply(
+        strsplit(rownames(metrics_spectra_wrapper_filtered), "sciex"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, 
         c("20171016_POOL_POS_1_105-134.mzML", 
             "20171016_POOL_POS_3_105-134.mzML"))
     expect_equal(length(metrics_spectra_wrapper), 24)
+    expect_equal(length(metrics_spectra_wrapper_filtered), 24)
     expect_equal(colnames(metrics_spectra_wrapper), colnames_metrics)
+    expect_equal(colnames(metrics_spectra_wrapper_filtered), colnames_metrics)
     expect_true(is.numeric(metrics_spectra_wrapper))
+    expect_true(is.numeric(metrics_spectra_wrapper_filtered))
     expect_equal(as.numeric(metrics_spectra_wrapper[1, ]), 
         metrics_spectra_1_vals,  tolerance = 1e-06)
+    expect_equal(as.numeric(metrics_spectra_wrapper_filtered[1, ]), 
+        metrics_spectra_1_vals,  tolerance = 1e-06)
     expect_equal(as.numeric(metrics_spectra_wrapper[2, ]), 
+        metrics_spectra_2_vals,  tolerance = 1e-06)
+    expect_equal(as.numeric(metrics_spectra_wrapper_filtered[2, ]), 
         metrics_spectra_2_vals,  tolerance = 1e-06)
     
     expect_error(calculateMetrics(NULL, metrics = metrics),
         "object '.metrics' not found")
     expect_error(calculateMetrics("foo", metrics = metrics),
         "object '.metrics' not found")
+    expect_error(calculateMetricsFromOneSampleSpectra(spectra, 
+        metrics = metrics, filterEmptySpectra = "foo"),
+        "'filterEmptySpectra' has to be either TRUE or FALSE")
     expect_error(calculateMetrics(spectra, metrics = "foo"),
         "should be one of ")
     
     ## test attributes
     expect_equal(attributes(metrics_spectra_wrapper)$dimnames[[2]], 
         colnames_metrics)
+    expect_equal(attributes(metrics_spectra_wrapper_filtered)$dimnames[[2]], 
+                 colnames_metrics)
     expect_equal(attr(metrics_spectra_wrapper, "names"), NULL)
-    expect_equal(attr(metrics_spectra_wrapper, "chromatographyDuration"), "MS:4000053")
-    expect_equal(attr(metrics_spectra_wrapper, "ticQuartersRtFraction"), "MS:4000054")
-    expect_equal(attr(metrics_spectra_wrapper, "numberSpectra"), "MS:4000059")
-    expect_equal(attr(metrics_spectra_wrapper, "areaUnderTic"), "MS:4000155")
-    expect_equal(attr(metrics_spectra_wrapper, "msSignal10xChange"), "MS:4000097")
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "names"), NULL)
+    expect_equal(attr(metrics_spectra_wrapper, "chromatographyDuration"), 
+        "MS:4000053")
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "chromatographyDuration"), 
+        "MS:4000053")
+    expect_equal(attr(metrics_spectra_wrapper, "ticQuartersRtFraction"),
+        "MS:4000054")
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "ticQuartersRtFraction"), 
+        "MS:4000054")
+    expect_equal(attr(metrics_spectra_wrapper, "numberSpectra"), 
+        "MS:4000059")
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "numberSpectra"), 
+        "MS:4000059")
+    expect_equal(attr(metrics_spectra_wrapper, "areaUnderTic"), 
+        "MS:4000155")
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "areaUnderTic"), 
+        "MS:4000155")
+    expect_equal(attr(metrics_spectra_wrapper, "msSignal10xChange"), 
+        "MS:4000097")
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "msSignal10xChange"), 
+        "MS:4000097")
     expect_equal(attr(metrics_spectra_wrapper, "msLevel"), 1)
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "msLevel"), 1)
     expect_equal(attr(metrics_spectra_wrapper, "relativeTo"), "Q1")
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "relativeTo"), "Q1")
     expect_equal(attr(metrics_spectra_wrapper, "mode"), "TIC")
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "mode"), "TIC")
     expect_equal(attr(metrics_spectra_wrapper, "change"), "jump")
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "change"), "jump")
 })
 ## END unit test calculateMetrics ## 
 

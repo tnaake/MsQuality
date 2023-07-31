@@ -7,6 +7,7 @@
 calculateMetricsFromSpectra(
   spectra,
   metrics,
+  filterEmptySpectra = c(FALSE, TRUE),
   f = dataOrigin(spectra),
   format = c("data.frame", "mzQC"),
   ...,
@@ -18,6 +19,9 @@ calculateMetricsFromSpectra(
 
 \item{metrics}{\code{character} specifying the quality metrics to be 
 calculated on \code{spectra}}
+
+\item{filterEmptySpectra}{\code{logical(1)} specifying if empty entries and
+entries with intensity zero of the \code{Spectra} object will be removed}
 
 \item{f}{\code{character} defining which spectra in \code{spectra} belong to
 one sample. Defaults to \code{f = dataOrigin(spectra)}. Spectra from the

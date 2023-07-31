@@ -20,6 +20,8 @@
 #' @param spectra \code{Spectra} object
 #' @param metrics \code{character} specifying the quality metrics to be 
 #' calculated on \code{spectra}
+#' @param filterEmptySpectra \code{logical(1)} specifying if empty entries and
+#' entries with intensity zero of the \code{Spectra} object will be removed
 #' @param f \code{character}, grouping parameter for \code{spectra}
 #' @param ... arguments passed to the quality metrics functions defined in 
 #' \code{metrics}
@@ -49,18 +51,30 @@
 #' MsQuality:::calculateMetricsFromOneSampleSpectra(spectra = spectra, 
 #'     metrics = metrics, msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromOneSampleSpectra <- function(spectra, 
-    metrics = qualityMetrics(spectra), f = spectra$dataOrigin, ...) {
+    metrics = qualityMetrics(spectra), filterEmptySpectra = c(FALSE, TRUE), 
+    f = spectra$dataOrigin, ...) {
     
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(spectra), throw an error if there are metrics that 
     ## are not defined in qualityMetrics(spectra)
     metrics <- match.arg(metrics, choices = qualityMetrics(spectra), 
         several.ok = TRUE)
+    
+    if (length(filterEmptySpectra) != 1 & !is.logical(filterEmptySpectra))
+        stop("'filterEmptySpectra' has to be either TRUE or FALSE")
 
     if(!is(spectra, "Spectra")) stop("'spectra' is not of class 'Spectra'")
     
     if(length(unique(f)) != 1) 
         stop("'spectra' should only contain data from one origin")
+    
+    ## in case of filterEmptySpectra == TRUE, remove the entries with
+    ## zero or Inf intensity and remove the entries with empty spectra
+    if (filterEmptySpectra) {
+        spectra <- spectra |>
+            filterIntensity(intensity = c(0, Inf)) |>
+            filterEmptySpectra(spectra)
+    }
     
     dots <- list(...)
 
@@ -119,6 +133,8 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' @param spectra \code{Spectra} object
 #' @param metrics \code{character} specifying the quality metrics to be 
 #' calculated on \code{spectra}
+#' @param filterEmptySpectra \code{logical(1)} specifying if empty entries and
+#' entries with intensity zero of the \code{Spectra} object will be removed
 #' @param f \code{character} defining which spectra in \code{spectra} belong to
 #'     one sample. Defaults to \code{f = dataOrigin(spectra)}. Spectra from the
 #'     same original data file are processed together (and in parallel for
@@ -178,17 +194,20 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' ##    format = "mzQC", msLevel = 1, change = "jump", relativeTo = "Q1")
 #' ##calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
 #' ##    format = "mzQC", msLevel = 1, change = "fall", relativeTo = "previous")
-calculateMetricsFromSpectra <- function(spectra, 
-    metrics, f = dataOrigin(spectra), format = c("data.frame", "mzQC"), ...,
-    BPPARAM = bpparam()) {
-    
-    format <- match.arg(format)
+calculateMetricsFromSpectra <- function(spectra, metrics, 
+    filterEmptySpectra = c(FALSE, TRUE), f = dataOrigin(spectra), 
+    format = c("data.frame", "mzQC"), ..., BPPARAM = bpparam()) {
     
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(spectra), throw an error if there are metrics that 
     ## are not defined in qualityMetrics(spectra)
     metrics <- match.arg(metrics, choices = qualityMetrics(spectra), 
         several.ok = TRUE)
+    
+    if (length(filterEmptySpectra) != 1 & !is.logical(filterEmptySpectra))
+        stop("'filterEmptySpectra' has to be either TRUE or FALSE")
+    
+    format <- match.arg(format)
     
     if(!is(spectra, "Spectra")) stop("spectra is not of class 'Spectra'")
     
@@ -202,7 +221,8 @@ calculateMetricsFromSpectra <- function(spectra,
     ## the lapply loop returns list containing named numeric vectors
     spectra_metrics <- bplapply(f_unique, function(f_unique_i, ...) {
         calculateMetricsFromOneSampleSpectra(
-            spectra = spectra[f == f_unique_i], metrics = metrics, ...)
+            spectra = spectra[f == f_unique_i], metrics = metrics, 
+            filterEmptySpectra = c(FALSE, TRUE), ...)
     }, ..., BPPARAM = BPPARAM)
     
     ## add file names as names of the list
@@ -371,6 +391,8 @@ transformIntoMzQC <- function(spectra_metrics) {
 #' @param msexp \code{MsExperiment} object
 #' @param metrics \code{character} specifying the quality metrics to be 
 #' calculated on \code{msexp}
+#' @param filterEmptySpectra \code{logical(1)} specifying if empty entries and
+#' entries with intensity zero of the \code{Spectra} object will be removed
 #' @param ... arguments passed to the quality metrics functions defined in 
 #' \code{metrics}
 #' 
@@ -427,7 +449,8 @@ transformIntoMzQC <- function(spectra_metrics) {
 #' calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
 #'     msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromMsExperiment <- function(msexp, 
-    metrics = qualityMetrics(msexp), ..., BPPARAM = bpparam()) {
+    metrics = qualityMetrics(msexp), filterEmptySpectra = c(FALSE, TRUE),
+    ..., BPPARAM = bpparam()) {
   
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(mse), throw an error if there are metrics that 
@@ -435,19 +458,22 @@ calculateMetricsFromMsExperiment <- function(msexp,
     metrics <- match.arg(metrics, choices = qualityMetrics(msexp), 
         several.ok = TRUE)
     
+    if (length(filterEmptySpectra) != 1 & !is.logical(filterEmptySpectra))
+        stop("'filterEmptySpectra' has to be either TRUE or FALSE")
+    
     if(!is(msexp, "MsExperiment")) 
         stop("'msexp' is not of class 'MsExperiment'")
-    
     
     ## get Spectra object from MsExperiment object and calculate the quality  
     ## metrics using the calculateMetricsFromSpectra function, the metrics
     ## will be stored in the data.frame df
     sps <- spectra(msexp)
-    df <- calculateMetricsFromSpectra(spectra = sps, metrics = metrics, ...,
-                                      BPPARAM = BPPARAM)
+    res <- calculateMetricsFromSpectra(spectra = sps, metrics = metrics, 
+        filterEmptySpectra = filterEmptySpectra, ...,
+        BPPARAM = BPPARAM)
     
-    ## return the data.frame
-    df
+    ## return the object
+    res
 }
 
 #' @name calculateMetrics
@@ -469,6 +495,8 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #' @param object \code{Spectra} or \code{MsExperiment} object
 #' @param metrics \code{character} specifying the quality metrics to be 
 #' calculated on \code{object}
+#' @param filterEmptySpectra \code{logical(1)} specifying if empty entries and
+#' entries with intensity zero of the \code{Spectra} object will be removed
 #' @param ... arguments passed to the quality metrics functions defined in 
 #' \code{metrics}
 #' 
@@ -500,7 +528,8 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #' calculateMetrics(object = spectra, metrics = metrics, 
 #'     msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetrics <- function(object, 
-        metrics = qualityMetrics(object), ...) {
+        metrics = qualityMetrics(object), filterEmptySpectra = c(FALSE, TRUE), 
+        ...) {
     
     ## match metrics against the possible quality metrics defined in 
     ## qualityMetrics(object), throw an error if there are metrics that 
@@ -508,14 +537,17 @@ calculateMetrics <- function(object,
     metrics <- match.arg(metrics, choices = qualityMetrics(object), 
         several.ok = TRUE)
     
+    if (length(filterEmptySpectra) != 1 & !is.logical(filterEmptySpectra))
+        stop("'filterEmptySpectra' has to be either TRUE or FALSE")
+    
     if (is(object, "Spectra")) {
         metrics_vals <- calculateMetricsFromSpectra(spectra = object, 
-            metrics = metrics, ...)
+            metrics = metrics, filterEmptySpectra = filterEmptySpectra, ...)
     }
     
     if (is(object, "MsExperiment")) {
       metrics_vals <- calculateMetricsFromMsExperiment(msexp = object, 
-            metrics = metrics, ...)
+            metrics = metrics, filterEmptySpectra = filterEmptySpectra, ...)
     }
     
     ## return the object

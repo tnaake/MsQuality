@@ -7,6 +7,7 @@
 calculateMetricsFromMsExperiment(
   msexp,
   metrics = qualityMetrics(msexp),
+  filterEmptySpectra = c(FALSE, TRUE),
   ...,
   BPPARAM = bpparam()
 )
@@ -16,6 +17,9 @@ calculateMetricsFromMsExperiment(
 
 \item{metrics}{\code{character} specifying the quality metrics to be 
 calculated on \code{msexp}}
+
+\item{filterEmptySpectra}{\code{logical(1)} specifying if empty entries and
+entries with intensity zero of the \code{Spectra} object will be removed}
 
 \item{...}{arguments passed to the quality metrics functions defined in 
 \code{metrics}}
