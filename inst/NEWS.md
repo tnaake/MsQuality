@@ -1,6 +1,23 @@
-# MsQuality 1.1.2
+# MsQuality 1.1
 
+## Changes in version 1.1.2
 - Fix implementation of `mzAquisitionRange`.
+
+## Changes in version 1.1.1
+- move msdata from Suggests to Imports
+- rename function rtDuration to chromatographyDuration
+- rename function rtOverTicQuantiles to ticQuartersRtFraction
+- create function numberEmptyScans
+- add attributes (MS QC terms) to the output of the Spectra metrics functions 
+  if the output matches the described term
+- add rmzqc to IMPORTS
+- add functionality to export quality metrics as in rmzqc format 
+- adjust documentation to newest version of PSI MS CV obo file
+- add to the vignette information on how the metrics are calculated
+- add argument filterEmptySpectra to remove entries of length 0 or that
+  have intensity 0, implement the argument in the functions
+  calculateMetricsFromOneSampleSpectra, calculateMetricsFromSpectra,
+  calculateMetricsFromMsExperiment, and calculateMetrics
 
 # MsQuality 0.99
 
