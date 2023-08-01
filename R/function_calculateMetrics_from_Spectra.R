@@ -17,6 +17,10 @@
 #' data origin (e.g. \code{spectra$dataOrigin} is of length 1). The grouping 
 #' is specified by the argument \code{f}.
 #' 
+#' Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
+#' zero-length entries, zero-intensity entries, and entries with 
+#' intensities that are \code{Inf} from the \code{Spectra} object.
+#' 
 #' @param spectra \code{Spectra} object
 #' @param metrics \code{character} specifying the quality metrics to be 
 #' calculated on \code{spectra}
@@ -130,6 +134,10 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' Samples will be processed in parallel
 #' using the default parallel processing setup ([bpparam()]) or with the
 #' parallel processing setup defined with parameter \code{BPPARAM}.
+#' 
+#' Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
+#' zero-length entries, zero-intensity entries, and entries with 
+#' intensities that are \code{Inf} from the \code{Spectra} object.
 #' 
 #' @param spectra \code{Spectra} object
 #' @param metrics \code{character} specifying the quality metrics to be 
@@ -390,6 +398,10 @@ transformIntoMzQC <- function(spectra_metrics) {
 #' argument. \code{params} can contain named entries which are matched against
 #' the formal arguments of the quality metric functions.
 #' 
+#' Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
+#' zero-length entries, zero-intensity entries, and entries with 
+#' intensities that are \code{Inf} from the \code{Spectra} object.
+#' 
 #' @param msexp \code{MsExperiment} object
 #' @param metrics \code{character} specifying the quality metrics to be 
 #' calculated on \code{msexp}
@@ -448,7 +460,7 @@ transformIntoMzQC <- function(spectra_metrics) {
 #' ## relativeTo is an argument of msSignal10xChange) passed to ...
 #' calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
 #'     msLevel = 1, change = "jump", relativeTo = "Q1")
-#'     
+#' 
 #' calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
 #'     msLevel = 1, change = "fall", relativeTo = "previous")
 calculateMetricsFromMsExperiment <- function(msexp, 
@@ -494,6 +506,10 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #' passed to the quality metric functions can be specified by the \code{params}
 #' argument. \code{params} can contain named entries which are matched against 
 #' the formal arguments of the quality metric functions. 
+#' 
+#' Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
+#' zero-length entries, zero-intensity entries, and entries with 
+#' intensities that are \code{Inf} from the \code{Spectra} object.
 #' 
 #' @param object \code{Spectra} or \code{MsExperiment} object
 #' @param metrics \code{character} specifying the quality metrics to be 
