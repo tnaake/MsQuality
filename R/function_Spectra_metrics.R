@@ -160,19 +160,17 @@ ticQuartersRtFraction <- function(spectra, probs = seq(0, 1, 0.25),
     ## cumulative TIC? The "accumulates" is interpreted as the 
     ## "sum of the TICs of all previous spectra".
     ## probs * max(TIC) calculates the portion of the total TIC at the probs,
-    ## e.g. if sum of TIC is 10000 and probs = c(0, 1, 0.25), ids will be 
+    ## e.g. if sum of TIC is 10000 and probs = seq(0, 1, 0.25), ids will be 
     ## the indices where the TIC is first higher than 0, 2500, 5000, 7500, 
     ## and 10000
     TIC <- cumsum(ionCount(spectra))
     idxs <- lapply(probs * max(TIC), function(z) which(TIC >= z)[1]) |>
         unlist()
     
-    ##idxs <- unlist(lapply(ticQuantile, function(z) which.max(TIC >= z)))
-    
     if (relative) {
         rtMin <- min(RT)
-        chromatographyDuration <- chromatographyDuration(spectra)
-        res <- (RT[idxs] - rtMin) / chromatographyDuration  
+        duration <- chromatographyDuration(spectra)
+        res <- (RT[idxs] - rtMin) / duration  
     } else {
         res <- RT[idxs]
     }
