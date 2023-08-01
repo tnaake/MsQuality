@@ -80,6 +80,14 @@ The `MsExperiment` serves as a container to
 store the mass spectral data of multiple samples. `MsQuality` enables the user
 to calculate quality metrics both on `Spectra` and `MsExperiment` objects.
 
+`MsQuality` can be used for any type of experiment that can be represented as 
+a `Spectra` or `MsExperiment` object. This includes simple LC-MS data, DIA or 
+DDA-based data, ion mobility data or MS data in general. The tool can thus 
+be used for any type of targeted or untargeted metabolomics or proteomics 
+workflow. Also, we are not limited to data files in mzML format, but, through 
+`Spectra` and related `MsBackend` packages, data can be imported from a large 
+variety of formats, including some raw vendor formats. 
+
 In this vignette, we will (i) create some exemplary `Spectra` and `MsExperiment`
 objects, (ii) calculate the quality metrics on these
 data sets, and (iii) visualize some of the metrics.
@@ -776,8 +784,16 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 The most important function to assess the data quality and to calculate the 
 metrics is the `calculateMetrics` function. The function takes
 a `Spectra` or `MsExperiment` object as input, a character vector of metrics
-to be calculated, and, optionally a list of parameters passed to the 
-quality metrics functions. 
+to be calculated, a Boolean value to the `filterEmptySpectra` argument, 
+and, optionally a list of parameters passed to the quality metrics functions.
+
+The `filterEmptySpectra` argument specifies if zero-intensity or zero-length 
+entries should be removed (`filterEmptySpectra = TRUE`). By default, the 
+entries are taken as they are (`filterEmptySpectra = FALSE`). The argument
+can be set to `TRUE` to compute metrics that are close to the implementation
+of the `QuaMeter` software. Prior to calculating the metrics, the implementation
+of `QuaMeter` skips all spectra with `defaultArrayLength=0` (in .mzML files)
+at any MS level.
 
 When passing a `Spectra`/`MsExperiment` object to the function, a `data.frame` 
 returned by `calculateMetrics` with the metrics specified by the argument
@@ -815,11 +831,11 @@ sps_comb_subset <- sps_comb[grep("Sample.1_", sps_comb$dataOrigin), ]
 
 ## for RPLC and HILIC
 metrics_sps_Q1 <- calculateMetrics(object = sps_comb_subset,
-    metrics = qualityMetrics(sps_comb_subset),
+    metrics = qualityMetrics(sps_comb_subset), filterEmptySpectra = FALSE,
     relativeTo = "Q1", msLevel = 1L)
 metrics_sps_Q1
 metrics_sps_previous <- calculateMetrics(object = sps_comb_subset,
-    metrics = qualityMetrics(sps_comb_subset),
+    metrics = qualityMetrics(sps_comb_subset), filterEmptySpectra = FALSE,
     relativeTo = "previous", msLevel = 1L)
 metrics_sps_previous
 ```
@@ -834,6 +850,10 @@ respectively in the objects `msexp_rplc` and `msexp_hilic`. To improve
 the visualization and interpretability, we will only calculate the metrics 
 from the first 20 of these samples.
 
+In this example here, we will remove zero-length and zero-intensity entries
+prior to calculating the metrics. To do this, we set the `filterEmptySpectra`
+argument to `TRUE` within the `calculateMetrics` function.
+
 ```{r metrics_rplc_hilic_lee2019}
 ## subset the MsExperiment objects
 msexp_rplc_subset <- msexp_rplc[1:20]
@@ -846,12 +866,12 @@ metrics_sps <- c("chromatographyDuration", "ticQuartersRtFraction", "rtOverMsQua
 
 ## for RPLC-derived MsExperiment
 metrics_rplc_msexp <- calculateMetrics(object = msexp_rplc_subset,
-    metrics = qualityMetrics(msexp_rplc_subset),
+    metrics = qualityMetrics(msexp_rplc_subset), filterEmptySpectra = TRUE,
     relativeTo = "Q1", msLevel = 1L)
 
 ## for HILIC-derived MsExperiment
 metrics_hilic_msexp <- calculateMetrics(object = msexp_hilic_subset,
-    metrics = qualityMetrics(msexp_hilic_subset),
+    metrics = qualityMetrics(msexp_hilic_subset), filterEmptySpectra = TRUE,
     relativeTo = "Q1", msLevel = 1L)
 ```
 
