@@ -661,8 +661,8 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
 #' 
 #' The metric is calculated as follows: \cr
 #' (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-#' (2) the m/z values of the peaks within the \code{Spectra} object are obtained, \cr 
-#' (3) the minimum and maximum m/z values are obtained and returned. 
+#' (2) the precursor m/z values of the peaks within the \code{Spectra} object are obtained, \cr 
+#' (3) the minimum and maximum precursor m/z values are obtained and returned. 
 #'
 #' @details
 #' MS:4000069 \cr
@@ -693,7 +693,8 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
 #'     msLevel = c(2L, 2L, 2L),
 #'     polarity = c(1L, 1L, 1L),
 #'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
-#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"),
+#'     precursorMz = c(170.16, 170.16, 195.08))
 #' ## Assign m/z and intensity values
 #' spd$mz <- list(
 #'     c(109.2, 124.2, 124.5, 170.16, 170.52),
@@ -706,14 +707,14 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' sps <- Spectra(spd)
 #' mzAcquisitionRange(spectra = sps, msLevel = 2L)
-mzAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
+mzAcquisitionRange <- function(spectra, msLevel = 2L, ...) {
     
     spectra <- filterMsLevel(object = spectra, msLevel)
     
     if (length(spectra) == 0) {
         res <- c(NaN, NaN)
     } else {
-        mzList <- mz(spectra)
+        mzList <- precursorMz(spectra)
         mz <- unlist(mzList)
         res <- range(mz)
     }

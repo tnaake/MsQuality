@@ -1,5 +1,8 @@
 # MsQuality 1.1
 
+## Changes in version 1.1.2
+- Fix implementation of `mzAquisitionRange`.
+
 ## Changes in version 1.1.1
 - move msdata from Suggests to Imports
 - rename function rtDuration to chromatographyDuration
