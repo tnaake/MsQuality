@@ -1,3 +1,7 @@
+# MsQuality 1.1.2
+
+- Fix implementation of `mzAquisitionRange`.
+
 # MsQuality 0.99
 
 ## Changes in version 0.99.9 (2023-04-18)

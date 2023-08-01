@@ -169,7 +169,7 @@ test_that("mzAcquisitionRange works properly.", {
     expect_error(mzAcquisitionRange(NULL), "unable to find an inherited method")
     expect_error(mzAcquisitionRange(1:10), "unable to find an inherited method")
     tmp <- mzAcquisitionRange(sps_sciex, msLevel = 1L)
-    expect_equal(as.numeric(tmp), c(105, 134), tolerance = 1e-06)
+    expect_equal(as.numeric(tmp), range(precursorMz(sps_sciex)))
     expect_equal(names(tmp), c("min", "max"))
     tmp <- mzAcquisitionRange(sps_sciex, msLevel = 2L)
     expect_equal(as.numeric(tmp), c(NaN, NaN))

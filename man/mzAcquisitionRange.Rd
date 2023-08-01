@@ -4,7 +4,7 @@
 \alias{mzAcquisitionRange}
 \title{m/z acquisition range (MS:4000069)}
 \usage{
-mzAcquisitionRange(spectra, msLevel = 1L, ...)
+mzAcquisitionRange(spectra, msLevel = 2L, ...)
 }
 \arguments{
 \item{spectra}{\code{Spectra} object}
@@ -23,8 +23,8 @@ recorded." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
 (1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the m/z values of the peaks within the \code{Spectra} object are obtained, \cr 
-(3) the minimum and maximum m/z values are obtained and returned.
+(2) the precursor m/z values of the peaks within the \code{Spectra} object are obtained, \cr 
+(3) the minimum and maximum precursor m/z values are obtained and returned.
 }
 \details{
 MS:4000069 \cr
@@ -43,7 +43,8 @@ spd <- DataFrame(
     msLevel = c(2L, 2L, 2L),
     polarity = c(1L, 1L, 1L),
     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
-    name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+    name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"),
+    precursorMz = c(170.16, 170.16, 195.08))
 ## Assign m/z and intensity values
 spd$mz <- list(
     c(109.2, 124.2, 124.5, 170.16, 170.52),
