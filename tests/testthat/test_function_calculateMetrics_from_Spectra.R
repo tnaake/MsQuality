@@ -548,7 +548,7 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
     #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
     #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
     expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
-                 packageDescription("MsQuality")$Version)
+        packageDescription("MsQuality")$Version)
     #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
     #    "")
     
@@ -777,7 +777,7 @@ test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
     #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
     #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
     expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
-        metrics_msexp("MsQuality")$Version)
+        packageDescription("MsQuality")$Version)
     #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
     #    "")
     
@@ -988,7 +988,7 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
     #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
     expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
-        metrics_spectra_wrapper("MsQuality")$Version)
+        packageDescription("MsQuality")$Version)
     #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
     #    "")
     
@@ -1185,7 +1185,7 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
     #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
     expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
-        metrics_msexp_wrapper("MsQuality")$Version)
+        packageDescription("MsQuality")$Version)
     #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
     #    "")
     
