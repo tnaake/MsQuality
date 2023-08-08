@@ -221,7 +221,7 @@ calculateMetricsFromSpectra <- function(spectra, metrics,
     
     if(!is(spectra, "Spectra")) stop("spectra is not of class 'Spectra'")
     
-    ## get first the number of spectra in the mse object, one spectra should 
+    ## get first the number of spectra in the Spectra object, one spectra should 
     ## refer to one mzML file/sample or other grouping factor specified by
     ## paramter f
     f_unique <- unique(f)
@@ -315,12 +315,8 @@ calculateMetricsFromSpectra <- function(spectra, metrics,
 #' ##transformIntoMzQC(spectra_metrics)
 #' 
 #' @importFrom rmzqc getCVTemplate filenameToCV toAnalysisSoftware toQCMetric
-#' @importFrom rmzqc getDefaultCV
-#' @importFrom rmzqc MzQCrunQuality 
-#' @importFrom rmzqc MzQCmetadata 
-#' @importFrom rmzqc MzQCinputFile 
-#' @importFrom rmzqc MzQCmzQC
-#' @importFrom rmzqc MzQCDateTime
+#' @importFrom rmzqc getCVInfo MzQCrunQuality MzQCmetadata MzQCinputFile 
+#' @importFrom rmzqc MzQCmzQC MzQCDateTime
 #' @importFrom utils packageDescription
 transformIntoMzQC <- function(spectra_metrics) {
     
@@ -332,7 +328,7 @@ transformIntoMzQC <- function(spectra_metrics) {
         file_format <- getCVTemplate(accession = filenameToCV(raw_file))
         
         ## obtain information on the MsQuality package
-        software <- toAnalysisSoftware(id = "MS:4000151", 
+        software <- toAnalysisSoftware(id = "MS:1003162",#### has to be "MS:4000151", 
             version = packageDescription("MsQuality")$Version)
         
         ## obtain information on the run qualities
@@ -347,15 +343,21 @@ transformIntoMzQC <- function(spectra_metrics) {
         
         ## iterate through all valid attributes, obtain the value of the metric,
         ## and rename the entry
-        qc_metric_i <- lapply(seq_along(attributes_i)[1], function(j) { #######
+        qc_metric_i <- lapply(seq_along(attributes_i), function(j) {
             id_j <- attr(x = spectra_metrics_i, 
                 which = names(attributes_i)[j], exact = TRUE)
             value_j <- spectra_metrics_i[names(attributes_i)[j]] |>
                 as.numeric()
-            toQCMetric(id = id_j, value = value_j)
+            tryCatch(toQCMetric(id = id_j, value = value_j), error = function(e) NULL)
         })
         
+        ## remove empty list entries if there are any
+        qc_metric_keep <- lapply(qc_metric_i, length) |>
+            unlist() |>
+            as.logical()
+        qc_metric_i <- qc_metric_i[qc_metric_keep]
         
+        ## create a MzQCrunQuality object
         run_qc <- MzQCrunQuality(
             metadata = MzQCmetadata(
                 label = raw_file,
@@ -374,9 +376,7 @@ transformIntoMzQC <- function(spectra_metrics) {
             description = paste("A mzQC document on the sample", basename(raw_file)),
             runQualities = list(run_qc),
             setQualities = list(), 
-            controlledVocabularies = list(getDefaultCV()))
-        
-        
+            controlledVocabularies = list(getCVInfo()))
     })
     
     res
