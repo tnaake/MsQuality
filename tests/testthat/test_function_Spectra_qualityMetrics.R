@@ -31,24 +31,26 @@ library(Spectra)
 spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 
 
-qm_spectra <- c("chromatographyDuration", "ticQuartersRtFraction", "rtOverMsQuarters",
-    "ticQuartileToQuartileLogRatio", "numberSpectra", "medianPrecursorMz", 
-    "rtIqr", "rtIqrRate", "areaUnderTic", "areaUnderTicRtQuantiles", 
+qm_spectra <- c("chromatographyDuration", "ticQuartersRtFraction", 
+    "rtOverMsQuarters", "ticQuartileToQuartileLogRatio", "numberSpectra", 
+    "numberEmptyScans", "medianPrecursorMz", "rtIqr", "rtIqrRate", 
+    "areaUnderTic", "areaUnderTicRtQuantiles", 
     "extentIdentifiedPrecursorIntensity", "medianTicRtIqr", 
     "medianTicOfRtRange", "mzAcquisitionRange", "rtAcquisitionRange", 
     "precursorIntensityRange", "precursorIntensityQuartiles", 
     "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange", 
     "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
     "medianCharge")
-qm_mse <- c("chromatographyDuration", "ticQuartersRtFraction", "rtOverMsQuarters",
-    "ticQuartileToQuartileLogRatio", "numberSpectra", "medianPrecursorMz", 
-    "rtIqr", "rtIqrRate", "areaUnderTic", "areaUnderTicRtQuantiles", 
+qm_mse <- c("chromatographyDuration", "ticQuartersRtFraction", 
+    "rtOverMsQuarters", "ticQuartileToQuartileLogRatio", "numberSpectra", 
+    "numberEmptyScans", "medianPrecursorMz", "rtIqr", "rtIqrRate", 
+    "areaUnderTic", "areaUnderTicRtQuantiles", 
     "extentIdentifiedPrecursorIntensity", "medianTicRtIqr", 
     "medianTicOfRtRange", "mzAcquisitionRange", "rtAcquisitionRange", 
     "precursorIntensityRange", "precursorIntensityQuartiles", 
     "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange", 
-    "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
-    "medianCharge")
+    "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", 
+    "meanCharge", "medianCharge")
 
 test_that("qualityMetrics", {
     expect_equal(qualityMetrics(spectra), qm_spectra)
