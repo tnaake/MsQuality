@@ -47,6 +47,7 @@ MS:4000153 \cr
 is_a: MS:4000003 ! single value \cr
 is_a: MS:4000008 ! ID based \cr
 is_a: MS:4000017 ! chromatogram metric \cr
+relationship: has_units UO:0000010 ! second \cr
 synonym: "C-2A"  RELATED [PMID:19837981] \cr
 
 Retention time values that are \code{NA} are removed.

@@ -51,6 +51,7 @@ MS:4000154 \cr
 is_a: MS:4000003 ! single value \cr
 is_a: MS:4000008 ! ID based \cr
 is_a: MS:4000017 ! chromatogram metric \cr
+relationship: has_units UO:0000106 ! hertz
 synonym: "C-2B"  RELATED [PMID:19837981] \cr
 
 An attribute containing the PSI:MS term will only be returned if 

@@ -67,6 +67,10 @@ the formal arguments of the quality metric functions.
 Samples will be processed in parallel
 using the default parallel processing setup ([bpparam()]) or with the
 parallel processing setup defined with parameter \code{BPPARAM}.
+
+Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
+zero-length entries, zero-intensity entries, and entries with 
+intensities that are \code{Inf} from the \code{Spectra} object.
 }
 \examples{
 library(msdata)

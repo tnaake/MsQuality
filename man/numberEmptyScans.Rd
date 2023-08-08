@@ -90,8 +90,8 @@ spd$intensity <- list(
     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 sps <- Spectra(spd)
-numberSpectra(spectra = sps, msLevel = 1L)
-numberSpectra(spectra = sps, msLevel = 2L)
+numberEmptyScans(spectra = sps, msLevel = 1L)
+numberEmptyScans(spectra = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake

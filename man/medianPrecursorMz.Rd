@@ -44,8 +44,9 @@ The metric is calculated as follows: \cr
 MS:4000152 \cr
 is_a: MS:4000003 ! single value \cr
 is_a: MS:4000008 ! ID based \cr
-relationship: has_metric_category MS:4000022 ! MS2 metric
 is_a: MS:4000020 ! ion source metric \cr
+relationship: has_metric_category MS:4000022 ! MS2 metric \cr
+relationship: has_units MS:1000040 ! m/z
 
 An attribute containing the PSI:MS term will only be returned if 
 \code{identificationLevel} is \code{"identified"} and \code{msLevel} is 1.

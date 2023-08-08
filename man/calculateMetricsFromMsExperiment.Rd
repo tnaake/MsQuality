@@ -41,6 +41,10 @@ The metrics are defined by the argument \code{metrics}. Further arguments
 passed to the quality metric functions can be specified by the \code{params}
 argument. \code{params} can contain named entries which are matched against
 the formal arguments of the quality metric functions.
+
+Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
+zero-length entries, zero-intensity entries, and entries with 
+intensities that are \code{Inf} from the \code{Spectra} object.
 }
 \examples{
 library(msdata)
@@ -77,7 +81,7 @@ metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 ## relativeTo is an argument of msSignal10xChange) passed to ...
 calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
     msLevel = 1, change = "jump", relativeTo = "Q1")
-    
+
 calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
     msLevel = 1, change = "fall", relativeTo = "previous")
 }

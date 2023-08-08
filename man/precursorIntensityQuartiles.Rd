@@ -2,9 +2,9 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{precursorIntensityQuartiles}
 \alias{precursorIntensityQuartiles}
-\title{MS2 precursor intensity distribution Q1, Q2, Q3 (MS:4000116), 
-identified MS2 precursor intensity distribution Q1, Q2, Q3 (MS:4000161), or
-unidentified MS2 precursor intensity distribution Q1, Q2, Q3 (MS:4000162)}
+\title{MS2 precursor intensity distribution (MS:4000116), 
+identified MS2 precursor intensity distribution (MS:4000161), or
+unidentified MS2 precursor intensity distribution (MS:4000162)}
 \usage{
 precursorIntensityQuartiles(
   spectra,
@@ -28,14 +28,15 @@ precursorIntensityQuartiles(
 }
 \description{
 MS:4000116 \cr
-"From the distribution of MS2 precursor intensities, the quartiles 
-Q1, Q2, Q3. The intensity distribution of the precursors informs about the 
-dynamic range of the acquisition." [PSI:MS]
-[PSI:MS] \cr
+"From the distribution of MS2 precursor intensities, the quantiles. E.g. a 
+value triplet represents the quartiles Q1, Q2, Q3. The intensity 
+distribution of the precursors informs about the dynamic range of the
+acquisition." [PSI:MS] \cr
 
 MS:40000161 \cr
-"From the distribution of identified MS2 precursor intensities, the quartiles 
-Q1, Q2, Q3. The intensity distribution of the precursors informs about 
+From the distribution of identified MS2 precursor intensities, the quantiles. 
+E.g. a value triplet represents the quartiles Q1, Q2, Q3. The intensity 
+distribution of the precursors informs about 
 the dynamic range of the acquisition in relation to identifiability. 
 The used type of identification should be noted in the metadata or analysis 
 methods section of the recording file for the respective run. In case of 
@@ -43,8 +44,9 @@ multiple acceptance criteria (FDR) available in proteomics, PSM-level FDR
 should be used for better comparability." [PSI:MS]" \cr
 
 id: MS:4000162 \cr
-"From the distribution of unidentified MS2 precursor intensities, the quartiles 
-Q1, Q2, Q3. The intensity distribution of the precursors informs about the 
+"From the distribution of unidentified MS2 precursor intensities, the 
+quantiles. E.g. a value triplet represents the quartiles Q1, Q2, Q3.
+The intensity distribution of the precursors informs about the 
 dynamic range of the acquisition in relation to identifiability. The used 
 type of identification should be noted in the metadata or analysis methods 
 section of the recording file for the respective run. In case of multiple 
@@ -78,6 +80,7 @@ term \cr
 relationship: has_units MS:1000043 ! intensity unit \cr
 
 id: MS:4000162 \cr
+is_a: MS:4000004 ! n-tuple \cr
 is_a: MS:4000008 ! ID based \cr
 relationship: has_metric_category MS:4000022 ! MS2 metric \cr
 relationship: has_value_concept STATO:0000291 ! quantile \cr

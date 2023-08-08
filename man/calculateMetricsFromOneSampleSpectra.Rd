@@ -43,6 +43,10 @@ the formal arguments of the quality metric functions.
 The \code{Spectra} object will only contain spectral data from one 
 data origin (e.g. \code{spectra$dataOrigin} is of length 1). The grouping 
 is specified by the argument \code{f}.
+
+Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
+zero-length entries, zero-intensity entries, and entries with 
+intensities that are \code{Inf} from the \code{Spectra} object.
 }
 \examples{
 library(msdata)
