@@ -99,6 +99,9 @@ different spectra (in rows)</p>
 passed to the quality metric functions can be specified by the <code>params</code>
 argument. <code>params</code> can contain named entries which are matched against
 the formal arguments of the quality metric functions.</p>
+<p>Setting the argument <code>filterEmptySpectra</code> to <code>TRUE</code> will remove
+zero-length entries, zero-intensity entries, and entries with 
+intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -162,7 +165,7 @@ the formal arguments of the quality metric functions.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "jump"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"relativeTo")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Q1"</span>
-<span class="r-in"><span>    </span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">calculateMetricsFromMsExperiment</span><span class="op">(</span>msexp <span class="op">=</span> <span class="va">msexp</span>, metrics <span class="op">=</span> <span class="va">metrics</span>, </span></span>
 <span class="r-in"><span>    msLevel <span class="op">=</span> <span class="fl">1</span>, change <span class="op">=</span> <span class="st">"fall"</span>, relativeTo <span class="op">=</span> <span class="st">"previous"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                                  areaUnderTic</span>

@@ -95,6 +95,9 @@ different spectra and in rows the samples</p>
 passed to the quality metric functions can be specified by the <code>params</code>
 argument. <code>params</code> can contain named entries which are matched against 
 the formal arguments of the quality metric functions.</p>
+<p>Setting the argument <code>filterEmptySpectra</code> to <code>TRUE</code> will remove
+zero-length entries, zero-intensity entries, and entries with 
+intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
     </div>
     <div id="author">
     <h2>Author</h2>

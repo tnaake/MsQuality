@@ -101,6 +101,9 @@ the formal arguments of the quality metric functions.</p>
 <p>The <code>Spectra</code> object will only contain spectral data from one 
 data origin (e.g. <code>spectra$dataOrigin</code> is of length 1). The grouping 
 is specified by the argument <code>f</code>.</p>
+<p>Setting the argument <code>filterEmptySpectra</code> to <code>TRUE</code> will remove
+zero-length entries, zero-intensity entries, and entries with 
+intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
