@@ -539,17 +539,17 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
         "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
     
     ## software
-    #export_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #export_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    export_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
+    #expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
+    expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware$version, 
         packageDescription("MsQuality")$Version)
-    #export_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware$description, 
     #    "")
-    #export_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #export_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    export_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
+    #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
+    expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
                  packageDescription("MsQuality")$Version)
-    #export_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
     #    "")
     
     ## chromatographyDuration
@@ -768,17 +768,17 @@ test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
                  "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
     
     ## software
-    #export_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #export_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    export_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
+    #expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
+    expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware$version, 
         packageDescription("MsQuality")$Version)
-    #export_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware$description, 
     #    "")
-    #export_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #export_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    export_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
+    #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
+    expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
         metrics_msexp("MsQuality")$Version)
-    #export_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
     #    "")
     
     ## chromatographyDuration
@@ -979,17 +979,17 @@ test_that("calculateMetrics, format = 'mzQC'.", {
         "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
     
     ## software
-    #export_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #export_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    export_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
+    #expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
+    expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$version, 
         packageDescription("MsQuality")$Version)
-    #export_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$description, 
     #    "")
-    #export_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #export_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    export_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
+    #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
+    expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
         metrics_spectra_wrapper("MsQuality")$Version)
-    #export_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
     #    "")
     
     ## chromatographyDuration
@@ -1176,17 +1176,17 @@ test_that("calculateMetrics, format = 'mzQC'.", {
                  "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
     
     ## software
-    #export_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #export_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    export_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
+    #expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
+    expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$version, 
         packageDescription("MsQuality")$Version)
-    #export_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$description, 
     #    "")
-    #export_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #export_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    export_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
+    #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
+    expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
         metrics_msexp_wrapper("MsQuality")$Version)
-    #export_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
     #    "")
     
     ## chromatographyDuration
