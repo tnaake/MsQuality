@@ -261,6 +261,8 @@ Currently, the following metrics are included:
 qualityMetrics(sps_comb)
 ```
 
+## List of included metrics
+
 The following list gives a brief explanation for these metrics. Further 
 information may be found at the 
 [HUPO-PSI mzQC project page](https://github.com/HUPO-PSI/mzQC)  or in the 
@@ -781,6 +783,8 @@ Currently, all quality metrics can be calculated for both `Spectra` and
     (3) the median of the precursor charge values is calculated and returned.
 
 
+## Obtain the metrics in `data.frame`-format
+
 The most important function to assess the data quality and to calculate the 
 metrics is the `calculateMetrics` function. The function takes
 a `Spectra` or `MsExperiment` object as input, a character vector of metrics
@@ -844,6 +848,19 @@ Alternatively, an `MsExperiment` object might be passed to
 `calculateMetrics`. The function will iterate over the samples (referring
 to rows in `sampleData(msexp))`) and calculate the quality metrics on the
 corresponding `Spectra`s.
+
+## Obtain the metrics in `mzQC`-format
+
+By default, a `data.frame` object containing the metric values as entries
+are returned by the the function `calculateMetrics`. Alternatively, the 
+function also allows the user to export the metrics in a format defined by
+the `rmzqc` package by setting the argument `format` to `"mzQC"` (default:
+`format = "data.frame"`). In that case, only the metrics that comply to the 
+`mzQC` specification will be written to the returned object. 
+The object can be exported and validated using the functionality of the `rmzqc` 
+package (see the documentation of `rmzqc` for further information). 
+
+## Remove empty spectra prior to the calculation
 
 There are in total `r length(msexp_hilic)` samples 
 respectively in the objects `msexp_rplc` and `msexp_hilic`. To improve 
