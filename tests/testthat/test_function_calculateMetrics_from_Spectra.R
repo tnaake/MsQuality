@@ -1,3 +1,7 @@
+################################################################################
+###################### format = 'data.frame' (default) #########################
+################################################################################
+
 fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
 spectra <- Spectra(fls, backend = MsBackendMzR())
 
@@ -505,8 +509,7 @@ suppressWarnings(metrics_spectra_1 <- calculateMetricsFromOneSampleSpectra(
 test_that("calculateMetricsFromOneSampleSpectra, format = 'mzQC'.", {
     ## spectra_1
     expect_equal(length(metrics_spectra_1), 12)
-    expect_true(is(metrics_spectra_1), "numeric")
-    expect_true(is(metrics_spectra_1), "vector_OR_Vector")
+    expect_is(metrics_spectra_1, "numeric")
     ## NOTE: it should not be a list with MzQCmzQC entries
 })
 ## END unit test calculateMetricsFromOneSampleSpectra
@@ -524,8 +527,8 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
         ".environment", "refClass", "environment", "refObject"))
     expect_equal(is(metrics_spectra[[2]]), c("MzQCmzQC", "envRefClass", 
         ".environment", "refClass", "environment", "refObject"))
-    expect_equal(metrics_spectra[[1]]$contactAddress, NA)
-    expect_equal(metrics_spectra[[2]]$contactAddress, NA)
+    expect_equal(metrics_spectra[[1]]$contactAddress, as.character(NA))
+    expect_equal(metrics_spectra[[2]]$contactAddress, as.character(NA))
     
     
     ## controlled vocabularies and description
@@ -539,17 +542,17 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
         "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
     
     ## software
-    #expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    #expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
     #    "")
-    #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
     #    "")
     
     ## chromatographyDuration
@@ -743,42 +746,42 @@ spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 ## relativeTo is an argument of msSignal10xChange) passed to ...
-metrics_msexp <- calculateMetricsFromMsExperiment(msexp = msexp, 
+suppressWarnings(metrics_msexp <- calculateMetricsFromMsExperiment(msexp = msexp, 
     metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1, 
-    relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC")
+    relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC"))
 
 test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
     expect_equal(length(metrics_msexp), 2)
     expect_equal(is(metrics_msexp[[1]]), c("MzQCmzQC", "envRefClass", 
-                                             ".environment", "refClass", "environment", "refObject"))
+        ".environment", "refClass", "environment", "refObject"))
     expect_equal(is(metrics_msexp[[2]]), c("MzQCmzQC", "envRefClass", 
-                                             ".environment", "refClass", "environment", "refObject"))
-    expect_equal(metrics_msexp[[1]]$contactAddress, NA)
-    expect_equal(metrics_msexp[[2]]$contactAddress, NA)
+        ".environment", "refClass", "environment", "refObject"))
+    expect_equal(metrics_msexp[[1]]$contactAddress, as.character(NA))
+    expect_equal(metrics_msexp[[2]]$contactAddress, as.character(NA))
     
     
     ## controlled vocabularies and description
     expect_equal(metrics_msexp[[1]]$controlledVocabularies[[1]]$name, 
-                 "Proteomics Standards Initiative Mass Spectrometry Ontology")
+        "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp[[1]]$description,
-                 "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
+        "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
     expect_equal(metrics_msexp[[2]]$controlledVocabularies[[1]]$name, 
-                 "Proteomics Standards Initiative Mass Spectrometry Ontology")
+        "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp[[2]]$description,
-                 "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
+        "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
     
     ## software
-    #expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    #expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
     #    "")
-    #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
     #    "")
     
     ## chromatographyDuration
@@ -965,8 +968,8 @@ test_that("calculateMetrics, format = 'mzQC'.", {
         ".environment", "refClass", "environment", "refObject"))
     expect_equal(is(metrics_spectra_wrapper[[2]]), c("MzQCmzQC", "envRefClass", 
         ".environment", "refClass", "environment", "refObject"))
-    expect_equal(metrics_spectra_wrapper[[1]]$contactAddress, NA)
-    expect_equal(metrics_spectra_wrapper[[2]]$contactAddress, NA)
+    expect_equal(metrics_spectra_wrapper[[1]]$contactAddress, as.character(NA))
+    expect_equal(metrics_spectra_wrapper[[2]]$contactAddress, as.character(NA))
     
     ## controlled vocabularies and description
     expect_equal(metrics_spectra_wrapper[[1]]$controlledVocabularies[[1]]$name, 
@@ -979,17 +982,17 @@ test_that("calculateMetrics, format = 'mzQC'.", {
         "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
     
     ## software
-    #expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    #expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
     #    "")
-    #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
     #    "")
     
     ## chromatographyDuration
@@ -1161,32 +1164,32 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     expect_equal(is(metrics_msexp_wrapper[[1]]), c("MzQCmzQC", "envRefClass", 
         ".environment", "refClass", "environment", "refObject"))
     expect_equal(is(metrics_msexp_wrapper[[2]]), c("MzQCmzQC", "envRefClass", 
-                                           ".environment", "refClass", "environment", "refObject"))
-    expect_equal(metrics_msexp_wrapper[[1]]$contactAddress, NA)
-    expect_equal(metrics_msexp_wrapper[[2]]$contactAddress, NA)
+        ".environment", "refClass", "environment", "refObject"))
+    expect_equal(metrics_msexp_wrapper[[1]]$contactAddress, as.character(NA))
+    expect_equal(metrics_msexp_wrapper[[2]]$contactAddress, as.character(NA))
     
     ## controlled vocabularies and description
     expect_equal(metrics_msexp_wrapper[[1]]$controlledVocabularies[[1]]$name, 
-                 "Proteomics Standards Initiative Mass Spectrometry Ontology")
+        "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp_wrapper[[1]]$description,
-                 "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
+        "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
     expect_equal(metrics_msexp_wrapper[[2]]$controlledVocabularies[[1]]$name, 
-                 "Proteomics Standards Initiative Mass Spectrometry Ontology")
+        "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp_wrapper[[2]]$description,
-                 "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
+        "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
     
     ## software
-    #expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    #expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
     #    "")
-    #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$accession, "MS:4000151")
-    #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$name, "MsQuality")
-    expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$version, 
+    #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware$description, 
+    #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
     #    "")
     
     ## chromatographyDuration
