@@ -77,6 +77,7 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
     ## zero or Inf intensity and remove the entries with empty spectra
     if (filterEmptySpectra) {
         spectra <- spectra |>
+            filterEmptySpectra() |>
             filterIntensity(intensity = c(0, Inf)) |>
             filterEmptySpectra()
     }
@@ -232,7 +233,7 @@ calculateMetricsFromSpectra <- function(spectra, metrics,
     spectra_metrics <- bplapply(f_unique, function(f_unique_i, ...) {
         calculateMetricsFromOneSampleSpectra(
             spectra = spectra[f == f_unique_i], metrics = metrics, 
-            filterEmptySpectra = FALSE, ...)
+            filterEmptySpectra = filterEmptySpectra, ...)
     }, ..., BPPARAM = BPPARAM)
     
     ## add file names as names of the list
