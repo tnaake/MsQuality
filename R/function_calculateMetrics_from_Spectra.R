@@ -25,7 +25,8 @@
 #' @param metrics \code{character} specifying the quality metrics to be 
 #' calculated on \code{spectra}
 #' @param filterEmptySpectra \code{logical(1)} specifying if empty entries and
-#' entries with intensity zero of the \code{Spectra} object will be removed
+#' entries with intensity zero or \code{Inf} of the \code{Spectra} object 
+#' will be removed
 #' @param f \code{character}, grouping parameter for \code{spectra}
 #' @param ... arguments passed to the quality metrics functions defined in 
 #' \code{metrics}
@@ -77,8 +78,8 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
     ## zero or Inf intensity and remove the entries with empty spectra
     if (filterEmptySpectra) {
         spectra <- spectra |>
-            filterEmptySpectra() |>
-            filterIntensity(intensity = c(0, Inf)) |>
+            filterIntensity(intensity = function(.intensity) 
+                .intensity > 0 & .intensity != Inf) |>
             filterEmptySpectra()
     }
     

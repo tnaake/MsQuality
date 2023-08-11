@@ -791,13 +791,13 @@ a `Spectra` or `MsExperiment` object as input, a character vector of metrics
 to be calculated, a Boolean value to the `filterEmptySpectra` argument, 
 and, optionally a list of parameters passed to the quality metrics functions.
 
-The `filterEmptySpectra` argument specifies if zero-intensity or zero-length 
-entries should be removed (`filterEmptySpectra = TRUE`). By default, the 
-entries are taken as they are (`filterEmptySpectra = FALSE`). The argument
-can be set to `TRUE` to compute metrics that are close to the implementation
-of the `QuaMeter` software. Prior to calculating the metrics, the implementation
-of `QuaMeter` skips all spectra with `defaultArrayLength=0` (in .mzML files)
-at any MS level.
+The `filterEmptySpectra` argument specifies if zero-intensity, `Inf`-intensity` 
+or zero-length entries should be removed (`filterEmptySpectra = TRUE`). 
+By default, the entries are taken as they are (`filterEmptySpectra = FALSE`). 
+The argument can be set to `TRUE` to compute metrics that are close to the 
+implementation of the `QuaMeter` software. Prior to calculating the metrics, 
+the implementation of `QuaMeter` skips all spectra with `defaultArrayLength=0`
+(in .mzML files) at any MS level.
 
 When passing a `Spectra`/`MsExperiment` object to the function, a `data.frame` 
 returned by `calculateMetrics` with the metrics specified by the argument
