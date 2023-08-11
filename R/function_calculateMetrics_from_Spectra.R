@@ -78,6 +78,7 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
     ## zero or Inf intensity and remove the entries with empty spectra
     if (filterEmptySpectra) {
         spectra <- spectra |>
+            filterEmptySpectra() |>
             filterIntensity(intensity = function(.intensity) 
                 .intensity > 0 & .intensity != Inf) |>
             filterEmptySpectra()
