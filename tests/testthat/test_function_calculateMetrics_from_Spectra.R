@@ -73,6 +73,7 @@ spd$intensity <- list(
     c())
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps_empty <- Spectra(spd)
+dataOrigin(sps_empty) <- c("manual", "manual", "manual")
 spd$mz <- list(
     c(109.2, 124.2, 124.5, 170.16, 170.52),
     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
@@ -83,6 +84,7 @@ spd$intensity <- list(
     c())
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps_multiple_empty <- Spectra(spd)
+dataOrigin(sps_multiple_empty) <- c("manual", "manual", "manual")
 spd$mz <- list(
     c(109.2, 124.2, 124.5, 170.16, 170.52),
     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
@@ -94,6 +96,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps_not_empty <- Spectra(spd)
+dataOrigin(sps_not_empty) <- c("manual", "manual", "manual")
 
 test_that("calculateMetricsFromOneSampleSpectra", {
     ## spectra
