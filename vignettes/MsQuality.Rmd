@@ -3,7 +3,7 @@ title: "MsQuality: Calculation of QC metrics from mass spectrometry data"
 author:
  - name: Thomas Naake and Johannes Rainer
    mail: thomas.naake@embl.de, thomasnaake@googlemail.com, johannes.rainer@eurac.edu
-   affiliation: European Molecular Biology Laboratory, Meyerhofstrasse 1, 69117 Heidelberg/ EURAC Research, Viale Druso 1, 39100 BOlzano
+   affiliation: European Molecular Biology Laboratory, Meyerhofstrasse 1, 69117 Heidelberg/ EURAC Research, Viale Druso 1, 39100 Bolzano
 package: MsQuality
       
 output:  
