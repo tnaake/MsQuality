@@ -57,6 +57,44 @@ metrics_spectra_2_vals <- c(2.594770e+02, 0, 2.505386e-01,
     4.999981e-01, 7.505367e-01, 1.000000e+00, 5.052683e-02, -5.673914e-01,
     -4.700149e-01, 9.310000e02, 6.229579e+08, 0)
 
+## create small test spectra to test filterEmptySpectra
+spd <- DataFrame(
+    msLevel = c(2L, 2L, 2L),
+    polarity = c(1L, 1L, 1L),
+    name = c("comp_1", "comp_2", "comp_3"))
+## Assign m/z and intensity values
+spd$mz <- list(
+        c(109.2),
+        c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+        c())
+spd$intensity <- list(
+    c(0),
+    c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+    c())
+spd$rtime <- c(9.44, 9.44, 15.84)
+sps_empty <- Spectra(spd)
+spd$mz <- list(
+    c(109.2, 124.2, 124.5, 170.16, 170.52),
+    c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+    c())
+spd$intensity <- list(
+    c(0, 0, 0, 0, 0),
+    c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+    c())
+spd$rtime <- c(9.44, 9.44, 15.84)
+sps_multiple_empty <- Spectra(spd)
+spd$mz <- list(
+    c(109.2, 124.2, 124.5, 170.16, 170.52),
+    c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+    c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+        111.0551, 123.0429, 138.0662, 195.0876))
+spd$intensity <- list(
+    c(3.407, 47.494, 3.094, 100.0, 13.240),
+    c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+    c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+spd$rtime <- c(9.44, 9.44, 15.84)
+sps_not_empty <- Spectra(spd)
+
 test_that("calculateMetricsFromOneSampleSpectra", {
     ## spectra
     expect_error(
@@ -107,6 +145,26 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     expect_error(calculateMetricsFromOneSampleSpectra(spectra_2,
         metrics = "msSignal10xChange", change = c("jump", "fall")),
         "'change' has to be of length 1")
+    
+    ## test filterEmptySpectra
+    expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
+        spectra = sps_empty, metrics = "numberSpectra", 
+        filterEmptySpectra = FALSE, msLevel = 2L)), 3)
+    expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
+        spectra = sps_empty, metrics = "numberSpectra", 
+        filterEmptySpectra = TRUE, msLevel = 2L)), 1)
+    expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
+        spectra = sps_multiple_empty, metrics = "numberSpectra", 
+        filterEmptySpectra = FALSE, msLevel = 2L)), 3)
+    expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
+        spectra = sps_multiple_empty, metrics = "numberSpectra", 
+        filterEmptySpectra = TRUE, msLevel = 2L)), 1)
+    expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
+        spectra = sps_not_empty, metrics = "numberSpectra", 
+        filterEmptySpectra = FALSE, msLevel = 2L)), 3)
+    expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
+        spectra = sps_not_empty, metrics = "numberSpectra", 
+        filterEmptySpectra = TRUE, msLevel = 2L)), 3)
     
     ## test attributes
     expect_equal(attr(metrics_spectra_1, "names"), colnames_metrics)
@@ -205,6 +263,26 @@ test_that("calculateMetricsFromSpectra", {
         metrics = "msSignal10xChange", change = c("jump", "fall")), 
         "'change' has to be of length 1")
     
+    ## test filterEmptySpectra
+    expect_equal(as.numeric(calculateMetricsFromSpectra(
+        spectra = sps_empty, metrics = "numberSpectra", 
+        filterEmptySpectra = FALSE, msLevel = 2L)), 3)
+    expect_equal(as.numeric(calculateMetricsFromSpectra(
+        spectra = sps_empty, metrics = "numberSpectra", 
+        filterEmptySpectra = TRUE, msLevel = 2L)), 1)
+    expect_equal(as.numeric(calculateMetricsFromSpectra(
+        spectra = sps_multiple_empty, metrics = "numberSpectra", 
+        filterEmptySpectra = FALSE, msLevel = 2L)), 3)
+    expect_equal(as.numeric(calculateMetricsFromSpectra(
+        spectra = sps_multiple_empty, metrics = "numberSpectra", 
+        filterEmptySpectra = TRUE, msLevel = 2L)), 1)
+    expect_equal(as.numeric(calculateMetricsFromSpectra(
+        spectra = sps_not_empty, metrics = "numberSpectra", 
+        filterEmptySpectra = FALSE, msLevel = 2L)), 3)
+    expect_equal(as.numeric(calculateMetricsFromSpectra(
+        spectra = sps_not_empty, metrics = "numberSpectra", 
+        filterEmptySpectra = TRUE, msLevel = 2L)), 3)
+    
     ## test attributes
     expect_equal(attr(metrics_spectra, "names"), NULL)
     expect_equal(attr(metrics_spectra_filtered, "names"), NULL)
@@ -265,7 +343,7 @@ metrics_msexp_filtered <- calculateMetricsFromMsExperiment(msexp = msexp,
     metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1, 
     relativeTo = "Q1", mode = "TIC", change = "jump")
 
-test_that("calculateMetricsFrom<sExperiment", {
+test_that("calculateMetricsFromMsExperiment", {
     expect_equal(dim(metrics_msexp), c(2, 12))
     expect_equal(dim(metrics_msexp_filtered), c(2, 12))
     dirs <- unlist(lapply(
@@ -420,6 +498,26 @@ test_that("calculateMetrics", {
         "should be one of ")
     expect_error(calculateMetrics(msexp, metrics = "foo"),
         "should be one of ")
+    
+    ## test filterEmptySpectra
+    expect_equal(as.numeric(calculateMetrics(object = sps_empty, 
+        metrics = "numberSpectra", filterEmptySpectra = FALSE, 
+        msLevel = 2L)), 3)
+    expect_equal(as.numeric(calculateMetrics(object = sps_empty, 
+        metrics = "numberSpectra", filterEmptySpectra = TRUE, 
+        msLevel = 2L)), 1)
+    expect_equal(as.numeric(calculateMetrics(object = sps_multiple_empty, 
+        metrics = "numberSpectra", filterEmptySpectra = FALSE, 
+        msLevel = 2L)), 3)
+    expect_equal(as.numeric(calculateMetrics(object = sps_multiple_empty, 
+        metrics = "numberSpectra", filterEmptySpectra = TRUE, 
+        msLevel = 2L)), 1)
+    expect_equal(as.numeric(calculateMetrics(object = sps_not_empty, 
+        metrics = "numberSpectra", filterEmptySpectra = FALSE, 
+        msLevel = 2L)), 3)
+    expect_equal(as.numeric(calculateMetrics(object = sps_not_empty, 
+        metrics = "numberSpectra", filterEmptySpectra = TRUE, 
+        msLevel = 2L)), 3)
     
     ## test attributes
     expect_equal(attributes(metrics_spectra_wrapper)$dimnames[[2]], 
