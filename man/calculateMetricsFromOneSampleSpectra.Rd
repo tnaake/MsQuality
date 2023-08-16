@@ -20,7 +20,8 @@ calculateMetricsFromOneSampleSpectra(
 calculated on \code{spectra}}
 
 \item{filterEmptySpectra}{\code{logical(1)} specifying if empty entries and
-entries with intensity zero of the \code{Spectra} object will be removed}
+entries with intensity zero or \code{Inf} of the \code{Spectra} object 
+will be removed}
 
 \item{f}{\code{character}, grouping parameter for \code{spectra}}
 
