@@ -1,7 +1,10 @@
 # MsQuality 1.1
 
 ## Changes in version 1.1.2
-- Fix implementation of `mzAquisitionRange`.
+- Fix implementation of `mzAquisitionRange`
+- add numberEmptyScans in qualityMetrics function
+- add unit tests for export in rmzqc format
+- add interpretation aid of metrics in vignette
 
 ## Changes in version 1.1.1
 - move msdata from Suggests to Imports
@@ -22,7 +25,7 @@
 # MsQuality 0.99
 
 ## Changes in version 0.99.9 (2023-04-18)
-- enable parallel processing in calculateMetricsFromSpectra.
+- enable parallel processing in calculateMetricsFromSpectra
 - rename ticQuantileToQuantileLogRatio to ticQuartileToQuartileLogRatio
 - rename rtOverTicQuantile to rtOverTicQuantiles
 - return quartiles instead of quantiles in precursorIntensityQuartiles
