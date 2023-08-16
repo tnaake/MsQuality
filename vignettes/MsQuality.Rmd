@@ -273,7 +273,10 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 `MsExperiment` objects. 
 
 - *chromatographyDuration*, **chromatography duration** (MS:4000053), 
-  "The retention time duration of the chromatography in seconds." [PSI:MS];
+  "The retention time duration of the chromatography in seconds." [PSI:MS]; 
+  Longer duration may indicate a better chromatographic separation of compounds 
+  which depends, however, also on the sampling/scan rate of the MS instrument. 
+  
   The metric is calculated as follows:  
     (1) the retention time associated to the `Spectra` object is obtained,
     (2) the maximum and the minimum of the retention time is obtained, 
@@ -281,6 +284,12 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 - *ticQuartersRtFraction*, **TIC quarters RT fraction** (MS:4000054), 
   "The interval when the respective quarter of the TIC accumulates divided by 
   retention time duration." [PSI:MS];
+  The metric informs about the dynamic range of the acquisition along the 
+  chromatographic separation. The metric provides information on the sample 
+  (compound) flow along the chromatographic run, potentially revealing poor 
+  chromatographic performance, such as the absence of a signal for a 
+  significant portion of the run.
+  
   The metric is calculated as follows: 
     (1) the `Spectra` object is ordered according to the retention time,  
     (2) the cumulative sum of the ion count is calculated (TIC), 
@@ -297,6 +306,10 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   "The interval used for acquisition of the first, second, third, and fourth 
   quarter of all MS1 events divided by retention time duration." [PSI:MS], 
   `msLevel = 1L`;
+  The metric informs about the dynamic range of the acquisition along the 
+  chromatographic separation. For MS1 scans, the values are expected to be in 
+  a similar range across samples of the same type.
+  
   The metric is calculated as follows:  
     (1) the retention time duration of the whole `Spectra` object is determined 
         (taking into account all the MS levels), 
@@ -311,6 +324,10 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   "The interval used for acquisition of the first, second, third, and fourth 
   quarter of all MS2 events divided by retention time duration." [PSI:MS],
   `msLevel = 2L`;
+  The metric informs about the dynamic range of the acquisition along the 
+  chromatographic separation. For MS2 scans, the comparability of the values 
+  depends on the acquisition mode and settings to select ions for fragmentation.
+  
   The metric is calculated as follows:  
     (1) the retention time duration of the whole `Spectra` object is determined 
         (taking into account all the MS levels), 
@@ -328,6 +345,12 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   preceding MS1 TIC. The metric's value triplet represents the log ratio of the 
   TIC-change Q2 to Q1, Q3 to Q2, TIC-change-max to Q3" [PSI:MS], 
   `mode = "TIC_change"`,  `relativeTo = "previous"`, `msLevel = 1L`;
+  The metric informs about the dynamic range of the acquisition along the 
+  chromatographic separation.This metric evaluates the stability (similarity) 
+  of MS1 TIC values from scan to scan along the LC run. High log ratios 
+  representing very large intensity differences between pairs of scans might 
+  be due to electrospray instability or presence of a chemical contaminant.
+  
   The metric is calculated as follows:  
     (1) the TIC (`ionCount`) of the  `Spectra` object is calculated 
         per scan event (with spectra ordered by retention time), 
@@ -341,6 +364,11 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   represents the log ratios of TIC-Q2 to TIC-Q1, TIC-Q3 to TIC-Q2, 
   TIC-max to TIC-Q3." [PSI:MS], `mode = "TIC"`, 
   `relativeTo = "previous"`, `msLevel = 1L`;
+  The metric informs about the dynamic range of the acquisition along the 
+  chromatographic separation. The ratios provide information on the distribution
+  of the TIC values for one LC-MS run. Within an experiment, with the same 
+  LC setup, values should be comparable between samples.
+  
   The metric is calculated as follows:  
     (1) the TIC (`ionCount`) of the `Spectra` object is calculated 
         per scan event (with spectra ordered by retention time),
@@ -351,12 +379,18 @@ Currently, all quality metrics can be calculated for both `Spectra` and
     (4) The `log` values of the ratios are returned.
 - *numberSpectra*, **number of MS1 spectra** MS:4000059), 
   "The number of MS1 events in the run." [PSI:MS], `msLevel = 1L`;
+  An unusual low number may indicate incomplete sampling/scan rate of the MS 
+  instrument, low sample volume and/or failed injection of a sample.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the number of the spectra are obtained (`length` of `Spectra`) and 
         returned.
 - *numberSpectra*, **number of MS2 spectra** (MS:4000060), 
   "The number of MS2 events in the run." [PSI:MS], `msLevel = 2L`;
+  An unusual low number may indicate incomplete sampling/scan rate of the MS 
+  instrument, low sample volume and/or failed injection of a sample.
+  
   The metric is calculated as follows:  
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the number of the spectra are obtained (`length` of `Spectra`) and 
@@ -364,12 +398,20 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 - *mzAcquisitionRange*, **m/z acquisition range** (MS:4000069),
   "Upper and lower limit of m/z precursor values at which MSn spectra are 
   recorded." [PSI:MS];
+  The metric informs about the dynamic range of the acquisition. Based on the 
+  used MS instrument configuration, the values should be similar. Variations 
+  between measurements may arise when employing acquisition in DDA mode.
+  
   The metric is calculated as follows: 
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the m/z values of the peaks within the `Spectra` object are obtained, 
     (3) the minimum and maximum m/z values are obtained and returned. 
 - *rtAcquisitionRange*, **retention time acquisition range** (MS:4000070),
-  "Upper and lower limit of retention time at which spectra are recorded." [PSI:MS];
+  "Upper and lower limit of retention time at which spectra are recorded." 
+  [PSI:MS];
+  An unusual low range may indicate incomplete sampling and/or a premature or 
+  failed LC run.
+  
   The metric is calculated as follows:  
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the retention time values of the features within the `Spectra` 
@@ -380,6 +422,9 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   "The number of times where MS1 TIC increased more than 10-fold between adjacent 
   MS1 scans. An unusual high count of signal jumps or falls can indicate 
   ESI stability issues." [PSI:MS], `change = "jump"`, `msLevel = 1L`;
+  An unusual high count of signal jumps or falls may indicate ESI stability 
+  issues.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the intensity of the precursor ions within the `Spectra` object are 
@@ -392,6 +437,9 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   "The number of times where MS1 TIC decreased more than 10-fold between adjacent 
   MS1 scans. An unusual high count of signal jumps or falls can indicate 
   ESI stability issues." [PSI:MS], `change = "fall"`, `msLevel = 1L`;
+  An unusual high count of signal jumps or falls may indicate ESI stability 
+  issues.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are 
@@ -403,6 +451,9 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 - *numberEmptyScans*, **number of empty MS1 scans** (MS:4000099),
   "Number of MS1 scans where the scans' peaks intensity sums to 0 (i.e. no 
   peaks or only 0-intensity peaks)." [PSI:MS], `msLevel = 1L`;
+  An unusual high number may indicate incomplete sampling/scan rate of the MS 
+  instrument, low sample volume and/or failed injection of a sample.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the intensities per entry are obtained, 
@@ -411,6 +462,9 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 - *numberEmptyScans*, **number of empty MS2 scans** (MS:4000100),
   "Number of MS2 scans where the scans' peaks intensity sums to 0 (i.e. no 
   peaks or only 0-intensity peaks)." [PSI:MS], `msLevel = 2L`;
+  An unusual high number may indicate incomplete sampling/scan rate of the MS 
+  instrument, low sample volume and/or failed injection of a sample.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the intensities per entry are obtained, 
@@ -419,6 +473,9 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 - *numberEmptyScans*, **number of empty MS3 scans** (MS:4000101),
   "Number of MS3 scans where the scans' peaks intensity sums to 0 (i.e. no 
   peaks or only 0-intensity peaks)." [PSI:MS], `msLevel = 3L`;
+  An unusual high number may indicate incomplete sampling/scan rate of the MS 
+  instrument, low sample volume and/or failed injection of a sample.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the intensities per entry are obtained, 
@@ -427,17 +484,21 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 - *precursorIntensityQuartiles*, 
   **MS2 precursor intensity distribution Q1, Q2, Q3** (MS:4000116), 
   "From the distribution of MS2 precursor intensities, the quartiles 
-  Q1, Q2, Q3. The intensity distribution of the precursors informs about the 
-  dynamic range of the acquisition." [PSI:MS], `identificationLevel = "all"`;
+  Q1, Q2, Q3." [PSI:MS], `identificationLevel = "all"`;
+  The intensity distribution of the precursors informs about the dynamic range 
+  of the acquisition.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are obtained, 
     (3) the 25\%, 50\%, and 75\% quantile of the  precursor intensity values are 
         obtained (`NA` values are removed) and returned.
 - *precursorIntensityMean*, **MS2 precursor intensity distribution mean** 
-  (MS:4000117), "From the distribution of MS2 precursor intensities, the mean. 
-  The intensity distribution of the precursors informs about the dynamic range of the 
-  acquisition." [PSI:MS], `identificationLevel = "all"`;
+  (MS:4000117), "From the distribution of MS2 precursor intensities, the mean." 
+  [PSI:MS], `identificationLevel = "all"`;
+  The intensity distribution of the precursors informs about the dynamic range
+  of the acquisition.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,  
     (2) the intensity of the precursor ions within the `Spectra` object are 
@@ -446,8 +507,10 @@ Currently, all quality metrics can be calculated for both `Spectra` and
         (`NA` values are removed) and returned.
 - *precursorIntensitySd*, **MS2 precursor intensity distribution sigma**
   (MS:4000118), "From the distribution of MS2 precursor intensities, the sigma 
-  value. The intensity distribution of the precursors informs about the dynamic 
-  range of the acquisition." [PSI:MS], `identificationLevel = "all"`;
+  value." [PSI:MS], `identificationLevel = "all"`;
+  The intensity distribution of the precursors informs about the dynamic range of 
+  the acquisition.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,  
     (2) the intensity of the precursor ions within the `Spectra` object are 
@@ -465,6 +528,8 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   case of multiple acceptance criteria (FDR) available in proteomics, PSM-level 
   FDR should be used for better comparability." [PSI:MS], 
   `identificationLevel = "identified"`, `msLevel = 1L`;
+  The m/z distribution informs about the dynamic range of the acquisition.
+  
   The metric is calculated as follows:  
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the precursor m/z values are obtained, 
@@ -473,13 +538,16 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   **interquartile RT period for identified quantification data points** 
   (MS:4000153), "The interquartile retention time period, in seconds, for all 
   quantification data points after user-defined acceptance criteria are applied 
-  over the complete run. Longer times indicate better chromatographic 
-  separation. These data points may be for example XIC profiles, isotopic 
-  pattern areas, or reporter ions (see MS:1001805). The used type should be 
-  noted in the metadata or analysis methods section of the recording file for 
-  the respective run. In case of multiple acceptance criteria (FDR) available 
-  in proteomics, PSM-level FDR should be used for better comparability." 
+  over the complete run. These data points may be for example XIC profiles, 
+  isotopic pattern areas, or reporter ions (see MS:1001805). The used type 
+  should be noted in the metadata or analysis methods section of the recording 
+  file for the respective run. In case of multiple acceptance criteria (FDR) 
+  available in proteomics, PSM-level FDR should be used for better 
+  comparability."
   [PSI:MS], `identificationLevel = "identified"`;
+  Longer duration may indicate a better chromatographic separation of compounds 
+  which depends, however, also on the sampling/scan rate of the MS instrument.
+  
   The metric is calculated as follows:  
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the retention time values are obtained, 
@@ -489,13 +557,15 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   **rate of the interquartile RT period for identified quantification data points**
   (MS:4000154), "The rate of identified quantification data points for the 
   interquartile retention time period, in identified quantification data points 
-  per second. Higher rates indicate efficient sampling and identification. 
-  These data points may be for example XIC profiles, isotopic pattern areas, 
-  or reporter ions (see MS:1001805). The used type should be noted in the 
-  metadata or analysis methods section of the recording file for the respective 
-  run. In case of multiple acceptance criteria (FDR) available in proteomics, 
-  PSM-level FDR should be used for better comparability." [PSI:MS],
+  per second. These data points may be for example XIC profiles, isotopic 
+  pattern areas, or reporter ions (see MS:1001805). The used type should 
+  be noted in the metadata or analysis methods section of the recording 
+  file for the respective run. In case of multiple acceptance criteria (FDR) 
+  available in proteomics, PSM-level FDR should be used for better 
+  comparability." [PSI:MS],
   `identificationLevel = "identified"`;
+  Higher rates may indicate a more efficient sampling and identification. 
+  
   The metric is calculated as follows:  
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the retention time values are obtained, 
@@ -507,12 +577,24 @@ Currently, all quality metrics can be calculated for both `Spectra` and
         retention time and returned.
 - *areaUnderTic*, **area under TIC** (MS:4000155),
   "The area under the total ion chromatogram." [PSI:MS];
+  The metric informs about the dynamic range of the acquisition. Differences 
+  between samples of an experiment may indicate differences in the dynamic 
+  range and/or in the sample content.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the sum of the ion counts are obtained and returned. 
 - *areaUnderTicRtQuantiles*, **area under TIC RT quantiles** (MS:4000156),
   "The area under the total ion chromatogram of the retention time quantiles. 
   Number of quantiles are given by the n-tuple." [PSI:MS];
+  The metric informs about the dynamic range of the acquisition. Differences 
+  between samples of an experiment may indicate differences in the dynamic 
+  range and/or in the sample content.
+  The metric informs about the dynamic range of the acquisition along the 
+  chromatographic separation. Differences between samples of an experiment may 
+  indicate differences in chromatographic performance, differences in the 
+  dynamic range and/or in the sample content.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,  
     (2) the `Spectra` object is ordered according to the retention time, 
@@ -525,12 +607,13 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   **extent of identified MS2 precursor intensity** (MS:4000157),
   "Ratio of 95th over 5th percentile of MS2 precursor intensity for all 
   quantification data points after user-defined acceptance criteria are 
-  applied. Can be used to approximate the dynamic range of signal. The used 
-  type of identification should be noted in the metadata or analysis methods 
-  section of the recording file for the respective run. In case of multiple 
-  acceptance criteria (FDR) available in proteomics, PSM-level FDR should 
-  be used for better comparability." [PSI:MS], 
+  applied. The used type of identification should be noted in the metadata or 
+  analysis methods section of the recording file for the respective run. 
+  In case of multiple acceptance criteria (FDR) available in proteomics, 
+  PSM-level FDR should be used for better comparability." [PSI:MS], 
   `identificationLevel = "identified"`;
+  The metric informs about the dynamic range of the acquisition.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the intensities of the precursor ions are obtained, 
@@ -548,6 +631,9 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   In case of multiple acceptance criteria (FDR) available in proteomics, 
   PSM-level FDR should be used for better comparability." [PSI:MS],
   `identificationLevel = "identified"`;
+  The metric informs about the dynamic range of the acquisition along the 
+  chromatographic separation.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the `Spectra` object is ordered according to the retention time, 
@@ -566,7 +652,10 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   methods section of the recording file for the respective run. In case of 
   multiple acceptance criteria (FDR) available in proteomics, PSM-level FDR 
   should be used for better comparability." [PSI:MS], 
-  `identificationLevel = "identified"`; 
+  `identificationLevel = "identified"`;
+  The metric informs about the dynamic range of the acquisition along the 
+  chromatographic separation.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the `Spectra` object is ordered according to the retention time,  
@@ -580,8 +669,9 @@ Currently, all quality metrics can be calculated for both `Spectra` and
     (6) calculate from the set of (5) the median TIC (`NA` values are removed)
         and return it.
 - *precursorIntensityRange*, **MS2 precursor intensity range** (MS:4000160),
-  "Minimum and maximum MS2 precursor intensity recorded. The intensity range 
-  of the precursors informs about the dynamic range of the acquisition." [PSI:MS];
+  "Minimum and maximum MS2 precursor intensity recorded. " [PSI:MS];
+  The metric informs about the dynamic range of the acquisition.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the intensity of the precursor ions within the `Spectra` object are 
@@ -591,13 +681,14 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 - *precursorIntensityQuartiles*, 
   **identified MS2 precursor intensity distribution Q1, Q2, Q3** (MS:4000161), 
   "From the distribution of identified MS2 precursor intensities, the quartiles 
-  Q1, Q2, Q3. The intensity distribution of the precursors informs about 
-  the dynamic range of the acquisition in relation to identifiability. 
-  The used type of identification should be noted in the metadata or analysis 
-  methods section of the recording file for the respective run. In case of 
-  multiple acceptance criteria (FDR) available in proteomics, PSM-level FDR 
-  should be used for better comparability." [PSI:MS], 
+  Q1, Q2, Q3. The used type of identification should be noted in the metadata 
+  or analysis methods section of the recording file for the respective run. 
+  In case of multiple acceptance criteria (FDR) available in proteomics, 
+  PSM-level FDR should be used for better comparability." [PSI:MS], 
   `identificationLevel = "identified"`;
+  The metric informs about the dynamic range of the acquisition in relation to 
+  identifiability.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are obtained, 
@@ -605,14 +696,15 @@ Currently, all quality metrics can be calculated for both `Spectra` and
         obtained (`NA` values are removed) and returned.
 - *precursorIntensityQuartiles*, 
   **unidentified MS2 precursor intensity distribution Q1, Q2, Q3** (MS:4000162), 
-  "From the distribution of unidentified MS2 precursor intensities, the quartiles 
-  Q1, Q2, Q3. The intensity distribution of the precursors informs about the 
-  dynamic range of the acquisition in relation to identifiability. The used 
-  type of identification should be noted in the metadata or analysis methods 
-  section of the recording file for the respective run. In case of multiple 
-  acceptance criteria (FDR) available in proteomics, PSM-level FDR should be 
-  used for better comparability." 
+  "From the distribution of unidentified MS2 precursor intensities, the 
+  quartiles Q1, Q2, Q3. The used type of identification should be noted in the 
+  metadata or analysis methods section of the recording file for the respective 
+  run. In case of multiple acceptance criteria (FDR) available in proteomics, 
+  PSM-level FDR should be used for better comparability." 
   [PSI:MS], `identificationLevel = "unidentified"`;
+  The metric informs about the dynamic range of the acquisition in relation to 
+  identifiability.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are 
@@ -623,8 +715,15 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   **identified MS2 precursor intensity distribution mean** (MS:4000163), 
   "From the distribution of identified MS2 precursor intensities, the mean. 
   The intensity distribution of the identified precursors informs about the 
-  dynamic range of the acquisition in relation to identifiability." 
+  dynamic range of the acquisition in relation to identifiability. The used 
+  type of identification should be noted in the metadata or analysis methods 
+  section of the recording file for the respective run. In case of multiple 
+  acceptance criteria (FDR) available in proteomics, PSM-level FDR should be 
+  used for better comparability." 
   [PSI:MS], `identificationLevel = "identified"`;
+  The metric informs about the dynamic range of the acquisition in relation to 
+  identifiability.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,  
     (2) the intensity of the precursor ions within the `Spectra` object are 
@@ -633,10 +732,15 @@ Currently, all quality metrics can be calculated for both `Spectra` and
         (`NA` values are removed) and returned.
 - *precursorIntensityMean*, 
   **unidentified MS2 precursor intensity distribution mean** (MS:4000164), 
-  "From the distribution of unidentified MS2 precursor 
-  intensities, the mean. The intensity distribution of the unidentified 
-  precursors informs about the dynamic range of the acquisition in 
-  relation to identifiability." [PSI:MS], `identificationLevel = "unidentified"`;
+  "From the distribution of unidentified MS2 precursor intensities, the mean. 
+  The used type of identification should be noted in the metadata or analysis 
+  methods section of the recording file for the respective run. In case of 
+  multiple acceptance criteria (FDR) available in proteomics, PSM-level FDR 
+  should be used for better comparability." [PSI:MS], 
+  `identificationLevel = "unidentified"`;
+  The metric informs about the dynamic range of the acquisition in relation 
+  to identifiability.
+  
   The metric is calculated as follows:  
     (1) the `Spectra` object is filtered according to the MS level,  
     (2) the intensity of the precursor ions within the `Spectra` object are 
@@ -645,13 +749,15 @@ Currently, all quality metrics can be calculated for both `Spectra` and
         (`NA` values are removed) and returned.
 - *precursorIntensitySd*, 
   **identified MS2 precursor intensity distribution sigma** (MS:4000165), 
-  "From the distribution of identified MS2 precursor intensities, the sigma value. 
-  The intensity distribution of the precursors informs about the dynamic 
-  range of the acquisition in relation to identifiability. The used type of 
-  identification should be noted in the metadata or analysis methods section 
-  of the recording file for the respective run. In case of multiple acceptance 
-  criteria (FDR) available in proteomics, PSM-level FDR should be used for 
-  better comparability." [PSI:MS], `identificationLevel = "identified"`;
+  "From the distribution of identified MS2 precursor intensities, the sigma 
+  value. The used type of identification should be noted in the metadata or 
+  analysis methods section of the recording file for the respective run. In 
+  case of multiple acceptance criteria (FDR) available in proteomics, PSM-level 
+  FDR should be used for better comparability." [PSI:MS], 
+  `identificationLevel = "identified"`;
+  The metric informs about the dynamic range of the acquisition in relation to 
+  identifiability.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,  
     (2) the intensity of the precursor ions within the `Spectra` object are 
@@ -661,13 +767,14 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 - *precursorIntensitySD*, 
   **unidentified MS2 precursor intensity distribution sigma** (MS:4000166), 
   "From the distribution of unidentified MS2 precursor intensities, the sigma 
-  value. The intensity distribution of the precursors informs about the 
-  dynamic range of the acquisition in relation to identifiability. The used 
-  type of identification should be noted in the metadata or analysis methods 
-  section of the recording file for the respective run. In case of multiple 
-  acceptance criteria (FDR) available in proteomics, PSM-level FDR should be 
-  used for better comparability." [PSI:MS], 
+  value. The used type of identification should be noted in the metadata or 
+  analysis methods section of the recording file for the respective run. In 
+  case of multiple acceptance criteria (FDR) available in proteomics, PSM-level 
+  FDR should be used for better comparability." [PSI:MS], 
   `identificationLevel = "unidentified"`;
+  The metric informs about the dynamic range of the acquisition in relation to 
+  identifiability.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,  
     (2) the intensity of the precursor ions within the `Spectra` object are 
@@ -676,9 +783,11 @@ Currently, all quality metrics can be calculated for both `Spectra` and
         (`NA` values are removed) and returned. 
 - *ratioCharge1over2*, 
   **ratio of 1+ over 2+ of all MS2 known precursor charges** (MS:4000167),
-  "The ratio of 1+ over 2+ MS2 precursor charge count of all spectra. High 
-  ratios of 1+/2+ MS2 precursor charge count may indicate inefficient 
-  ionization." [PSI:MS], `identificationLevel = "all"`;
+  "The ratio of 1+ over 2+ MS2 precursor charge count of all spectra." [PSI:MS], 
+  `identificationLevel = "all"`;
+  High ratios of 1+/2+ MS2 precursor charge count may indicate inefficient 
+  ionization.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the precursor charge is obtained, 
@@ -686,13 +795,15 @@ Currently, all quality metrics can be calculated for both `Spectra` and
       precursors with charge 2+ and the ratio is returned.
 - *ratioCharge1over2*, 
   **ratio of 1+ over 2+ of identified MS2 known precursor charges** (MS:4000168),
-  "The ratio of 1+ over 2+ MS2 precursor charge count of identified spectra. 
-  High ratios of 1+/2+ MS2 precursor charge count may indicate inefficient 
-  ionization. The used type of identification should be noted in the metadata 
-  or analysis methods section of the recording file for the respective run. 
-  In case of multiple acceptance criteria (FDR) available in proteomics, 
-  PSM-level FDR should be used for better comparability." [PSI:MS],
+  ""The ratio of 1+ over 2+ MS2 precursor charge count of identified spectra. 
+  The used type of identification should be noted in the metadata or analysis 
+  methods section of the recording file for the respective run. In case of 
+  multiple acceptance criteria (FDR) available in proteomics, PSM-level FDR 
+  should be used for better comparability." [PSI:MS],
   `identificationLevel = "identified"`;
+  High ratios of 1+/2+ MS2 precursor charge count may indicate inefficient 
+  ionization in relation to identifiability.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the precursor charge is obtained, 
@@ -700,33 +811,39 @@ Currently, all quality metrics can be calculated for both `Spectra` and
       precursors with charge 2+ and the ratio is returned.
 - *ratioCharge3over2*, 
   **ratio of 3+ over 2+ of all MS2 known precursor charges** (MS:4000169),
-  "The ratio of 3+ over 2+ MS2 precursor charge count of all spectra. Higher 
-  ratios of 3+/2+ MS2 precursor charge count may preferentially favor 
-  longer e.g. peptides." [PSI:MS], `identificationLevel = "all"`;
+  "The ratio of 3+ over 2+ MS2 precursor charge count of all spectra." [PSI:MS], 
+  `identificationLevel = "all"`;
+  Higher ratios of 3+/2+ MS2 precursor charge count may indicate e.g. 
+  preference for longer peptides.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,  
-    (2) the precursor charge is obtained, \
+    (2) the precursor charge is obtained, 
     (3) the number of precursors with charge 3+ is divided by the number of 
         precursors with charge 2+ and the ratio is returned.
 - *ratioCharge3over2*, 
   **ratio of 3+ over 2+ of identified MS2 known precursor charges** (MS:4000170),
   "The ratio of 3+ over 2+ MS2 precursor charge count of identified spectra. 
-  Higher ratios of 3+/2+ MS2 precursor charge count may preferentially favor 
-  longer e.g. peptides. The used type of identification should be noted in the 
-  metadata or analysis methods section of the recording file for the respective
-  run. In case of multiple acceptance criteria (FDR) available in proteomics, 
-  PSM-level FDR should be used for better comparability." [PSI:MS], 
+  The used type of identification should be noted in the metadata or analysis 
+  methods section of the recording file for the respective run. In case of 
+  multiple acceptance criteria (FDR) available in proteomics, PSM-level 
+  FDR should be used for better comparability." [PSI:MS], 
   `identificationLevel = "identified"`;
+  Higher ratios of 3+/2+ MS2 precursor charge count may indicate e.g. 
+  preference for longer peptides in relation to identifiability.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,  
-    (2) the precursor charge is obtained, \
+    (2) the precursor charge is obtained, 
     (3) the number of precursors with charge 3+ is divided by the number of 
         precursors with charge 2+ and the ratio is returned.
 - *ratioCharge4over2*,
   **ratio of 4+ over 2+ of all MS2 known precursor charges** (MS:4000171),
-  "The ratio of 4+ over 2+ MS2 precursor charge count of all spectra. Higher 
-  ratios of 4+/2+ MS2 precursor charge count may preferentially favor longer 
-  e.g. peptides." [PSI:MS], `identificationLevel = "all"`;
+  "The ratio of 4+ over 2+ MS2 precursor charge count of all spectra." 
+  [PSI:MS], `identificationLevel = "all"`;
+  Higher ratios of 3+/2+ MS2 precursor charge count may indicate e.g. 
+  preference for longer peptides.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the precursor charge is obtained, 
@@ -735,12 +852,14 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 - *ratioCharge4over2*, 
   **ratio of 4+ over 2+ of identified MS2 known precursor charges** (MS:4000172),
   "The ratio of 4+ over 2+ MS2 precursor charge count of identified spectra. 
-  Higher ratios of 4+/2+ MS2 precursor charge count may preferentially favor 
-  longer e.g. peptides. The used type of identification should be noted in the 
-  metadata or analysis methods section of the recording file for the respective
-  run. In case of multiple acceptance criteria (FDR) available in proteomics,
-  PSM-level FDR should be used for better comparability." [PSI:MS], 
+  The used type of identification should be noted in the metadata or analysis 
+  methods section of the recording file for the respective run. In case of 
+  multiple acceptance criteria (FDR) available in proteomics, PSM-level FDR 
+  should be used for better comparability." [PSI:MS], 
   `identificationLevel = "identified"`;
+  Higher ratios of 3+/2+ MS2 precursor charge count may indicate e.g. 
+  preference for longer peptides in relation to identifiability.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the precursor charge is obtained, 
@@ -749,6 +868,10 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 - *meanCharge*, **mean MS2 precursor charge in all spectra** (MS:4000173),
   "Mean MS2 precursor charge in all spectra" [PSI:MS], 
   `identificationLevel = "all"`;
+  Higher charges may indicate inefficient ionization or e.g. preference for 
+  longer peptides.
+  
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the precursor charge is obtained,
@@ -759,6 +882,9 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   of the recording file for the respective run. In case of multiple acceptance 
   criteria (FDR) available in proteomics, PSM-level FDR should be used for 
   better comparability." [PSI:MS], `identificationLevel = "identified"`;
+  Higher charges may indicate inefficient ionization or e.g. preference for 
+  longer peptides in relation to identifiability.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the precursor charge is obtained,
@@ -766,6 +892,9 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 - *medianCharge*, **median MS2 precursor charge in all spectra** (MS:4000175),
   "Median MS2 precursor charge in all spectra" [PSI:MS], 
   `identificationLevel = "all"`;
+  Higher charges may indicate inefficient ionization and/or e.g. preference 
+  for longer peptides.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the precursor charge is obtained, 
@@ -777,6 +906,9 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   acceptance criteria (FDR) available in proteomics, PSM-level FDR should be 
   used for better comparability." [PSI:MS],
   `identificationLevel = "identified"`; 
+  Higher charges may indicate inefficient ionization and/or e.g. preference for 
+  longer peptides in relation to identifiability.
+  
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the precursor charge is obtained, 
