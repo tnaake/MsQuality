@@ -630,8 +630,7 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
         ".environment", "refClass", "environment", "refObject"))
     expect_equal(metrics_spectra[[1]]$contactAddress, as.character(NA))
     expect_equal(metrics_spectra[[2]]$contactAddress, as.character(NA))
-    
-    
+
     ## controlled vocabularies and description
     expect_equal(metrics_spectra[[1]]$controlledVocabularies[[1]]$name, 
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
@@ -643,18 +642,18 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
         "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
     
     ## software
-    #expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
-    #expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
     expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
-    #    "")
-    #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
-    #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+        "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
+    expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
     expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
-    #    "")
+    expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+        "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
     
     ## chromatographyDuration
     expect_equal(
