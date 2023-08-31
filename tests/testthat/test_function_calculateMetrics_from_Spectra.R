@@ -795,7 +795,7 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
         "MS1 signal jump (10x) count")
     expect_equal(
         metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
-        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans. An unusual high count of signal jumps or falls can indicate ESI stability issues.\" [PSI:MS]")
+        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
         metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
         0, tolerance = 1e-06)
@@ -810,7 +810,7 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
         "MS1 signal jump (10x) count")
     expect_equal(
         metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
-        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans. An unusual high count of signal jumps or falls can indicate ESI stability issues.\" [PSI:MS]")
+        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
         metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
         0, tolerance = 1e-06)
@@ -1024,7 +1024,7 @@ test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
         "MS1 signal jump (10x) count")
     expect_equal(
         metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
-        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans. An unusual high count of signal jumps or falls can indicate ESI stability issues.\" [PSI:MS]")
+        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
         metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
         0, tolerance = 1e-06)
@@ -1039,7 +1039,7 @@ test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
         "MS1 signal jump (10x) count")
     expect_equal(
         metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
-        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans. An unusual high count of signal jumps or falls can indicate ESI stability issues.\" [PSI:MS]")
+        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
         metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
         0, tolerance = 1e-06)
@@ -1235,7 +1235,7 @@ test_that("calculateMetrics, format = 'mzQC'.", {
         "MS1 signal jump (10x) count")
     expect_equal(
         metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
-        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans. An unusual high count of signal jumps or falls can indicate ESI stability issues.\" [PSI:MS]")
+        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
         metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
         0, tolerance = 1e-06)
@@ -1250,7 +1250,7 @@ test_that("calculateMetrics, format = 'mzQC'.", {
         "MS1 signal jump (10x) count")
     expect_equal(
         metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
-        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans. An unusual high count of signal jumps or falls can indicate ESI stability issues.\" [PSI:MS]")
+        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
         metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
         0, tolerance = 1e-06)
@@ -1432,7 +1432,7 @@ test_that("calculateMetrics, format = 'mzQC'.", {
         "MS1 signal jump (10x) count")
     expect_equal(
         metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
-        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans. An unusual high count of signal jumps or falls can indicate ESI stability issues.\" [PSI:MS]")
+        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
         metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
         0, tolerance = 1e-06)
@@ -1447,7 +1447,7 @@ test_that("calculateMetrics, format = 'mzQC'.", {
         "MS1 signal jump (10x) count")
     expect_equal(
         metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
-        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans. An unusual high count of signal jumps or falls can indicate ESI stability issues.\" [PSI:MS]")
+        "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
         metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
         0, tolerance = 1e-06)
