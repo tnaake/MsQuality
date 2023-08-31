@@ -1,5 +1,8 @@
 # MsQuality 1.1
 
+## Changes in version 1.1.3
+- update tests after update of OBO file / rmzqc
+
 ## Changes in version 1.1.2
 - Fix implementation of `mzAquisitionRange`
 - add numberEmptyScans in qualityMetrics function
