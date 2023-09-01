@@ -6,7 +6,7 @@ author:
    affiliation: European Molecular Biology Laboratory, Meyerhofstrasse 1, 69117 Heidelberg/ EURAC Research, Viale Druso 1, 39100 Bolzano
 package: MsQuality
       
-output:  
+output:         
     BiocStyle::html_document:
         toc_float: true
 bibliography: MsQuality-citations.bib
@@ -263,12 +263,12 @@ qualityMetrics(sps_comb)
 
 ## List of included metrics
 
-The following list gives a brief explanation for these metrics. Further 
+The following list gives a brief explanation on the included metrics. Further 
 information may be found at the 
 [HUPO-PSI mzQC project page](https://github.com/HUPO-PSI/mzQC)  or in the 
 respective help file for the quality metric (accessible by e.g. entering
 `?chromatographyDuration` to the R console). 
-We also give explanation on how the metric is calculated in `MsQuality`. 
+We also give here explanation on how the metric is calculated in `MsQuality`. 
 Currently, all quality metrics can be calculated for both `Spectra` and
 `MsExperiment` objects. 
 
@@ -923,7 +923,7 @@ a `Spectra` or `MsExperiment` object as input, a character vector of metrics
 to be calculated, a Boolean value to the `filterEmptySpectra` argument, 
 and, optionally a list of parameters passed to the quality metrics functions.
 
-The `filterEmptySpectra` argument specifies if zero-intensity, `Inf`-intensity` 
+The `filterEmptySpectra` argument specifies if zero-intensity, `Inf`-intensity 
 or zero-length entries should be removed (`filterEmptySpectra = TRUE`). 
 By default, the entries are taken as they are (`filterEmptySpectra = FALSE`). 
 The argument can be set to `TRUE` to compute metrics that are close to the 
