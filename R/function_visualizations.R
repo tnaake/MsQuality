@@ -26,6 +26,7 @@
 #' 
 #' @author Thomas Naake, \email{thomasnaake@@googlemail.com}
 #' 
+#' @importFrom rlang sym
 #' @importFrom ggplot2 ggplot geom_point aes scale_colour_brewer theme_bw
 #' @importFrom ggplot2 xlab ggtitle guides guide_legend theme element_text
 #' @importFrom ggplot2 element_blank
@@ -68,7 +69,7 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
     qc_tbl_l <- plotMetricTibble(qc = qc, metric = metric)
     
     g <- ggplot(qc_tbl_l) +
-        geom_point(aes(x = get("rowname"), y = get("value"), col = get("name"))) +
+        geom_point(aes(x = !!sym("rowname"), y = !!sym("value"), col = !!sym("name"))) +
         scale_colour_brewer(palette = "Set1") + theme_bw() +
         xlab("sample") + ggtitle(metric) +
         guides(shape = guide_legend(override.aes = list(size = 5))) +
