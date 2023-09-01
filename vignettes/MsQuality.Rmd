@@ -277,7 +277,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   Longer duration may indicate a better chromatographic separation of compounds 
   which depends, however, also on the sampling/scan rate of the MS instrument. 
   
-  The metric is calculated as follows:  
+  The metric is calculated as follows:
     (1) the retention time associated to the `Spectra` object is obtained,
     (2) the maximum and the minimum of the retention time is obtained, 
     (3) the difference between the maximum and the minimum is calculated and returned. 
@@ -291,7 +291,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   significant portion of the run.
   
   The metric is calculated as follows: 
-    (1) the `Spectra` object is ordered according to the retention time,  
+    (1) the `Spectra` object is ordered according to the retention time,
     (2) the cumulative sum of the ion count is calculated (TIC), 
     (3) the quantiles are calculated according to the `probs` argument, 
         e.g. when `probs` is set to `c(0, 0.25, 0.5, 0.75, 1)` the 
@@ -310,11 +310,11 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   chromatographic separation. For MS1 scans, the values are expected to be in 
   a similar range across samples of the same type.
   
-  The metric is calculated as follows:  
+  The metric is calculated as follows:
     (1) the retention time duration of the whole `Spectra` object is determined 
         (taking into account all the MS levels), 
     (2) the `Spectra` object is filtered according to the MS level and 
-        subsequently ordered according to the retention time  
+        subsequently ordered according to the retention time,
     (3) the MS events are split into four (approximately) equal parts, 
     (4) the relative retention time is calculated (using the retention time 
         duration from (1) and taking into account the minimum retention time), 
@@ -328,11 +328,11 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   chromatographic separation. For MS2 scans, the comparability of the values 
   depends on the acquisition mode and settings to select ions for fragmentation.
   
-  The metric is calculated as follows:  
+  The metric is calculated as follows:
     (1) the retention time duration of the whole `Spectra` object is determined 
         (taking into account all the MS levels), 
     (2) the `Spectra` object is filtered according to the MS level and 
-        subsequently ordered according to the retention time  
+        subsequently ordered according to the retention time,
     (3) the MS events are split into four (approximately) equal parts, 
     (4) the relative retention time is calculated (using the retention time 
         duration from (1) and taking into account the minimum retention time), 
@@ -344,15 +344,15 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   one to the next scan, produced when each MS1 TIC is subtracted from the 
   preceding MS1 TIC. The metric's value triplet represents the log ratio of the 
   TIC-change Q2 to Q1, Q3 to Q2, TIC-change-max to Q3" [PSI:MS], 
-  `mode = "TIC_change"`,  `relativeTo = "previous"`, `msLevel = 1L`;
+  `mode = "TIC_change"`, `relativeTo = "previous"`, `msLevel = 1L`;
   The metric informs about the dynamic range of the acquisition along the 
   chromatographic separation.This metric evaluates the stability (similarity) 
   of MS1 TIC values from scan to scan along the LC run. High log ratios 
   representing very large intensity differences between pairs of scans might 
   be due to electrospray instability or presence of a chemical contaminant.
   
-  The metric is calculated as follows:  
-    (1) the TIC (`ionCount`) of the  `Spectra` object is calculated 
+  The metric is calculated as follows:
+    (1) the TIC (`ionCount`) of the `Spectra` object is calculated 
         per scan event (with spectra ordered by retention time), 
     (2) the differences between TIC values are calculated between subsequent 
         scan events,
@@ -369,7 +369,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   of the TIC values for one LC-MS run. Within an experiment, with the same 
   LC setup, values should be comparable between samples.
   
-  The metric is calculated as follows:  
+  The metric is calculated as follows:
     (1) the TIC (`ionCount`) of the `Spectra` object is calculated 
         per scan event (with spectra ordered by retention time),
     (2) the TIC values between subsequent scan events are taken
@@ -391,7 +391,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   An unusual low number may indicate incomplete sampling/scan rate of the MS 
   instrument, low sample volume and/or failed injection of a sample.
   
-  The metric is calculated as follows:  
+  The metric is calculated as follows: 
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the number of the spectra are obtained (`length` of `Spectra`) and 
         returned.
@@ -412,7 +412,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   An unusual low range may indicate incomplete sampling and/or a premature or 
   failed LC run.
   
-  The metric is calculated as follows:  
+  The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the retention time values of the features within the `Spectra` 
         object are obtained, 
@@ -429,7 +429,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the intensity of the precursor ions within the `Spectra` object are 
         obtained, 
-    (3) the intensity values of the features are obtained via the ion count,  
+    (3) the intensity values of the features are obtained via the ion count,
     (4) the signal jumps/declines of the intensity values with the two 
         subsequent intensity values is calculated,
     (5) the signal jumps by a factor of ten or more are counted and returned.
@@ -491,7 +491,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are obtained, 
-    (3) the 25\%, 50\%, and 75\% quantile of the  precursor intensity values are 
+    (3) the 25\%, 50\%, and 75\% quantile of the precursor intensity values are 
         obtained (`NA` values are removed) and returned.
 - *precursorIntensityMean*, **MS2 precursor intensity distribution mean** 
   (MS:4000117), "From the distribution of MS2 precursor intensities, the mean." 
@@ -500,7 +500,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   of the acquisition.
   
   The metric is calculated as follows:
-    (1) the `Spectra` object is filtered according to the MS level,  
+    (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are 
         obtained, 
     (3) the mean of the precursor intensity values is obtained 
@@ -512,7 +512,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   the acquisition.
   
   The metric is calculated as follows:
-    (1) the `Spectra` object is filtered according to the MS level,  
+    (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are 
         obtained,
     (3) the standard deviation of precursor intensity values is obtained 
@@ -530,7 +530,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   `identificationLevel = "identified"`, `msLevel = 1L`;
   The m/z distribution informs about the dynamic range of the acquisition.
   
-  The metric is calculated as follows:  
+  The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the precursor m/z values are obtained, 
     (3) the median value is returned (`NA`s are removed).
@@ -548,7 +548,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   Longer duration may indicate a better chromatographic separation of compounds 
   which depends, however, also on the sampling/scan rate of the MS instrument.
   
-  The metric is calculated as follows:  
+  The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the retention time values are obtained, 
     (3) the interquartile range is obtained from the values and returned
@@ -566,7 +566,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   `identificationLevel = "identified"`;
   Higher rates may indicate a more efficient sampling and identification. 
   
-  The metric is calculated as follows:  
+  The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the retention time values are obtained, 
     (3) the 25\% and 75\% quantiles are obtained from the retention time values
@@ -596,7 +596,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   dynamic range and/or in the sample content.
   
   The metric is calculated as follows:
-    (1) the `Spectra` object is filtered according to the MS level,  
+    (1) the `Spectra` object is filtered according to the MS level,
     (2) the `Spectra` object is ordered according to the retention time, 
     (3) the 0\%, 25\%, 50\%, 75\%, and 100\% quantiles of the retention time 
         values are obtained, 
@@ -658,7 +658,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level, 
-    (2) the `Spectra` object is ordered according to the retention time,  
+    (2) the `Spectra` object is ordered according to the retention time,
     (3) the number of features in the `Spectra` object is obtained and 
         the number for half of the features is calculated,
     (4) iterate through the features (always by taking the neighbouring
@@ -692,7 +692,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are obtained, 
-    (3) the 25\%, 50\%, and 75\% quantile of the  precursor intensity values are 
+    (3) the 25\%, 50\%, and 75\% quantile of the precursor intensity values are 
         obtained (`NA` values are removed) and returned.
 - *precursorIntensityQuartiles*, 
   **unidentified MS2 precursor intensity distribution Q1, Q2, Q3** (MS:4000162), 
@@ -709,7 +709,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are 
         obtained, 
-    (3) the 25\%, 50\%, and 75\% quantile of the  precursor intensity values are 
+    (3) the 25\%, 50\%, and 75\% quantile of the precursor intensity values are 
         obtained (`NA` values are removed) and returned.
 - *precursorIntensityMean*, 
   **identified MS2 precursor intensity distribution mean** (MS:4000163), 
@@ -725,7 +725,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   identifiability.
   
   The metric is calculated as follows:
-    (1) the `Spectra` object is filtered according to the MS level,  
+    (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are 
         obtained, 
     (3) the mean of the precursor intensity values is obtained 
@@ -741,8 +741,8 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   The metric informs about the dynamic range of the acquisition in relation 
   to identifiability.
   
-  The metric is calculated as follows:  
-    (1) the `Spectra` object is filtered according to the MS level,  
+  The metric is calculated as follows:
+    (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are 
         obtained, 
     (3) the mean of the precursor intensity values is obtained 
@@ -759,7 +759,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   identifiability.
   
   The metric is calculated as follows:
-    (1) the `Spectra` object is filtered according to the MS level,  
+    (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are 
         obtained,
     (3) the standard deviation of precursor intensity values is obtained 
@@ -776,7 +776,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   identifiability.
   
   The metric is calculated as follows:
-    (1) the `Spectra` object is filtered according to the MS level,  
+    (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are 
         obtained,
     (3) the standard deviation of precursor intensity values is obtained 
@@ -817,7 +817,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   preference for longer peptides.
   
   The metric is calculated as follows:
-    (1) the `Spectra` object is filtered according to the MS level,  
+    (1) the `Spectra` object is filtered according to the MS level,
     (2) the precursor charge is obtained, 
     (3) the number of precursors with charge 3+ is divided by the number of 
         precursors with charge 2+ and the ratio is returned.
@@ -833,7 +833,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   preference for longer peptides in relation to identifiability.
   
   The metric is calculated as follows:
-    (1) the `Spectra` object is filtered according to the MS level,  
+    (1) the `Spectra` object is filtered according to the MS level,
     (2) the precursor charge is obtained, 
     (3) the number of precursors with charge 3+ is divided by the number of 
         precursors with charge 2+ and the ratio is returned.
@@ -952,13 +952,13 @@ MS$^2$ or MS$^3$ features. If the user adds the arguments
 `ticQuartileToQuartileLogRatio` is run with the parameter combinations 
 `relativeTo = "Q1", mode = "TIC", msLevel = c(1L, 2L)`.
 
-The  results based on these parameter combinations are returned and the 
+The results based on these parameter combinations are returned and the 
 used parameters are returned as attributes to the returned vector. 
 
 Here, we would like to calculate the metrics of **all** included quality 
 metrics functions (`qualityMetrics(object)`) and additionally pass the 
 parameter `relativeTo = "Q1"` and `relativeTo = "previous"`. For computational
-reasons, we will restrict the calculation of the metrics to the first  
+reasons, we will restrict the calculation of the metrics to the first
 sample and to RPLC samples.
 
 ```{r calculateMetrics}
