@@ -1,7 +1,7 @@
 Package: MsQuality
 Type: Package
 Title: MsQuality - Quality metric calculation from Spectra and MsExperiment objects
-Version: 1.3.0
+Version: 1.3.1
 Date: 2023-12-14
 Authors@R: c(person(given = "Thomas", family = "Naake", 
 		email = "thomasnaake@googlemail.com", role = c("aut", "cre"),
