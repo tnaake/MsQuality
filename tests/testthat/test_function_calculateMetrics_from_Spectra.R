@@ -755,67 +755,67 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
         list())
     
     ## areaUnderTic
-    # expect_equal(
-    #     metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[]]$accession, 
-    #     "MS:4000155")
-    # expect_equal(
-    #     metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[]]$name, 
-    #     "area under TIC")
-    # expect_equal(
-    #     metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[]]$description, 
-    #     "")
-    # expect_equal(
-    #     metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[]]$value, 
-    #     6.509697e+08, tolerance = 1e-06)
-    # expect_equal(
-    #     metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[]]$unit, 
-    #     list())
-    # expect_equal(
-    #     metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[]]$accession, 
-    #     "MS:4000155")
-    # expect_equal(
-    #     metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[]]$name, 
-    #     "area under TIC")
-    # expect_equal(
-    #     metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[]]$description, 
-    #     "")
-    # expect_equal(
-    #     metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[]]$value, 
-    #     6.509697e+08, tolerance = 1e-06)
-    # expect_equal(
-    #     metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[]]$unit, 
-    #     list())
+    expect_equal(
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[4]]$accession,
+        "MS:4000155")
+    expect_equal(
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[4]]$name,
+        "area under TIC")
+    expect_equal(
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[4]]$description,
+        "\"The area under the total ion chromatogram.\" [PSI:MS]")
+    expect_equal(
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[4]]$value,
+        6.509697e+08, tolerance = 1e-06)
+    expect_equal(
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[4]]$unit,
+        list())
+    expect_equal(
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[4]]$accession,
+        "MS:4000155")
+    expect_equal(
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[4]]$name,
+        "area under TIC")
+    expect_equal(
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[4]]$description,
+        "\"The area under the total ion chromatogram.\" [PSI:MS]")
+    expect_equal(
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[4]]$value,
+        6.229579e+08, tolerance = 1e-06)
+    expect_equal(
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[4]]$unit,
+        list())
     
     ## msSignal10xChange
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[4]]$accession, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
         "MS:4000097")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[4]]$name, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[4]]$unit, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
         list())
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[4]]$accession, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
         "MS:4000097")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[4]]$name, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[4]]$unit, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
         list())
 })
 ## END unit test calculateMetricsFromSpectra ##
@@ -871,18 +871,18 @@ test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
         "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
     
     ## software
-    #expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
-    #expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
     expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
-    #    "")
-    #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
-    #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+        "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
+    expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
     expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
-    #    "")
+    expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+        "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
     
     ## chromatographyDuration
     expect_equal(
@@ -984,67 +984,67 @@ test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
         list())
     
     ## areaUnderTic
-    # expect_equal(
-    #     metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[]]$accession, 
-    #     "MS:4000155")
-    # expect_equal(
-    #     metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[]]$name, 
-    #     "area under TIC")
-    # expect_equal(
-    #     metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[]]$description, 
-    #     "")
-    # expect_equal(
-    #     metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[]]$value, 
-    #     6.509697e+08, tolerance = 1e-06)
-    # expect_equal(
-    #     metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[]]$unit, 
-    #     list())
-    # expect_equal(
-    #     metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[]]$accession, 
-    #     "MS:4000155")
-    # expect_equal(
-    #     metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[]]$name, 
-    #     "area under TIC")
-    # expect_equal(
-    #     metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[]]$description, 
-    #     "")
-    # expect_equal(
-    #     metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[]]$value, 
-    #     6.509697e+08, tolerance = 1e-06)
-    # expect_equal(
-    #     metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[]]$unit, 
-    #     list())
+    expect_equal(
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[4]]$accession,
+        "MS:4000155")
+    expect_equal(
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[4]]$name,
+        "area under TIC")
+    expect_equal(
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[4]]$description,
+        "\"The area under the total ion chromatogram.\" [PSI:MS]")
+    expect_equal(
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[4]]$value,
+        6.509697e+08, tolerance = 1e-06)
+    expect_equal(
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[4]]$unit,
+        list())
+    expect_equal(
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[4]]$accession,
+        "MS:4000155")
+    expect_equal(
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[4]]$name,
+        "area under TIC")
+    expect_equal(
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[4]]$description,
+        "\"The area under the total ion chromatogram.\" [PSI:MS]")
+    expect_equal(
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[4]]$value,
+        6.229579e+08, tolerance = 1e-06)
+    expect_equal(
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[4]]$unit,
+        list())
     
     ## msSignal10xChange
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[4]]$accession, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
         "MS:4000097")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[4]]$name, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[4]]$unit, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
         list())
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[4]]$accession, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
         "MS:4000097")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[4]]$name, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[4]]$unit, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
         list())
 })
 ## END unit test calculateMetricsFromMsExperiment ## 
@@ -1082,18 +1082,18 @@ test_that("calculateMetrics, format = 'mzQC'.", {
         "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
     
     ## software
-    #expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
-    #expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
     expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
-    #    "")
-    #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
-    #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+         "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
+    expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
     expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
-    #    "")
+    expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+        "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
     
     ## chromatographyDuration
     expect_equal(
@@ -1195,67 +1195,67 @@ test_that("calculateMetrics, format = 'mzQC'.", {
         list())
     
     ## areaUnderTic
-    # expect_equal(
-    #     metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[]]$accession, 
-    #     "MS:4000155")
-    # expect_equal(
-    #     metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[]]$name, 
-    #     "area under TIC")
-    # expect_equal(
-    #     metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[]]$description, 
-    #     "")
-    # expect_equal(
-    #     metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[]]$value, 
-    #     6.509697e+08, tolerance = 1e-06)
-    # expect_equal(
-    #     metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[]]$unit, 
-    #     list())
-    # expect_equal(
-    #     metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[]]$accession, 
-    #     "MS:4000155")
-    # expect_equal(
-    #     metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[]]$name, 
-    #     "area under TIC")
-    # expect_equal(
-    #     metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[]]$description, 
-    #     "")
-    # expect_equal(
-    #     metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[]]$value, 
-    #     6.509697e+08, tolerance = 1e-06)
-    # expect_equal(
-    #     metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[]]$unit, 
-    #     list())
+    expect_equal(
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$accession,
+        "MS:4000155")
+    expect_equal(
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$name,
+        "area under TIC")
+    expect_equal(
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$description,
+        "\"The area under the total ion chromatogram.\" [PSI:MS]")
+    expect_equal(
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$value,
+        6.509697e+08, tolerance = 1e-06)
+    expect_equal(
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$unit,
+        list())
+    expect_equal(
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$accession,
+        "MS:4000155")
+    expect_equal(
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$name,
+        "area under TIC")
+    expect_equal(
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$description,
+        "\"The area under the total ion chromatogram.\" [PSI:MS]")
+    expect_equal(
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$value,
+        6.229579e+08, tolerance = 1e-06)
+    expect_equal(
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$unit,
+        list())
     
     ## msSignal10xChange
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$accession, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
         "MS:4000097")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$name, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$unit, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
         list())
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$accession, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
         "MS:4000097")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$name, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$unit, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
         list())
     
     ## 
@@ -1279,18 +1279,18 @@ test_that("calculateMetrics, format = 'mzQC'.", {
         "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
     
     ## software
-    #expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
-    #expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
     expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
-    #    "")
-    #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
-    #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
+    expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+        "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
+    expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
+    expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
     expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
         packageDescription("MsQuality")$Version)
-    #expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
-    #    "")
+    expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+        "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
     
     ## chromatographyDuration
     expect_equal(
@@ -1392,67 +1392,68 @@ test_that("calculateMetrics, format = 'mzQC'.", {
         list())
     
     ## areaUnderTic
-    # expect_equal(
-    #     metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[]]$accession, 
-    #     "MS:4000155")
-    # expect_equal(
-    #     metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[]]$name, 
-    #     "area under TIC")
-    # expect_equal(
-    #     metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[]]$description, 
-    #     "")
-    # expect_equal(
-    #     metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[]]$value, 
-    #     6.509697e+08, tolerance = 1e-06)
-    # expect_equal(
-    #     metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[]]$unit, 
-    #     list())
-    # expect_equal(
-    #     metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[]]$accession, 
-    #     "MS:4000155")
-    # expect_equal(
-    #     metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[]]$name, 
-    #     "area under TIC")
-    # expect_equal(
-    #     metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[]]$description, 
-    #     "")
-    # expect_equal(
-    #     metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[]]$value, 
-    #     6.509697e+08, tolerance = 1e-06)
-    # expect_equal(
-    #     metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[]]$unit, 
-    #     list())
+    expect_equal(
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$accession,
+        "MS:4000155")
+    expect_equal(
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$name,
+        "area under TIC")
+    expect_equal(
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$description,
+        "\"The area under the total ion chromatogram.\" [PSI:MS]")
+    expect_equal(
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$value,
+        6.509697e+08, tolerance = 1e-06)
+    expect_equal(
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$unit,
+        list())
+    expect_equal(
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$accession,
+        "MS:4000155")
+    expect_equal(
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$name,
+        "area under TIC")
+    expect_equal(
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$description,
+        "\"The area under the total ion chromatogram.\" [PSI:MS]")
+    expect_equal(
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$value,
+        6.229579e+08, tolerance = 1e-06)
+    expect_equal(
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$unit,
+        list())
     
     ## msSignal10xChange
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$accession, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
         "MS:4000097")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$name, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$unit, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
         list())
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$accession, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
         "MS:4000097")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$name, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$description, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$value, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$unit, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
         list())
 })
 ## END unit test calculateMetrics ## 
+
