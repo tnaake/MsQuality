@@ -1,3 +1,9 @@
+# MsQuality 1.9
+
+## Changes in version 1.7.1
+- fix bug due to update in rmzqc package, use $new for constructing 
+  R6 objects
+
 # MsQuality 1.7
 
 ## Changes in version 1.7.1
