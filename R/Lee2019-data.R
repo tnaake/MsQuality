@@ -9,7 +9,7 @@
 #'
 #' @description
 #' The data set of Lee et al. (2019) contains metabolite information measured
-#' by reverse phase liquid chromatography (RPLC) coupled to mass spectrometry 
+#' by reverse phase liquid chromatography (RPLC) coupled to mass spectrometry
 #' and hydrophilic interaction liquid chromatography (HILIC) coupled to mass 
 #' spectrometry (file `STables - rev1.xlsx` in the Supplementary Information).
 #'
