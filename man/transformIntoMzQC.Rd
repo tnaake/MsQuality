@@ -51,13 +51,14 @@ metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 ## obtain the spectra_metrics object
 f <- dataOrigin(spectra)
 f_unique <- unique(f)
-## spectra_metrics <- bplapply(f_unique, function(f_unique_i) {
-##calculateMetricsFromOneSampleSpectra(
-##    spectra = spectra[f == f_unique_i], metrics = metrics)
-##    }, BPPARAM = bpparam())
+spectra_metrics <- bplapply(f_unique, function(f_unique_i) {
+     calculateMetricsFromOneSampleSpectra(
+         spectra = spectra[f == f_unique_i], metrics = metrics)
+     }, BPPARAM = bpparam())
+names(spectra_metrics) <- f_unique
 
 ## transform into mzQC objects
-##transformIntoMzQC(spectra_metrics)
+transformIntoMzQC(spectra_metrics)
 
 }
 \author{
