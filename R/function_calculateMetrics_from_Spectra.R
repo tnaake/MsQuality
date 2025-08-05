@@ -47,9 +47,9 @@
 #' 
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
-#'     
+#'
 #' ## calculate the metrics
-#' ## additional parameters passed to the quality metrics functions
+#' ## additional parameters B to the quality metrics functions
 #' ## (MsLevel is an argument of areaUnderTic and msSignal10xChange,
 #' ## relativeTo is an argument of msSignal10xChange) passed to ...
 #' MsQuality:::calculateMetricsFromOneSampleSpectra(spectra = spectra, 
@@ -316,13 +316,13 @@ calculateMetricsFromSpectra <- function(spectra, metrics,
 #' f <- dataOrigin(spectra)
 #' f_unique <- unique(f)
 #' spectra_metrics <- bplapply(f_unique, function(f_unique_i) {
-#'      calculateMetricsFromOneSampleSpectra(
+#'      MsQuality:::calculateMetricsFromOneSampleSpectra(
 #'          spectra = spectra[f == f_unique_i], metrics = metrics)
 #'      }, BPPARAM = bpparam())
 #' names(spectra_metrics) <- f_unique
 #' 
 #' ## transform into mzQC objects
-#' transformIntoMzQC(spectra_metrics)
+#' MsQuality:::transformIntoMzQC(spectra_metrics)
 #' 
 transformIntoMzQC <- function(spectra_metrics) {
     
