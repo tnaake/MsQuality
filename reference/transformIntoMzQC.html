@@ -23,7 +23,7 @@ calculateMetricsFromSpectra."><!-- mathjax --><script src="https://cdnjs.cloudfl
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MsQuality</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.9.2</span>
       </span>
     </div>
 
@@ -108,13 +108,50 @@ of <code>MsQuality</code> ("MS:") and the version is taken from
 <span class="r-in"><span><span class="co">## obtain the spectra_metrics object</span></span></span>
 <span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">dataOrigin</a></span><span class="op">(</span><span class="va">spectra</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">f_unique</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co">## spectra_metrics &lt;- bplapply(f_unique, function(f_unique_i) {</span></span></span>
-<span class="r-in"><span><span class="co">##calculateMetricsFromOneSampleSpectra(</span></span></span>
-<span class="r-in"><span><span class="co">##    spectra = spectra[f == f_unique_i], metrics = metrics)</span></span></span>
-<span class="r-in"><span><span class="co">##    }, BPPARAM = bpparam())</span></span></span>
+<span class="r-in"><span><span class="va">spectra_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html" class="external-link">bplapply</a></span><span class="op">(</span><span class="va">f_unique</span>, <span class="kw">function</span><span class="op">(</span><span class="va">f_unique_i</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>     <span class="fu">MsQuality</span><span class="fu">:::</span><span class="fu"><a href="calculateMetricsFromOneSampleSpectra.html">calculateMetricsFromOneSampleSpectra</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>         spectra <span class="op">=</span> <span class="va">spectra</span><span class="op">[</span><span class="va">f</span> <span class="op">==</span> <span class="va">f_unique_i</span><span class="op">]</span>, metrics <span class="op">=</span> <span class="va">metrics</span><span class="op">)</span></span></span>
+<span class="r-in"><span>     <span class="op">}</span>, BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">bpparam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">spectra_metrics</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">f_unique</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## transform into mzQC objects</span></span></span>
-<span class="r-in"><span><span class="co">##transformIntoMzQC(spectra_metrics)</span></span></span>
+<span class="r-in"><span><span class="fu">MsQuality</span><span class="fu">:::</span><span class="fu">transformIntoMzQC</span><span class="op">(</span><span class="va">spectra_metrics</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;MzQCmzQC&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Public:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     clone: function (deep = FALSE) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     contactAddress: NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     contactName: root</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     controlledVocabularies: list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     creationDate: MzQCDateTime, R6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 20171016_POOL_POS_1_105-13 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     fromData: function (data, context = "MzQCmzQC") </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     initialize: function (version = NA_character_, creationDate = MzQCDateTime$new(), </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     isValid: function (context = "MzQCmzQC") </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     runQualities: list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     self: MzQCmzQC, R6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     setQualities: list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     toJSON: function (...) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     version: 0.7.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;MzQCmzQC&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Public:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     clone: function (deep = FALSE) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     contactAddress: NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     contactName: root</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     controlledVocabularies: list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     creationDate: MzQCDateTime, R6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 20171016_POOL_POS_3_105-13 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     fromData: function (data, context = "MzQCmzQC") </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     initialize: function (version = NA_character_, creationDate = MzQCDateTime$new(), </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     isValid: function (context = "MzQCmzQC") </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     runQualities: list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     self: MzQCmzQC, R6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     setQualities: list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     toJSON: function (...) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     version: 0.7.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -130,7 +167,7 @@ of <code>MsQuality</code> ("MS:") and the version is taken from
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
 </div>
 
       </footer></div>

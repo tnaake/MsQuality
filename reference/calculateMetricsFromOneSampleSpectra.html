@@ -18,7 +18,7 @@ metrics from a Spectra containing spectral data from one sample."><!-- mathjax -
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MsQuality</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.9.2</span>
       </span>
     </div>
 
@@ -117,9 +117,9 @@ intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## define the quality metrics to be calculated</span></span></span>
 <span class="r-in"><span><span class="va">metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"areaUnderTic"</span>, <span class="st">"chromatographyDuration"</span>, <span class="st">"msSignal10xChange"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    </span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## calculate the metrics</span></span></span>
-<span class="r-in"><span><span class="co">## additional parameters passed to the quality metrics functions</span></span></span>
+<span class="r-in"><span><span class="co">## additional parameters B to the quality metrics functions</span></span></span>
 <span class="r-in"><span><span class="co">## (MsLevel is an argument of areaUnderTic and msSignal10xChange,</span></span></span>
 <span class="r-in"><span><span class="co">## relativeTo is an argument of msSignal10xChange) passed to ...</span></span></span>
 <span class="r-in"><span><span class="fu">MsQuality</span><span class="fu">:::</span><span class="fu">calculateMetricsFromOneSampleSpectra</span><span class="op">(</span>spectra <span class="op">=</span> <span class="va">spectra</span>, </span></span>
@@ -168,7 +168,7 @@ intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
 </div>
 
       </footer></div>
