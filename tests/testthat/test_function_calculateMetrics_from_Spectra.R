@@ -625,10 +625,8 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
             relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC")
     
     expect_equal(length(metrics_spectra), 2)
-    expect_equal(is(metrics_spectra[[1]]), c("MzQCmzQC", "envRefClass", 
-        ".environment", "refClass", "environment", "refObject"))
-    expect_equal(is(metrics_spectra[[2]]), c("MzQCmzQC", "envRefClass", 
-        ".environment", "refClass", "environment", "refObject"))
+    expect_equal(is(metrics_spectra[[1]]), c("MzQCmzQC", "oldClass"))
+    expect_equal(is(metrics_spectra[[2]]), c("MzQCmzQC", "oldClass"))
     expect_equal(metrics_spectra[[1]]$contactAddress, as.character(NA))
     expect_equal(metrics_spectra[[2]]$contactAddress, as.character(NA))
 
@@ -853,10 +851,8 @@ test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
         relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC"))
     
     expect_equal(length(metrics_msexp), 2)
-    expect_equal(is(metrics_msexp[[1]]), c("MzQCmzQC", "envRefClass", 
-        ".environment", "refClass", "environment", "refObject"))
-    expect_equal(is(metrics_msexp[[2]]), c("MzQCmzQC", "envRefClass", 
-        ".environment", "refClass", "environment", "refObject"))
+    expect_equal(is(metrics_msexp[[1]]), c("MzQCmzQC", "oldClass"))
+    expect_equal(is(metrics_msexp[[2]]), c("MzQCmzQC", "oldClass"))
     expect_equal(metrics_msexp[[1]]$contactAddress, as.character(NA))
     expect_equal(metrics_msexp[[2]]$contactAddress, as.character(NA))
     
@@ -1065,10 +1061,8 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     
     ## metrics_spectra_wrapper
     expect_equal(length(metrics_spectra_wrapper), 2)
-    expect_equal(is(metrics_spectra_wrapper[[1]]), c("MzQCmzQC", "envRefClass", 
-        ".environment", "refClass", "environment", "refObject"))
-    expect_equal(is(metrics_spectra_wrapper[[2]]), c("MzQCmzQC", "envRefClass", 
-        ".environment", "refClass", "environment", "refObject"))
+    expect_equal(is(metrics_spectra_wrapper[[1]]), c("MzQCmzQC", "oldClass"))
+    expect_equal(is(metrics_spectra_wrapper[[2]]), c("MzQCmzQC", "oldClass"))
     expect_equal(metrics_spectra_wrapper[[1]]$contactAddress, as.character(NA))
     expect_equal(metrics_spectra_wrapper[[2]]$contactAddress, as.character(NA))
     
@@ -1262,10 +1256,8 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     ## 
     ## metrics_msexp_wrapper
     expect_equal(length(metrics_msexp_wrapper), 2)
-    expect_equal(is(metrics_msexp_wrapper[[1]]), c("MzQCmzQC", "envRefClass", 
-        ".environment", "refClass", "environment", "refObject"))
-    expect_equal(is(metrics_msexp_wrapper[[2]]), c("MzQCmzQC", "envRefClass", 
-        ".environment", "refClass", "environment", "refObject"))
+    expect_equal(is(metrics_msexp_wrapper[[1]]), c("MzQCmzQC", "oldClass"))
+    expect_equal(is(metrics_msexp_wrapper[[2]]), c("MzQCmzQC", "oldClass"))
     expect_equal(metrics_msexp_wrapper[[1]]$contactAddress, as.character(NA))
     expect_equal(metrics_msexp_wrapper[[2]]$contactAddress, as.character(NA))
     

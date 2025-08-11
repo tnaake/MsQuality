@@ -281,27 +281,6 @@ Currently, all quality metrics can be calculated for both `Spectra` and
     (1) the retention time associated to the `Spectra` object is obtained,
     (2) the maximum and the minimum of the retention time is obtained, 
     (3) the difference between the maximum and the minimum is calculated and returned. 
-- *ticQuartersRtFraction*, **TIC quarters RT fraction** (MS:4000054), 
-  "The interval when the respective quarter of the TIC accumulates divided by 
-  retention time duration." [PSI:MS];
-  The metric informs about the dynamic range of the acquisition along the 
-  chromatographic separation. The metric provides information on the sample 
-  (compound) flow along the chromatographic run, potentially revealing poor 
-  chromatographic performance, such as the absence of a signal for a 
-  significant portion of the run.
-  
-  The metric is calculated as follows: 
-    (1) the `Spectra` object is ordered according to the retention time,
-    (2) the cumulative sum of the ion count is calculated (TIC), 
-    (3) the quantiles are calculated according to the `probs` argument, 
-        e.g. when `probs` is set to `c(0, 0.25, 0.5, 0.75, 1)` the 
-        0\%, 25\%, 50\%, 75\%, and 100\% quantile is calculated, 
-    (4) the retention time/relative retention time (retention time divided by 
-        the total run time taking into account the minimum retention time) is 
-        calculated, 
-    (5) the (relative) duration of the LC run after which the cumulative
-        TIC exceeds (for the first time) the respective quantile of the 
-        cumulative TIC is calculated and returned.
 - *rtOverMsQuarters*, **MS1 quarter RT fraction** (MS:4000055), 
   "The interval used for acquisition of the first, second, third, and fourth 
   quarter of all MS1 events divided by retention time duration." [PSI:MS], 
@@ -913,7 +892,28 @@ Currently, all quality metrics can be calculated for both `Spectra` and
     (1) the `Spectra` object is filtered according to the MS level, 
     (2) the precursor charge is obtained, 
     (3) the median of the precursor charge values is calculated and returned.
-
+- *ticQuantileRtFraction*, **TIC quantile RT fraction** (MS:4000183), 
+  "The interval when the respective quantile of the TIC accumulates divided by 
+  retention time duration. The number of values in the tuple implies the 
+  quantile mode." [PSI:MS];
+  The metric informs about the dynamic range of the acquisition along the 
+  chromatographic separation. The metric provides information on the sample 
+  (compound) flow along the chromatographic run, potentially revealing poor 
+  chromatographic performance, such as the absence of a signal for a 
+  significant portion of the run.
+  
+  The metric is calculated as follows: 
+    (1) the `Spectra` object is ordered according to the retention time,
+    (2) the cumulative sum of the ion count is calculated (TIC), 
+    (3) the quantiles are calculated according to the `probs` argument, 
+        e.g. when `probs` is set to `c(0, 0.25, 0.5, 0.75, 1)` the 
+        0\%, 25\%, 50\%, 75\%, and 100\% quantile is calculated, 
+    (4) the retention time/relative retention time (retention time divided by 
+        the total run time taking into account the minimum retention time) is 
+        calculated, 
+    (5) the (relative) duration of the LC run after which the cumulative
+        TIC exceeds (for the first time) the respective quantile of the 
+        cumulative TIC is calculated and returned.
 
 ## Obtain the metrics in `data.frame`-format
 
@@ -1009,7 +1009,7 @@ msexp_rplc_subset <- msexp_rplc[1:20]
 msexp_hilic_subset <- msexp_hilic[1:20]
 
 ## define metrics
-metrics_sps <- c("chromatographyDuration", "ticQuartersRtFraction", "rtOverMsQuarters",
+metrics_sps <- c("chromatographyDuration", "ticQuantileRtFraction", "rtOverMsQuarters",
     "ticQuartileToQuartileLogRatio", "numberSpectra", "medianPrecursorMz",
     "rtIqr", "rtIqrRate", "areaUnderTic")
 

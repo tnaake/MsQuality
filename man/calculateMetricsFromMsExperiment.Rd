@@ -84,6 +84,7 @@ calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
 
 calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
     msLevel = 1, change = "fall", relativeTo = "previous")
+
 }
 \author{
 Thomas Naake

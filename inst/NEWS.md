@@ -1,7 +1,15 @@
 # MsQuality 1.8
 
 ## Changes in version 1.8.1
+- fix bug due to update in rmzqc package, use $new for constructing 
+  R6 objects
 - fix bug due to updates in rmzqc, use $new for constructing R6 objects 
+
+# MsQuality 1.7
+
+## Changes in version 1.7.1
+- rename ticQuartersRtFraction to ticQuantileRtFraction
+- update tests after update of OBO file / rmzqc
 
 # MsQuality 1.1
 

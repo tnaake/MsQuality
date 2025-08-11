@@ -203,10 +203,11 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #'     relativeTo = "previous")
 #'     
 #' ## format = "mzQC"
-#' ##calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
-#' ##    format = "mzQC", msLevel = 1, change = "jump", relativeTo = "Q1")
-#' ##calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
-#' ##    format = "mzQC", msLevel = 1, change = "fall", relativeTo = "previous")
+#' calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
+#'     format = "mzQC", msLevel = 1, change = "jump", relativeTo = "Q1")
+#' calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
+#'     format = "mzQC", msLevel = 1, change = "fall", relativeTo = "previous")
+#'
 calculateMetricsFromSpectra <- function(spectra, metrics, 
     filterEmptySpectra = FALSE, f = dataOrigin(spectra), 
     format = c("data.frame", "mzQC"), ..., BPPARAM = bpparam()) {
@@ -293,6 +294,11 @@ calculateMetricsFromSpectra <- function(spectra, metrics,
 #' 
 #' @author Thomas Naake, Johannes Rainer
 #' 
+#' @importFrom rmzqc getCVTemplate filenameToCV toAnalysisSoftware toQCMetric
+#' @importFrom rmzqc getCVInfo MzQCrunQuality MzQCmetadata MzQCinputFile 
+#' @importFrom rmzqc MzQCmzQC MzQCDateTime
+#' @importFrom utils packageDescription
+#' 
 #' @examples 
 #' library(msdata)
 #' library(Spectra)
@@ -318,10 +324,6 @@ calculateMetricsFromSpectra <- function(spectra, metrics,
 #' ## transform into mzQC objects
 #' MsQuality:::transformIntoMzQC(spectra_metrics)
 #' 
-#' @importFrom rmzqc getCVTemplate filenameToCV toAnalysisSoftware toQCMetric
-#' @importFrom rmzqc getCVInfo MzQCrunQuality MzQCmetadata MzQCinputFile 
-#' @importFrom rmzqc MzQCmzQC MzQCDateTime
-#' @importFrom utils packageDescription
 transformIntoMzQC <- function(spectra_metrics) {
     
     ## create mzQC objects per sample and return as a list
@@ -362,19 +364,19 @@ transformIntoMzQC <- function(spectra_metrics) {
         qc_metric_i <- qc_metric_i[qc_metric_keep]
         
         ## create a MzQCrunQuality object
-        run_qc <- MzQCrunQuality(
-            metadata = MzQCmetadata(
+        run_qc <- MzQCrunQuality$new(
+            metadata = rmzqc::MzQCmetadata$new(
                 label = raw_file,
-                inputFiles = list(MzQCinputFile(
+                inputFiles = list(rmzqc::MzQCinputFile$new(
                     basename(raw_file), raw_file, file_format)),
                 analysisSoftware = list(software)),
             qualityMetrics = qc_metric_i
         )
         
         ## create the final object and return
-        MzQCmzQC(
+        rmzqc::MzQCmzQC$new(
             version = packageDescription("rmzqc")$Version,
-            creationDate = MzQCDateTime(), 
+            creationDate = MzQCDateTime$new(), 
             contactName = Sys.info()[["user"]], 
             #contactAddress = "test@user.info", 
             description = paste("A mzQC document on the sample", basename(raw_file)),
@@ -467,6 +469,7 @@ transformIntoMzQC <- function(spectra_metrics) {
 #' 
 #' calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
 #'     msLevel = 1, change = "fall", relativeTo = "previous")
+#'
 calculateMetricsFromMsExperiment <- function(msexp, 
     metrics = qualityMetrics(msexp), filterEmptySpectra = FALSE,
     ..., BPPARAM = bpparam()) {

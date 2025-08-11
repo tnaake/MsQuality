@@ -68,126 +68,6 @@ chromatographyDuration <- function(spectra, ...) {
     res
 }
 
-#' @name ticQuantileRtFraction
-#' 
-#' @title TIC quantile RT fraction (MS:4000183)
-#' 
-#' @description
-#' MS:4000183
-#' "The interval when the respective quantile of the TIC accumulates divided by 
-#' retention time duration. The number of values in the tuple implies the 
-#' quantile mode." [PSI:MS] \cr
-#' 
-#' The metric informs about the dynamic range of the acquisition along the 
-#' chromatographic separation. The metric provides information on the sample 
-#' (compound) flow along the chromatographic run, potentially revealing poor 
-#' chromatographic performance, such as the absence of a signal for a 
-#' significant portion of the run.
-#' 
-#' The metric is calculated as follows: \cr
-#' (1) the \code{Spectra} object is ordered according to the retention time, \cr 
-#' (2) the cumulative sum of the ion count is calculated (TIC), \cr 
-#' (3) the quantiles are calculated according to the \code{probs} argument, e.g.
-#' when \code{probs} is set to \code{c(0, 0.25, 0.5, 0.75, 1)} the 0\%, 25\%, 
-#' 50\%, 75\%, and 100\% quantile is calculated, \cr 
-#' (4) the retention time/relative retention time (retention time divided by 
-#' the total run time taking into account the minimum retention time) is 
-#' calculated, \cr 
-#' (5) the (relative) duration of the LC run after which the cumulative
-#' TIC exceeds (for the first time) the respective quantile of the
-#' cumulative TIC is calculated and returned. \cr
-#' 
-#' @details
-#' MS:4000183
-#' synonym: "RT-TIC-Q1" RELATED [PMID:24494671] \cr
-#' synonym: "RT-TIC-Q2" RELATED [PMID:24494671] \cr
-#' synonym: "RT-TIC-Q3" RELATED [PMID:24494671] \cr
-#' synonym: "RT-TIC-Q4" RELATED [PMID:24494671] \cr
-#' is_a: MS:4000004 ! n-tuple \cr
-#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
-#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
-#' relationship: has_metric_category MS:4000016 ! retention time metric \cr
-#' relationship: has_metric_category MS:4000017 ! chromatogram metric \cr
-#' relationship: has_units UO:0000191 ! fraction \cr
-#' relationship: has_value_concept STATO:0000291 \cr
-#' relationship: has_value_type xsd:float \cr#' 
-#' 
-#' @param spectra \code{Spectra} object
-#' @param probs \code{numeric} defining the quantiles. See \code{probs = seq(0, 1, 0.25)}.
-#' @param msLevel \code{integer}
-#' @param relative \code{logical}, if set to \code{TRUE} the relative retention time 
-#' will be returned instead of the abolute retention time
-#' @param ... not used here
-#' 
-#' @return \code{numeric} of length equal to length \code{probs} with the relative
-#'    duration (duration divided by the total run time) after which the TIC
-#'    exceeds the respective quantile of the TIC.
-#' 
-#' @author Thomas Naake, Johannes Rainer
-#' 
-#' @export 
-#' 
-#' @importMethodsFrom Spectra ionCount filterMsLevel
-#'
-#' @importFrom stats quantile
-#' 
-#' @examples
-#' library(S4Vectors)
-#' library(Spectra)
-#' 
-#' spd <- DataFrame(
-#'     msLevel = c(2L, 2L, 2L),
-#'     polarity = c(1L, 1L, 1L),
-#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
-#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
-#' ## Assign m/z and intensity values
-#' spd$mz <- list(
-#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
-#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
-#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
-#'         111.0551, 123.0429, 138.0662, 195.0876))
-#' spd$intensity <- list(
-#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
-#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
-#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
-#' spd$rtime <- c(9.44, 9.44, 15.84)
-#' sps <- Spectra(spd)
-#' ticQuantileRtFraction(spectra = sps, msLevel = 2L)
-ticQuantileRtFraction <- function(spectra, probs = seq(0, 1, 0.25),
-    msLevel = 1L, relative = TRUE, ...) {
-    
-    ## truncate spectra based on the MS level
-    spectra <- filterMsLevel(object = spectra, msLevel)
-    
-    ## order spectra according to increasing retention time
-    spectra <- .rtOrderSpectra(spectra)
-    RT <- rtime(spectra)
-
-    ## what is the (relative) duration of the LC run after which the cumulative
-    ## TIC exceeds (for the first time) the respective quantile of the
-    ## cumulative TIC? The "accumulates" is interpreted as the 
-    ## "sum of the TICs of all previous spectra".
-    ## probs * max(TIC) calculates the portion of the total TIC at the probs,
-    ## e.g. if sum of TIC is 10000 and probs = seq(0, 1, 0.25), ids will be 
-    ## the indices where the TIC is first higher than 0, 2500, 5000, 7500, 
-    ## and 10000
-    TIC <- cumsum(ionCount(spectra))
-    idxs <- lapply(probs * max(TIC), function(z) which(TIC >= z)[1]) |>
-        unlist()
-    
-    if (relative) {
-        rtMin <- min(RT)
-        duration <- chromatographyDuration(spectra)
-        res <- (RT[idxs] - rtMin) / duration  
-    } else {
-        res <- RT[idxs]
-    }
-    
-    ## add attributes and return
-    attributes(res) <- list(names = paste0(probs * 100, "%"), 
-        ticQuantileRtFraction = "MS:4000183")
-    res
-}
 
 #' @title Order Spectra according to increasing retention time
 #' 
@@ -1793,8 +1673,8 @@ rtIqrRate <- function(spectra, msLevel = 1L,
 #' @details
 #' MS:4000155 \cr
 #' is_a: MS:4000003 ! single value \cr
-#' is_a: MS:4000009 ! ID free \cr
-#' is_a: MS:4000017 ! chromatogram metric \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000017 ! chromatogram metric \cr
 #' 
 #' The sum of the TIC is returned as an equivalent to the area. \cr
 #' 
@@ -3021,4 +2901,124 @@ medianCharge <- function(spectra, msLevel = 1L,
     res
 }
 
+#' @name ticQuantileRtFraction
+#' 
+#' @title TIC quantile RT fraction (MS:4000183)
+#' 
+#' @description
+#' MS:4000183
+#' "The interval when the respective quantile of the TIC accumulates divided by 
+#' retention time duration. The number of values in the tuple implies the 
+#' quantile mode." [PSI:MS] \cr
+#' 
+#' The metric informs about the dynamic range of the acquisition along the 
+#' chromatographic separation. The metric provides information on the sample 
+#' (compound) flow along the chromatographic run, potentially revealing poor 
+#' chromatographic performance, such as the absence of a signal for a 
+#' significant portion of the run.
+#' 
+#' The metric is calculated as follows: \cr
+#' (1) the \code{Spectra} object is ordered according to the retention time, \cr 
+#' (2) the cumulative sum of the ion count is calculated (TIC), \cr 
+#' (3) the quantiles are calculated according to the \code{probs} argument, e.g.
+#' when \code{probs} is set to \code{c(0, 0.25, 0.5, 0.75, 1)} the 0\%, 25\%, 
+#' 50\%, 75\%, and 100\% quantile is calculated, \cr 
+#' (4) the retention time/relative retention time (retention time divided by 
+#' the total run time taking into account the minimum retention time) is 
+#' calculated, \cr 
+#' (5) the (relative) duration of the LC run after which the cumulative
+#' TIC exceeds (for the first time) the respective quantile of the
+#' cumulative TIC is calculated and returned. \cr
+#' 
+#' @details
+#' MS:4000183
+#' synonym: "RT-TIC-Q1" RELATED [PMID:24494671] \cr
+#' synonym: "RT-TIC-Q2" RELATED [PMID:24494671] \cr
+#' synonym: "RT-TIC-Q3" RELATED [PMID:24494671] \cr
+#' synonym: "RT-TIC-Q4" RELATED [PMID:24494671] \cr
+#' is_a: MS:4000004 ! n-tuple \cr
+#' relationship: has_metric_category MS:4000009 ! ID free metric \cr
+#' relationship: has_metric_category MS:4000012 ! single run based metric \cr
+#' relationship: has_metric_category MS:4000016 ! retention time metric \cr
+#' relationship: has_metric_category MS:4000017 ! chromatogram metric \cr
+#' relationship: has_units UO:0000191 ! fraction \cr
+#' relationship: has_value_concept STATO:0000291 \cr
+#' relationship: has_value_type xsd:float \cr#' 
+#' 
+#' @param spectra \code{Spectra} object
+#' @param probs \code{numeric} defining the quantiles. See \code{probs = seq(0, 1, 0.25)}.
+#' @param msLevel \code{integer}
+#' @param relative \code{logical}, if set to \code{TRUE} the relative retention time 
+#' will be returned instead of the abolute retention time
+#' @param ... not used here
+#' 
+#' @return \code{numeric} of length equal to length \code{probs} with the relative
+#'    duration (duration divided by the total run time) after which the TIC
+#'    exceeds the respective quantile of the TIC.
+#' 
+#' @author Thomas Naake, Johannes Rainer
+#' 
+#' @export 
+#' 
+#' @importMethodsFrom Spectra ionCount filterMsLevel
+#'
+#' @importFrom stats quantile
+#' 
+#' @examples
+#' library(S4Vectors)
+#' library(Spectra)
+#' 
+#' spd <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     polarity = c(1L, 1L, 1L),
+#'     id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+#'     name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+#' ## Assign m/z and intensity values
+#' spd$mz <- list(
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52),
+#'     c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+#'     c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+#'         111.0551, 123.0429, 138.0662, 195.0876))
+#' spd$intensity <- list(
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240),
+#'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+#'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+#' spd$rtime <- c(9.44, 9.44, 15.84)
+#' sps <- Spectra(spd)
+#' ticQuantileRtFraction(spectra = sps, msLevel = 2L)
+ticQuantileRtFraction <- function(spectra, probs = seq(0, 1, 0.25),
+    msLevel = 1L, relative = TRUE, ...) {
+    
+    ## truncate spectra based on the MS level
+    spectra <- filterMsLevel(object = spectra, msLevel)
+    
+    ## order spectra according to increasing retention time
+    spectra <- .rtOrderSpectra(spectra)
+    RT <- rtime(spectra)
+    
+    ## what is the (relative) duration of the LC run after which the cumulative
+    ## TIC exceeds (for the first time) the respective quantile of the
+    ## cumulative TIC? The "accumulates" is interpreted as the 
+    ## "sum of the TICs of all previous spectra".
+    ## probs * max(TIC) calculates the portion of the total TIC at the probs,
+    ## e.g. if sum of TIC is 10000 and probs = seq(0, 1, 0.25), ids will be 
+    ## the indices where the TIC is first higher than 0, 2500, 5000, 7500, 
+    ## and 10000
+    TIC <- cumsum(ionCount(spectra))
+    idxs <- lapply(probs * max(TIC), function(z) which(TIC >= z)[1]) |>
+        unlist()
+    
+    if (relative) {
+        rtMin <- min(RT)
+        duration <- chromatographyDuration(spectra)
+        res <- (RT[idxs] - rtMin) / duration  
+    } else {
+        res <- RT[idxs]
+    }
+    
+    ## add attributes and return
+    attributes(res) <- list(names = paste0(probs * 100, "%"), 
+        ticQuantileRtFraction = "MS:4000183")
+    res
+}
 
