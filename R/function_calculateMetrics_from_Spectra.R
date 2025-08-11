@@ -49,7 +49,7 @@
 #' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 #'
 #' ## calculate the metrics
-#' ## additional parameters B to the quality metrics functions
+#' ## additional parameters passed to the quality metrics functions
 #' ## (MsLevel is an argument of areaUnderTic and msSignal10xChange,
 #' ## relativeTo is an argument of msSignal10xChange) passed to ...
 #' MsQuality:::calculateMetricsFromOneSampleSpectra(spectra = spectra, 
