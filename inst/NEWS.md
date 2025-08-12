@@ -2,11 +2,14 @@
 
 ## Changes in version 1.8.3
 
-- trigger version bump
+- trigger version bump (changes of 1.8.1 were not propagated to BioC)
 
 ## Changes in version 1.8.2
 
-- fix NAMESPACE issue
+- trigger build in RELASE_3_21 (changes of 1.8.1 were not propagated to BioC)
+
+## Changes in version 1.8.2
+- fix bug due to updates in rmzqc, use $new for constructing R6 objects 
 
 ## Changes in version 1.8.1
 - fix bug due to update in rmzqc package, use $new for constructing 
