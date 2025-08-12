@@ -1,5 +1,9 @@
 # MsQuality 1.8
 
+## Changes in version 1.8.3
+
+- trigger build in RELASE_3_21 (changes of 1.8.1 were not propagated to BioC)
+
 ## Changes in version 1.8.2
 - fix bug due to updates in rmzqc, use $new for constructing R6 objects 
 

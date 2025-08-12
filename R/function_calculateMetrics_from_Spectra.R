@@ -364,19 +364,19 @@ transformIntoMzQC <- function(spectra_metrics) {
         qc_metric_i <- qc_metric_i[qc_metric_keep]
         
         ## create a MzQCrunQuality object
-        run_qc <- MzQCrunQuality$new(
-            metadata = rmzqc::MzQCmetadata$new(
+        run_qc <- MzQCrunQuality$new( 
+            metadata = rmzqc::MzQCmetadata$new( 
                 label = raw_file,
-                inputFiles = list(rmzqc::MzQCinputFile$new(
+                inputFiles = list(rmzqc::MzQCinputFile$new( 
                     basename(raw_file), raw_file, file_format)),
                 analysisSoftware = list(software)),
             qualityMetrics = qc_metric_i
         )
         
         ## create the final object and return
-        rmzqc::MzQCmzQC$new(
+        rmzqc::MzQCmzQC$new( 
             version = packageDescription("rmzqc")$Version,
-            creationDate = MzQCDateTime$new(), 
+            creationDate = MzQCDateTime$new(),
             contactName = Sys.info()[["user"]], 
             #contactAddress = "test@user.info", 
             description = paste("A mzQC document on the sample", basename(raw_file)),
@@ -394,12 +394,12 @@ transformIntoMzQC <- function(spectra_metrics) {
 #' @title Calculate QC metrics from a MsExperiment object
 #' 
 #' @description
-#' The function \code{calculateMetricsFromMsExperiment} calculates quality 
+#' The function \code{calculateMetricsFromMsExperiment} calculates quality
 #' metrics from a \code{MsExperiment} object. Each spectra in the 
 #' \code{msexp} object should refer to one mzML file/to one sample.
 #' 
 #' @details
-#' The metrics are defined by the argument \code{metrics}. Further arguments 
+#' The metrics are defined by the argument \code{metrics}. Further arguments
 #' passed to the quality metric functions can be specified by the \code{params}
 #' argument. \code{params} can contain named entries which are matched against
 #' the formal arguments of the quality metric functions.
