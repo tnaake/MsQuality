@@ -1,6 +1,14 @@
-# MsQuality 1.9
+# MsQuality 1.8
 
-## Changes in version 1.7.1
+## Changes in version 1.8.3
+
+- trigger version bump
+
+## Changes in version 1.8.2
+
+- fix NAMESPACE issue
+
+## Changes in version 1.8.1
 - fix bug due to update in rmzqc package, use $new for constructing 
   R6 objects
 
