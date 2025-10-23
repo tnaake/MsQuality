@@ -1,5 +1,8 @@
 # MsQuality 1.9
 
+## Changes in version 1.9.3
+
+- change unit tests for filterEmptySpectra after update
 ## Changes in version 1.9.2
 
 - resolve NAMESPACE issue of unexported objects
