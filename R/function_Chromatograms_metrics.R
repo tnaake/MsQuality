@@ -6,7 +6,7 @@
 #'
 #' @rdname chromatographyDuration
 #'
-#' @aliases chromatographyDuration,Chromatograms-method chromatographyDuration, Spectra-method
+#' @aliases chromatographyDuration,Chromatograms-method chromatographyDuration,Spectra-method
 #'
 #' @examples
 #' library(Chromatograms)
@@ -24,7 +24,7 @@
 #' )
 #'
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-#' chromatographyDuration(OBJECT = chr)
+#' chromatographyDuration(object = chr)
 NULL
 
 #' @noRd
@@ -1251,7 +1251,7 @@ xicHeightQuantileRatios <- function(
 #'
 #' @importFrom stats setNames
 #'
-#' @aliases ticQuantileRtFraction, Spectra-method
+#' @aliases ticQuantileRtFraction,Chromatograms-method ticQuantileRtFraction,Spectra-method
 #'
 #' @export
 #'

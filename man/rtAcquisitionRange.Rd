@@ -14,11 +14,11 @@ rtAcquisitionRange(object, ...)
 \S4method{rtAcquisitionRange}{Spectra}(object, msLevel = 1L, ...)
 }
 \arguments{
+\item{object}{\code{Spectra} or \code{Chromatograms} object}
+
 \item{...}{not used here}
 
 \item{msLevel}{\code{integer}}
-
-\item{spectra}{\code{Spectra} object}
 }
 \value{
 \code{numeric(2)}

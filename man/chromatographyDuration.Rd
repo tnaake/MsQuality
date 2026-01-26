@@ -4,8 +4,6 @@
 \name{chromatographyDuration}
 \alias{chromatographyDuration}
 \alias{chromatographyDuration,Chromatograms-method}
-\alias{chromatographyDuration,}
-\alias{Spectra-method}
 \alias{chromatographyDuration,Spectra-method}
 \title{chromatography duration (MS:4000053)}
 \usage{
@@ -62,7 +60,7 @@ pdata <- list(
 )
 
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-chromatographyDuration(OBJECT = chr)
+chromatographyDuration(object = chr)
 library(S4Vectors)
 library(Spectra)
 

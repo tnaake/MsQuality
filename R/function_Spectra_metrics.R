@@ -644,7 +644,7 @@ mzAcquisitionRange <- function(spectra, msLevel = 2L, ...) {
 #' relationship: has_units UO:0000010 ! second \cr
 #' relationship: has_value_concept STATO:0000035 ! range \cr
 #'
-#' @param spectra \code{Spectra} object
+#' @param object \code{Spectra} or \code{Chromatograms} object
 #' @param msLevel \code{integer}
 #' @param ... not used here
 #'
@@ -701,7 +701,7 @@ NULL
 
 #' @rdname rtAcquisitionRange
 setMethod("rtAcquisitionRange", "Spectra", function(object, msLevel = 1L, ...) {
-    .rtAcquisitionRange_spectra(object, msLevel = msLevel, ...)
+    .rtAcquisitionRange_spectra(spectra = object, msLevel = msLevel, ...)
 })
 
 #' @name msSignal10xChange

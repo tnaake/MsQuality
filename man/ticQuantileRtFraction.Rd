@@ -4,8 +4,6 @@
 \name{ticQuantileRtFraction}
 \alias{ticQuantileRtFraction}
 \alias{ticQuantileRtFraction,Chromatograms-method}
-\alias{ticQuantileRtFraction,}
-\alias{Spectra-method}
 \alias{ticQuantileRtFraction,Spectra-method}
 \title{TIC quantile RT fraction}
 \usage{
