@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{numberSpectra}
 \alias{numberSpectra}
-\title{number of MS1 spectra (MS:4000059) or number of MS2 spectra 
+\title{number of MS1 spectra (MS:4000059) or number of MS2 spectra
 (MS:4000060)}
 \usage{
 numberSpectra(spectra, msLevel = 1L, ...)
@@ -24,7 +24,7 @@ MS:4000059 \cr
 MS:4000060 \cr
 "The number of MS2 events in the run." [PSI:MS] \cr
 
-For *MS:4000059*, \code{msLevel} is set to 1. For *MS:4000060*, 
+For *MS:4000059*, \code{msLevel} is set to 1. For *MS:4000060*,
 \code{msLevel} is set to 2.
 
 The metric is calculated as follows: \cr
@@ -51,7 +51,7 @@ relationship: has_metric_category MS:4000022 ! MS2 metric \cr
 relationship: has_value_type xsd:int ! The allowed value-type for this CV term \cr
 relationship: has_units UO:0000189 ! count unit \cr
 
-An attribute containing the PSI:MS term will only be returned if 
+An attribute containing the PSI:MS term will only be returned if
 \code{msLevel} is either 1 or 2.
 }
 \examples{

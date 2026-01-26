@@ -17,19 +17,19 @@ plotMetric(qc, metric = "areaUnderTic", plotly = TRUE)
 \code{gg} \code{plotly}
 }
 \description{
-The function \code{plotMetric} visualizes the metric values per sample. The 
+The function \code{plotMetric} visualizes the metric values per sample. The
 function accepts the output of \code{calculateMetrics} or,
-\code{calculateMetricsFromSpectra}, or 
-\code{calculateMetricsFromMsExperiment} and a vector specifying the metric 
+\code{calculateMetricsFromSpectra}, or
+\code{calculateMetricsFromMsExperiment} and a vector specifying the metric
 to display.
 }
 \details{
 \code{plotMetric} will select all columns that start with
-\code{metric}. The different levels in the \code{name} column in the 
-returned tibble correspond to the columns that were selected and do not 
-contain the \code{metric} prefix. In case there is no additional specification 
-(e.g. for the metric \code{chromatographyDuration} only the column \code{chromatographyDuration} will 
-be selected), the \code{name} column will include the \code{metric} 
+\code{metric}. The different levels in the \code{name} column in the
+returned tibble correspond to the columns that were selected and do not
+contain the \code{metric} prefix. In case there is no additional specification
+(e.g. for the metric \code{chromatographyDuration} only the column \code{chromatographyDuration} will
+be selected), the \code{name} column will include the \code{metric}
 (\code{chromatographyDuration}).
 }
 \examples{
@@ -51,12 +51,12 @@ spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 
 ## define the quality metrics to be calculated
 metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
-    
+
 ## calculate the metrics
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 ## relativeTo is an argument of msSignal10xChange)
-qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
+qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
     msLevel = 1, relativeTo = "Q1", change = "jump")
 rownames(qc) <- c("Sample 1", "Sample 2")
 

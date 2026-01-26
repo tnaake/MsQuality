@@ -18,16 +18,16 @@ areaUnderTicRtQuantiles(spectra, msLevel = 1L, ...)
 }
 \description{
 MS:4000156 \cr
-"The area under the total ion chromatogram of the retention time quantiles. 
+"The area under the total ion chromatogram of the retention time quantiles.
 Number of quantiles are given by the n-tuple." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the \code{Spectra} object is ordered according to the retention time, \cr 
-(3) the 0\%, 25\%, 50\%, 75\%, and 100\% quantiles of the retention time 
-values are obtained, \cr 
-(4) the ion count of the intervals between the 0\%/25\%, 25\%/50\%, 
-50\%/75\%, and 75\%/100\% are obtained, \cr 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the \code{Spectra} object is ordered according to the retention time, \cr
+(3) the 0\%, 25\%, 50\%, 75\%, and 100\% quantiles of the retention time
+values are obtained, \cr
+(4) the ion count of the intervals between the 0\%/25\%, 25\%/50\%,
+50\%/75\%, and 75\%/100\% are obtained, \cr
 (5) the ion counts of the intervals are summed (TIC) and the values returned.
 }
 \details{

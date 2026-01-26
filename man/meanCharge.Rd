@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{meanCharge}
 \alias{meanCharge}
-\title{mean MS2 precursor charge in all spectra (MS:4000173) or mean MS2 
+\title{mean MS2 precursor charge in all spectra (MS:4000173) or mean MS2
 precursor charge in identified spectra (MS:4000174)}
 \usage{
 meanCharge(
@@ -17,7 +17,7 @@ meanCharge(
 
 \item{msLevel}{\code{integer}}
 
-\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"},
 \code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
@@ -30,10 +30,10 @@ MS:4000173 \cr
 "Mean MS2 precursor charge in all spectra" [PSI:MS] \cr
 
 MS:4000174 \cr
-"Mean MS2 precursor charge in identified spectra. The used type of 
-identification should be noted in the metadata or analysis methods section 
-of the recording file for the respective run. In case of multiple acceptance 
-criteria (FDR) available in proteomics, PSM-level FDR should be used for 
+"Mean MS2 precursor charge in identified spectra. The used type of
+identification should be noted in the metadata or analysis methods section
+of the recording file for the respective run. In case of multiple acceptance
+criteria (FDR) available in proteomics, PSM-level FDR should be used for
 better comparability." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
@@ -72,12 +72,12 @@ synonym: "MS2-PrecZ-4" RELATED [PMID:24494671] \cr
 synonym: "MS2-PrecZ-5" RELATED [PMID:24494671] \cr
 synonym: "MS2-PrecZ-more" RELATED [PMID:24494671] \cr
 
-An attribute containing the PSI:MS term will only be returned if 
+An attribute containing the PSI:MS term will only be returned if
 \code{identificationLevel} is either \code{"all"} or \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If
-the calculation needs to be done according to *MS:4000174*, the 
+the calculation needs to be done according to *MS:4000174*, the
 \code{Spectra} object should be prepared accordingly.
 }
 \examples{

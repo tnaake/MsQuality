@@ -1,5 +1,35 @@
 # MsQuality 1.9
 
+## Changes in version 1.9.4
+
+- Implementation of metrics for Chromatograms objects
+- Created S4 generic functions and methods for shared metrics:
+  - `areaUnderTic`: Generic function with methods for Spectra and Chromatograms
+  classes
+  - `ticQuantileRtFraction`: Generic function with methods for Spectra and
+  Chromatograms classes
+  - `calculateMetrics`: Generic function dispatching to appropriate methods
+  based on input object class
+- renaming of argument filterEmptySpectra to filterEmptyObject
+  in calculateMetricsFromSpectra and calculateMetricsFromMsExperiment.
+- Refactored `areaUnderTic` and `ticQuantileRtFraction` to support both
+  Spectra and Chromatograms objects:
+  - `areaUnderTic`: Returns MS:4000155 for both Spectra (MS level filtered)
+  and Chromatograms (all intensities summed)
+  - `ticQuantileRtFraction`: Unified to use `probs = seq(0, 1, 0.25)` by default
+    for both Spectra and Chromatograms, returns 5 values with percentage names
+    ("0%", "25%", "50%", "75%", "100%") using dynamic name generation
+- Changed `calculateMetrics` function argument from `spectra` to `object` to
+  reflect its generic nature and support for multiple object types
+  (Spectra, MsExperiment, and Chromatograms)
+- Consolidated and refactored test suite:
+  - Added comprehensive unit tests validating exact metric calculations
+  - Added integration tests ensuring calculateMetrics* wrappers work correctly
+- Fixed output of calculateMetrics() if format = "data.frame", to actually
+  return a "data.frame"
+- Fixed `shinyMsQuality()` documentation example to convert data.frame to matrix
+  before passing to `shinyMsQuality()` function.
+
 ## Changes in version 1.9.3
 
 - change unit tests for filterEmptySpectra after update
@@ -8,7 +38,7 @@
 - resolve NAMESPACE issue of unexported objects
 
 ## Changes in version 1.9.1
-- fix bug due to update in rmzqc package, use $new for constructing 
+- fix bug due to update in rmzqc package, use $new for constructing
   R6 objects
 
 # MsQuality 1.7
@@ -33,10 +63,10 @@
 - rename function rtDuration to chromatographyDuration
 - rename function rtOverTicQuantiles to ticQuartersRtFraction
 - create function numberEmptyScans
-- add attributes (MS QC terms) to the output of the Spectra metrics functions 
+- add attributes (MS QC terms) to the output of the Spectra metrics functions
   if the output matches the described term
 - add rmzqc to IMPORTS
-- add functionality to export quality metrics as in rmzqc format 
+- add functionality to export quality metrics as in rmzqc format
 - adjust documentation to newest version of PSI MS CV obo file
 - add to the vignette information on how the metrics are calculated
 - add argument filterEmptySpectra to remove entries of length 0 or that
@@ -54,7 +84,7 @@
 - add mzR to Suggests in DESCRIPTION
 
 ## Changes in version 0.99.8 (2023-09-02)
-- adjust behaviour of metrics function when Spectra object of 
+- adjust behaviour of metrics function when Spectra object of
   length 0 is presented, return NA values instead of raising an
   error
 
@@ -66,14 +96,14 @@
 - extend section Description in `DESCRIPTION`
 - add sections BugReports and URL in `DESCRIPTION`
 - update dependency to `R` version 4.2.0
-- transfer source code in R/Lee2019-data.R to 
+- transfer source code in R/Lee2019-data.R to
   inst/sources/Lee2019-data-source.R
 - use partial_bundle to reduce the file size of plotly graphics
 
 ## Changes in version 0.99.5 (2022-10-12):
 - add section on alternative software in vignette
 - simplify the vignette with regard to dealing with the RPLC and HILIC
-  example data set and adjust the Lee2019-data.R accordingly to keep 
+  example data set and adjust the Lee2019-data.R accordingly to keep
   the RPLC/HILIC information in the dataOrigin slot of the Spectra object
 
 ## Changes in version 0.99.4 (2022-10-11):
@@ -89,17 +119,17 @@
   `MsExperiment` objects
 - remove `MsExperiment` objects since this is still in BioC review and solely
   rely on `Spectra` objects
-- adjust documentation for the implemented changes (removal of `MsExperiment`)  
-  
+- adjust documentation for the implemented changes (removal of `MsExperiment`)
+
 ## Changes in version 0.99.1 (2021-11-23)
 - simplify `calculateMetricsFromSpectra`:
-  - the function does not any longer match the arguments by the formal 
+  - the function does not any longer match the arguments by the formal
     arguments of the metric functions
   - the function does not any longer combine the parameters
-  - the additional arguments do not take longer the parameter list of 
+  - the additional arguments do not take longer the parameter list of
     arguments but comma-separated arguments given to `...`
   - for all metric functions the `...` parameter is added
-  - adjust the vignette and help pages  
+  - adjust the vignette and help pages
 - rename functions to camel case
 
 ## Changes in version 0.99.0 (2021-09-10)
@@ -130,8 +160,8 @@
   - `meanCharge` (QC:4000177, QC:4000182),
   - `medianCharge` (QC:4000178, QC:4000183)
   - `.rt_order_spectra` (helper function)
-- add the functions `calculateMetricsFromSpectra`, 
-  `calculateMetricsFromMsExperiment` to calculate the metrics based on 
+- add the functions `calculateMetricsFromSpectra`,
+  `calculateMetricsFromMsExperiment` to calculate the metrics based on
   `Spectra` and `MsExperiment` objects
 - add functions `plotMetric`, `plotMetric_tibble` to visualize the metrics
 - add shiny application `shinyMsQuality` to interactively visualize the metrics

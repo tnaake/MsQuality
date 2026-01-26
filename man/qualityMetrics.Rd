@@ -7,7 +7,8 @@
 qualityMetrics(object)
 }
 \arguments{
-\item{object}{object of type \code{Spectra} or \code{MsExperiment}}
+\item{object}{object of type \code{Spectra}, \code{MsExperiment}, or
+\code{Chromatograms}}
 }
 \value{
 \code{character}
@@ -17,7 +18,7 @@ The function \code{qualityMetrics} returns a character vector with available
 quality metrics depending on \code{object}.
 }
 \details{
-\code{object} is a \code{Spectra} or \code{MsExperiment}.
+\code{object} is a \code{Spectra}, \code{MsExperiment}, or \code{Chromatograms}.
 }
 \examples{
 library(Spectra)
@@ -42,5 +43,5 @@ sps <- Spectra(spd)
 qualityMetrics(object = sps)
 }
 \author{
-Thomas Naake
+Thomas Naake, Philippine Louail
 }

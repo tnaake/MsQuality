@@ -3,7 +3,7 @@
 \name{precursorIntensitySd}
 \alias{precursorIntensitySd}
 \title{MS2 precursor intensity distribution sigma (MS:4000118),
-identified MS2 precursor intensity distribution sigma (MS:4000165), or 
+identified MS2 precursor intensity distribution sigma (MS:4000165), or
 unidentified MS2 precursor intensity distribution sigma (MS:4000166)}
 \usage{
 precursorIntensitySd(
@@ -18,7 +18,7 @@ precursorIntensitySd(
 
 \item{msLevel}{\code{integer}}
 
-\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"},
 \code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
@@ -28,65 +28,65 @@ precursorIntensitySd(
 }
 \description{
 MS:4000118 \cr
-"From the distribution of MS2 precursor intensities, the sigma value. The 
-intensity distribution of the precursors informs about the dynamic range 
+"From the distribution of MS2 precursor intensities, the sigma value. The
+intensity distribution of the precursors informs about the dynamic range
 of the acquisition." [PSI:MS] \cr
 
 MS:4000165 \cr
-"From the distribution of identified MS2 precursor intensities, the sigma value. 
-The intensity distribution of the precursors informs about the dynamic 
-range of the acquisition in relation to identifiability. The used type of 
-identification should be noted in the metadata or analysis methods section 
-of the recording file for the respective run. In case of multiple acceptance 
-criteria (FDR) available in proteomics, PSM-level FDR should be used for 
+"From the distribution of identified MS2 precursor intensities, the sigma value.
+The intensity distribution of the precursors informs about the dynamic
+range of the acquisition in relation to identifiability. The used type of
+identification should be noted in the metadata or analysis methods section
+of the recording file for the respective run. In case of multiple acceptance
+criteria (FDR) available in proteomics, PSM-level FDR should be used for
 better comparability." [PSI:MS] \cr
 
 MS:4000166 \cr
-"From the distribution of unidentified MS2 precursor intensities, the sigma 
-value. The intensity distribution of the precursors informs about the 
-dynamic range of the acquisition in relation to identifiability. The used 
-type of identification should be noted in the metadata or analysis methods 
-section of the recording file for the respective run. In case of multiple 
-acceptance criteria (FDR) available in proteomics, PSM-level FDR should be 
+"From the distribution of unidentified MS2 precursor intensities, the sigma
+value. The intensity distribution of the precursors informs about the
+dynamic range of the acquisition in relation to identifiability. The used
+type of identification should be noted in the metadata or analysis methods
+section of the recording file for the respective run. In case of multiple
+acceptance criteria (FDR) available in proteomics, PSM-level FDR should be
 used for better comparability." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the intensity of the precursor ions within the \code{Spectra} object are obtained, \cr 
-(3) the standard deviation of precursor intensity values is obtained 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the intensity of the precursor ions within the \code{Spectra} object are obtained, \cr
+(3) the standard deviation of precursor intensity values is obtained
 (\code{NA} values are removed) and returned.
 }
 \details{
-MS:4000118 \cr 
-is_a: MS:4000003 ! single value \cr 
-relationship: has_metric_category MS:4000009 ! ID free metric \cr 
+MS:4000118 \cr
+is_a: MS:4000003 ! single value \cr
+relationship: has_metric_category MS:4000009 ! ID free metric \cr
 relationship: has_metric_category MS:4000022 ! MS2 metric \cr
-relationship: has_value_concept STATO:0000237 ! standard deviation \cr 
-relationship: has_value_type xsd:float ! The allowed value-type for this CV 
-term \cr 
-relationship: has_units MS:1000043 ! intensity unit \cr 
+relationship: has_value_concept STATO:0000237 ! standard deviation \cr
+relationship: has_value_type xsd:float ! The allowed value-type for this CV
+term \cr
+relationship: has_units MS:1000043 ! intensity unit \cr
 
-MS:4000165 \cr 
-is_a: MS:4000003 ! single value \cr 
-relationship: has_metric_category MS:4000008 ! ID based \cr 
+MS:4000165 \cr
+is_a: MS:4000003 ! single value \cr
+relationship: has_metric_category MS:4000008 ! ID based \cr
 relationship: has_metric_category MS:4000022 ! MS2 metric \cr
-relationship: has_value_concept STATO:0000237 ! standard deviation \cr 
-relationship: has_value_type xsd:float ! The allowed value-type for this CV 
-term \cr 
-relationship: has_units MS:1000043 ! intensity unit \cr 
+relationship: has_value_concept STATO:0000237 ! standard deviation \cr
+relationship: has_value_type xsd:float ! The allowed value-type for this CV
+term \cr
+relationship: has_units MS:1000043 ! intensity unit \cr
 
-MS:4000166 \cr 
-is_a: MS:4000003 ! single value \cr 
-relationship: has_metric_category MS:4000008 ! ID based \cr 
+MS:4000166 \cr
+is_a: MS:4000003 ! single value \cr
+relationship: has_metric_category MS:4000008 ! ID based \cr
 relationship: has_metric_category MS:4000022 ! MS2 metric \cr
-relationship: has_value_concept STATO:0000237 ! standard deviation \cr 
-relationship: has_value_type xsd:float ! The allowed value-type for this CV 
-term \cr 
+relationship: has_value_concept STATO:0000237 ! standard deviation \cr
+relationship: has_value_type xsd:float ! The allowed value-type for this CV
+term \cr
 relationship: has_units MS:1000043 ! intensity unit \cr
 }
 \note{
 The \code{Spectra} object might contain features that were (not) identified. If
-the calculation needs to be done according to *MS:4000165*/*MS:4000166*, the 
+the calculation needs to be done according to *MS:4000165*/*MS:4000166*, the
 \code{Spectra} object should be prepared accordingly.
 }
 \examples{

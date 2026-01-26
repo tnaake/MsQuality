@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{msSignal10xChange}
 \alias{msSignal10xChange}
-\title{MS1 signal jump (10x) count (MS:4000097) or MS1 signal fall (10x) 
+\title{MS1 signal jump (10x) count (MS:4000097) or MS1 signal fall (10x)
 count (MS:4000098)}
 \usage{
 msSignal10xChange(spectra, change = "jump", msLevel = 1L, ...)
@@ -21,22 +21,22 @@ msSignal10xChange(spectra, change = "jump", msLevel = 1L, ...)
 }
 \description{
 MS:4000097 \cr
-"The number of times where MS1 TIC increased more than 10-fold between 
-adjacent MS1 scans. An unusual high count of signal jumps or falls can 
+"The number of times where MS1 TIC increased more than 10-fold between
+adjacent MS1 scans. An unusual high count of signal jumps or falls can
 indicate ESI stability issues." [PSI:MS] \cr
 
 MS:4000098 \cr
-"The number of times where MS1 TIC decreased more than 10-fold between 
-adjacent MS1 scans. An unusual high count of signal jumps or falls can 
+"The number of times where MS1 TIC decreased more than 10-fold between
+adjacent MS1 scans. An unusual high count of signal jumps or falls can
 indicate ESI stability issues." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the intensity of the precursor ions within the \code{Spectra} object are 
-obtained, \cr 
-(3) the intensity values of the features are obtained via the ion count, \cr 
-(4) the signal jumps/declines of the intensity values with the two 
-subsequent intensity values is calculated, \cr 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the intensity of the precursor ions within the \code{Spectra} object are
+obtained, \cr
+(3) the intensity values of the features are obtained via the ion count, \cr
+(4) the signal jumps/declines of the intensity values with the two
+subsequent intensity values is calculated, \cr
 (5) in the case of *MS:4000097*, the signal jumps by a factor of ten or more
 are counted and returned; \cr
 in the case of *MS:4000098*, the signal declines by a factor of ten or more
@@ -48,7 +48,7 @@ is_a: MS:4000003 ! single value \cr
 relationship: has_metric_category MS:4000009 ! ID free metric \cr
 relationship: has_metric_category MS:4000021 ! MS1 metric \cr
 relationship: has_units UO:0000189 ! count unit \cr
-relationship: has_value_type xsd:integer ! The allowed value-type for this CV 
+relationship: has_value_type xsd:integer ! The allowed value-type for this CV
 term \cr
 synonym: "IS-1A"  RELATED [] \cr
 
@@ -60,11 +60,11 @@ relationship: has_units UO:0000189 ! count unit \cr
 relationship: has_value_type xsd:integer ! The allowed value-type for this CV
 term \cr
 synonym: "IS-1B"  RELATED [] \cr
- 
-The function \code{msSignal10xChange} uses the function \code{ionCount} as an 
+
+The function \code{msSignal10xChange} uses the function \code{ionCount} as an
 equivalent to the TIC.
 
-An attribute containing the PSI:MS term will only be returned if 
+An attribute containing the PSI:MS term will only be returned if
 \code{msLevel} is 1.
 }
 \examples{

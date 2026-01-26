@@ -14,15 +14,15 @@ contain the metrics and the rows the samples}
 \code{shiny}
 }
 \description{
-The function \code{shinyMsQuality} function starts a shiny application to 
+The function \code{shinyMsQuality} function starts a shiny application to
 visualize the quality metrics interactively. It allows to display all metrics
-contained in \code{qc}. 
+contained in \code{qc}.
 
 The function accepts the output of \code{calculateMetrics},
 \code{calculateMetricsFromSpectra}, or \code{calculateMetricsFromMsExperiment}
 }
 \details{
-The plots within the shiny application can be saved by clicking on the 
+The plots within the shiny application can be saved by clicking on the
 download button.
 }
 \examples{
@@ -53,13 +53,14 @@ spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 
 ## define the quality metrics to be calculated
 metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
-    
+
 ## calculate the metrics
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 ## relativeTo is an argument of msSignal10xChange)
-qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
+qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
     msLevel = 1, relativeTo = "Q1", change = "jump")
+qc <- as.matrix(qc)
 rownames(qc) <- c("Sample 1", "Sample 2")
 
 if (interactive())

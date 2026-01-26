@@ -17,7 +17,7 @@ rtIqr(
 
 \item{msLevel}{\code{integer}}
 
-\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"},
 \code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
@@ -27,13 +27,13 @@ rtIqr(
 }
 \description{
 MS:4000153 \cr
-"The interquartile retention time period, in seconds, for all quantification 
-data points after user-defined acceptance criteria are applied over the 
-complete run. Longer times indicate better chromatographic separation. 
-These data points may be for example XIC profiles, isotopic pattern areas, 
-or reporter ions (see MS:1001805). The used type should be noted in the 
-metadata or analysis methods section of the recording file for the respective 
-run. In case of multiple acceptance criteria (FDR) available in proteomics, 
+"The interquartile retention time period, in seconds, for all quantification
+data points after user-defined acceptance criteria are applied over the
+complete run. Longer times indicate better chromatographic separation.
+These data points may be for example XIC profiles, isotopic pattern areas,
+or reporter ions (see MS:1001805). The used type should be noted in the
+metadata or analysis methods section of the recording file for the respective
+run. In case of multiple acceptance criteria (FDR) available in proteomics,
 PSM-level FDR should be used for better comparability." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
@@ -52,17 +52,17 @@ synonym: "C-2A"  RELATED [PMID:19837981] \cr
 
 Retention time values that are \code{NA} are removed.
 
-An attribute containing the PSI:MS term will only be returned if 
+An attribute containing the PSI:MS term will only be returned if
 \code{identificationLevel} is \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If
-the calculation needs to be done according to *MS:4000153*, the 
-\code{Spectra} object should be prepared accordingly, i.e. subsetted to 
+the calculation needs to be done according to *MS:4000153*, the
+\code{Spectra} object should be prepared accordingly, i.e. subsetted to
 \code{spectra} with identification data.
 
-The stored retention time information in \code{spectra} might have a 
-different unit than seconds. \code{rtIqr} will return the IQR based on the 
+The stored retention time information in \code{spectra} might have a
+different unit than seconds. \code{rtIqr} will return the IQR based on the
 values stored in \code{spectra} and will not convert these values to seconds.
 }
 \examples{

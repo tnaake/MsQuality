@@ -7,7 +7,7 @@
 calculateMetricsFromSpectra(
   spectra,
   metrics,
-  filterEmptySpectra = FALSE,
+  filterEmptyObject = FALSE,
   f = dataOrigin(spectra),
   format = c("data.frame", "mzQC"),
   ...,
@@ -17,10 +17,10 @@ calculateMetricsFromSpectra(
 \arguments{
 \item{spectra}{\code{Spectra} object}
 
-\item{metrics}{\code{character} specifying the quality metrics to be 
+\item{metrics}{\code{character} specifying the quality metrics to be
 calculated on \code{spectra}}
 
-\item{filterEmptySpectra}{\code{logical(1)} specifying if empty entries and
+\item{filterEmptyObject}{\code{logical(1)} specifying if empty entries and
 entries with intensity zero of the \code{Spectra} object will be removed}
 
 \item{f}{\code{character} defining which spectra in \code{spectra} belong to
@@ -28,48 +28,48 @@ one sample. Defaults to \code{f = dataOrigin(spectra)}. Spectra from the
 same original data file are processed together (and in parallel for
 different files).}
 
-\item{format}{\code{character(1)} specifying if metrics are returned 
-as a \code{data.frame} (\code{format = "data.frame"}) or as a list of 
+\item{format}{\code{character(1)} specifying if metrics are returned
+as a \code{data.frame} (\code{format = "data.frame"}) or as a list of
 \code{MzQCmzQC} objects (\code{format = "mzQC"})}
 
-\item{...}{arguments passed to the quality metrics functions defined in 
+\item{...}{arguments passed to the quality metrics functions defined in
 \code{metrics}}
 
 \item{BPPARAM}{Parallel processing setup. Defaults to \code{BPPARAM = bpparam()}.
 See [bpparam()] for details on parallel processing with \code{BiocParallel}.}
 }
 \value{
-In case of \code{format = "data.frame"}, a \code{data.frame} containing in 
-the columns the metrics for the different spectra of identical 
+In case of \code{format = "data.frame"}, a \code{data.frame} containing in
+the columns the metrics for the different spectra of identical
 \code{dataOrigin{spectra}} (in rows).
 In case of \code{format = "mzQC"}, a \code{list} of \code{MzQCmzQC} objects
-containing the metrics for the different spectra of identical 
+containing the metrics for the different spectra of identical
 \code{dataOrigin{spectra}}
 }
 \description{
-The function \code{calculateMetricsFromSpectra} calculates quality metrics 
-from a \code{Spectra} object. The function will calculate the 
-metrics per sample according to the grouping parameter \code{f}, 
-e.g. \code{dataOrigin} information. 
+The function \code{calculateMetricsFromSpectra} calculates quality metrics
+from a \code{Spectra} object. The function will calculate the
+metrics per sample according to the grouping parameter \code{f},
+e.g. \code{dataOrigin} information.
 
 Two format options are available:
 
 - \code{format = "data.frame"} returns the metrics as a \code{data.frame}, \cr
-- \code{format = "mzQC"} returns the metrics as a list of \code{MzQCmzQC} 
+- \code{format = "mzQC"} returns the metrics as a list of \code{MzQCmzQC}
   objects. \cr
 }
 \details{
-The metrics are defined by the argument \code{metrics}. Further arguments 
-passed to the quality metric functions can be specified by \code{...}. 
-The additional arguments \code{...} are matched against 
-the formal arguments of the quality metric functions. 
+The metrics are defined by the argument \code{metrics}. Further arguments
+passed to the quality metric functions can be specified by \code{...}.
+The additional arguments \code{...} are matched against
+the formal arguments of the quality metric functions.
 
 Samples will be processed in parallel
 using the default parallel processing setup ([bpparam()]) or with the
 parallel processing setup defined with parameter \code{BPPARAM}.
 
-Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
-zero-length entries, zero-intensity entries, and entries with 
+Setting the argument \code{filterEmptyObject} to \code{TRUE} will remove
+zero-length entries, zero-intensity entries, and entries with
 intensities that are \code{Inf} from the \code{Spectra} object.
 }
 \examples{
@@ -93,14 +93,14 @@ metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 ## format = "data.frame"
 calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
     format = "data.frame", msLevel = 1, change = "jump", relativeTo = "Q1")
-calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
-    format = "data.frame", msLevel = 1, change = "fall", 
+calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
+    format = "data.frame", msLevel = 1, change = "fall",
     relativeTo = "previous")
-    
+
 ## format = "mzQC"
 calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
     format = "mzQC", msLevel = 1, change = "jump", relativeTo = "Q1")
-calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
+calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
     format = "mzQC", msLevel = 1, change = "fall", relativeTo = "previous")
 
 }

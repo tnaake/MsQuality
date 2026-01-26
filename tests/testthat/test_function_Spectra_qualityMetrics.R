@@ -1,8 +1,10 @@
 ## create toy example data set (Spectra)
 library(msdata)
 library(Spectra)
+library(Chromatograms)
 fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
 spectra <- Spectra(fls, backend = MsBackendMzR())
+chr <- Chromatograms(spectra, "sum")
 
 ## create toy example data set (MsExperiment)
 library(msdata)
@@ -31,29 +33,51 @@ library(Spectra)
 spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 
 
-qm_spectra <- c("chromatographyDuration", "ticQuantileRtFraction", 
-    "rtOverMsQuarters", "ticQuartileToQuartileLogRatio", "numberSpectra", 
-    "numberEmptyScans", "medianPrecursorMz", "rtIqr", "rtIqrRate", 
-    "areaUnderTic", "areaUnderTicRtQuantiles", 
-    "extentIdentifiedPrecursorIntensity", "medianTicRtIqr", 
-    "medianTicOfRtRange", "mzAcquisitionRange", "rtAcquisitionRange", 
-    "precursorIntensityRange", "precursorIntensityQuartiles", 
-    "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange", 
     "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
+    "rtOverMsQuarters", "ticQuartileToQuartileLogRatio", "numberSpectra",
+    "numberEmptyScans", "medianPrecursorMz", "rtIqr", "rtIqrRate",
+    "areaUnderTic", "areaUnderTicRtQuantiles",
+    "extentIdentifiedPrecursorIntensity", "medianTicRtIqr",
+    "medianTicOfRtRange", "mzAcquisitionRange", "rtAcquisitionRange",
+    "precursorIntensityRange", "precursorIntensityQuartiles",
+    "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange",
+    "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
     "medianCharge")
-qm_mse <- c("chromatographyDuration", "ticQuantileRtFraction", 
-    "rtOverMsQuarters", "ticQuartileToQuartileLogRatio", "numberSpectra", 
-    "numberEmptyScans", "medianPrecursorMz", "rtIqr", "rtIqrRate", 
-    "areaUnderTic", "areaUnderTicRtQuantiles", 
-    "extentIdentifiedPrecursorIntensity", "medianTicRtIqr", 
-    "medianTicOfRtRange", "mzAcquisitionRange", "rtAcquisitionRange", 
-    "precursorIntensityRange", "precursorIntensityQuartiles", 
-    "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange", 
-    "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", 
+qm_mse <- c("chromatographyDuration", "ticQuantileRtFraction",
+    "rtOverMsQuarters", "ticQuartileToQuartileLogRatio", "numberSpectra",
+    "numberEmptyScans", "medianPrecursorMz", "rtIqr", "rtIqrRate",
+    "areaUnderTic", "areaUnderTicRtQuantiles",
+    "extentIdentifiedPrecursorIntensity", "medianTicRtIqr",
+    "medianTicOfRtRange", "mzAcquisitionRange", "rtAcquisitionRange",
+    "precursorIntensityRange", "precursorIntensityQuartiles",
+    "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange",
+    "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2",
     "meanCharge", "medianCharge")
+qm_chr <-  c("chromatogramDuration", "chromatogramCount",
+            "rtAcquisitionRangeChromatograms", "maxIntensity",
+            "intensityQuartiles", "intensityMean", "intensitySd",
+            "intensityRange", "peakCount", "rtIqrChromatograms",
+            "baselineIntensity", "signalToNoiseRatio",
+            "intensityQuantileRtFraction", "intensity10xChange",
+            "numberEmptyChrom",
+            "areaUnderIntensityRtQuantiles", "medianIntensityRtIqr",
+            "extentIntensity", "intensityQuartileToQuartileLogRatio",
+            "xicFwhmQuantiles", "xic50Fraction", "xicHeightQuantileRatios",
+            "ticQuantileRtFraction", "areaUnderTic")
 
-test_that("qualityMetrics", {
+test_that("qualityMetrics for Spectra", {
     expect_equal(qualityMetrics(spectra), qm_spectra)
     expect_equal(qualityMetrics(spectra), qm_mse)
     expect_error(qualityMetrics(NULL), "object '.metrics' not found")
+})
+
+test_that("qualityMetrics for Chromatograms", {
+    chr <- Chromatograms(spectra)
+    expect_equal(qualityMetrics(chr), qm_chr)
+})
+
+test_that("qualityMetrics for MsExperiment", {
+    expect_equal(qualityMetrics(msexp), qm_mse)
+    expect_is(msexp, "MsExperiment")
+    expect_equal(length(spectra(msexp)), 1862)
 })

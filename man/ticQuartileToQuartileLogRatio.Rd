@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{ticQuartileToQuartileLogRatio}
 \alias{ticQuartileToQuartileLogRatio}
-\title{MS1 TIC-change quartile ratios (MS:4000057) or  
+\title{MS1 TIC-change quartile ratios (MS:4000057) or
 MS1 TIC quartile ratios (MS:4000058)}
 \usage{
 ticQuartileToQuartileLogRatio(
@@ -16,7 +16,7 @@ ticQuartileToQuartileLogRatio(
 \arguments{
 \item{spectra}{\code{Spectra} object}
 
-\item{relativeTo}{\code{character(1)}, one of \code{"Q1"} or 
+\item{relativeTo}{\code{character(1)}, one of \code{"Q1"} or
 \code{"previous"}}
 
 \item{mode}{\code{character(1)}, one of \code{"TIC_change"} or \code{"TIC"}}
@@ -30,30 +30,30 @@ ticQuartileToQuartileLogRatio(
 }
 \description{
 MS:4000057 \cr
-"The log ratios of successive TIC-change quartiles. The TIC changes are 
-the list of MS1 total ion current (TIC) value changes from one to the next 
-scan, produced when each MS1 TIC is subtracted from the preceding MS1 TIC. 
-The metric's value triplet represents the log ratio of the TIC-change 
-Q2 to Q1, Q3 to Q2, TIC-change-max to Q3" [PSI:MS] \cr 
+"The log ratios of successive TIC-change quartiles. The TIC changes are
+the list of MS1 total ion current (TIC) value changes from one to the next
+scan, produced when each MS1 TIC is subtracted from the preceding MS1 TIC.
+The metric's value triplet represents the log ratio of the TIC-change
+Q2 to Q1, Q3 to Q2, TIC-change-max to Q3" [PSI:MS] \cr
 For calculation of MS:400057 set \code{mode = "TIC_change"}. \cr
 
 MS:4000058 \cr
-"The log ratios of successive TIC quartiles. The metric's value triplet 
-represents the log ratios of TIC-Q2 to TIC-Q1, TIC-Q3 to TIC-Q2, 
+"The log ratios of successive TIC quartiles. The metric's value triplet
+represents the log ratios of TIC-Q2 to TIC-Q1, TIC-Q3 to TIC-Q2,
 TIC-max to TIC-Q3." [PSI:MS] \cr
 For calculation of MS:400058 set \code{mode = "TIC"}. \cr
 
 The metric is calculated as follows: \cr
-(1) the TIC (\code{ionCount}) of the \code{Spectra} object is calculated 
+(1) the TIC (\code{ionCount}) of the \code{Spectra} object is calculated
 per scan event (with spectra ordered by retention time), \cr
-(2) for *MS:4000057*, the differences between TIC values are calculated 
+(2) for *MS:4000057*, the differences between TIC values are calculated
 between subsequent scan events,
 for *MS:4000058*, the TIC values between subsequent scan events are taken
 as they are, \cr
-(3) for *MS:4000057* and *MS:4000058* the ratios between the 25\%, 50\%, 
-75\%, and 100\% quantile to the 25\% quantile of the values of (2) are 
+(3) for *MS:4000057* and *MS:4000058* the ratios between the 25\%, 50\%,
+75\%, and 100\% quantile to the 25\% quantile of the values of (2) are
 calculated.
-Alternatively, if \code{relativeTo = "Q1"}, the ratios are calculated 
+Alternatively, if \code{relativeTo = "Q1"}, the ratios are calculated
 between the 50\%/25\%, 75\%/25\%, and 100\%/25\% quantiles, \cr
 (4) The \code{log} values of the ratios are returned. \cr
 }
@@ -82,7 +82,7 @@ relationship: has_metric_category MS:4000021 ! MS1 metric \cr
 relationship: has_value_type xsd:float ! The allowed value-type for this CV term \cr
 relationship: has_value_concept STATO:0000105 ! log signal intensity ratio \cr
 
-An attribute containing the PSI:MS term will only be returned if 
+An attribute containing the PSI:MS term will only be returned if
 \code{relativeTo} is \code{"previous"} and \code{msLevel} is 1.
 }
 \note{

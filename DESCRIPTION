@@ -1,14 +1,17 @@
 Package: MsQuality
 Type: Package
-Title: MsQuality - Quality metric calculation from Spectra and MsExperiment objects
-Version: 1.9.3
-Date: 2025-10-23
+Title: MsQuality - Quality metric calculation from Spectra, MsExperiment and Chromatograms objects
+Version: 1.9.4
+Date: 2026-01-20
 Authors@R: c(person(given = "Thomas", family = "Naake", 
 		email = "thomasnaake@googlemail.com", role = c("aut", "cre"),
 		comment = c(ORCID = "0000-0001-7917-5580")),
 	person(given = "Johannes", family = "Rainer",
 		email = "johannes.rainer@eurac.edu", role = "aut",
-		comment = c(ORCID = "0000-0002-6977-7147")))
+		comment = c(ORCID = "0000-0002-6977-7147")),
+	person(given = "Philippine", family = "Louail",
+		email = "philippine.louail@outlook.com", role = "aut",
+		comment = c(ORCID = "0009-0007-5429-6846")))
 VignetteBuilder: knitr
 Description: 
 	The MsQuality provides functionality to calculate quality metrics 
@@ -23,11 +26,13 @@ Description:
 	require minimum information on mass spectrometry data: retention time, 
 	m/z values, and associated intensities. MsQuality relies on the 
 	Spectra package, or alternatively the MsExperiment package, and its infrastructure 
-	to store spectral data.
+	to store spectral data. Additionally, MsQuality supports Chromatograms objects 
+	from the Chromatograms package for chromatographic quality metrics.
 Depends:
     R (>= 4.2.0)
 Imports:
     BiocParallel (>= 1.32.0),
+    Chromatograms (>= 1.1.1),
     ggplot2 (>= 3.3.5),
     htmlwidgets (>= 1.5.3),
     methods (>= 4.2.0),
@@ -59,4 +64,4 @@ URL: https://www.github.com/tnaake/MsQuality/
 BugReport: https://www.github.com/tnaake/MsQuality/issues/
 License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3

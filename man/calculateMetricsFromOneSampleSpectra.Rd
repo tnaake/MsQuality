@@ -2,13 +2,13 @@
 % Please edit documentation in R/function_calculateMetrics_from_Spectra.R
 \name{calculateMetricsFromOneSampleSpectra}
 \alias{calculateMetricsFromOneSampleSpectra}
-\title{Calculate QC metrics from a Spectra object containing only spectral 
+\title{Calculate QC metrics from a Spectra object containing only spectral
 data from one sample}
 \usage{
 calculateMetricsFromOneSampleSpectra(
   spectra,
   metrics = qualityMetrics(spectra),
-  filterEmptySpectra = FALSE,
+  filterEmptyObject = FALSE,
   f = spectra$dataOrigin,
   ...
 )
@@ -16,37 +16,37 @@ calculateMetricsFromOneSampleSpectra(
 \arguments{
 \item{spectra}{\code{Spectra} object}
 
-\item{metrics}{\code{character} specifying the quality metrics to be 
+\item{metrics}{\code{character} specifying the quality metrics to be
 calculated on \code{spectra}}
 
-\item{filterEmptySpectra}{\code{logical(1)} specifying if empty entries and
-entries with intensity zero or \code{Inf} of the \code{Spectra} object 
+\item{filterEmptyObject}{\code{logical(1)} specifying if empty entries and
+entries with intensity zero or \code{Inf} of the \code{Spectra} object
 will be removed}
 
 \item{f}{\code{character}, grouping parameter for \code{spectra}}
 
-\item{...}{arguments passed to the quality metrics functions defined in 
+\item{...}{arguments passed to the quality metrics functions defined in
 \code{metrics}}
 }
 \value{
 named \code{numeric} vector
 }
 \description{
-The function \code{calculateMetricsFromOneSampleSpectra} calculates quality 
+The function \code{calculateMetricsFromOneSampleSpectra} calculates quality
 metrics from a \code{Spectra} containing spectral data from one sample.
 }
 \details{
-The metrics are defined by the argument \code{metrics}. Further arguments 
+The metrics are defined by the argument \code{metrics}. Further arguments
 passed to the quality metric functions can be specified by the \code{params}
-argument. \code{params} can contain named entries which are matched against 
-the formal arguments of the quality metric functions. 
+argument. \code{params} can contain named entries which are matched against
+the formal arguments of the quality metric functions.
 
-The \code{Spectra} object will only contain spectral data from one 
-data origin (e.g. \code{spectra$dataOrigin} is of length 1). The grouping 
+The \code{Spectra} object will only contain spectral data from one
+data origin (e.g. \code{spectra$dataOrigin} is of length 1). The grouping
 is specified by the argument \code{f}.
 
-Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
-zero-length entries, zero-intensity entries, and entries with 
+Setting the argument \code{filterEmptyObject} to \code{TRUE} will remove
+zero-length entries, zero-intensity entries, and entries with
 intensities that are \code{Inf} from the \code{Spectra} object.
 }
 \examples{
@@ -62,9 +62,9 @@ metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 ## additional parameters B to the quality metrics functions
 ## (MsLevel is an argument of areaUnderTic and msSignal10xChange,
 ## relativeTo is an argument of msSignal10xChange) passed to ...
-MsQuality:::calculateMetricsFromOneSampleSpectra(spectra = spectra, 
+MsQuality:::calculateMetricsFromOneSampleSpectra(spectra = spectra,
     metrics = metrics, msLevel = 1, change = "jump", relativeTo = "Q1")
-MsQuality:::calculateMetricsFromOneSampleSpectra(spectra = spectra, 
+MsQuality:::calculateMetricsFromOneSampleSpectra(spectra = spectra,
     metrics = metrics, msLevel = 1, change = "fall", relativeTo = "previous")
 }
 \author{

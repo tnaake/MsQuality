@@ -4,5 +4,8 @@ library("Spectra")
 library("MsExperiment")
 library("msdata")
 library("S4Vectors")
+library("Chromatograms")
+library("BiocParallel")
+register(SerialParam())
 
 test_check("MsQuality")

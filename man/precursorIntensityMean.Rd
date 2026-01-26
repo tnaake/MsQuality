@@ -18,7 +18,7 @@ precursorIntensityMean(
 
 \item{msLevel}{\code{integer}}
 
-\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"},
 \code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
@@ -28,25 +28,25 @@ precursorIntensityMean(
 }
 \description{
 MS:4000117 \cr
-"From the distribution of MS2 precursor intensities, the mean. The intensity 
-distribution of the precursors informs about the dynamic range of the 
+"From the distribution of MS2 precursor intensities, the mean. The intensity
+distribution of the precursors informs about the dynamic range of the
 acquisition." [PSI:MS] \cr
 
 MS:4000163 \cr
-"From the distribution of identified MS2 precursor intensities, the mean. The 
-intensity distribution of the identified precursors informs about the dynamic 
+"From the distribution of identified MS2 precursor intensities, the mean. The
+intensity distribution of the identified precursors informs about the dynamic
 range of the acquisition in relation to identifiability." [PSI:MS] \cr
 
 MS:4000164 \cr
-"From the distribution of unidentified MS2 precursor intensities, the mean. The 
-intensity distribution of the unidentified precursors informs about the 
-dynamic range of the acquisition in relation to identifiability." 
+"From the distribution of unidentified MS2 precursor intensities, the mean. The
+intensity distribution of the unidentified precursors informs about the
+dynamic range of the acquisition in relation to identifiability."
 [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the intensity of the precursor ions within the \code{Spectra} object are obtained, \cr 
-(3) the mean of the precursor intensity values is obtained 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the intensity of the precursor ions within the \code{Spectra} object are obtained, \cr
+(3) the mean of the precursor intensity values is obtained
 (\code{NA} values are removed) and returned. \cr
 }
 \details{
@@ -76,7 +76,7 @@ relationship: has_units MS:1000043 ! intensity unit \cr
 }
 \note{
 The \code{Spectra} object might contain features that were (not) identified. If
-the calculation needs to be done according to *MS:4000163*/*MS:4000164*, the 
+the calculation needs to be done according to *MS:4000163*/*MS:4000164*, the
 \code{Spectra} object should be prepared accordingly.
 }
 \examples{
@@ -98,7 +98,7 @@ spd$intensity <- list(
     c(3.407, 47.494, 3.094, 100.0, 13.240),
     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
-spd$precursorIntensity <- c(100.0, 100.0, 100.0)     
+spd$precursorIntensity <- c(100.0, 100.0, 100.0)
 sps <- Spectra(spd)
 precursorIntensityMean(spectra = sps, msLevel = 2L)
 }

@@ -16,7 +16,7 @@ extentIdentifiedPrecursorIntensity(
 
 \item{msLevel}{\code{integer}}
 
-\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"},
 \code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
@@ -26,19 +26,19 @@ extentIdentifiedPrecursorIntensity(
 }
 \description{
 MS:4000157 \cr
-"Ratio of 95th over 5th percentile of MS2 precursor intensity for all 
-quantification data points after user-defined acceptance criteria are 
-applied. Can be used to approximate the dynamic range of signal. The used 
-type of identification should be noted in the metadata or analysis methods 
-section of the recording file for the respective run. In case of multiple 
-acceptance criteria (FDR) available in proteomics, PSM-level FDR should 
+"Ratio of 95th over 5th percentile of MS2 precursor intensity for all
+quantification data points after user-defined acceptance criteria are
+applied. Can be used to approximate the dynamic range of signal. The used
+type of identification should be noted in the metadata or analysis methods
+section of the recording file for the respective run. In case of multiple
+acceptance criteria (FDR) available in proteomics, PSM-level FDR should
 be used for better comparability." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the intensities of the precursor ions are obtained, \cr 
-(3) the 5\% and 95\% quantile of these intensities are obtained 
-(\code{NA} values are removed), \cr 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the intensities of the precursor ions are obtained, \cr
+(3) the 5\% and 95\% quantile of these intensities are obtained
+(\code{NA} values are removed), \cr
 (4) the ratio between the 95\% and the 5\% intensity quantile is calculated
 and returned. \cr
 }
@@ -52,12 +52,12 @@ synonym: "MS1-3A"  RELATED [PMID:19837981] \cr
 
 Precursor intensity values that are \code{NA} are removed. \cr
 
-An attribute containing the PSI:MS term will only be returned if 
+An attribute containing the PSI:MS term will only be returned if
 \code{identificationLevel} is \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If
-the calculation needs to be done according to *MS:4000157*, the 
+the calculation needs to be done according to *MS:4000157*, the
 \code{Spectra} object should be prepared accordingly, i.e. being subsetted to
 spectra with identification data.
 }

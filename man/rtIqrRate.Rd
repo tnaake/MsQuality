@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{rtIqrRate}
 \alias{rtIqrRate}
-\title{rate of the interquartile RT period for identified quantification 
+\title{rate of the interquartile RT period for identified quantification
 data points (MS:4000154)}
 \usage{
 rtIqrRate(
@@ -17,7 +17,7 @@ rtIqrRate(
 
 \item{msLevel}{\code{integer}}
 
-\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"},
 \code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
@@ -27,23 +27,23 @@ rtIqrRate(
 }
 \description{
 MS:4000154 \cr
-"The rate of identified quantification data points for the interquartile 
-retention time period, in identified quantification data points per second. 
-Higher rates indicate efficient sampling and identification. These data 
-points may be for example XIC profiles, isotopic pattern areas, or reporter 
-ions (see MS:1001805). The used type should be noted in the metadata or 
-analysis methods section of the recording file for the respective run. In 
-case of multiple acceptance criteria (FDR) available in proteomics, PSM-level 
+"The rate of identified quantification data points for the interquartile
+retention time period, in identified quantification data points per second.
+Higher rates indicate efficient sampling and identification. These data
+points may be for example XIC profiles, isotopic pattern areas, or reporter
+ions (see MS:1001805). The used type should be noted in the metadata or
+analysis methods section of the recording file for the respective run. In
+case of multiple acceptance criteria (FDR) available in proteomics, PSM-level
 FDR should be used for better comparability." [PSI:MS]\cr
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the retention time values are obtained, \cr 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the retention time values are obtained, \cr
 (3) the 25\% and 75\% quantiles are obtained from the retention time values
-(\code{NA} values are removed), \cr 
-(4) the number of eluted features between this 25\% and 75\% quantile is 
-calculated, \cr 
-(5) the number of features is divided by the interquartile range of the 
+(\code{NA} values are removed), \cr
+(4) the number of eluted features between this 25\% and 75\% quantile is
+calculated, \cr
+(5) the number of features is divided by the interquartile range of the
 retention time and returned. \cr
 }
 \details{
@@ -54,12 +54,12 @@ is_a: MS:4000017 ! chromatogram metric \cr
 relationship: has_units UO:0000106 ! hertz
 synonym: "C-2B"  RELATED [PMID:19837981] \cr
 
-An attribute containing the PSI:MS term will only be returned if 
+An attribute containing the PSI:MS term will only be returned if
 \code{identificationLevel} is \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If
-the calculation needs to be done according to *MS:4000154*, the 
+the calculation needs to be done according to *MS:4000154*, the
 \code{Spectra} object should be prepared accordingly, i.e. being subsetted to
 \code{spectra} with identification data.
 
