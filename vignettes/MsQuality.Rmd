@@ -992,9 +992,9 @@ In addition to the metrics above (which operate on `Spectra` and `MsExperiment`
 objects), `MsQuality` includes metrics specifically designed for `Chromatograms`
 objects. These metrics assess chromatographic quality and include:
 
-- *chromatogramDuration* (MS:4000053): Duration of chromatographic run
+- *chromatographyDuration* (MS:4000053): Duration of chromatographic run (same generic as for `Spectra`)
 - *numberChromatograms* (MS:4000071): Total number of chromatograms
-- *rtAcquisitionRangeChromatograms* (MS:4000070): RT range across chromatograms
+- *rtAcquisitionRange* (MS:4000070): RT range across chromatograms (same generic as for `Spectra`)
 - *maxIntensity*, *intensityMean*, *intensitySd*: Intensity statistics
 - *intensityQuartiles*, *intensityRange*: Intensity distributions per chromatogram
 - *peakCount*: Number of data points per chromatogram

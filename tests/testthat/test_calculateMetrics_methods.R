@@ -104,7 +104,7 @@ test_that("calculateMetrics works with MsExperiment objects", {
 
 test_that("calculateMetrics works with Chromatograms objects", {
     chr <- Chromatograms(spectra)
-    chrom_metrics <- c("chromatogramDuration", "maxIntensity", "intensityMean")
+    chrom_metrics <- c("chromatographyDuration", "maxIntensity", "intensityMean")
 
     result <- calculateMetrics(object = chr, metrics = chrom_metrics,
         filterEmptyObject = FALSE)
@@ -116,7 +116,7 @@ test_that("calculateMetrics works with Chromatograms objects", {
 
 test_that("calculateMetrics works with multiple Chromatograms metrics", {
     chr <- Chromatograms(spectra)
-    chrom_metrics <- c("chromatogramDuration", "maxIntensity",
+    chrom_metrics <- c("chromatographyDuration", "maxIntensity",
                        "intensityMean", "intensitySd", "peakCount")
 
     result <- calculateMetrics(object = chr, metrics = chrom_metrics,

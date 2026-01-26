@@ -2,29 +2,11 @@
 ################## PART 1: FULL CHROMATOGRAMS METRICS ##########################
 ################################################################################
 
-#' @title Calculate the duration of the chromatographic run per chromatogram
+#' @name chromatographyDuration
 #'
-#' @description
-#' The function `chromatogramDuration` calculates The range of retention time
-#' over which the data was acquired of the chromatographic run, defined as the
-#' difference between the maximum and minimum retention time.
+#' @rdname chromatographyDuration
 #'
-#' @details
-#' The function returns the duration of the chromatographic run.
-#'
-#' id: MS:4000055
-#'
-#' @param chromatograms `Chromatograms` object
-
-#' @param ... further arguments passed to `min` and `max` (e.g. `na.rm`)
-#'
-#' @return `numeric(1)`
-#'
-#' @author Philippine Louail
-#'
-#' @export
-#'
-#' @importFrom Chromatograms rtime
+#' @aliases chromatographyDuration,Chromatograms-method chromatographyDuration, Spectra-method
 #'
 #' @examples
 #' library(Chromatograms)
@@ -42,8 +24,11 @@
 #' )
 #'
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-#' chromatogramDuration(chr)
-chromatogramDuration <- function(chromatograms, ...) {
+#' chromatographyDuration(OBJECT = chr)
+NULL
+
+#' @noRd
+.chromatographyDuration_chromatograms <- function(chromatograms, ...) {
     rts <- unlist(rtime(chromatograms), use.names = FALSE)
     rts <- as.numeric(rts)
 
@@ -53,9 +38,14 @@ chromatogramDuration <- function(chromatograms, ...) {
         res <- max(rts, na.rm = TRUE) - min(rts, na.rm = TRUE)
     }
 
-    attr(res, "chromatogramDuration") <- "MS:4000055"
+    attr(res, "chromatographyDuration") <- "MS:4000053"
     res
 }
+
+#' @rdname chromatographyDuration
+setMethod("chromatographyDuration", "Chromatograms", function(object, ...) {
+    .chromatographyDuration_chromatograms(chromatograms = object, ...)
+})
 
 #' @title Number of Chromatograms
 #'
@@ -65,7 +55,7 @@ chromatogramDuration <- function(chromatograms, ...) {
 #'
 #' @details
 #' This metric corresponds to the PSI:MS term:
-#' MS:4000056 (number of chromatograms).
+#' MS:4000071 (number of chromatograms).
 #'
 #' @param chromatograms `Chromatograms` object
 #' @param ... further arguments
@@ -95,7 +85,7 @@ chromatogramDuration <- function(chromatograms, ...) {
 chromatogramCount <- function(chromatograms, ...) {
     res <- length(chromatograms)
     names(res) <- "chromatogramCount"
-    attr(res, "chromatogramCount") <- "MS:4000056"
+    attr(res, "chromatogramCount") <- "MS:4000071"
     res
 }
 
@@ -140,35 +130,11 @@ numberEmptyChrom <- function(chromatograms, ...) {
     res
 }
 
-
-
-#' @title Retention time acquisition range
+#' @name rtAcquisitionRange
 #'
-#' @description
-#' The function `rtAcquisitionRangeChromatograms` returns the minimum and
-#' maximum retention time across all chromatograms.
+#' @rdname rtAcquisitionRange
 #'
-#' @details
-#' The function returns a named vector of length 2 with the minimum and maximum
-#' retention times.
-#'
-#' id: MS:4000070
-#' name: retention time acquisition range
-#' def: "Upper and lower limit of retention time at which spectra are recorded." [PSI:MS]
-#' is_a: MS:4000004 ! n-tuple
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_metric_category MS:4000012 ! single run based metric
-#' relationship: has_metric_category MS:4000016 ! retention time metric
-#' relationship: has_units UO:0000010 ! second
-#'
-#' @param chromatograms `Chromatograms` object
-#' @param ... further arguments passed to `range`
-#'
-#' @return `numeric(2)` named "min" and "max"
-#'
-#' @author Philippine Louail
-#'
-#' @export
+#' @aliases rtAcquisitionRange,Chromatograms-method
 #'
 #' @examples
 #' library(Chromatograms)
@@ -184,8 +150,11 @@ numberEmptyChrom <- function(chromatograms, ...) {
 #'                intensity = c(80, 500, 1200, 600, 120))
 #' )
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-#' rtAcquisitionRangeChromatograms(chr)
-rtAcquisitionRangeChromatograms <- function(chromatograms, ...) {
+#' rtAcquisitionRange(chr)
+NULL
+
+#' @noRd
+.rtAcquisitionRange_chromatograms <- function(chromatograms, ...) {
     rts <- unlist(rtime(chromatograms), use.names = FALSE)
     if (length(rts) == 0) {
         res <- c(min = NA_real_, max = NA_real_)
@@ -193,9 +162,14 @@ rtAcquisitionRangeChromatograms <- function(chromatograms, ...) {
         res <- range(rts, ...)
         names(res) <- c("min", "max")
     }
-    attr(res, "rtAcquisitionRangeChromatograms") <- "MS:4000070"
+    attr(res, "rtAcquisitionRange") <- "MS:4000070"
     res
 }
+
+#' @rdname rtAcquisitionRange
+setMethod("rtAcquisitionRange", "Chromatograms", function(object, ...) {
+    .rtAcquisitionRange_chromatograms(object, ...)
+})
 
 #' @title Maximum intensity across chromatograms
 #'
@@ -1345,6 +1319,285 @@ setMethod("ticQuantileRtFraction", "Chromatograms", function(
     }
     attr(res, "ticQuantileRtFraction") <- "MS:4000183"
     res
+})
+
+#' @title Retention time window width
+#'
+#' @description
+#' The function `retentionTimeWindowWidth` calculates the full width of the
+#' retention time window (max - min) for each individual chromatogram.
+#'
+#' @details
+#' Unlike `chromatographyDuration` which calculates the global acquisition range,
+#' this metric calculates the duration for each specific chromatogram (peak)
+#' in the object.
+#'
+#' id: MS:1001907
+#' name: retention time window width
+#' def: "The full width of a retention time window for a chromatographic peak." [PSI:MS]
+#' is_a: MS:1000915 ! retention time window attribute
+#' relationship: has_units UO:0000010 ! second
+#'
+#' @param chromatograms `Chromatograms` object
+#' @param ... further arguments passed to `min` and `max`
+#'
+#' @return `numeric` vector with the RT width for each chromatogram.
+#'
+#' @author Philippine Louail
+#'
+#' @export
+#'
+#' @examples
+#' library(Chromatograms)
+#' cdata <- data.frame(
+#'     msLevel = c(1L, 1L),
+#'     mz = c(112.2, 123.3),
+#'     dataOrigin = c("mem1", "mem1")
+#' )
+#' pdata <- list(
+#'     data.frame(rtime = c(2.1, 2.5, 3.0), intensity = c(100, 250, 400)),
+#'     data.frame(rtime = c(5.1, 5.8, 6.3, 6.9, 7.5), intensity = c(80, 500, 1200, 600, 120))
+#' )
+#' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
+#' ## Returns vector of widths: (3.0-2.1), (7.5-5.1)
+#' retentionTimeWindowWidth(chr)
+retentionTimeWindowWidth <- function(chromatograms, ...) {
+    res <- vapply(rtime(chromatograms), function(x) {
+        if (length(x) == 0 || all(is.na(x))) {
+            NA_real_
+        } else {
+            max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
+        }
+    }, numeric(1))
+
+    attr(res, "retentionTimeWindowWidth") <- "MS:1001907"
+    res
+}
+
+#' @title Area under TIC in MS1
+#'
+#' @description
+#' The function `areaUnderTicMs1` calculates the area under the total ion
+#' current chromatogram for all MS1 spectra.
+#'
+#' @details
+#' The function filters the chromatograms for `msLevel == 1` and calculates
+#' the sum of intensities.
+#'
+#' id: MS:4000029
+#' name: area under TIC in MS1
+#' def: "The area under the total ion current chromatogram (MS:1000235) of all MS1 spectra." [PSI:MS]
+#'
+#' @param chromatograms `Chromatograms` object
+#' @param ... further arguments passed to `sum`
+#'
+#' @return `numeric(1)`
+#'
+#' @author Philippine Louail
+#'
+#' @export
+#'
+#' @importFrom Chromatograms filterChromData
+#'
+#' @examples
+#' library(Chromatograms)
+#' cdata <- data.frame(
+#'     msLevel = c(1L, 2L),
+#'     mz = c(112.2, 123.3),
+#'     dataOrigin = c("mem1", "mem1")
+#' )
+#' pdata <- list(
+#'     data.frame(rtime = c(2.1, 2.5, 3.0), intensity = c(100, 250, 400)),
+#'     data.frame(rtime = c(5.1, 5.8), intensity = c(80, 500))
+#' )
+#' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
+#' ## Returns sum of intensities for MS1 only
+#' areaUnderTicMs1(chr)
+areaUnderTicMs1 <- function(chromatograms, ...) {
+    # Check for empty input
+    if (length(chromatograms) == 0) {
+        res <- NA_real_
+    } else {
+        # Filter for MS1 - use tryCatch in case no chromatograms match
+        chr_ms1 <- tryCatch(
+            filterChromData(chromatograms, variables = c("msLevel"), ranges = c(1L, 1L)),
+            error = function(e) NULL
+        )
+        if (is.null(chr_ms1) || length(chr_ms1) == 0) {
+            res <- NA_real_
+        } else {
+            # Subset and calculate sum
+            ints <- unlist(intensity(chr_ms1), use.names = FALSE)
+            res <- sum(ints, na.rm = TRUE, ...)
+        }
+    }
+
+    attr(res, "areaUnderTicMs1") <- "MS:4000029"
+    res
+}
+
+#' @title Area under TIC in MS2
+#'
+#' @description
+#' The function `areaUnderTicMs2` calculates the area under the total ion
+#' current chromatogram for all MS2 spectra.
+#'
+#' @details
+#' The function filters the chromatograms for `msLevel == 2` and calculates
+#' the sum of intensities.
+#'
+#' id: MS:4000030
+#' name: area under TIC in MS2
+#' def: "The area under the total ion current chromatogram (MS:1000235) of all MS2 spectra." [PSI:MS]
+#'
+#' @param chromatograms `Chromatograms` object
+#' @param ... further arguments passed to `sum`
+#'
+#' @return `numeric(1)`
+#'
+#' @author Philippine Louail
+#'
+#' @export
+#'
+#' @examples
+#' library(Chromatograms)
+#' cdata <- data.frame(
+#'     msLevel = c(1L, 2L),
+#'     mz = c(112.2, 123.3),
+#'     dataOrigin = c("mem1", "mem1")
+#' )
+#' pdata <- list(
+#'     data.frame(rtime = c(2.1, 2.5, 3.0), intensity = c(100, 250, 400)),
+#'     data.frame(rtime = c(5.1, 5.8), intensity = c(80, 500))
+#' )
+#' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
+#' ## Returns sum of intensities for MS2 only
+#' areaUnderTicMs2(chr)
+areaUnderTicMs2 <- function(chromatograms, ...) {
+    # Check for empty input
+    if (length(chromatograms) == 0) {
+        res <- NA_real_
+    } else {
+        # Filter for MS2 - use tryCatch in case no chromatograms match
+        chr_ms2 <- tryCatch(
+            filterChromData(chromatograms, variables = c("msLevel"), ranges = c(2L, 2L)),
+            error = function(e) NULL
+        )
+        if (is.null(chr_ms2) || length(chr_ms2) == 0) {
+            res <- NA_real_
+        } else {
+            # Subset and calculate sum
+            ints <- unlist(intensity(chr_ms2), use.names = FALSE)
+            res <- sum(ints, na.rm = TRUE, ...)
+        }
+    }
+
+    attr(res, "areaUnderTicMs2") <- "MS:4000030"
+    res
+}
+
+#' @name areaUnderTicRtQuantiles
+#'
+#' @rdname areaUnderTicRtQuantiles
+#'
+#' @aliases areaUnderTicRtQuantiles,Chromatograms-method
+#'
+#' @examples
+#' library(Chromatograms)
+#' cdata <- data.frame(
+#'     msLevel = c(1L, 1L),
+#'     mz = c(112.2, 123.3),
+#'     dataOrigin = c("mem1", "mem1")
+#' )
+#' pdata <- list(
+#'     data.frame(rtime = c(2.1, 2.5, 3.0, 3.4, 3.9),
+#'                intensity = c(100, 250, 400, 300, 150)),
+#'     data.frame(rtime = c(5.1, 5.8, 6.3, 6.9, 7.5),
+#'                intensity = c(80, 500, 1200, 600, 120))
+#' )
+#' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
+#' areaUnderTicRtQuantiles(chr)
+NULL
+
+#' @noRd
+.areaUnderTicRtQuantiles_chromatograms <- function(chromatograms, msLevel = NULL, ...) {
+    if (length(chromatograms) == 0) {
+        res <- setNames(rep(NA_real_, 4), c("25%", "50%", "75%", "100%"))
+        attr(res, "areaUnderTicRtQuantiles") <- "MS:4000156"
+        return(res)
+    }
+
+    if (!is.null(msLevel)) {
+        chromatograms <- tryCatch(
+            filterChromData(chromatograms, variables = c("msLevel"), ranges = c(msLevel, msLevel)),
+            error = function(e) NULL
+        )
+
+        if (is.null(chromatograms) || length(chromatograms) == 0) {
+            res <- setNames(rep(NA_real_, 4), c("25%", "50%", "75%", "100%"))
+            attr(res, "areaUnderTicRtQuantiles") <- "MS:4000156"
+            return(res)
+        }
+    }
+
+    ints <- unlist(intensity(chromatograms), use.names = FALSE)
+    rts <- unlist(rtime(chromatograms), use.names = FALSE)
+
+    if (length(rts) < 2 || all(is.na(rts))) {
+        res <- setNames(rep(NA_real_, 4), c("25%", "50%", "75%", "100%"))
+        attr(res, "areaUnderTicRtQuantiles") <- "MS:4000156"
+        return(res)
+    }
+
+    ord <- order(rts)
+    rts <- rts[ord]
+    ints <- ints[ord]
+
+    rt_range <- range(rts, na.rm = TRUE)
+
+    # Define cut points for 4 quartiles
+    cuts <- seq(rt_range[1], rt_range[2], length.out = 5)[2:4]
+
+    new_rts <- rts
+    new_ints <- ints
+
+    # Interpolate intensities at cut points
+    for (ct in cuts) {
+        interp_val <- approx(rts, ints, xout = ct)$y
+        if (!is.na(interp_val)) {
+            new_rts <- c(new_rts, ct)
+            new_ints <- c(new_ints, interp_val)
+        }
+    }
+
+    # Re-order after adding interpolated points
+    ord_new <- order(new_rts)
+    final_rts <- new_rts[ord_new]
+    final_ints <- new_ints[ord_new]
+
+    # Calculate trapezoidal area segments
+    areas <- (final_ints[-1] + final_ints[-length(final_ints)]) / 2 * diff(final_rts)
+
+    # Midpoints for binning
+    midpoints <- (final_rts[-1] + final_rts[-length(final_rts)]) / 2
+
+    # Bin areas into quartiles
+    breaks <- seq(rt_range[1], rt_range[2], length.out = 5)
+    bins <- cut(midpoints, breaks = breaks, include.lowest = TRUE, labels = FALSE)
+
+    res <- numeric(4)
+    for (i in 1:4) {
+        res[i] <- sum(areas[which(bins == i)], na.rm = TRUE)
+    }
+
+    names(res) <- c("25%", "50%", "75%", "100%")
+    attr(res, "areaUnderTicRtQuantiles") <- "MS:4000156"
+    res
+}
+
+#' @rdname areaUnderTicRtQuantiles
+setMethod("areaUnderTicRtQuantiles", "Chromatograms", function(object, msLevel = NULL, ...) {
+    .areaUnderTicRtQuantiles_chromatograms(object, msLevel = msLevel, ...)
 })
 
 #' @title Area under TIC

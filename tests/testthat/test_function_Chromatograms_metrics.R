@@ -33,14 +33,14 @@ pdata_jump <- list(
 chr_jump <- Chromatograms(ChromBackendMemory(), chromData = cdata_jump,
                           peaksData = pdata_jump)
 
-test_that("chromatogramDuration works properly.", {
-    tmp <- chromatogramDuration(chr)
+test_that("chromatographyDuration works properly for Chromatograms.", {
+    tmp <- chromatographyDuration(chr)
     ## Returns aggregated duration across all chromatograms: max(7.5) - min(2.1) = 5.4
     expect_equal(length(tmp), 1)
     expect_equal(as.numeric(tmp), 5.4, tolerance = 1e-6)
 
     ## test attributes
-    expect_equal(attr(tmp, "chromatogramDuration"), "MS:4000055")
+    expect_equal(attr(tmp, "chromatographyDuration"), "MS:4000053")
 })
 
 test_that("chromatogramCount works properly.", {
@@ -50,7 +50,7 @@ test_that("chromatogramCount works properly.", {
     expect_equal(as.numeric(tmp), 3)
 
     ## test attributes
-    expect_equal(attr(tmp, "chromatogramCount"), "MS:4000056")
+    expect_equal(attr(tmp, "chromatogramCount"), "MS:4000071")
 })
 
 test_that("numberEmptyChrom works properly.", {
@@ -58,13 +58,13 @@ test_that("numberEmptyChrom works properly.", {
     expect_equal(as.numeric(tmp), 1)  # One empty chromatogram
 })
 
-test_that("rtAcquisitionRangeChromatograms works properly.", {
-    tmp <- rtAcquisitionRangeChromatograms(chr)
+test_that("rtAcquisitionRange works properly for Chromatograms.", {
+    tmp <- rtAcquisitionRange(chr)
     expect_equal(as.numeric(tmp), c(2.1, 7.5))
     expect_equal(names(tmp), c("min", "max"))
 
     ## test attributes
-    expect_equal(attr(tmp, "rtAcquisitionRangeChromatograms"), "MS:4000070")
+    expect_equal(attr(tmp, "rtAcquisitionRange"), "MS:4000070")
 })
 
 test_that("maxIntensity works properly.", {
@@ -298,5 +298,108 @@ test_that("areaUnderTic works properly.", {
 
     ## test attributes
     expect_equal(attr(tmp, "areaUnderTic"), "MS:4000155")
+})
+
+test_that("areaUnderTicRtQuantiles works properly.", {
+    tmp <- areaUnderTicRtQuantiles(chr)
+    expect_equal(length(tmp), 4)
+    expect_equal(names(tmp), c("25%", "50%", "75%", "100%"))
+    expect_true(all(is.numeric(tmp)))
+    expect_true(sum(tmp) > 0)  # Total area should be positive
+
+    ## test attributes
+    expect_equal(attr(tmp, "areaUnderTicRtQuantiles"), "MS:4000156")
+})
+
+test_that("areaUnderTicRtQuantiles filters by msLevel for Chromatograms.", {
+    cdata_mslevel <- data.frame(
+        msLevel = c(1L, 2L),
+        mz = c(100, 100),
+        dataOrigin = c("mem1", "mem1")
+    )
+    pdata_mslevel <- list(
+        data.frame(rtime = c(0, 1), intensity = c(1, 1)),
+        data.frame(rtime = c(0, 1), intensity = c(2, 2))
+    )
+    chr_mslevel <- Chromatograms(ChromBackendMemory(), chromData = cdata_mslevel,
+                                 peaksData = pdata_mslevel)
+
+    res_ms1 <- areaUnderTicRtQuantiles(chr_mslevel, msLevel = 1L)
+    expect_equal(as.numeric(res_ms1), rep(0.25, 4), tolerance = 1e-8)
+    expect_equal(names(res_ms1), c("25%", "50%", "75%", "100%"))
+    expect_equal(attr(res_ms1, "areaUnderTicRtQuantiles"), "MS:4000156")
+
+    res_ms2 <- areaUnderTicRtQuantiles(chr_mslevel, msLevel = 2L)
+    expect_equal(as.numeric(res_ms2), rep(0.5, 4), tolerance = 1e-8)
+    expect_equal(names(res_ms2), c("25%", "50%", "75%", "100%"))
+
+    res_empty <- areaUnderTicRtQuantiles(chr_mslevel, msLevel = 3L)
+    expect_true(all(is.na(res_empty)))
+    expect_equal(names(res_empty), c("25%", "50%", "75%", "100%"))
+    expect_equal(attr(res_empty, "areaUnderTicRtQuantiles"), "MS:4000156")
+})
+
+test_that("retentionTimeWindowWidth works properly.", {
+    tmp <- retentionTimeWindowWidth(chr)
+    ## Returns width (max RT - min RT) for each chromatogram
+    ## chr1: 3.9 - 2.1 = 1.8
+    ## chr2: empty, should be NA
+    ## chr3: 7.5 - 5.1 = 2.4
+    expect_equal(length(tmp), 3)
+    expect_equal(as.numeric(tmp[1]), 1.8, tolerance = 1e-6)
+    expect_true(is.na(tmp[2]))  # Empty chromatogram
+    expect_equal(as.numeric(tmp[3]), 2.4, tolerance = 1e-6)
+
+    ## test attributes
+    expect_equal(attr(tmp, "retentionTimeWindowWidth"), "MS:1001907")
+})
+
+## Chromatograms with MS1 and MS2 for areaUnderTicMs1/Ms2 tests
+cdata_ms <- data.frame(
+    msLevel = c(1L, 2L, 1L),
+    mz = c(112.2, 123.3, 134.4),
+    dataOrigin = c("mem1", "mem1", "mem1")
+)
+pdata_ms <- list(
+    data.frame(rtime = c(2.1, 2.5, 3.0), intensity = c(100, 200, 300)),
+    data.frame(rtime = c(3.5, 4.0, 4.5), intensity = c(50, 60, 70)),
+    data.frame(rtime = c(5.0, 5.5, 6.0), intensity = c(400, 500, 600))
+)
+chr_ms <- Chromatograms(ChromBackendMemory(), chromData = cdata_ms, peaksData = pdata_ms)
+
+test_that("areaUnderTicMs1 works properly.", {
+    tmp <- areaUnderTicMs1(chr_ms)
+    ## MS1 chromatograms: chr1 (100+200+300=600) + chr3 (400+500+600=1500) = 2100
+    expect_equal(length(tmp), 1)
+    expect_equal(as.numeric(tmp), 2100)
+
+    ## test attributes
+    expect_equal(attr(tmp, "areaUnderTicMs1"), "MS:4000029")
+
+    ## Test with no MS1 data
+    cdata_ms2_only <- data.frame(msLevel = 2L, mz = 100.0, dataOrigin = "mem1")
+    pdata_ms2_only <- list(data.frame(rtime = c(1, 2), intensity = c(10, 20)))
+    chr_ms2_only <- Chromatograms(ChromBackendMemory(), chromData = cdata_ms2_only,
+                                   peaksData = pdata_ms2_only)
+    tmp2 <- areaUnderTicMs1(chr_ms2_only)
+    expect_true(is.na(tmp2))
+})
+
+test_that("areaUnderTicMs2 works properly.", {
+    tmp <- areaUnderTicMs2(chr_ms)
+    ## MS2 chromatogram: chr2 (50+60+70=180)
+    expect_equal(length(tmp), 1)
+    expect_equal(as.numeric(tmp), 180)
+
+    ## test attributes
+    expect_equal(attr(tmp, "areaUnderTicMs2"), "MS:4000030")
+
+    ## Test with no MS2 data
+    cdata_ms1_only <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_ms1_only <- list(data.frame(rtime = c(1, 2), intensity = c(10, 20)))
+    chr_ms1_only <- Chromatograms(ChromBackendMemory(), chromData = cdata_ms1_only,
+                                   peaksData = pdata_ms1_only)
+    tmp2 <- areaUnderTicMs2(chr_ms1_only)
+    expect_true(is.na(tmp2))
 })
 

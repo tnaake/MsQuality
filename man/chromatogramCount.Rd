@@ -20,7 +20,7 @@ The function `chromatogramCount` computes the number of chromatograms in the
 }
 \details{
 This metric corresponds to the PSI:MS term:
-MS:4000056 (number of chromatograms).
+MS:4000071 (number of chromatograms).
 }
 \examples{
 library(Chromatograms)

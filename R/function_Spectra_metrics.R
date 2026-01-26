@@ -25,7 +25,7 @@
 #'
 #' Retention time values that are \code{NA} are removed.
 #'
-#' @param spectra \code{Spectra} object
+#' @param object \code{Spectra} or \code{Chromatograms} object
 #'
 #' @param ... not used here
 #'
@@ -58,8 +58,11 @@
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' chromatographyDuration(spectra = sps)
-chromatographyDuration <- function(spectra, ...) {
+#' chromatographyDuration(object = sps)
+NULL
+
+#' @noRd
+.chromatographyDuration_spectra <- function(spectra, ...) {
     RT <- rtime(object = spectra)
     res <- max(RT, na.rm = TRUE) - min(RT, na.rm = TRUE)
 
@@ -67,6 +70,11 @@ chromatographyDuration <- function(spectra, ...) {
     attributes(res) <- list(chromatographyDuration = "MS:4000053")
     res
 }
+
+#' @rdname chromatographyDuration
+setMethod("chromatographyDuration", "Spectra", function(object, ...) {
+    .chromatographyDuration_spectra(object, ...)
+})
 
 
 #' @title Order Spectra according to increasing retention time
@@ -670,8 +678,11 @@ mzAcquisitionRange <- function(spectra, msLevel = 2L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' rtAcquisitionRange(spectra = sps, msLevel = 2L)
-rtAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
+#' rtAcquisitionRange(object = sps, msLevel = 2L)
+NULL
+
+#' @noRd
+.rtAcquisitionRange_spectra <- function(spectra, msLevel = 1L, ...) {
 
     spectra <- filterMsLevel(object = spectra, msLevel)
 
@@ -687,6 +698,11 @@ rtAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
         rtAcquisitionRange = "MS:4000070")
     res
 }
+
+#' @rdname rtAcquisitionRange
+setMethod("rtAcquisitionRange", "Spectra", function(object, msLevel = 1L, ...) {
+    .rtAcquisitionRange_spectra(object, msLevel = msLevel, ...)
+})
 
 #' @name msSignal10xChange
 #'
@@ -1741,6 +1757,10 @@ setMethod("areaUnderTic", "Spectra", function(object, msLevel = 1L, ...) {
 #'
 #' @title area under TIC RT quantiles (MS:4000156)
 #'
+#' @rdname areaUnderTicRtQuantiles
+#'
+#' @aliases areaUnderTicRtQuantiles,Spectra-method
+#'
 #' @description
 #' MS:4000156 \cr
 #' "The area under the total ion chromatogram of the retention time quantiles.
@@ -1767,11 +1787,14 @@ setMethod("areaUnderTic", "Spectra", function(object, msLevel = 1L, ...) {
 #' This function interprets the *quantiles* from the [PSI:MS] definition as
 #' *quartiles*, i.e. the 0, 25, 50, 75 and 100\% quantiles are used.
 #'
-#' @param spectra \code{Spectra} object
-#' @param msLevel \code{integer}
+#' @param object \code{Spectra} or \code{Chromatograms} object
+#' @param msLevel \code{integer}; optional MS level filter (defaults to 1L for
+#'     \code{Spectra}; if supplied for \code{Chromatograms}, data are filtered
+#'     via \code{msLevel} before computing the metric)
 #' @param ... not used here
 #'
-#' @return \code{.numeric(4)}
+#' @return A numeric vector of length 4 with areas per quartile,
+#'     named "25%", "50%", "75%", and "100%".
 #'
 #' @author Thomas Naake
 #'
@@ -1801,9 +1824,11 @@ setMethod("areaUnderTic", "Spectra", function(object, msLevel = 1L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' areaUnderTicRtQuantiles(spectra = sps, msLevel = 2L)
-areaUnderTicRtQuantiles <- function(spectra, msLevel = 1L, ...) {
+#' areaUnderTicRtQuantiles(object = sps, msLevel = 2L)
+NULL
 
+#' @noRd
+.areaUnderTicRtQuantiles_spectra <- function(spectra, msLevel = 1L, ...) {
     spectra <- filterMsLevel(object = spectra, msLevel)
 
     if (length(spectra) == 0) {
@@ -1840,6 +1865,11 @@ areaUnderTicRtQuantiles <- function(spectra, msLevel = 1L, ...) {
 
     res
 }
+
+#' @rdname areaUnderTicRtQuantiles
+setMethod("areaUnderTicRtQuantiles", "Spectra", function(object, msLevel = 1L, ...) {
+    .areaUnderTicRtQuantiles_spectra(object, msLevel = msLevel, ...)
+})
 
 #' @name extentIdentifiedPrecursorIntensity
 #'

@@ -14,3 +14,15 @@ setGeneric("areaUnderTic", function(object, ...) standardGeneric("areaUnderTic")
 #' @rdname ticQuantileRtFraction
 #' @export
 setGeneric("ticQuantileRtFraction", function(object, ...) standardGeneric("ticQuantileRtFraction"))
+
+#' @rdname areaUnderTicRtQuantiles
+#' @export
+setGeneric("areaUnderTicRtQuantiles", function(object, ...) standardGeneric("areaUnderTicRtQuantiles"))
+
+#' @rdname chromatographyDuration
+#' @export
+setGeneric("chromatographyDuration", function(object, ...) standardGeneric("chromatographyDuration"))
+
+#' @rdname rtAcquisitionRange
+#' @export
+setGeneric("rtAcquisitionRange", function(object, ...) standardGeneric("rtAcquisitionRange"))

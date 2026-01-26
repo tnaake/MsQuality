@@ -73,8 +73,8 @@ qualityMetrics <- function(object) {
 
     if (is(object, "Chromatograms"))
         .metrics <- c(
-            "chromatogramDuration", "chromatogramCount",
-            "rtAcquisitionRangeChromatograms", "maxIntensity",
+            "chromatographyDuration", "chromatogramCount",
+            "rtAcquisitionRange", "maxIntensity",
             "intensityQuartiles", "intensityMean", "intensitySd",
             "intensityRange", "peakCount", "rtIqrChromatograms",
             "baselineIntensity", "signalToNoiseRatio",
@@ -83,7 +83,8 @@ qualityMetrics <- function(object) {
             "areaUnderIntensityRtQuantiles", "medianIntensityRtIqr",
             "extentIntensity", "intensityQuartileToQuartileLogRatio",
             "xicFwhmQuantiles", "xic50Fraction", "xicHeightQuantileRatios",
-            "ticQuantileRtFraction", "areaUnderTic"
+            "ticQuantileRtFraction", "areaUnderTic", "areaUnderTicRtQuantiles",
+            "retentionTimeWindowWidth", "areaUnderTicMs1", "areaUnderTicMs2"
         )
 
     .metrics

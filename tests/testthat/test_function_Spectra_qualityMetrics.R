@@ -33,7 +33,7 @@ library(Spectra)
 spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 
 
-    "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
+qm_spectra <- c("chromatographyDuration", "ticQuantileRtFraction",
     "rtOverMsQuarters", "ticQuartileToQuartileLogRatio", "numberSpectra",
     "numberEmptyScans", "medianPrecursorMz", "rtIqr", "rtIqrRate",
     "areaUnderTic", "areaUnderTicRtQuantiles",
@@ -53,8 +53,8 @@ qm_mse <- c("chromatographyDuration", "ticQuantileRtFraction",
     "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange",
     "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2",
     "meanCharge", "medianCharge")
-qm_chr <-  c("chromatogramDuration", "chromatogramCount",
-            "rtAcquisitionRangeChromatograms", "maxIntensity",
+qm_chr <-  c("chromatographyDuration", "chromatogramCount",
+            "rtAcquisitionRange", "maxIntensity",
             "intensityQuartiles", "intensityMean", "intensitySd",
             "intensityRange", "peakCount", "rtIqrChromatograms",
             "baselineIntensity", "signalToNoiseRatio",
@@ -63,7 +63,8 @@ qm_chr <-  c("chromatogramDuration", "chromatogramCount",
             "areaUnderIntensityRtQuantiles", "medianIntensityRtIqr",
             "extentIntensity", "intensityQuartileToQuartileLogRatio",
             "xicFwhmQuantiles", "xic50Fraction", "xicHeightQuantileRatios",
-            "ticQuantileRtFraction", "areaUnderTic")
+            "ticQuantileRtFraction", "areaUnderTic", "areaUnderTicRtQuantiles",
+            "retentionTimeWindowWidth", "areaUnderTicMs1", "areaUnderTicMs2")
 
 test_that("qualityMetrics for Spectra", {
     expect_equal(qualityMetrics(spectra), qm_spectra)
