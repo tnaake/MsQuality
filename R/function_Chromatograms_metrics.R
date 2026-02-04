@@ -414,7 +414,6 @@ intensityRange <- function(chromatograms, ...) {
 #' The function returns the count of data points per chromatogram.
 #'
 #' No specific PSI:MS term exists for chromatogram peak count.
-#' Note: MS:4000061 is "MS1 density quantiles", not peak count.
 #'
 #' @param chromatograms `Chromatograms` object
 #' @param ... further arguments (currently ignored)
@@ -586,8 +585,6 @@ signalToNoiseRatio <- function(chromatograms, ...) {
     res
 }
 
-#' @title Fraction of Intensity in Equal RT Intervals
-#'
 #' @description
 #' The function `intensityQuantileRtFraction` calculates the fraction of the
 #' total intensity that falls within 4 equal time intervals (retention time
@@ -621,29 +618,6 @@ intensityQuantileRtFraction <- function(chromatograms, ...) {
 
     if (rt_range[2] == rt_range[1]) {
         res <- setNames(c(1, 0, 0, 0), c("Q1", "Q2", "Q3", "Q4"))
-        attr(res, "intensityQuantileRtFraction") <- "custom_metric:intensity_rt_quantile_fraction"
-        return(res)
-    }
-
-    ## Create 4 bins: [Start, 25%], (25%, 50%], (50%, 75%], (75%, End]
-    breaks <- seq(rt_range[1], rt_range[2], length.out = 5)
-
-    ## include.lowest = TRUE ensures the first point is included in Q1
-    bins <- cut(rts, breaks = breaks, include.lowest = TRUE, labels = FALSE)
-
-    bin_sums <- numeric(4)
-    for (i in 1:4) {
-        bin_sums[i] <- sum(ints[which(bins == i)], na.rm = TRUE)
-    }
-
-    total_intensity <- sum(ints, na.rm = TRUE)
-    res <- bin_sums / total_intensity
-
-    names(res) <- c("Q1", "Q2", "Q3", "Q4")
-    attr(res, "intensityQuantileRtFraction") <- "custom_metric:intensity_rt_quantile_fraction"
-    res
-}
-
 #' @title Number of 10x Intensity Changes across chromatograms
 #'
 #' @description
@@ -770,115 +744,6 @@ medianIntensityRtIqr <- function(chromatograms, ...) {
     res
 }
 
-#' @title Extent of Intensity across chromatograms
-#'
-#' @description
-#' The function `extentIntensity` calculates the range of intensity values
-#' (max - min) across all chromatograms.
-#'
-#' @details
-#' The function returns `max - min` intensity across all chromatograms.
-#'
-#' No specific PSI:MS term exists. It should be created.
-#'
-#' @param chromatograms `Chromatograms` object
-#' @param ... further arguments passed to `min` and `max`
-#'
-#' @return `numeric(1)`
-#'
-#' @author Philippine Louail
-#'
-#' @export
-#'
-#' @examples
-#' library(Chromatograms)
-#' cdata <- data.frame(
-#'     msLevel = c(1L, 1L),
-#'     mz = c(112.2, 123.3),
-#'     dataOrigin = c("mem1", "mem1")
-#' )
-#' pdata <- list(
-#'     data.frame(rtime = c(2.1, 2.5, 3.0, 3.4, 3.9),
-#'                intensity = c(100, 250, 400, 300, 150)),
-#'     data.frame(rtime = c(5.1, 5.8, 6.3, 6.9, 7.5),
-#'                intensity = c(80, 500, 1200, 600, 120))
-#' )
-#' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-#' ## Returns max - min intensity across all chromatograms: 1120
-#' extentIntensity(chr)
-extentIntensity <- function(chromatograms, ...) {
-    all_ints <- unlist(intensity(chromatograms), use.names = FALSE)
-    if (length(all_ints) == 0 || all(is.na(all_ints))) {
-        res <- NA_real_
-    } else {
-        res <- max(all_ints, ...) - min(all_ints, ...)
-    }
-    attr(res, "extentIntensity") <- "custom_metric:extent_intensity"
-    res
-}
-
-#' @title Log Ratio of Intensity Quartiles across chromatograms
-#'
-#' @description
-#' The function `intensityQuartileToQuartileLogRatio` calculates the log2 ratio
-#' between specific intensity quartiles across all chromatograms.
-#'
-#' @details
-#' It calculates `log2(Q_a / Q_b)` across all chromatograms.
-#'
-#' No specific PSI:MS term exists. It should be created.
-#'
-#' @param chromatograms `Chromatograms` object
-#' @param probs `numeric(2)` probabilities for the quartiles (default c(0.25, 0.75))
-#' @param ... further arguments passed to `quantile`
-#'
-#' @return `numeric(1)`
-#'
-#' @author Philippine Louail
-#'
-#' @export
-#'
-#' @examples
-#' library(Chromatograms)
-#' cdata <- data.frame(
-#'     msLevel = c(1L, 1L),
-#'     mz = c(112.2, 123.3),
-#'     dataOrigin = c("mem1", "mem1")
-#' )
-#' pdata <- list(
-#'     data.frame(rtime = c(2.1, 2.5, 3.0, 3.4, 3.9),
-#'                intensity = c(100, 250, 400, 300, 150)),
-#'     data.frame(rtime = c(5.1, 5.8, 6.3, 6.9, 7.5),
-#'                intensity = c(80, 500, 1200, 600, 120))
-#' )
-#' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-#' ## Returns log2(Q3/Q1) ratio across all chromatograms
-#' intensityQuartileToQuartileLogRatio(chr)
-#' ## Use different quartiles
-#' intensityQuartileToQuartileLogRatio(chr, probs = c(0.10, 0.90))
-intensityQuartileToQuartileLogRatio <- function(
-    chromatograms,
-    probs = c(0.25, 0.75),
-    ...
-) {
-    all_ints <- unlist(intensity(chromatograms), use.names = FALSE)
-    if (length(all_ints) == 0 || all(is.na(all_ints))) {
-        res <- NA_real_
-        attr(res, "intensityQuartileToQuartileLogRatio") <- "custom_metric:intensity_quartile_to_quartile_log_ratio"
-        return(res)
-    }
-    qs <- quantile(all_ints, probs = probs, na.rm = TRUE, ...)
-    if (any(qs <= 0)) {
-        res <- NA_real_
-        attr(res, "intensityQuartileToQuartileLogRatio") <- "custom_metric:intensity_quartile_to_quartile_log_ratio"
-        return(res)
-    }
-    res <- log2(qs[2] / qs[1])
-    attr(res, "intensityQuartileToQuartileLogRatio") <- "custom_metric:intensity_quartile_to_quartile_log_ratio"
-    res
-
-}
-
 #' @title Area Under Intensity-RT Quantiles
 #'
 #' @description
@@ -955,32 +820,53 @@ areaUnderIntensityRtQuantiles <- function(chromatograms, ...) {
 #################### PART 2: XIC/EIC METRICS FROM PSI-MS #######################
 ################################################################################
 
-#' @title Distribution of Peak Widths (FWHM)
+#' @title Full Width at Half Maximum (FWHM) per Chromatogram
 #'
 #' @description
-#' The function `xicFwhmQuantiles` calculates the Full Width at Half Maximum (FWHM)
-#' for each chromatogram and returns the quantiles (min, 25%, median, 75%, max).
+#' The function `xicFwhm` calculates the Full Width at Half Maximum (FWHM)
+#' for each chromatogram in the `Chromatograms` object.
 #'
 #' @details
 #' The FWHM is calculated by finding the maximum intensity peak, determining
 #' 50% of that intensity, and linearly interpolating the time difference between
 #' the left and right crossing points.
 #'
-#' This is a custom metric analogous to MS:4000120 (median retention time width).
+#' This metric is analogous to MS:4000051 (XIC-FWHM quantiles) but returns
+#' individual FWHM values per chromatogram instead of summary quantiles.
 #'
 #' @param chromatograms `Chromatograms` object
 #' @param ... further arguments
 #'
-#' @return `numeric(5)` Named vector of quantiles.
+#' @return `numeric` vector with FWHM for each chromatogram. Returns `NA` for
+#'   chromatograms where FWHM cannot be calculated (e.g., empty chromatograms,
+#'   no clear peak, or peak at edge).
 #'
 #' @author Philippine Louail
 #'
-#' @importFrom stats approx quantile
+#' @importFrom stats approx
 #' @importFrom utils tail
 #' @export
-xicFwhmQuantiles <- function(chromatograms, ...) {
+#'
+#' @examples
+#' library(Chromatograms)
+#' cdata <- data.frame(
+#'     msLevel = c(1L, 1L, 1L),
+#'     mz = c(112.2, 123.3, 134.4),
+#'     dataOrigin = c("mem1", "mem1", "mem1")
+#' )
+#' pdata <- list(
+#'     data.frame(rtime = c(2.1, 2.5, 3.0, 3.4, 3.9),
+#'                intensity = c(100, 250, 400, 300, 150)),
+#'     data.frame(rtime = numeric(), intensity = numeric()),
+#'     data.frame(rtime = c(5.1, 5.8, 6.3, 6.9, 7.5),
+#'                intensity = c(80, 500, 1200, 600, 120))
+#' )
+#' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
+#' ## Returns FWHM for each chromatogram (NA for empty chromatogram)
+#' xicFwhm(chr)
+xicFwhm <- function(chromatograms, ...) {
 
-    fwhms <- vapply(
+    res <- vapply(
         seq_along(chromatograms),
         function(i) {
             rts <- rtime(chromatograms)[[i]]
@@ -1021,195 +907,7 @@ xicFwhmQuantiles <- function(chromatograms, ...) {
         numeric(1)
     )
 
-    res <- quantile(fwhms, probs = c(0, 0.25, 0.5, 0.75, 1), na.rm = TRUE)
-    attr(res, "xicFwhmQuantiles") <- "custom_metric:xic_fwhm_distribution"
-    res
-}
-
-#' @title XIC50 fraction
-#'
-#' @description
-#' The function `xic50Fraction` calculates the fraction of XIC peaks that account
-#' for the top half of all XIC-FWHM values.
-#'
-#' @details
-#' This metric characterizes the distribution of precursor peak widths, similar
-#' to how N50 characterizes contig sizes in genome assembly.
-#'
-#' id: MS:4000050
-#' name: XIC50 fraction
-#' def: "The number of XIC that account for the top half of all XIC-FWHM divided
-#' by the number of all XIC." [PSI:MS]
-#' is_a: MS:4000003 ! single value
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_metric_category MS:4000012 ! single run based metric
-#' relationship: has_units UO:0000191 ! fraction
-#'
-#' @param chromatograms `Chromatograms` object
-#' @param ... further arguments
-#'
-#' @return `numeric(1)` fraction value
-#'
-#' @author Philippine Louail
-#'
-#' @export
-#'
-#' @examples
-#' library(Chromatograms)
-#' cdata <- data.frame(
-#'     msLevel = c(1L, 1L, 1L),
-#'     mz = c(112.2, 123.3, 134.4),
-#'     dataOrigin = c("mem1", "mem1", "mem1")
-#' )
-#' pdata <- list(
-#'     data.frame(rtime = c(2.1, 2.5, 3.0, 3.4, 3.9),
-#'                intensity = c(100, 250, 400, 300, 150)),
-#'     data.frame(rtime = c(4.0, 4.5, 5.0, 5.5, 6.0),
-#'                intensity = c(50, 150, 300, 200, 75)),
-#'     data.frame(rtime = c(5.1, 5.8, 6.3, 6.9, 7.5),
-#'                intensity = c(80, 500, 1200, 600, 120))
-#' )
-#' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-#' ## Returns fraction of XICs accounting for top half of FWHM
-#' xic50Fraction(chr)
-xic50Fraction <- function(chromatograms, ...) {
-    fwhm_vals <- vapply(
-        seq_along(chromatograms),
-        function(i) {
-            rts <- rtime(chromatograms)[[i]]
-            ints <- intensity(chromatograms)[[i]]
-
-            if (length(rts) < 3 || all(is.na(ints))) {
-                return(NA_real_)
-            }
-
-            max_idx <- which.max(ints)
-            max_int <- ints[max_idx]
-            half_max <- max_int / 2
-
-            if (max_idx > 1 && max_idx < length(ints)) {
-                left_idx <- max_idx - 1
-                right_idx <- max_idx + 1
-
-                while (left_idx > 1 && ints[left_idx] > half_max) {
-                    left_idx <- left_idx - 1
-                }
-                while (right_idx < length(ints) && ints[right_idx] > half_max) {
-                    right_idx <- right_idx + 1
-                }
-
-                if (left_idx < max_idx && right_idx > max_idx) {
-                    rt_left <- approx(ints[c(left_idx, left_idx + 1)],
-                                      rts[c(left_idx, left_idx + 1)],
-                                      half_max)$y
-                    rt_right <- approx(x = ints[c(right_idx, right_idx - 1)],
-                        y = rts[c(right_idx, right_idx - 1)],
-                        xout = half_max
-                    )$y
-                    return(rt_right - rt_left)
-                }
-            }
-            NA_real_
-        },
-        numeric(1)
-    )
-
-    fwhm_vals <- fwhm_vals[!is.na(fwhm_vals)]
-    if (length(fwhm_vals) < 2) {
-        res <- NA_real_
-    } else {
-        ## Sort FWHM values in descending order
-        sorted_fwhm <- sort(fwhm_vals, decreasing = TRUE)
-        cumsum_fwhm <- cumsum(sorted_fwhm)
-        total_fwhm <- sum(fwhm_vals)
-
-        ## Find number of XICs accounting for top half
-        n_top_half <- sum(cumsum_fwhm <= (total_fwhm / 2)) + 1
-        res <- n_top_half / length(fwhm_vals)
-    }
-    attr(res, "xic50Fraction") <- "MS:4000050"
-    res
-}
-
-#' @title XIC height quantile ratios
-#'
-#' @description
-#' The function `xicHeightQuantileRatios` calculates the log ratios of successive
-#' XIC height quantiles across all chromatograms.
-#'
-#' @details
-#' Returns log ratios of Q2/Q1, Q3/Q2, and max/Q3 of peak heights.
-#'
-#' id: MS:4000182
-#' name: XIC-Height quantile ratios
-#' def: "The log ratio of successive XIC height quantiles. A value triplet
-#' represents the original QuaMeter metrics, the log ratios of XIC-Height-Q2 to
-#' XIC-Height-Q1, XIC-Height-Q3 to XIC-Height-Q2, XIC-Height max to XIC-Height-Q3." [PSI:MS]
-#' is_a: MS:4000004 ! n-tuple
-#' relationship: has_metric_category MS:4000009 ! ID free metric
-#' relationship: has_metric_category MS:4000012 ! single run based metric
-#' relationship: has_metric_category MS:4000018 ! XIC metric
-#' relationship: has_units UO:0000191 ! fraction
-#'
-#' @param chromatograms `Chromatograms` object
-#' @param probs `numeric` vector of probabilities (default c(0.25, 0.5, 0.75))
-#' @param ... further arguments passed to `quantile`
-#'
-#' @return `numeric(3)` named vector with log ratios
-#'
-#' @author Philippine Louail
-#'
-#' @export
-#'
-#' @examples
-#' library(Chromatograms)
-#' cdata <- data.frame(
-#'     msLevel = c(1L, 1L),
-#'     mz = c(112.2, 123.3),
-#'     dataOrigin = c("mem1", "mem1")
-#' )
-#' pdata <- list(
-#'     data.frame(rtime = c(2.1, 2.5, 3.0, 3.4, 3.9),
-#'                intensity = c(100, 250, 400, 300, 150)),
-#'     data.frame(rtime = c(5.1, 5.8, 6.3, 6.9, 7.5),
-#'                intensity = c(80, 500, 1200, 600, 120))
-#' )
-#' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-#' ## Returns log ratios of Q2/Q1, Q3/Q2, max/Q3
-#' xicHeightQuantileRatios(chr)
-xicHeightQuantileRatios <- function(
-    chromatograms,
-    probs = c(0.25, 0.5, 0.75),
-    ...
-) {
-    all_max_ints <- vapply(
-        intensity(chromatograms),
-        function(x) {
-            if (length(x) == 0 || all(is.na(x))) {
-                NA_real_
-            } else {
-                max(x, na.rm = TRUE)
-            }
-        },
-        numeric(1)
-    )
-
-    all_max_ints <- all_max_ints[!is.na(all_max_ints)]
-
-    if (length(all_max_ints) < 2) {
-        res <- setNames(rep(NA_real_, 3), c("Q2/Q1", "Q3/Q2", "max/Q3"))
-    } else {
-        q_vals <- quantile(all_max_ints, probs = c(probs, 1), na.rm = TRUE, ...)
-
-        ## Calculate log ratios
-        res <- c(
-            log2(q_vals[2] / q_vals[1]),
-            log2(q_vals[3] / q_vals[2]),
-            log2(q_vals[4] / q_vals[3])
-        )
-        names(res) <- c("Q2/Q1", "Q3/Q2", "max/Q3")
-    }
-    attr(res, "xicHeightQuantileRatios") <- "MS:4000182"
+    attr(res, "xicFwhm") <- "custom_metric:xic_fwhm"
     res
 }
 
@@ -1320,59 +1018,6 @@ setMethod("ticQuantileRtFraction", "Chromatograms", function(
     attr(res, "ticQuantileRtFraction") <- "MS:4000183"
     res
 })
-
-#' @title Retention time window width
-#'
-#' @description
-#' The function `retentionTimeWindowWidth` calculates the full width of the
-#' retention time window (max - min) for each individual chromatogram.
-#'
-#' @details
-#' Unlike `chromatographyDuration` which calculates the global acquisition range,
-#' this metric calculates the duration for each specific chromatogram (peak)
-#' in the object.
-#'
-#' id: MS:1001907
-#' name: retention time window width
-#' def: "The full width of a retention time window for a chromatographic peak." [PSI:MS]
-#' is_a: MS:1000915 ! retention time window attribute
-#' relationship: has_units UO:0000010 ! second
-#'
-#' @param chromatograms `Chromatograms` object
-#' @param ... further arguments passed to `min` and `max`
-#'
-#' @return `numeric` vector with the RT width for each chromatogram.
-#'
-#' @author Philippine Louail
-#'
-#' @export
-#'
-#' @examples
-#' library(Chromatograms)
-#' cdata <- data.frame(
-#'     msLevel = c(1L, 1L),
-#'     mz = c(112.2, 123.3),
-#'     dataOrigin = c("mem1", "mem1")
-#' )
-#' pdata <- list(
-#'     data.frame(rtime = c(2.1, 2.5, 3.0), intensity = c(100, 250, 400)),
-#'     data.frame(rtime = c(5.1, 5.8, 6.3, 6.9, 7.5), intensity = c(80, 500, 1200, 600, 120))
-#' )
-#' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-#' ## Returns vector of widths: (3.0-2.1), (7.5-5.1)
-#' retentionTimeWindowWidth(chr)
-retentionTimeWindowWidth <- function(chromatograms, ...) {
-    res <- vapply(rtime(chromatograms), function(x) {
-        if (length(x) == 0 || all(is.na(x))) {
-            NA_real_
-        } else {
-            max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
-        }
-    }, numeric(1))
-
-    attr(res, "retentionTimeWindowWidth") <- "MS:1001907"
-    res
-}
 
 #' @title Area under TIC in MS1
 #'

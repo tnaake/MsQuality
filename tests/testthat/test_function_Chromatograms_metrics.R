@@ -153,24 +153,6 @@ test_that("signalToNoiseRatio works properly.", {
     expect_equal(attr(tmp, "signalToNoiseRatio"), "custom_metric:signal_to_noise_ratio")
 })
 
-test_that("intensityQuantileRtFraction works properly.", {
-    tmp <- intensityQuantileRtFraction(chr)
-    ## RT range [2.1, 7.5], bins: [2.1, 3.45], (3.45, 4.8], (4.8, 6.15], (6.15, 7.5]
-    ## Q1: (2.1,100), (2.5,250), (3.0,400), (3.4,300) = 1050
-    ## Q2: (3.9,150) = 150
-    ## Q3: (5.1,80), (5.8,500) = 580
-    ## Q4: (6.3,1200), (6.9,600), (7.5,120) = 1920
-    ## Total = 3700
-    expected <- c(1050, 150, 580, 1920) / 3700
-    expect_equal(length(tmp), 4)
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3", "Q4"))
-    expect_equal(as.numeric(tmp), expected, tolerance = 1e-6)
-    expect_equal(sum(tmp), 1, tolerance = 1e-6)
-
-    ## test attributes
-    expect_equal(attr(tmp, "intensityQuantileRtFraction"), "custom_metric:intensity_rt_quantile_fraction")
-})
-
 test_that("intensity10xChange works properly.", {
     tmp_jump <- intensity10xChange(chr_jump, change = "jump")
     tmp_fall <- intensity10xChange(chr_jump, change = "fall")
@@ -199,32 +181,6 @@ test_that("medianIntensityRtIqr works properly.", {
     expect_equal(attr(tmp, "medianIntensityRtIqr"), "custom_metric:median_intensity_rt_iqr")
 })
 
-test_that("extentIntensity works properly.", {
-    tmp <- extentIntensity(chr)
-    ## Aggregated extent across all chromatograms
-    expect_equal(length(tmp), 1)
-    expect_equal(as.numeric(tmp), 1200 - 80)  # max - min across all chromatograms
-
-    ## test attributes
-    expect_equal(attr(tmp, "extentIntensity"), "custom_metric:extent_intensity")
-})
-
-test_that("intensityQuartileToQuartileLogRatio works properly.", {
-    tmp <- intensityQuartileToQuartileLogRatio(chr)
-    ## All intensities: 100, 250, 400, 300, 150, 80, 500, 1200, 600, 120
-    ## Q1 (0.25) = 122.5, Q3 (0.75) = 525 (using R's default type=7)
-    ## log2(525 / 122.5) = 2.099434
-    all_ints <- c(100, 250, 400, 300, 150, 80, 500, 1200, 600, 120)
-    qs <- quantile(all_ints, probs = c(0.25, 0.75))
-    expected <- log2(qs[2] / qs[1])
-    expect_equal(length(tmp), 1)
-    expect_equal(as.numeric(tmp), as.numeric(expected), tolerance = 1e-6)
-
-    ## test attributes
-    expect_equal(attr(tmp, "intensityQuartileToQuartileLogRatio"),
-                 "custom_metric:intensity_quartile_to_quartile_log_ratio")
-})
-
 test_that("areaUnderIntensityRtQuantiles works properly.", {
     tmp <- areaUnderIntensityRtQuantiles(chr)
     ## RT range [2.1, 7.5], 4 equal bins with cuts at 3.45, 4.8, 6.15
@@ -240,34 +196,21 @@ test_that("areaUnderIntensityRtQuantiles works properly.", {
     expect_equal(attr(tmp, "areaUnderIntensityRtQuantiles"), "custom_metric:area_under_intensity_rt_quantiles")
 })
 
-test_that("xicFwhmQuantiles works properly.", {
-    tmp <- xicFwhmQuantiles(chr)
-    expect_equal(length(tmp), 5)
-    expect_equal(names(tmp), c("0%", "25%", "50%", "75%", "100%"))
-    expect_true(all(is.numeric(tmp)))
-
-    ## test attributes
-    expect_equal(attr(tmp, "xicFwhmQuantiles"), "custom_metric:xic_fwhm_distribution")
-})
-
-test_that("xic50Fraction works properly.", {
-    tmp <- xic50Fraction(chr)
-    expect_equal(length(tmp), 1)
-    expect_true(is.numeric(tmp))
-    expect_true(tmp >= 0 && tmp <= 1 || is.na(tmp))  # Should be a fraction
-
-    ## test attributes
-    expect_equal(attr(tmp, "xic50Fraction"), "MS:4000050")
-})
-
-test_that("xicHeightQuantileRatios works properly.", {
-    tmp <- xicHeightQuantileRatios(chr)
+test_that("xicFwhm works properly.", {
+    tmp <- xicFwhm(chr)
+    ## Returns FWHM for each chromatogram
+    ## chr1: has data with peak, should return numeric FWHM
+    ## chr2: empty, should return NA
+    ## chr3: has data with peak, should return numeric FWHM
     expect_equal(length(tmp), 3)
-    expect_equal(names(tmp), c("Q2/Q1", "Q3/Q2", "max/Q3"))
-    expect_true(all(is.numeric(tmp)))
+    expect_true(is.numeric(tmp[1]))
+    expect_true(is.na(tmp[2]))  # Empty chromatogram
+    expect_true(is.numeric(tmp[3]))
+    expect_true(tmp[1] > 0)  # FWHM should be positive
+    expect_true(tmp[3] > 0)  # FWHM should be positive
 
     ## test attributes
-    expect_equal(attr(tmp, "xicHeightQuantileRatios"), "MS:4000182")
+    expect_equal(attr(tmp, "xicFwhm"), "custom_metric:xic_fwhm")
 })
 
 test_that("ticQuantileRtFraction works properly.", {
@@ -337,21 +280,6 @@ test_that("areaUnderTicRtQuantiles filters by msLevel for Chromatograms.", {
     expect_true(all(is.na(res_empty)))
     expect_equal(names(res_empty), c("25%", "50%", "75%", "100%"))
     expect_equal(attr(res_empty, "areaUnderTicRtQuantiles"), "MS:4000156")
-})
-
-test_that("retentionTimeWindowWidth works properly.", {
-    tmp <- retentionTimeWindowWidth(chr)
-    ## Returns width (max RT - min RT) for each chromatogram
-    ## chr1: 3.9 - 2.1 = 1.8
-    ## chr2: empty, should be NA
-    ## chr3: 7.5 - 5.1 = 2.4
-    expect_equal(length(tmp), 3)
-    expect_equal(as.numeric(tmp[1]), 1.8, tolerance = 1e-6)
-    expect_true(is.na(tmp[2]))  # Empty chromatogram
-    expect_equal(as.numeric(tmp[3]), 2.4, tolerance = 1e-6)
-
-    ## test attributes
-    expect_equal(attr(tmp, "retentionTimeWindowWidth"), "MS:1001907")
 })
 
 ## Chromatograms with MS1 and MS2 for areaUnderTicMs1/Ms2 tests

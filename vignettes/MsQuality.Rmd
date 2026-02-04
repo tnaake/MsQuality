@@ -993,32 +993,27 @@ objects), `MsQuality` includes metrics specifically designed for `Chromatograms`
 objects. These metrics assess chromatographic quality and include:
 
 - *chromatographyDuration* (MS:4000053): Duration of chromatographic run (same generic as for `Spectra`)
-- *numberChromatograms* (MS:4000071): Total number of chromatograms
+- *chromatogramCount* (MS:4000071): Total number of chromatograms
 - *rtAcquisitionRange* (MS:4000070): RT range across chromatograms (same generic as for `Spectra`)
 - *maxIntensity*, *intensityMean*, *intensitySd*: Intensity statistics
-- *intensityQuartiles*, *intensityRange*: Intensity distributions per chromatogram
-- *peakCount*: Number of data points per chromatogram
+- *intensityQuartiles*, *intensityRange*: Intensity distributions
 - *numberEmptyChrom*: Count of empty chromatograms
-- *xicFwhmQuantiles* (MS:4000051): Peak width (FWHM) quantiles
-- *xic50Fraction* (MS:4000050): Fraction of XICs accounting for top half of FWHM
-- *xicHeightQuantileRatios* (MS:4000182): Log ratios of XIC height quantiles
+- *xicFwhm*: Full Width at Half Maximum (FWHM) per chromatogram
 - *ticQuantileRtFraction* (MS:4000183): RT fraction when TIC quantiles accumulate
-- *ms1TicChangeQuantileRatios* (MS:4000186): TIC change quantile ratios
-- *ms1TicQuantileRatios* (MS:4000187): TIC quantile ratios
-- *areaUnderTic* (MS:4000029): Total area under TIC
+- *areaUnderTic* (MS:4000155): Total area under TIC
+- *areaUnderTicRtQuantiles* (MS:4000156): Area under TIC per RT quartile
+- *areaUnderTicMs1* (MS:4000029): Area under TIC for MS1
+- *areaUnderTicMs2* (MS:4000030): Area under TIC for MS2
 - *areaUnderIntensityRtQuantiles*: AUC per RT quartile
 - *intensity10xChange*: Count of 10x intensity jumps/falls
 - *medianIntensityRtIqr*: Median intensity in RT IQR
-- *extentIntensity*: Intensity range (max - min)
-- *intensityQuartileToQuartileLogRatio*: Log ratio of intensity quartiles
 - *baselineIntensity*: 5th percentile (baseline estimate)
 - *signalToNoiseRatio*: Max/baseline ratio
 - *rtIqrChromatograms*: RT interquartile range
-- *intensityQuantileRtFraction*: Fraction of intensity in RT quartiles
 
 For complete documentation of each metric, including calculation details and
-PSI-MS accessions, see the respective help pages (e.g., `?chromatogramDuration`,
-`?xicFwhmQuantiles`).
+PSI-MS accessions, see the respective help pages (e.g., `?chromatographyDuration`,
+`?xicFwhm`).
 
 ## Obtain the metrics in `data.frame`-format
 

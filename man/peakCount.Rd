@@ -22,7 +22,6 @@ time - intensity pairs) for each chromatogram.
 The function returns the count of data points per chromatogram.
 
 No specific PSI:MS term exists for chromatogram peak count.
-Note: MS:4000061 is "MS1 density quantiles", not peak count.
 }
 \examples{
 library(Chromatograms)

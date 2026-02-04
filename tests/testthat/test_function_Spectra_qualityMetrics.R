@@ -58,13 +58,12 @@ qm_chr <-  c("chromatographyDuration", "chromatogramCount",
             "intensityQuartiles", "intensityMean", "intensitySd",
             "intensityRange", "peakCount", "rtIqrChromatograms",
             "baselineIntensity", "signalToNoiseRatio",
-            "intensityQuantileRtFraction", "intensity10xChange",
+            "intensity10xChange",
             "numberEmptyChrom",
             "areaUnderIntensityRtQuantiles", "medianIntensityRtIqr",
-            "extentIntensity", "intensityQuartileToQuartileLogRatio",
-            "xicFwhmQuantiles", "xic50Fraction", "xicHeightQuantileRatios",
+            "xicFwhm",
             "ticQuantileRtFraction", "areaUnderTic", "areaUnderTicRtQuantiles",
-            "retentionTimeWindowWidth", "areaUnderTicMs1", "areaUnderTicMs2")
+            "areaUnderTicMs1", "areaUnderTicMs2")
 
 test_that("qualityMetrics for Spectra", {
     expect_equal(qualityMetrics(spectra), qm_spectra)
