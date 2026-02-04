@@ -585,39 +585,6 @@ signalToNoiseRatio <- function(chromatograms, ...) {
     res
 }
 
-#' @description
-#' The function `intensityQuantileRtFraction` calculates the fraction of the
-#' total intensity that falls within 4 equal time intervals (retention time
-#' quartiles) across the entire run.
-#'
-#' @details
-#' The retention time range (min to max) is divided into 4 equal bins. The sum
-#' of intensities for data points falling into each bin is calculated and
-#' divided by the total intensity.
-#'
-#' @param chromatograms `Chromatograms` object
-#' @param ... further arguments passed to `range`
-#'
-#' @return `numeric(4)` named vector with fractions for Q1, Q2, Q3, Q4
-#'
-#' @author Philippine Louail
-#'
-#' @export
-#'
-intensityQuantileRtFraction <- function(chromatograms, ...) {
-    ints <- unlist(intensity(chromatograms), use.names = FALSE)
-    rts <- unlist(rtime(chromatograms), use.names = FALSE)
-
-    if (length(rts) == 0 || all(is.na(rts)) || sum(ints, na.rm = TRUE) == 0) {
-        res <- setNames(rep(NA_real_, 4), c("Q1", "Q2", "Q3", "Q4"))
-        attr(res, "intensityQuantileRtFraction") <- "custom_metric:intensity_rt_quantile_fraction"
-        return(res)
-    }
-
-    rt_range <- range(rts, na.rm = TRUE, ...)
-
-    if (rt_range[2] == rt_range[1]) {
-        res <- setNames(c(1, 0, 0, 0), c("Q1", "Q2", "Q3", "Q4"))
 #' @title Number of 10x Intensity Changes across chromatograms
 #'
 #' @description
