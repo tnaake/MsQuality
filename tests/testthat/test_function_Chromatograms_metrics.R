@@ -121,6 +121,41 @@ test_that("peakCount works properly.", {
     expect_equal(as.numeric(tmp[1]), 5)
     expect_equal(as.numeric(tmp[2]), 0)  # Empty chromatogram
     expect_equal(as.numeric(tmp[3]), 5)
+
+    ## test attributes
+    expect_equal(attr(tmp, "peakCount"), "custom_metric:peak_count")
+})
+
+test_that("peakCount works with na.rm parameter.", {
+    ## Create chromatograms with NA values in intensities
+    cdata_na <- data.frame(
+        msLevel = c(1L, 1L),
+        mz = c(112.2, 123.3),
+        dataOrigin = c("mem1", "mem1")
+    )
+    pdata_na <- list(
+        data.frame(rtime = c(1.0, 2.0, 3.0, 4.0, 5.0),
+                   intensity = c(100, NA, 300, NA, 500)),
+        data.frame(rtime = c(1.0, 2.0, 3.0),
+                   intensity = c(NA, NA, NA))
+    )
+    chr_na <- Chromatograms(ChromBackendMemory(), chromData = cdata_na,
+                            peaksData = pdata_na)
+
+    ## Without na.rm (default = FALSE): counts all data points including NA
+    tmp_with_na <- peakCount(chr_na, na.rm = FALSE)
+    expect_equal(as.numeric(tmp_with_na[1]), 5)  # All 5 points counted
+    expect_equal(as.numeric(tmp_with_na[2]), 3)  # All 3 points counted
+
+    ## With na.rm = TRUE: counts only non-NA intensity values
+    tmp_no_na <- peakCount(chr_na, na.rm = TRUE)
+    ## na.rm = TRUE returns total count of non-NA values across all chromatograms
+    expect_true(is.numeric(tmp_no_na))
+    ## chr1 has 3 non-NA values (100, 300, 500), chr2 has 0 non-NA values
+    expect_equal(as.numeric(tmp_no_na), 3)
+
+    ## test attributes preserved
+    expect_equal(attr(tmp_no_na, "peakCount"), "custom_metric:peak_count")
 })
 
 test_that("rtIqrChromatograms works properly.", {

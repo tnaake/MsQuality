@@ -4,10 +4,13 @@
 \alias{peakCount}
 \title{Peak Count (Number of data points) per chromatogram}
 \usage{
-peakCount(chromatograms, ...)
+peakCount(chromatograms, na.rm = FALSE, ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
+
+\item{na.rm}{`logical(1)` indicating whether `NA` values should be
+removed before counting (default `FALSE`)}
 
 \item{...}{further arguments (currently ignored)}
 }

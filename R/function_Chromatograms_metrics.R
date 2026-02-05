@@ -416,6 +416,8 @@ intensityRange <- function(chromatograms, ...) {
 #' No specific PSI:MS term exists for chromatogram peak count.
 #'
 #' @param chromatograms `Chromatograms` object
+#' @param na.rm `logical(1)` indicating whether `NA` values should be
+#' removed before counting (default `FALSE`)
 #' @param ... further arguments (currently ignored)
 #'
 #' @return `integer` vector of length equal to number of chromatograms
@@ -441,10 +443,14 @@ intensityRange <- function(chromatograms, ...) {
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 #' ## Returns number of data points per chromatogram: 5, 0, 5
 #' peakCount(chr)
-peakCount <- function(chromatograms, ...) {
+peakCount <- function(chromatograms, na.rm = FALSE, ...) {
+  if (na.rm) {
+    res <- length(intensity(chromatograms)[!is.na(intensity(chromatograms))])
+  } else {
     res <- lengths(chromatograms)
-    attr(res, "peakCount") <- "custom_metric:peak_count"
-    res
+  }
+  attr(res, "peakCount") <- "custom_metric:peak_count"
+  res
 }
 
 #' @title Retention Time IQR across chromatograms
