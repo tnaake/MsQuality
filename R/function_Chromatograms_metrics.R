@@ -445,7 +445,7 @@ intensityRange <- function(chromatograms, ...) {
 #' peakCount(chr)
 peakCount <- function(chromatograms, na.rm = FALSE, ...) {
   if (na.rm) {
-    res <- length(intensity(chromatograms)[!is.na(intensity(chromatograms))])
+    res <- length(unlist(intensity(chromatograms)[!is.na(intensity(chromatograms))]))
   } else {
     res <- lengths(chromatograms)
   }
