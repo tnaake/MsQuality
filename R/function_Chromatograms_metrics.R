@@ -420,7 +420,7 @@ intensityRange <- function(chromatograms, ...) {
 #' removed before counting (default `FALSE`)
 #' @param ... further arguments (currently ignored)
 #'
-#' @return `integer` vector of length equal to number of chromatograms
+#' @return `integer(1)` total count of data points across all chromatograms
 #'
 #' @author Philippine Louail
 #'
@@ -441,16 +441,17 @@ intensityRange <- function(chromatograms, ...) {
 #'                intensity = c(80, 500, 1200, 600, 120))
 #' )
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-#' ## Returns number of data points per chromatogram: 5, 0, 5
+#' ## Returns total number of data points: 10 (5 + 0 + 5)
 #' peakCount(chr)
 peakCount <- function(chromatograms, na.rm = FALSE, ...) {
-  if (na.rm) {
-    res <- length(unlist(intensity(chromatograms)[!is.na(intensity(chromatograms))]))
-  } else {
-    res <- lengths(chromatograms)
-  }
-  attr(res, "peakCount") <- "custom_metric:peak_count"
-  res
+    int <- unlist(intensity(chromatograms), use.names = FALSE)
+    if (na.rm) {
+        res <- sum(!is.na(int))
+    } else {
+        res <- length(int)
+    }
+    attr(res, "peakCount") <- "custom_metric:peak_count"
+    res
 }
 
 #' @title Retention Time IQR across chromatograms
@@ -801,7 +802,7 @@ areaUnderIntensityRtQuantiles <- function(chromatograms, ...) {
 #'
 #' @details
 #' The FWHM is calculated by finding the maximum intensity peak, determining
-#' 50% of that intensity, and linearly interpolating the time difference between
+#' 50\% of that intensity, and linearly interpolating the time difference between
 #' the left and right crossing points.
 #'
 #' This metric is analogous to MS:4000051 (XIC-FWHM quantiles) but returns
@@ -844,15 +845,11 @@ xicFwhm <- function(chromatograms, ...) {
         function(i) {
             rts <- rtime(chromatograms)[[i]]
             ints <- intensity(chromatograms)[[i]]
-
-            ## Basic checks
             if (length(ints) < 3 || all(is.na(ints))) return(NA_real_)
             max_int <- max(ints, na.rm = TRUE)
             if (max_int == 0) return(NA_real_)
-
             max_idx <- which.max(ints)
             half_max <- max_int / 2
-
             ## Left side (rising): Find last point below half_max before peak
             left_candidates <- which(ints[1:max_idx] < half_max)
             if (length(left_candidates) == 0) return(NA_real_)
@@ -863,24 +860,169 @@ xicFwhm <- function(chromatograms, ...) {
             if (length(right_candidates) == 0) return(NA_real_)
             right_idx <- max_idx + right_candidates[1] - 1
 
-            ## Interpolation Logic
-            ## Left: ints[left_idx] < half_max < ints[left_idx+1] (Increasing)
             rt_left <- approx(x = ints[c(left_idx, left_idx + 1)],
                               y = rts[c(left_idx, left_idx + 1)],
                               xout = half_max)$y
-
-            ## Right: ints[right_idx-1] > half_max > ints[right_idx] (Decreasing)
-            ## We MUST reverse the vectors so 'x' (intensity) is increasing for approx()
             rt_right <- approx(x = ints[c(right_idx, right_idx - 1)],
                                y = rts[c(right_idx, right_idx - 1)],
                                xout = half_max)$y
-
             return(rt_right - rt_left)
         },
         numeric(1)
     )
-
     attr(res, "xicFwhm") <- "custom_metric:xic_fwhm"
+    res
+}
+
+#' @title Peak Boundary for a Chromatogram
+#'
+#' @description
+#' The function `peakBoundary` finds the left and right retention time boundaries
+#' of the main peak in a single chromatogram (EIC).
+#'
+#' @details
+#' The peak boundaries are determined by finding where the intensity drops to
+#' baseline level (defined by the `baselineThreshold` parameter, default 5\% of
+#' max intensity) on either side of the maximum intensity point.
+#'
+#' The function uses linear interpolation to find the exact RT where the
+#' intensity crosses the baseline threshold.
+#'
+#' The user should provide a single chromatogram representing an extracted ion
+#' chromatogram (EIC) for a specific compound/feature.
+#'
+#' @param chromatograms `Chromatograms` object containing a single chromatogram
+#' @param baselineThreshold `numeric(1)` fraction of max intensity to use as
+#'   baseline threshold (default 0.05, i.e., 5\%)
+#' @param ... further arguments
+#'
+#' @return `numeric(2)` named vector with `left_rt` and `right_rt` values.
+#'   Returns `NA` values if boundaries cannot be determined.
+#'
+#' @author Philippine Louail
+#'
+#' @importFrom stats approx
+#' @importFrom utils tail
+#' @export
+#'
+#' @examples
+#' library(Chromatograms)
+#' cdata <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+#' pdata <- list(
+#'     data.frame(rtime = c(2.1, 2.5, 3.0, 3.4, 3.9),
+#'                intensity = c(100, 250, 400, 300, 150))
+#' )
+#' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
+#' ## Returns peak boundaries (left_rt, right_rt) for the chromatogram
+#' peakBoundary(chr)
+peakBoundary <- function(chromatograms, baselineThreshold = 0.05, ...) {
+
+    rts <- rtime(chromatograms)[[1L]]
+    ints <- intensity(chromatograms)[[1L]]
+
+    ## Basic checks
+    if (length(ints) < 3 || all(is.na(ints))) {
+        res <- c(left_rt = NA_real_, right_rt = NA_real_)
+        attr(res, "peakBoundary") <- "custom_metric:peak_boundary"
+        return(res)
+    }
+
+    max_int <- max(ints, na.rm = TRUE)
+    if (max_int == 0) {
+        res <- c(left_rt = NA_real_, right_rt = NA_real_)
+        attr(res, "peakBoundary") <- "custom_metric:peak_boundary"
+        return(res)
+    }
+
+    max_idx <- which.max(ints)
+    threshold <- max_int * baselineThreshold
+
+    ## Left side: Find where intensity drops below threshold before peak
+    left_region <- ints[1:max_idx]
+    left_candidates <- which(left_region <= threshold)
+
+    if (length(left_candidates) == 0) {
+        rt_left <- rts[1]
+    } else {
+        left_idx <- tail(left_candidates, 1)
+        if (left_idx == max_idx) {
+            rt_left <- rts[1]
+        } else {
+            rt_left <- approx(x = ints[c(left_idx, left_idx + 1)],
+                              y = rts[c(left_idx, left_idx + 1)],
+                              xout = threshold)$y
+            if (is.na(rt_left)) rt_left <- rts[left_idx]
+        }
+    }
+
+    ## Right side: Find where intensity drops below threshold after peak
+    right_region <- ints[max_idx:length(ints)]
+    right_candidates <- which(right_region <= threshold)
+
+    if (length(right_candidates) == 0) {
+        rt_right <- rts[length(rts)]
+    } else {
+        right_idx <- max_idx + right_candidates[1] - 1
+        if (right_idx == max_idx) {
+            rt_right <- rts[length(rts)]
+        } else {
+            rt_right <- approx(x = ints[c(right_idx, right_idx - 1)],
+                               y = rts[c(right_idx, right_idx - 1)],
+                               xout = threshold)$y
+            if (is.na(rt_right)) rt_right <- rts[right_idx]
+        }
+    }
+
+    res <- c(left_rt = rt_left, right_rt = rt_right)
+    attr(res, "peakBoundary") <- "custom_metric:peak_boundary"
+    res
+}
+
+#' @title Peak Width for a Chromatogram
+#'
+#' @description
+#' The function `peakWidth` calculates the width of the main peak in a single
+#' chromatogram (EIC).
+#'
+#' @details
+#' The peak width is calculated as the difference between the right and left
+#' peak boundaries determined by `peakBoundary()`. The boundaries are found
+#' where the intensity drops to the baseline threshold (default 5\% of max
+#' intensity).
+#'
+#' This is different from FWHM which measures width at 50\% of max intensity.
+#' Peak width at baseline gives a measure of the total chromatographic peak
+#' extent.
+#'
+#' The user should provide a single chromatogram representing an extracted ion
+#' chromatogram (EIC) for a specific compound/feature.
+#'
+#' @param chromatograms `Chromatograms` object containing a single chromatogram
+#' @param baselineThreshold `numeric(1)` fraction of max intensity to use as
+#'   baseline threshold (default 0.05, i.e., 5\%)
+#' @param ... further arguments
+#'
+#' @return `numeric(1)` peak width value. Returns `NA` if width cannot be
+#'   calculated.
+#'
+#' @author Philippine Louail
+#'
+#' @export
+#'
+#' @examples
+#' library(Chromatograms)
+#' cdata <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+#' pdata <- list(
+#'     data.frame(rtime = c(2.1, 2.5, 3.0, 3.4, 3.9),
+#'                intensity = c(100, 250, 400, 300, 150))
+#' )
+#' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
+#' ## Returns peak width for the chromatogram
+#' peakWidth(chr)
+peakWidth <- function(chromatograms, baselineThreshold = 0.05, ...) {
+    boundaries <- peakBoundary(chromatograms, baselineThreshold = baselineThreshold, ...)
+    res <- unname(boundaries["right_rt"] - boundaries["left_rt"])
+    attr(res, "peakWidth") <- "custom_metric:peak_width"
     res
 }
 

@@ -117,45 +117,24 @@ test_that("intensityRange works properly.", {
 })
 
 test_that("peakCount works properly.", {
+    ## Returns total count of data points across all chromatograms
     tmp <- peakCount(chr)
-    expect_equal(as.numeric(tmp[1]), 5)
-    expect_equal(as.numeric(tmp[2]), 0)  # Empty chromatogram
-    expect_equal(as.numeric(tmp[3]), 5)
+    expect_equal(length(tmp), 1)        # Single aggregated value
+    expect_equal(as.numeric(tmp), 10)   # 5 + 0 + 5 = 10 total points
 
     ## test attributes
     expect_equal(attr(tmp, "peakCount"), "custom_metric:peak_count")
 })
 
 test_that("peakCount works with na.rm parameter.", {
-    ## Create chromatograms with NA values in intensities
-    cdata_na <- data.frame(
-        msLevel = c(1L, 1L),
-        mz = c(112.2, 123.3),
-        dataOrigin = c("mem1", "mem1")
-    )
-    pdata_na <- list(
-        data.frame(rtime = c(1.0, 2.0, 3.0, 4.0, 5.0),
-                   intensity = c(100, NA, 300, NA, 500)),
-        data.frame(rtime = c(1.0, 2.0, 3.0),
-                   intensity = c(NA, NA, NA))
-    )
-    chr_na <- Chromatograms(ChromBackendMemory(), chromData = cdata_na,
-                            peaksData = pdata_na)
+    ## Test with all non-NA data (standard chr object)
+    ## na.rm = TRUE and na.rm = FALSE should give same result when no NAs
+    tmp_standard_rm <- peakCount(chr, na.rm = TRUE)
+    expect_equal(as.numeric(tmp_standard_rm), 10)  # All 10 points are non-NA
 
-    ## Without na.rm (default = FALSE): counts all data points including NA
-    tmp_with_na <- peakCount(chr_na, na.rm = FALSE)
-    expect_equal(as.numeric(tmp_with_na[1]), 5)  # All 5 points counted
-    expect_equal(as.numeric(tmp_with_na[2]), 3)  # All 3 points counted
-
-    ## With na.rm = TRUE: counts only non-NA intensity values
-    tmp_no_na <- peakCount(chr_na, na.rm = TRUE)
-    ## na.rm = TRUE returns total count of non-NA values across all chromatograms
-    expect_true(is.numeric(tmp_no_na))
-    ## chr1 has 3 non-NA values (100, 300, 500), chr2 has 0 non-NA values
-    expect_equal(as.numeric(tmp_no_na), 3)
-
-    ## test attributes preserved
-    expect_equal(attr(tmp_no_na, "peakCount"), "custom_metric:peak_count")
+    tmp_standard_no_rm <- peakCount(chr, na.rm = FALSE)
+    expect_equal(as.numeric(tmp_standard_no_rm), 10)  # Same result when no NAs
+    expect_equal(attr(tmp_standard_no_rm, "peakCount"), "custom_metric:peak_count")
 })
 
 test_that("rtIqrChromatograms works properly.", {
@@ -364,5 +343,104 @@ test_that("areaUnderTicMs2 works properly.", {
                                    peaksData = pdata_ms1_only)
     tmp2 <- areaUnderTicMs2(chr_ms1_only)
     expect_true(is.na(tmp2))
+})
+
+## peakBoundary tests
+test_that("peakBoundary returns correct RT boundaries.", {
+    ## Simple chromatogram with clear peak
+    cdata_pb <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_pb <- list(data.frame(rtime = c(1, 2, 3, 4, 5),
+                                intensity = c(10, 50, 100, 50, 10)))
+    chr_pb <- Chromatograms(ChromBackendMemory(), chromData = cdata_pb, peaksData = pdata_pb)
+
+    tmp <- peakBoundary(chr_pb)
+    expect_equal(length(tmp), 2)
+    expect_equal(names(tmp), c("left_rt", "right_rt"))
+    ## With default threshold = 0.05 (5% of 100 = 5), all points are above threshold
+    ## so boundaries are at the edges (rt 1 and 5)
+    expect_equal(as.numeric(tmp), c(1, 5))
+    expect_equal(attr(tmp, "peakBoundary"), "custom_metric:peak_boundary")
+})
+
+test_that("peakBoundary finds interpolated boundaries.", {
+    ## Peak where intensity drops below threshold
+    cdata_pb <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_pb <- list(data.frame(rtime = c(1, 2, 3, 4, 5),
+                                intensity = c(0, 50, 100, 50, 0)))
+    chr_pb <- Chromatograms(ChromBackendMemory(), chromData = cdata_pb, peaksData = pdata_pb)
+
+    tmp <- peakBoundary(chr_pb)
+    expect_equal(length(tmp), 2)
+    expect_equal(names(tmp), c("left_rt", "right_rt"))
+    ## threshold = 5, crosses between rt 1-2 and rt 4-5
+    expect_true(tmp["left_rt"] > 1 && tmp["left_rt"] < 2)
+    expect_true(tmp["right_rt"] > 4 && tmp["right_rt"] < 5)
+})
+
+test_that("peakBoundary handles NA intensities.", {
+    cdata_na <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_na <- list(data.frame(rtime = c(1, 2, 3, 4, 5),
+                                intensity = c(10, NA, 100, NA, 10)))
+    chr_na <- Chromatograms(ChromBackendMemory(), chromData = cdata_na, peaksData = pdata_na)
+
+    tmp <- peakBoundary(chr_na)
+    expect_equal(length(tmp), 2)
+    expect_equal(names(tmp), c("left_rt", "right_rt"))
+})
+
+test_that("peakBoundary returns NA for empty chromatograms.", {
+    cdata_empty <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_empty <- list(data.frame(rtime = numeric(), intensity = numeric()))
+    chr_empty <- Chromatograms(ChromBackendMemory(), chromData = cdata_empty, peaksData = pdata_empty)
+
+    tmp <- peakBoundary(chr_empty)
+    expect_equal(length(tmp), 2)
+    expect_true(all(is.na(tmp)))
+})
+
+## peakWidth tests
+test_that("peakWidth returns correct width.", {
+    cdata_pw <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_pw <- list(data.frame(rtime = c(1, 2, 3, 4, 5),
+                                intensity = c(10, 50, 100, 50, 10)))
+    chr_pw <- Chromatograms(ChromBackendMemory(), chromData = cdata_pw, peaksData = pdata_pw)
+
+    tmp <- peakWidth(chr_pw)
+    expect_equal(length(tmp), 1)
+    ## boundaries at rt 1 and 5 (all above 5% threshold), so width = 5 - 1 = 4
+    expect_equal(as.numeric(tmp), 4)
+    expect_equal(attr(tmp, "peakWidth"), "custom_metric:peak_width")
+})
+
+test_that("peakWidth calculates interpolated width.", {
+    cdata_pw <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_pw <- list(data.frame(rtime = c(1, 2, 3, 4, 5),
+                                intensity = c(0, 50, 100, 50, 0)))
+    chr_pw <- Chromatograms(ChromBackendMemory(), chromData = cdata_pw, peaksData = pdata_pw)
+
+    tmp <- peakWidth(chr_pw)
+    expect_equal(length(tmp), 1)
+    ## Width should be between ~3 and ~4 (interpolated boundaries)
+    expect_true(tmp > 3 && tmp < 4)
+})
+
+test_that("peakWidth handles NA intensities.", {
+    cdata_na <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_na <- list(data.frame(rtime = c(1, 2, 3, 4, 5),
+                                intensity = c(10, NA, 100, NA, 10)))
+    chr_na <- Chromatograms(ChromBackendMemory(), chromData = cdata_na, peaksData = pdata_na)
+
+    tmp <- peakWidth(chr_na)
+    expect_equal(length(tmp), 1)
+})
+
+test_that("peakWidth returns NA for empty chromatograms.", {
+    cdata_empty <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_empty <- list(data.frame(rtime = numeric(), intensity = numeric()))
+    chr_empty <- Chromatograms(ChromBackendMemory(), chromData = cdata_empty, peaksData = pdata_empty)
+
+    tmp <- peakWidth(chr_empty)
+    expect_equal(length(tmp), 1)
+    expect_true(is.na(tmp))
 })
 

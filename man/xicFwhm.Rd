@@ -22,7 +22,7 @@ for each chromatogram in the `Chromatograms` object.
 }
 \details{
 The FWHM is calculated by finding the maximum intensity peak, determining
-50% of that intensity, and linearly interpolating the time difference between
+50\% of that intensity, and linearly interpolating the time difference between
 the left and right crossing points.
 
 This metric is analogous to MS:4000051 (XIC-FWHM quantiles) but returns

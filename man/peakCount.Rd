@@ -15,7 +15,7 @@ removed before counting (default `FALSE`)}
 \item{...}{further arguments (currently ignored)}
 }
 \value{
-`integer` vector of length equal to number of chromatograms
+`integer(1)` total count of data points across all chromatograms
 }
 \description{
 The function `peakCount` returns the number of data points (retention
@@ -41,7 +41,7 @@ pdata <- list(
                intensity = c(80, 500, 1200, 600, 120))
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-## Returns number of data points per chromatogram: 5, 0, 5
+## Returns total number of data points: 10 (5 + 0 + 5)
 peakCount(chr)
 }
 \author{
