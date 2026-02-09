@@ -1452,6 +1452,8 @@ medianPrecursorMz <- function(spectra, msLevel = 1L,
 #' @title interquartile RT period for identified quantification data points
 #' (MS:4000153)
 #'
+#' @aliases rtIqr,Spectra-method rtIqr,Chromatograms-method
+#'
 #' @description
 #' MS:4000153 \cr
 #' "The interquartile retention time period, in seconds, for all quantification
@@ -1492,10 +1494,13 @@ medianPrecursorMz <- function(spectra, msLevel = 1L,
 #' different unit than seconds. \code{rtIqr} will return the IQR based on the
 #' values stored in \code{spectra} and will not convert these values to seconds.
 #'
-#' @param spectra \code{Spectra} object
-#' @param msLevel \code{integer}
+#' For \code{Chromatograms} objects, the function calculates the IQR of retention
+#' times across all chromatograms.
+#'
+#' @param object \code{Spectra} or \code{Chromatograms} object
+#' @param msLevel \code{integer} (only used for \code{Spectra})
 #' @param identificationLevel \code{character(1)}, one of \code{"all"},
-#' \code{"identified"}, or \code{"unidentified"}
+#' \code{"identified"}, or \code{"unidentified"} (only used for \code{Spectra})
 #' @param ... not used here
 #'
 #' @return \code{numeric(1)}
@@ -1528,8 +1533,11 @@ medianPrecursorMz <- function(spectra, msLevel = 1L,
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' rtIqr(spectra = sps, msLevel = 2L)
-rtIqr <- function(spectra, msLevel = 1L,
+#' rtIqr(object = sps, msLevel = 2L)
+NULL
+
+#' @noRd
+.rtIqr_spectra <- function(spectra, msLevel = 1L,
         identificationLevel = c("all", "identified", "unidentified"), ...) {
 
     identificationLevel <- match.arg(identificationLevel)
@@ -1553,6 +1561,13 @@ rtIqr <- function(spectra, msLevel = 1L,
 
     res
 }
+
+#' @rdname rtIqr
+setMethod("rtIqr", "Spectra", function(object, msLevel = 1L,
+        identificationLevel = c("all", "identified", "unidentified"), ...) {
+    .rtIqr_spectra(object, msLevel = msLevel,
+        identificationLevel = identificationLevel, ...)
+})
 
 #' @name rtIqrRate
 #'

@@ -1004,12 +1004,11 @@ objects. These metrics assess chromatographic quality and include:
 - *areaUnderTicRtQuantiles* (MS:4000156): Area under TIC per RT quartile
 - *areaUnderTicMs1* (MS:4000029): Area under TIC for MS1
 - *areaUnderTicMs2* (MS:4000030): Area under TIC for MS2
-- *areaUnderIntensityRtQuantiles*: AUC per RT quartile
 - *intensity10xChange*: Count of 10x intensity jumps/falls
 - *medianIntensityRtIqr*: Median intensity in RT IQR
 - *baselineIntensity*: 5th percentile (baseline estimate)
 - *signalToNoiseRatio*: Max/baseline ratio
-- *rtIqrChromatograms*: RT interquartile range
+- *rtIqr*: RT interquartile range
 
 For complete documentation of each metric, including calculation details and
 PSI-MS accessions, see the respective help pages (e.g., `?chromatographyDuration`,

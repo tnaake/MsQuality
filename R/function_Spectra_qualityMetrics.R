@@ -76,11 +76,11 @@ qualityMetrics <- function(object) {
             "chromatographyDuration", "chromatogramCount",
             "rtAcquisitionRange", "maxIntensity",
             "intensityQuartiles", "intensityMean", "intensitySd",
-            "intensityRange", "peakCount", "rtIqrChromatograms",
+            "intensityRange", "peakCount", "rtIqr",
             "baselineIntensity", "signalToNoiseRatio",
             "intensity10xChange",
             "numberEmptyChrom",
-            "areaUnderIntensityRtQuantiles", "medianIntensityRtIqr",
+            "medianIntensityRtIqr",
             "xicFwhm",
             "ticQuantileRtFraction", "areaUnderTic", "areaUnderTicRtQuantiles",
             "areaUnderTicMs1", "areaUnderTicMs2"

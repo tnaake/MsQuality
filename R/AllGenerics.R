@@ -26,3 +26,7 @@ setGeneric("chromatographyDuration", function(object, ...) standardGeneric("chro
 #' @rdname rtAcquisitionRange
 #' @export
 setGeneric("rtAcquisitionRange", function(object, ...) standardGeneric("rtAcquisitionRange"))
+
+#' @rdname rtIqr
+#' @export
+setGeneric("rtIqr", function(object, ...) standardGeneric("rtIqr"))

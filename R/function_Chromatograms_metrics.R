@@ -454,25 +454,11 @@ peakCount <- function(chromatograms, na.rm = FALSE, ...) {
     res
 }
 
-#' @title Retention Time IQR across chromatograms
+#' @name rtIqr
 #'
-#' @description
-#' The function `rtIqrChromatograms` calculates the interquartile range (IQR)
-#' of the retention times across all chromatograms.
+#' @rdname rtIqr
 #'
-#' @details
-#' The function returns the IQR of the retention times across all chromatograms.
-#'
-#' No specific PSI:MS term exists. It should be created.
-#'
-#' @param chromatograms `Chromatograms` object
-#' @param ... further arguments passed to `IQR`
-#'
-#' @return `numeric(1)`
-#'
-#' @author Philippine Louail
-#'
-#' @export
+#' @aliases rtIqr,Chromatograms-method
 #'
 #' @examples
 #' library(Chromatograms)
@@ -489,12 +475,20 @@ peakCount <- function(chromatograms, na.rm = FALSE, ...) {
 #' )
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 #' ## Returns IQR of retention times across all chromatograms
-#' rtIqrChromatograms(chr)
-rtIqrChromatograms <- function(chromatograms, ...) {
-    res <- IQR(unlist(rtime(chromatograms), use.names = FALSE), ...)
+#' rtIqr(chr)
+NULL
+
+#' @noRd
+.rtIqr_chromatograms <- function(chromatograms, ...) {
+    res <- IQR(unlist(rtime(chromatograms), use.names = FALSE), na.rm = TRUE, ...)
     attr(res, "rtIqr") <- "custom_metric:rt_iqr"
     res
 }
+
+#' @rdname rtIqr
+setMethod("rtIqr", "Chromatograms", function(object, ...) {
+    .rtIqr_chromatograms(object, ...)
+})
 
 #' @title Baseline Intensity across chromatograms
 #'
@@ -715,78 +709,6 @@ medianIntensityRtIqr <- function(chromatograms, ...) {
     }
     res <- median(all_ints[mask], na.rm = TRUE, ...)
     attr(res, "medianIntensityRtIqr") <- "custom_metric:median_intensity_rt_iqr"
-    res
-}
-
-#' @title Area Under Intensity-RT Quantiles
-#'
-#' @description
-#' The function `areaUnderIntensityRtQuantiles` calculates the Area Under the
-#' Curve (AUC) for 4 equal time intervals (retention time quartiles) across
-#' the run.
-#'
-#' @details
-#' The function splits the chromatogram into 4 equal time bins. To ensure accurate
-#' area calculation at the boundaries, intensity values are linearly interpolated
-#' exactly at the cut-off times.
-#'
-#' @param chromatograms `Chromatograms` object
-#' @param ... further arguments
-#'
-#' @return `numeric(4)` named vector with Q1-Q4 area values
-#'
-#' @author Philippine Louail
-#'
-#' @importFrom stats approx
-#' @export
-#'
-areaUnderIntensityRtQuantiles <- function(chromatograms, ...) {
-    ints <- unlist(intensity(chromatograms), use.names = FALSE)
-    rts <- unlist(rtime(chromatograms), use.names = FALSE)
-
-    if (length(rts) < 2 || all(is.na(rts))) {
-        res <- setNames(rep(NA_real_, 4), c("Q1", "Q2", "Q3", "Q4"))
-        attr(res, "areaUnderIntensityRtQuantiles") <- "custom_metric:area_under_intensity_rt_quantiles"
-        return(res)
-    }
-
-    ord <- order(rts)
-    rts <- rts[ord]
-    ints <- ints[ord]
-
-    rt_range <- range(rts, na.rm = TRUE)
-
-    cuts <- seq(rt_range[1], rt_range[2], length.out = 5)[2:4]
-
-    new_rts <- rts
-    new_ints <- ints
-
-    for (ct in cuts) {
-        interp_val <- approx(rts, ints, xout = ct)$y
-        if (!is.na(interp_val)) {
-            new_rts <- c(new_rts, ct)
-            new_ints <- c(new_ints, interp_val)
-        }
-    }
-        ord_new <- order(new_rts)
-    final_rts <- new_rts[ord_new]
-    final_ints <- new_ints[ord_new]
-
-
-    areas <- (final_ints[-1] + final_ints[-length(final_ints)]) / 2 * diff(final_rts)
-
-    midpoints <- (final_rts[-1] + final_rts[-length(final_rts)]) / 2
-
-    breaks <- seq(rt_range[1], rt_range[2], length.out = 5)
-    bins <- cut(midpoints, breaks = breaks, include.lowest = TRUE, labels = FALSE)
-
-    res <- numeric(4)
-    for (i in 1:4) {
-        res[i] <- sum(areas[which(bins == i)], na.rm = TRUE)
-    }
-
-    names(res) <- c("Q1", "Q2", "Q3", "Q4")
-    attr(res, "areaUnderIntensityRtQuantiles") <- "custom_metric:area_under_intensity_rt_quantiles"
     res
 }
 

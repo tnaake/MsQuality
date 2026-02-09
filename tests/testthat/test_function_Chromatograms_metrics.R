@@ -137,11 +137,13 @@ test_that("peakCount works with na.rm parameter.", {
     expect_equal(attr(tmp_standard_no_rm, "peakCount"), "custom_metric:peak_count")
 })
 
-test_that("rtIqrChromatograms works properly.", {
-    tmp <- rtIqrChromatograms(chr)
+test_that("rtIqr works properly for Chromatograms.", {
+    tmp <- rtIqr(chr)
     ## Aggregated IQR across all chromatograms
     expect_equal(length(tmp), 1)
     expect_equal(as.numeric(tmp), IQR(c(2.1, 2.5, 3.0, 3.4, 3.9, 5.1, 5.8, 6.3, 6.9, 7.5)))
+    ## test attributes
+    expect_equal(attr(tmp, "rtIqr"), "custom_metric:rt_iqr")
 })
 
 test_that("baselineIntensity works properly.", {
@@ -193,21 +195,6 @@ test_that("medianIntensityRtIqr works properly.", {
 
     ## test attributes
     expect_equal(attr(tmp, "medianIntensityRtIqr"), "custom_metric:median_intensity_rt_iqr")
-})
-
-test_that("areaUnderIntensityRtQuantiles works properly.", {
-    tmp <- areaUnderIntensityRtQuantiles(chr)
-    ## RT range [2.1, 7.5], 4 equal bins with cuts at 3.45, 4.8, 6.15
-    ## Uses trapezoidal integration with linear interpolation at boundaries
-    ## Just verify structure and that values are reasonable (positive areas)
-    expect_equal(length(tmp), 4)
-    expect_equal(names(tmp), c("Q1", "Q2", "Q3", "Q4"))
-    expect_true(all(is.numeric(tmp)))
-    expect_true(all(tmp >= 0))  # Areas should be non-negative
-    expect_true(sum(tmp) > 0)   # Total area should be positive
-
-    ## test attributes
-    expect_equal(attr(tmp, "areaUnderIntensityRtQuantiles"), "custom_metric:area_under_intensity_rt_quantiles")
 })
 
 test_that("xicFwhm works properly.", {
