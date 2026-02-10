@@ -4,15 +4,16 @@
 \alias{peakWidth}
 \title{Peak Width for a Chromatogram}
 \usage{
-peakWidth(chromatograms, baselineThreshold = 0.05, ...)
+peakWidth(chromatograms, peakBoundary = NULL, ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object containing a single chromatogram}
 
-\item{baselineThreshold}{`numeric(1)` fraction of max intensity to use as
-baseline threshold (default 0.05, i.e., 5\%)}
+\item{peakBoundary}{optional `numeric(2)` named vector with `peakBoundary_left`
+and `peakBoundary_right` values from a previous call to `peakBoundary()`.
+If not provided, boundaries are calculated automatically.}
 
-\item{...}{further arguments}
+\item{...}{further arguments passed to `peakBoundary()`}
 }
 \value{
 `numeric(1)` peak width value. Returns `NA` if width cannot be
@@ -24,13 +25,11 @@ chromatogram (EIC).
 }
 \details{
 The peak width is calculated as the difference between the right and left
-peak boundaries determined by `peakBoundary()`. The boundaries are found
-where the intensity drops to the baseline threshold (default 5\% of max
-intensity).
+peak boundaries determined by `peakBoundary()`, which uses
+`MsCoreUtils::valleys()` to find the local minima (valleys) on each side
+of the peak apex.
 
 This is different from FWHM which measures width at 50\% of max intensity.
-Peak width at baseline gives a measure of the total chromatographic peak
-extent.
 
 The user should provide a single chromatogram representing an extracted ion
 chromatogram (EIC) for a specific compound/feature.
@@ -45,6 +44,10 @@ pdata <- list(
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 ## Returns peak width for the chromatogram
 peakWidth(chr)
+
+## Use pre-computed peak boundaries for efficiency
+pb <- peakBoundary(chr)
+peakWidth(chr, peakBoundary = pb)
 }
 \author{
 Philippine Louail

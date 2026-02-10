@@ -103,15 +103,20 @@ calculateMetricsFromOneSampleChromatograms <- function(
         chromatograms <- chromatograms[keep]
     }
 
-    ## chromatograms object
-    ## lapply is the outer loop that iterates through the functions `metrics`
+    ## lapply iterates through the functions `metrics`
     metrics_vals <- lapply(metrics, function(metric_name) {
-        # Get the function by name and call it with the chromatograms object
         metric_fn <- get(metric_name)
-        metric_fn(chromatograms, ...)
+        result <- metric_fn(chromatograms, ...)
+        result_attrs <- attributes(result)
+        result <- unname(result)
+        for (attr_name in names(result_attrs)) {
+            if (attr_name != "names") {
+                attr(result, attr_name) <- result_attrs[[attr_name]]
+            }
+        }
+        result
     })
 
-    ## add attributes (attributes of metrics_vals and dots)
     dots <- list(...)
     names(metrics_vals) <- metrics
     metrics_vals_attributes <- lapply(metrics_vals, attributes)
@@ -124,8 +129,6 @@ calculateMetricsFromOneSampleChromatograms <- function(
         metrics_vals_attributes,
         dots
     )
-
-    ## return the object
     metrics_vals
 }
 
@@ -233,24 +236,22 @@ calculateMetricsFromChromatograms <- function(
             filterEmptyObject = filterEmptyObject, ...)
     }, ..., BPPARAM = BPPARAM)
 
-    ## add file names as names of the list
     names(chromatograms_metrics) <- f_unique
 
-    ## Convert to data.frame format (handle empty results gracefully)
-    if (format == "data.frame") {
-        obj_attributes <- lapply(chromatograms_metrics, attributes)[[1]]
-        obj <- do.call("rbind", chromatograms_metrics)
-
-        ## add attributes
-        dots <- list(...)
-        attributes(obj) <- c(attributes(obj), obj_attributes, dots)
-        names(obj) <- NULL
-        obj <- as.data.frame(obj)
-    }
     if (length(chromatograms_metrics) == 0) {
         return(data.frame())
     }
-    ## return the data.frame
+
+    if (format == "data.frame") {
+        obj_attributes <- lapply(chromatograms_metrics, attributes)[[1]]
+        obj <- do.call("rbind", chromatograms_metrics)
+        col_names <- names(chromatograms_metrics[[1]])
+        obj <- as.data.frame(obj)
+        colnames(obj) <- col_names
+        rownames(obj) <- f_unique
+        dots <- list(...)
+        attributes(obj) <- c(attributes(obj), obj_attributes, dots)
+    }
     obj
 }
 

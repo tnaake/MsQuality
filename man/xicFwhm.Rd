@@ -2,49 +2,50 @@
 % Please edit documentation in R/function_Chromatograms_metrics.R
 \name{xicFwhm}
 \alias{xicFwhm}
-\title{Full Width at Half Maximum (FWHM) per Chromatogram}
+\title{Full Width at Half Maximum (FWHM) for a Chromatogram}
 \usage{
-xicFwhm(chromatograms, ...)
+xicFwhm(chromatograms, peakBoundary = NULL, ...)
 }
 \arguments{
-\item{chromatograms}{`Chromatograms` object}
+\item{chromatograms}{`Chromatograms` object containing a single chromatogram}
+
+\item{peakBoundary}{optional `numeric(2)` named vector with `peakBoundary_left`
+and `peakBoundary_right` values from a previous call to `peakBoundary()`.
+If not provided, the full chromatogram is used.}
 
 \item{...}{further arguments}
 }
 \value{
-`numeric` vector with FWHM for each chromatogram. Returns `NA` for
-  chromatograms where FWHM cannot be calculated (e.g., empty chromatograms,
-  no clear peak, or peak at edge).
+`numeric(1)` FWHM value. Returns `NA` if FWHM cannot be calculated.
 }
 \description{
 The function `xicFwhm` calculates the Full Width at Half Maximum (FWHM)
-for each chromatogram in the `Chromatograms` object.
+for a single chromatogram.
 }
 \details{
 The FWHM is calculated by finding the maximum intensity peak, determining
 50\% of that intensity, and linearly interpolating the time difference between
 the left and right crossing points.
 
-This metric is analogous to MS:4000051 (XIC-FWHM quantiles) but returns
-individual FWHM values per chromatogram instead of summary quantiles.
+If `peakBoundary` is provided, the calculation is restricted to the peak
+region defined by those boundaries, which can improve accuracy for noisy
+chromatograms and efficiency when calculating multiple metrics.
+
+This metric is analogous to MS:4000051 (XIC-FWHM quantiles).
 }
 \examples{
 library(Chromatograms)
-cdata <- data.frame(
-    msLevel = c(1L, 1L, 1L),
-    mz = c(112.2, 123.3, 134.4),
-    dataOrigin = c("mem1", "mem1", "mem1")
-)
+cdata <- data.frame(msLevel = 1L, mz = 112.2, dataOrigin = "mem1")
 pdata <- list(
     data.frame(rtime = c(2.1, 2.5, 3.0, 3.4, 3.9),
-               intensity = c(100, 250, 400, 300, 150)),
-    data.frame(rtime = numeric(), intensity = numeric()),
-    data.frame(rtime = c(5.1, 5.8, 6.3, 6.9, 7.5),
-               intensity = c(80, 500, 1200, 600, 120))
+               intensity = c(100, 250, 400, 300, 150))
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-## Returns FWHM for each chromatogram (NA for empty chromatogram)
 xicFwhm(chr)
+
+## Use pre-computed peak boundaries for efficiency
+pb <- peakBoundary(chr)
+xicFwhm(chr, peakBoundary = pb)
 }
 \author{
 Philippine Louail

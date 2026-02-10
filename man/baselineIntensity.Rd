@@ -4,12 +4,14 @@
 \alias{baselineIntensity}
 \title{Baseline Intensity across chromatograms}
 \usage{
-baselineIntensity(chromatograms, probs = 0.05, ...)
+baselineIntensity(chromatograms, probs = 0.05, na.rm = TRUE, ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
 
 \item{probs}{`numeric(1)` quantile probability (default 0.05)}
+
+\item{na.rm}{`logical(1)` whether to remove `NA` values (default `TRUE`)}
 
 \item{...}{further arguments passed to `quantile`}
 }

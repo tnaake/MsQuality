@@ -4,10 +4,12 @@
 \alias{maxIntensity}
 \title{Maximum intensity across chromatograms}
 \usage{
-maxIntensity(chromatograms, ...)
+maxIntensity(chromatograms, na.rm = TRUE, ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
+
+\item{na.rm}{`logical(1)` whether to remove `NA` values (default `TRUE`)}
 
 \item{...}{further arguments passed to `max`}
 }

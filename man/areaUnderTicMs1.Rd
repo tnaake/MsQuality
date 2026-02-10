@@ -4,10 +4,12 @@
 \alias{areaUnderTicMs1}
 \title{Area under TIC in MS1}
 \usage{
-areaUnderTicMs1(chromatograms, ...)
+areaUnderTicMs1(chromatograms, na.rm = TRUE, ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
+
+\item{na.rm}{`logical(1)` whether to remove `NA` values (default `TRUE`)}
 
 \item{...}{further arguments passed to `sum`}
 }

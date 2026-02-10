@@ -999,6 +999,9 @@ objects. These metrics assess chromatographic quality and include:
 - *intensityQuartiles*, *intensityRange*: Intensity distributions
 - *numberEmptyChrom*: Count of empty chromatograms
 - *xicFwhm*: Full Width at Half Maximum (FWHM) per chromatogram
+- *peakBoundary*: Left/right peak boundaries using valley detection
+- *peakWidth*: Peak width based on valley boundaries
+- *peakBeta*: Peak shape quality metrics (correlation to beta distribution)
 - *ticQuantileRtFraction* (MS:4000183): RT fraction when TIC quantiles accumulate
 - *areaUnderTic* (MS:4000155): Total area under TIC
 - *areaUnderTicRtQuantiles* (MS:4000156): Area under TIC per RT quartile

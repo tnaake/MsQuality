@@ -184,6 +184,7 @@ setMethod("rtAcquisitionRange", "Chromatograms", function(object, ...) {
 #' Note: MS:4000063 is "MS2 known precursor charges fractions", not max intensity.
 #'
 #' @param chromatograms `Chromatograms` object
+#' @param na.rm `logical(1)` whether to remove `NA` values (default `TRUE`)
 #' @param ... further arguments passed to `max`
 #'
 #' @return `numeric(1)`
@@ -210,11 +211,11 @@ setMethod("rtAcquisitionRange", "Chromatograms", function(object, ...) {
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 #' ## Returns max intensity across all chromatograms: 1200
 #' maxIntensity(chr)
-maxIntensity <- function(chromatograms, ...) {
+maxIntensity <- function(chromatograms, na.rm = TRUE, ...) {
     ints <- intensity(chromatograms)
     # Ensure we properly extract numeric values even in parallel context
     ints <- as.numeric(unlist(ints, use.names = FALSE))
-    res <- max(ints, na.rm = TRUE, ...)
+    res <- max(ints, na.rm = na.rm)
     attr(res, "maxIntensity") <- "custom_metric:max_intensity"
     res
 }
@@ -231,6 +232,7 @@ maxIntensity <- function(chromatograms, ...) {
 #' No specific PSI:MS term exists. It should be created.
 #'
 #' @param chromatograms `Chromatograms` object
+#' @param na.rm `logical(1)` whether to remove `NA` values (default `TRUE`)
 #' @param ... further arguments passed to `mean`
 #'
 #' @return `numeric(1)`
@@ -255,11 +257,11 @@ maxIntensity <- function(chromatograms, ...) {
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 #' ## Returns mean intensity across all chromatograms
 #' intensityMean(chr)
-intensityMean <- function(chromatograms, ...) {
+intensityMean <- function(chromatograms, na.rm = TRUE, ...) {
     ints <- intensity(chromatograms)
     # Ensure we properly extract numeric values even in parallel context
     ints <- as.numeric(unlist(ints, use.names = FALSE))
-    res <- mean(ints, na.rm = TRUE, ...)
+    res <- mean(ints, na.rm = na.rm)
     attr(res, "intensityMean") <- "custom_metric:intensity_mean"
     res
 }
@@ -276,6 +278,7 @@ intensityMean <- function(chromatograms, ...) {
 #' No specific PSI:MS term exists. It should be created.
 #'
 #' @param chromatograms `Chromatograms` object
+#' @param na.rm `logical(1)` whether to remove `NA` values (default `TRUE`)
 #' @param ... further arguments passed to `sd`
 #'
 #' @return `numeric(1)`
@@ -300,11 +303,11 @@ intensityMean <- function(chromatograms, ...) {
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 #' ## Returns standard deviation of intensities across all chromatograms
 #' intensitySd(chr)
-intensitySd <- function(chromatograms, ...) {
+intensitySd <- function(chromatograms, na.rm = TRUE, ...) {
     ints <- intensity(chromatograms)
     # Ensure we properly extract numeric values even in parallel context
     ints <- as.numeric(unlist(ints, use.names = FALSE))
-    res <- sd(ints, na.rm = TRUE, ...)
+    res <- sd(ints, na.rm = na.rm)
     attr(res, "intensitySd") <- "custom_metric:intensity_sd"
     res
 }
@@ -371,6 +374,7 @@ intensityQuartiles <- function(chromatograms, ...) {
 #' No specific PSI:MS term exists. It should be created.
 #'
 #' @param chromatograms `Chromatograms` object
+#' @param na.rm `logical(1)` whether to remove `NA` values (default `TRUE`)
 #' @param ... further arguments passed to `range`
 #'
 #' @return `numeric(2)` named vector with min and max
@@ -395,10 +399,10 @@ intensityQuartiles <- function(chromatograms, ...) {
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 #' ## Returns (min, max) intensity across all chromatograms
 #' intensityRange(chr)
-intensityRange <- function(chromatograms, ...) {
-    res <- unlist(intensity(chromatograms), use.names = FALSE)
-    min_val <- min(res, ...)
-    max_val <- max(res, ...)
+intensityRange <- function(chromatograms, na.rm = TRUE, ...) {
+    ints <- unlist(intensity(chromatograms), use.names = FALSE)
+    min_val <- min(ints, na.rm = na.rm)
+    max_val <- max(ints, na.rm = na.rm)
     res <- c(min = min_val, max = max_val)
     attr(res, "intensityRange") <- "custom_metric:intensity_range"
     res
@@ -479,8 +483,8 @@ peakCount <- function(chromatograms, na.rm = FALSE, ...) {
 NULL
 
 #' @noRd
-.rtIqr_chromatograms <- function(chromatograms, ...) {
-    res <- IQR(unlist(rtime(chromatograms), use.names = FALSE), na.rm = TRUE, ...)
+.rtIqr_chromatograms <- function(chromatograms, na.rm = TRUE, ...) {
+    res <- IQR(unlist(rtime(chromatograms), use.names = FALSE), na.rm = na.rm)
     attr(res, "rtIqr") <- "custom_metric:rt_iqr"
     res
 }
@@ -503,6 +507,7 @@ setMethod("rtIqr", "Chromatograms", function(object, ...) {
 #'
 #' @param chromatograms `Chromatograms` object
 #' @param probs `numeric(1)` quantile probability (default 0.05)
+#' @param na.rm `logical(1)` whether to remove `NA` values (default `TRUE`)
 #' @param ... further arguments passed to `quantile`
 #'
 #' @return `numeric(1)`
@@ -529,11 +534,11 @@ setMethod("rtIqr", "Chromatograms", function(object, ...) {
 #' baselineIntensity(chr)
 #' ## Use different percentile
 #' baselineIntensity(chr, probs = 0.10)
-baselineIntensity <- function(chromatograms, probs = 0.05, ...) {
+baselineIntensity <- function(chromatograms, probs = 0.05, na.rm = TRUE, ...) {
     res <- quantile(
         unlist(intensity(chromatograms), use.names = FALSE),
         probs = probs,
-        ...
+        na.rm = na.rm
     )
     attr(res, "baselineIntensity") <- "custom_metric:baseline_intensity"
     res
@@ -665,6 +670,7 @@ change <- match.arg(change)
 #' No specific PSI:MS term exists. It should be created.
 #'
 #' @param chromatograms `Chromatograms` object
+#' @param na.rm `logical(1)` whether to remove `NA` values (default `TRUE`)
 #' @param ... further arguments passed to `median` and `quantile`
 #'
 #' @return `numeric(1)`
@@ -689,7 +695,7 @@ change <- match.arg(change)
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 #' ## Returns median intensity of points within RT IQR
 #' medianIntensityRtIqr(chr)
-medianIntensityRtIqr <- function(chromatograms, ...) {
+medianIntensityRtIqr <- function(chromatograms, na.rm = TRUE, ...) {
     all_rts <- unlist(rtime(chromatograms), use.names = FALSE)
     all_ints <- unlist(intensity(chromatograms), use.names = FALSE)
 
@@ -699,7 +705,7 @@ medianIntensityRtIqr <- function(chromatograms, ...) {
         return(res)
     }
 
-    q_rt <- quantile(all_rts, probs = c(0.25, 0.75), na.rm = TRUE, ...)
+    q_rt <- quantile(all_rts, probs = c(0.25, 0.75), na.rm = na.rm)
     mask <- all_rts >= q_rt[1] & all_rts <= q_rt[2] & !is.na(all_rts)
 
     if (!any(mask)) {
@@ -707,7 +713,7 @@ medianIntensityRtIqr <- function(chromatograms, ...) {
         attr(res, "medianIntensityRtIqr") <- "custom_metric:median_intensity_rt_iqr"
         return(res)
     }
-    res <- median(all_ints[mask], na.rm = TRUE, ...)
+    res <- median(all_ints[mask], na.rm = na.rm)
     attr(res, "medianIntensityRtIqr") <- "custom_metric:median_intensity_rt_iqr"
     res
 }
@@ -716,26 +722,30 @@ medianIntensityRtIqr <- function(chromatograms, ...) {
 #################### PART 2: XIC/EIC METRICS FROM PSI-MS #######################
 ################################################################################
 
-#' @title Full Width at Half Maximum (FWHM) per Chromatogram
+#' @title Full Width at Half Maximum (FWHM) for a Chromatogram
 #'
 #' @description
 #' The function `xicFwhm` calculates the Full Width at Half Maximum (FWHM)
-#' for each chromatogram in the `Chromatograms` object.
+#' for a single chromatogram.
 #'
 #' @details
 #' The FWHM is calculated by finding the maximum intensity peak, determining
 #' 50\% of that intensity, and linearly interpolating the time difference between
 #' the left and right crossing points.
 #'
-#' This metric is analogous to MS:4000051 (XIC-FWHM quantiles) but returns
-#' individual FWHM values per chromatogram instead of summary quantiles.
+#' If `peakBoundary` is provided, the calculation is restricted to the peak
+#' region defined by those boundaries, which can improve accuracy for noisy
+#' chromatograms and efficiency when calculating multiple metrics.
 #'
-#' @param chromatograms `Chromatograms` object
+#' This metric is analogous to MS:4000051 (XIC-FWHM quantiles).
+#'
+#' @param chromatograms `Chromatograms` object containing a single chromatogram
+#' @param peakBoundary optional `numeric(2)` named vector with `peakBoundary_left`
+#'   and `peakBoundary_right` values from a previous call to `peakBoundary()`.
+#'   If not provided, the full chromatogram is used.
 #' @param ... further arguments
 #'
-#' @return `numeric` vector with FWHM for each chromatogram. Returns `NA` for
-#'   chromatograms where FWHM cannot be calculated (e.g., empty chromatograms,
-#'   no clear peak, or peak at edge).
+#' @return `numeric(1)` FWHM value. Returns `NA` if FWHM cannot be calculated.
 #'
 #' @author Philippine Louail
 #'
@@ -745,53 +755,70 @@ medianIntensityRtIqr <- function(chromatograms, ...) {
 #'
 #' @examples
 #' library(Chromatograms)
-#' cdata <- data.frame(
-#'     msLevel = c(1L, 1L, 1L),
-#'     mz = c(112.2, 123.3, 134.4),
-#'     dataOrigin = c("mem1", "mem1", "mem1")
-#' )
+#' cdata <- data.frame(msLevel = 1L, mz = 112.2, dataOrigin = "mem1")
 #' pdata <- list(
 #'     data.frame(rtime = c(2.1, 2.5, 3.0, 3.4, 3.9),
-#'                intensity = c(100, 250, 400, 300, 150)),
-#'     data.frame(rtime = numeric(), intensity = numeric()),
-#'     data.frame(rtime = c(5.1, 5.8, 6.3, 6.9, 7.5),
-#'                intensity = c(80, 500, 1200, 600, 120))
+#'                intensity = c(100, 250, 400, 300, 150))
 #' )
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-#' ## Returns FWHM for each chromatogram (NA for empty chromatogram)
 #' xicFwhm(chr)
-xicFwhm <- function(chromatograms, ...) {
+#'
+#' ## Use pre-computed peak boundaries for efficiency
+#' pb <- peakBoundary(chr)
+#' xicFwhm(chr, peakBoundary = pb)
+xicFwhm <- function(chromatograms, peakBoundary = NULL, ...) {
+    rts <- rtime(chromatograms)[[1L]]
+    ints <- intensity(chromatograms)[[1L]]
 
-    res <- vapply(
-        seq_along(chromatograms),
-        function(i) {
-            rts <- rtime(chromatograms)[[i]]
-            ints <- intensity(chromatograms)[[i]]
-            if (length(ints) < 3 || all(is.na(ints))) return(NA_real_)
-            max_int <- max(ints, na.rm = TRUE)
-            if (max_int == 0) return(NA_real_)
-            max_idx <- which.max(ints)
-            half_max <- max_int / 2
-            ## Left side (rising): Find last point below half_max before peak
-            left_candidates <- which(ints[1:max_idx] < half_max)
-            if (length(left_candidates) == 0) return(NA_real_)
-            left_idx <- tail(left_candidates, 1)
+    ## If peakBoundary provided, subset to peak region
+    if (!is.null(peakBoundary) && !any(is.na(peakBoundary))) {
+        left_rt <- peakBoundary["peakBoundary_left"]
+        right_rt <- peakBoundary["peakBoundary_right"]
+        mask <- rts >= left_rt & rts <= right_rt
+        rts <- rts[mask]
+        ints <- ints[mask]
+    }
 
-            ## Right side (falling): Find first point below half_max after peak
-            right_candidates <- which(ints[max_idx:length(ints)] < half_max)
-            if (length(right_candidates) == 0) return(NA_real_)
-            right_idx <- max_idx + right_candidates[1] - 1
+    if (length(ints) < 3 || all(is.na(ints))) {
+        res <- NA_real_
+        attr(res, "xicFwhm") <- "custom_metric:xic_fwhm"
+        return(res)
+    }
 
-            rt_left <- approx(x = ints[c(left_idx, left_idx + 1)],
-                              y = rts[c(left_idx, left_idx + 1)],
-                              xout = half_max)$y
-            rt_right <- approx(x = ints[c(right_idx, right_idx - 1)],
-                               y = rts[c(right_idx, right_idx - 1)],
-                               xout = half_max)$y
-            return(rt_right - rt_left)
-        },
-        numeric(1)
-    )
+    max_int <- max(ints, na.rm = TRUE)
+    if (max_int == 0) {
+        res <- NA_real_
+        attr(res, "xicFwhm") <- "custom_metric:xic_fwhm"
+        return(res)
+    }
+
+    max_idx <- which.max(ints)
+    half_max <- max_int / 2
+
+    left_candidates <- which(ints[1:max_idx] < half_max)
+    if (length(left_candidates) == 0) {
+        res <- NA_real_
+        attr(res, "xicFwhm") <- "custom_metric:xic_fwhm"
+        return(res)
+    }
+    left_idx <- tail(left_candidates, 1)
+
+    right_candidates <- which(ints[max_idx:length(ints)] < half_max)
+    if (length(right_candidates) == 0) {
+        res <- NA_real_
+        attr(res, "xicFwhm") <- "custom_metric:xic_fwhm"
+        return(res)
+    }
+    right_idx <- max_idx + right_candidates[1] - 1
+
+    rt_left <- approx(x = ints[c(left_idx, left_idx + 1)],
+                      y = rts[c(left_idx, left_idx + 1)],
+                      xout = half_max)$y
+    rt_right <- approx(x = ints[c(right_idx, right_idx - 1)],
+                       y = rts[c(right_idx, right_idx - 1)],
+                       xout = half_max)$y
+
+    res <- rt_right - rt_left
     attr(res, "xicFwhm") <- "custom_metric:xic_fwhm"
     res
 }
@@ -803,28 +830,23 @@ xicFwhm <- function(chromatograms, ...) {
 #' of the main peak in a single chromatogram (EIC).
 #'
 #' @details
-#' The peak boundaries are determined by finding where the intensity drops to
-#' baseline level (defined by the `baselineThreshold` parameter, default 5\% of
-#' max intensity) on either side of the maximum intensity point.
+#' The peak boundaries are determined by finding the valleys (local minima)
+#' on each side of the peak apex using `MsCoreUtils::valleys()`.
 #'
-#' The function uses linear interpolation to find the exact RT where the
-#' intensity crosses the baseline threshold.
-#'
-#' The user should provide a single chromatogram representing an extracted ion
-#' chromatogram (EIC) for a specific compound/feature.
+#' This approach is robust for:
+#' - Overlapping peaks (stops at the valley between peaks)
+#' - Noisy baselines (finds the first local minimum)
+#' - Peaks with elevated baselines that never drop to zero
 #'
 #' @param chromatograms `Chromatograms` object containing a single chromatogram
-#' @param baselineThreshold `numeric(1)` fraction of max intensity to use as
-#'   baseline threshold (default 0.05, i.e., 5\%)
-#' @param ... further arguments
+#' @param ... further arguments (currently unused)
 #'
-#' @return `numeric(2)` named vector with `left_rt` and `right_rt` values.
+#' @return `numeric(2)` named vector with `peakBoundary_left` and `peakBoundary_right` values.
 #'   Returns `NA` values if boundaries cannot be determined.
 #'
 #' @author Philippine Louail
 #'
-#' @importFrom stats approx
-#' @importFrom utils tail
+#' @importFrom MsCoreUtils valleys
 #' @export
 #'
 #' @examples
@@ -835,67 +857,43 @@ xicFwhm <- function(chromatograms, ...) {
 #'                intensity = c(100, 250, 400, 300, 150))
 #' )
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-#' ## Returns peak boundaries (left_rt, right_rt) for the chromatogram
 #' peakBoundary(chr)
-peakBoundary <- function(chromatograms, baselineThreshold = 0.05, ...) {
+peakBoundary <- function(chromatograms, ...) {
 
     rts <- rtime(chromatograms)[[1L]]
     ints <- intensity(chromatograms)[[1L]]
 
-    ## Basic checks
     if (length(ints) < 3 || all(is.na(ints))) {
-        res <- c(left_rt = NA_real_, right_rt = NA_real_)
+        res <- c(peakBoundary_left = NA_real_, peakBoundary_right = NA_real_)
         attr(res, "peakBoundary") <- "custom_metric:peak_boundary"
         return(res)
     }
 
     max_int <- max(ints, na.rm = TRUE)
     if (max_int == 0) {
-        res <- c(left_rt = NA_real_, right_rt = NA_real_)
+        res <- c(peakBoundary_left = NA_real_, peakBoundary_right = NA_real_)
         attr(res, "peakBoundary") <- "custom_metric:peak_boundary"
         return(res)
     }
 
     max_idx <- which.max(ints)
-    threshold <- max_int * baselineThreshold
 
-    ## Left side: Find where intensity drops below threshold before peak
-    left_region <- ints[1:max_idx]
-    left_candidates <- which(left_region <= threshold)
-
-    if (length(left_candidates) == 0) {
-        rt_left <- rts[1]
+    v <- MsCoreUtils::valleys(ints, max_idx)
+    
+    ## Handle edge cases where peak is at boundary (valleys may not return left/right)
+    if (!"left" %in% colnames(v)) {
+        left_idx <- 1L
     } else {
-        left_idx <- tail(left_candidates, 1)
-        if (left_idx == max_idx) {
-            rt_left <- rts[1]
-        } else {
-            rt_left <- approx(x = ints[c(left_idx, left_idx + 1)],
-                              y = rts[c(left_idx, left_idx + 1)],
-                              xout = threshold)$y
-            if (is.na(rt_left)) rt_left <- rts[left_idx]
-        }
+        left_idx <- v[1L, "left"]
+    }
+    
+    if (!"right" %in% colnames(v)) {
+        right_idx <- length(ints)
+    } else {
+        right_idx <- v[1L, "right"]
     }
 
-    ## Right side: Find where intensity drops below threshold after peak
-    right_region <- ints[max_idx:length(ints)]
-    right_candidates <- which(right_region <= threshold)
-
-    if (length(right_candidates) == 0) {
-        rt_right <- rts[length(rts)]
-    } else {
-        right_idx <- max_idx + right_candidates[1] - 1
-        if (right_idx == max_idx) {
-            rt_right <- rts[length(rts)]
-        } else {
-            rt_right <- approx(x = ints[c(right_idx, right_idx - 1)],
-                               y = rts[c(right_idx, right_idx - 1)],
-                               xout = threshold)$y
-            if (is.na(rt_right)) rt_right <- rts[right_idx]
-        }
-    }
-
-    res <- c(left_rt = rt_left, right_rt = rt_right)
+    res <- c(peakBoundary_left = rts[left_idx], peakBoundary_right = rts[right_idx])
     attr(res, "peakBoundary") <- "custom_metric:peak_boundary"
     res
 }
@@ -908,21 +906,20 @@ peakBoundary <- function(chromatograms, baselineThreshold = 0.05, ...) {
 #'
 #' @details
 #' The peak width is calculated as the difference between the right and left
-#' peak boundaries determined by `peakBoundary()`. The boundaries are found
-#' where the intensity drops to the baseline threshold (default 5\% of max
-#' intensity).
+#' peak boundaries determined by `peakBoundary()`, which uses
+#' `MsCoreUtils::valleys()` to find the local minima (valleys) on each side
+#' of the peak apex.
 #'
 #' This is different from FWHM which measures width at 50\% of max intensity.
-#' Peak width at baseline gives a measure of the total chromatographic peak
-#' extent.
 #'
 #' The user should provide a single chromatogram representing an extracted ion
 #' chromatogram (EIC) for a specific compound/feature.
 #'
 #' @param chromatograms `Chromatograms` object containing a single chromatogram
-#' @param baselineThreshold `numeric(1)` fraction of max intensity to use as
-#'   baseline threshold (default 0.05, i.e., 5\%)
-#' @param ... further arguments
+#' @param peakBoundary optional `numeric(2)` named vector with `peakBoundary_left`
+#'   and `peakBoundary_right` values from a previous call to `peakBoundary()`.
+#'   If not provided, boundaries are calculated automatically.
+#' @param ... further arguments passed to `peakBoundary()`
 #'
 #' @return `numeric(1)` peak width value. Returns `NA` if width cannot be
 #'   calculated.
@@ -941,10 +938,114 @@ peakBoundary <- function(chromatograms, baselineThreshold = 0.05, ...) {
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 #' ## Returns peak width for the chromatogram
 #' peakWidth(chr)
-peakWidth <- function(chromatograms, baselineThreshold = 0.05, ...) {
-    boundaries <- peakBoundary(chromatograms, baselineThreshold = baselineThreshold, ...)
-    res <- unname(boundaries["right_rt"] - boundaries["left_rt"])
+#'
+#' ## Use pre-computed peak boundaries for efficiency
+#' pb <- peakBoundary(chr)
+#' peakWidth(chr, peakBoundary = pb)
+peakWidth <- function(chromatograms, peakBoundary = NULL, ...) {
+    if (is.null(peakBoundary)) {
+        peakBoundary <- peakBoundary(chromatograms, ...)
+    }
+    res <- unname(peakBoundary["peakBoundary_right"] - peakBoundary["peakBoundary_left"])
     attr(res, "peakWidth") <- "custom_metric:peak_width"
+    res
+}
+
+#' @title Peak Beta Values (Peak Shape Quality)
+#'
+#' @description
+#' The function `peakBeta` calculates beta parameters for a chromatographic peak,
+#' assessing its similarity to a bell curve (beta distribution) and the quality
+#' of the peak shape.
+#'
+#' @details
+#' This function wraps `MetaboCoreUtils::betaValues()` which compares the
+#' chromatographic peak to Beta distribution curves. It returns two values:
+#' - `beta_cor`: correlation/similarity to the best-fit beta distribution curve
+#' - `beta_snr`: signal-to-noise ratio of the residuals after fitting
+#'
+#' Higher `beta_cor` values indicate more symmetric, bell-shaped peaks.
+#' Lower `beta_snr` values indicate cleaner peaks with less noise.
+#'
+#' If `peakBoundary` is provided, only the peak region is analyzed. Otherwise,
+#' boundaries are calculated automatically using `peakBoundary()`.
+#'
+#' Requires at least 5 data points within the peak region.
+#'
+#' @references
+#' Kumler W, Hazelton B J and Ingalls A E (2023) "Picky with peakpicking:
+#' assessing chromatographic peak quality with simple metrics in metabolomics"
+#' BMC Bioinformatics 24(1):404. doi: 10.1186/s12859-023-05533-4
+#'
+#' @param chromatograms `Chromatograms` object containing a single chromatogram
+#' @param peakBoundary optional `numeric(2)` named vector with `peakBoundary_left`
+#'   and `peakBoundary_right` values from a previous call to `peakBoundary()`.
+#'   If not provided, boundaries are calculated automatically.
+#' @param ... further arguments passed to `MetaboCoreUtils::betaValues()`
+#'
+#' @return `numeric(2)` named vector with `beta_cor` and `beta_snr` values.
+#'   Returns `NA` for both if values cannot be calculated.
+#'
+#' @author Philippine Louail
+#'
+#' @importFrom MetaboCoreUtils betaValues
+#' @export
+#'
+#' @examples
+#' library(Chromatograms)
+#' cdata <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+#' pdata <- list(
+#'     data.frame(rtime = seq(1, 20, by = 0.5),
+#'                intensity = c(10, 15, 25, 50, 100, 200, 350, 500, 650,
+#'                              700, 650, 500, 350, 200, 100, 50, 25, 15,
+#'                              10, 8, 6, 5, 4, 3, 2, 2, 1, 1, 1, 1, 1,
+#'                              1, 1, 1, 1, 1, 1, 1, 1))
+#' )
+#' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
+#' peakBeta(chr)
+#'
+#' ## Use pre-computed peak boundaries for efficiency
+#' pb <- peakBoundary(chr)
+#' peakBeta(chr, peakBoundary = pb)
+peakBeta <- function(chromatograms, peakBoundary = NULL, ...) {
+    rts <- rtime(chromatograms)[[1L]]
+    ints <- intensity(chromatograms)[[1L]]
+
+    ## Calculate peak boundaries if not provided
+    if (is.null(peakBoundary)) {
+        peakBoundary <- peakBoundary(chromatograms)
+    }
+
+    ## Check for valid boundaries
+    if (any(is.na(peakBoundary))) {
+        res <- c(beta_cor = NA_real_, beta_snr = NA_real_)
+        attr(res, "peakBeta") <- "custom_metric:peak_beta"
+        return(res)
+    }
+
+    ## Subset to peak region
+    left_rt <- peakBoundary["peakBoundary_left"]
+    right_rt <- peakBoundary["peakBoundary_right"]
+    mask <- rts >= left_rt & rts <= right_rt
+    peak_rts <- rts[mask]
+    peak_ints <- ints[mask]
+
+    ## Need at least 5 points for betaValues
+    if (length(peak_ints) < 5) {
+        res <- c(beta_cor = NA_real_, beta_snr = NA_real_)
+        attr(res, "peakBeta") <- "custom_metric:peak_beta"
+        return(res)
+    }
+
+    ## Calculate beta values using MetaboCoreUtils
+    beta_vals <- MetaboCoreUtils::betaValues(
+        intensity = peak_ints,
+        rtime = peak_rts,
+        ...
+    )
+
+    res <- c(beta_cor = unname(beta_vals[1]), beta_snr = unname(beta_vals[2]))
+    attr(res, "peakBeta") <- "custom_metric:peak_beta"
     res
 }
 
@@ -1071,6 +1172,7 @@ setMethod("ticQuantileRtFraction", "Chromatograms", function(
 #' def: "The area under the total ion current chromatogram (MS:1000235) of all MS1 spectra." [PSI:MS]
 #'
 #' @param chromatograms `Chromatograms` object
+#' @param na.rm `logical(1)` whether to remove `NA` values (default `TRUE`)
 #' @param ... further arguments passed to `sum`
 #'
 #' @return `numeric(1)`
@@ -1095,7 +1197,7 @@ setMethod("ticQuantileRtFraction", "Chromatograms", function(
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 #' ## Returns sum of intensities for MS1 only
 #' areaUnderTicMs1(chr)
-areaUnderTicMs1 <- function(chromatograms, ...) {
+areaUnderTicMs1 <- function(chromatograms, na.rm = TRUE, ...) {
     # Check for empty input
     if (length(chromatograms) == 0) {
         res <- NA_real_
@@ -1110,7 +1212,7 @@ areaUnderTicMs1 <- function(chromatograms, ...) {
         } else {
             # Subset and calculate sum
             ints <- unlist(intensity(chr_ms1), use.names = FALSE)
-            res <- sum(ints, na.rm = TRUE, ...)
+            res <- sum(ints, na.rm = na.rm)
         }
     }
 
@@ -1133,6 +1235,7 @@ areaUnderTicMs1 <- function(chromatograms, ...) {
 #' def: "The area under the total ion current chromatogram (MS:1000235) of all MS2 spectra." [PSI:MS]
 #'
 #' @param chromatograms `Chromatograms` object
+#' @param na.rm `logical(1)` whether to remove `NA` values (default `TRUE`)
 #' @param ... further arguments passed to `sum`
 #'
 #' @return `numeric(1)`
@@ -1155,7 +1258,7 @@ areaUnderTicMs1 <- function(chromatograms, ...) {
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 #' ## Returns sum of intensities for MS2 only
 #' areaUnderTicMs2(chr)
-areaUnderTicMs2 <- function(chromatograms, ...) {
+areaUnderTicMs2 <- function(chromatograms, na.rm = TRUE, ...) {
     # Check for empty input
     if (length(chromatograms) == 0) {
         res <- NA_real_
@@ -1170,7 +1273,7 @@ areaUnderTicMs2 <- function(chromatograms, ...) {
         } else {
             # Subset and calculate sum
             ints <- unlist(intensity(chr_ms2), use.names = FALSE)
-            res <- sum(ints, na.rm = TRUE, ...)
+            res <- sum(ints, na.rm = na.rm)
         }
     }
 

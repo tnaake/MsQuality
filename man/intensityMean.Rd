@@ -4,10 +4,12 @@
 \alias{intensityMean}
 \title{Intensity statistics (Mean) across chromatograms}
 \usage{
-intensityMean(chromatograms, ...)
+intensityMean(chromatograms, na.rm = TRUE, ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
+
+\item{na.rm}{`logical(1)` whether to remove `NA` values (default `TRUE`)}
 
 \item{...}{further arguments passed to `mean`}
 }

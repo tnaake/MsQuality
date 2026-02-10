@@ -4,18 +4,15 @@
 \alias{peakBoundary}
 \title{Peak Boundary for a Chromatogram}
 \usage{
-peakBoundary(chromatograms, baselineThreshold = 0.05, ...)
+peakBoundary(chromatograms, ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object containing a single chromatogram}
 
-\item{baselineThreshold}{`numeric(1)` fraction of max intensity to use as
-baseline threshold (default 0.05, i.e., 5\%)}
-
-\item{...}{further arguments}
+\item{...}{further arguments (currently unused)}
 }
 \value{
-`numeric(2)` named vector with `left_rt` and `right_rt` values.
+`numeric(2)` named vector with `peakBoundary_left` and `peakBoundary_right` values.
   Returns `NA` values if boundaries cannot be determined.
 }
 \description{
@@ -23,15 +20,13 @@ The function `peakBoundary` finds the left and right retention time boundaries
 of the main peak in a single chromatogram (EIC).
 }
 \details{
-The peak boundaries are determined by finding where the intensity drops to
-baseline level (defined by the `baselineThreshold` parameter, default 5\% of
-max intensity) on either side of the maximum intensity point.
+The peak boundaries are determined by finding the valleys (local minima)
+on each side of the peak apex using `MsCoreUtils::valleys()`.
 
-The function uses linear interpolation to find the exact RT where the
-intensity crosses the baseline threshold.
-
-The user should provide a single chromatogram representing an extracted ion
-chromatogram (EIC) for a specific compound/feature.
+This approach is robust for:
+- Overlapping peaks (stops at the valley between peaks)
+- Noisy baselines (finds the first local minimum)
+- Peaks with elevated baselines that never drop to zero
 }
 \examples{
 library(Chromatograms)
@@ -41,7 +36,6 @@ pdata <- list(
                intensity = c(100, 250, 400, 300, 150))
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-## Returns peak boundaries (left_rt, right_rt) for the chromatogram
 peakBoundary(chr)
 }
 \author{

@@ -193,3 +193,75 @@ test_that("calculateMetrics validates inputs correctly", {
         "should be one of"
     )
 })
+
+test_that("calculateMetrics returns correct column names with multiple metrics", {
+    chr <- test_chr
+    chrom_metrics <- c(
+        "peakCount",
+        "maxIntensity",
+        "baselineIntensity",
+        "signalToNoiseRatio"
+    )
+
+    result <- calculateMetrics(
+        object = chr,
+        metrics = chrom_metrics,
+        filterEmptyObject = FALSE,
+        na.rm = TRUE,
+        probs = 0.05
+    )
+
+    expect_s3_class(result, "data.frame")
+    ## Column names should be the metric names, not "5%", NA, etc.
+    expect_equal(colnames(result), chrom_metrics)
+    ## All values should be numeric
+    expect_true(all(sapply(result, is.numeric)))
+    ## No NA column names
+    expect_false(any(is.na(colnames(result))))
+})
+
+test_that("calculateMetrics works with metrics returning multiple values",
+{    chr <- test_chr
+    chrom_metrics <- c("xicFwhm", "peakBoundary")
+    expect_no_error({
+        result <- calculateMetrics(
+            object = chr,
+            metrics = chrom_metrics,
+            filterEmptyObject = FALSE
+        )
+    })
+})
+
+test_that("calculateMetrics handles na.rm parameter without errors", {
+    chr <- test_chr
+    chrom_metrics <- c(
+        "peakCount",
+        "maxIntensity",
+        "intensityMean",
+        "intensitySd",
+        "baselineIntensity",
+        "signalToNoiseRatio"
+    )
+
+    expect_no_error({
+        result <- calculateMetrics(
+            object = chr,
+            metrics = chrom_metrics,
+            filterEmptyObject = FALSE,
+            na.rm = TRUE,
+            probs = 0.05
+        )
+    })
+
+    result <- calculateMetrics(
+        object = chr,
+        metrics = chrom_metrics,
+        filterEmptyObject = FALSE,
+        na.rm = TRUE,
+        probs = 0.05
+    )
+
+    expect_s3_class(result, "data.frame")
+    expect_equal(ncol(result), length(chrom_metrics))
+    expect_equal(colnames(result), chrom_metrics)
+})

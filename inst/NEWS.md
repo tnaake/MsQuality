@@ -3,6 +3,12 @@
 ## Changes in version 1.9.4
 
 - Implementation of metrics for Chromatograms objects
+- Add `peakBoundary()` function to find peak left/right boundaries using
+  `MsCoreUtils::valleys()`
+- Add `peakBeta()` function wrapping `MetaboCoreUtils::betaValues()` to assess
+  peak shape quality (similarity to beta distribution)
+- Add optional `peakBoundary` parameter to `xicFwhm()`, `peakWidth()`, and
+  `peakBeta()` for efficiency when calculating multiple peak-based metrics
 - Created S4 generic functions and methods for shared metrics:
   - `areaUnderTic`: Generic function with methods for Spectra and Chromatograms
   classes

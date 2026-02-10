@@ -61,7 +61,7 @@ qm_chr <-  c("chromatographyDuration", "chromatogramCount",
             "intensity10xChange",
             "numberEmptyChrom",
             "medianIntensityRtIqr",
-            "xicFwhm",
+            "xicFwhm", "peakBoundary", "peakWidth", "peakBeta",
             "ticQuantileRtFraction", "areaUnderTic", "areaUnderTicRtQuantiles",
             "areaUnderTicMs1", "areaUnderTicMs2")
 
