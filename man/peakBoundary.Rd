@@ -4,29 +4,54 @@
 \alias{peakBoundary}
 \title{Peak Boundary for a Chromatogram}
 \usage{
-peakBoundary(chromatograms, ...)
+peakBoundary(
+  chromatograms,
+  threshold = 0.1,
+  baselineThreshold = 0.1,
+  baselineQuantile = 0.1,
+  ...
+)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object containing a single chromatogram}
 
+\item{threshold}{`numeric(1)` fraction of peak height above baseline used
+as fallback threshold (default 0.1 = 10\%). The boundary is placed where
+intensity drops below: `baseline + (max - baseline) * threshold`.}
+
+\item{baselineThreshold}{`numeric(1)` maximum acceptable intensity at 
+boundaries as a fraction of peak height above baseline. If boundary 
+intensity exceeds this, falls back to threshold method. Default is 0.1.}
+
+\item{baselineQuantile}{`numeric(1)` quantile used to estimate the baseline
+intensity (default 0.1 = 10th percentile of intensities).}
+
 \item{...}{further arguments (currently unused)}
 }
 \value{
-`numeric(2)` named vector with `peakBoundary_left` and `peakBoundary_right` values.
-  Returns `NA` values if boundaries cannot be determined.
+`numeric(2)` named vector with `left_boundary` and `right_boundary` 
+  values. Returns `NA` values if boundaries cannot be determined.
 }
 \description{
 The function `peakBoundary` finds the left and right retention time boundaries
 of the main peak in a single chromatogram (EIC).
 }
 \details{
-The peak boundaries are determined by finding the valleys (local minima)
-on each side of the peak apex using `MsCoreUtils::valleys()`.
+The function uses an adaptive approach to find peak boundaries:
 
-This approach is robust for:
-- Overlapping peaks (stops at the valley between peaks)
-- Noisy baselines (finds the first local minimum)
-- Peaks with elevated baselines that never drop to zero
+1. First attempts to find boundaries using local minima (valleys) on each
+   side of the peak apex via `MsCoreUtils::valleys()`.
+
+2. Validates the boundaries by checking if intensities at boundaries are
+   near baseline level.
+
+3. If boundaries are not at baseline (e.g., for peaks with elevated baseline
+   or monotonic slopes), falls back to a relative threshold method that
+   finds where intensity drops below a fraction of peak height above baseline.
+
+The baseline is estimated from a lower quantile of intensities (default 10th
+percentile), and the threshold is calculated relative to peak height above
+this baseline.
 }
 \examples{
 library(Chromatograms)
@@ -36,7 +61,12 @@ pdata <- list(
                intensity = c(100, 250, 400, 300, 150))
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
+
+## Find peak boundaries
 peakBoundary(chr)
+
+## Adjust threshold for different sensitivity
+peakBoundary(chr, threshold = 0.05)
 }
 \author{
 Philippine Louail

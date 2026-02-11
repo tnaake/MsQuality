@@ -222,7 +222,7 @@ test_that("calculateMetrics returns correct column names with multiple metrics",
 
 test_that("calculateMetrics works with metrics returning multiple values",
 {    chr <- test_chr
-    chrom_metrics <- c("xicFwhm", "peakBoundary")
+    chrom_metrics <- c("xicFwhm", "peakBoundary", "peakBeta")
     expect_no_error({
         result <- calculateMetrics(
             object = chr,
@@ -230,6 +230,23 @@ test_that("calculateMetrics works with metrics returning multiple values",
             filterEmptyObject = FALSE
         )
     })
+    
+    result <- calculateMetrics(
+        object = chr,
+        metrics = chrom_metrics,
+        filterEmptyObject = FALSE
+    )
+    
+    expect_s3_class(result, "data.frame")
+    ## Check that multi-value metrics have proper column names
+    ## peakBoundary returns left_boundary and right_boundary
+    expect_true("peakBoundary.left_boundary" %in% colnames(result))
+    expect_true("peakBoundary.right_boundary" %in% colnames(result))
+    ## peakBeta returns beta_cor and beta_snr
+    expect_true("peakBeta.beta_cor" %in% colnames(result))
+    expect_true("peakBeta.beta_snr" %in% colnames(result))
+    ## xicFwhm returns a single value
+    expect_true("xicFwhm" %in% colnames(result))
 })
 
 test_that("calculateMetrics handles na.rm parameter without errors", {

@@ -10,7 +10,7 @@
 \usage{
 areaUnderTic(object, ...)
 
-\S4method{areaUnderTic}{Chromatograms}(object, ...)
+\S4method{areaUnderTic}{Chromatograms}(object, na.rm = TRUE, ...)
 
 \S4method{areaUnderTic}{Spectra}(object, msLevel = 1L, ...)
 }
@@ -18,6 +18,8 @@ areaUnderTic(object, ...)
 \item{object}{\code{Spectra} or \code{Chromatograms} object}
 
 \item{...}{additional arguments passed to internal helpers}
+
+\item{na.rm}{`logical(1)` whether to remove `NA` values (default `TRUE`)}
 
 \item{msLevel}{\code{integer}}
 }

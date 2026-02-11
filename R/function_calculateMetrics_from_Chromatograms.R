@@ -67,26 +67,16 @@ calculateMetricsFromOneSampleChromatograms <- function(
     f = chromatograms$dataOrigin,
     ...
 ) {
-    ## match metrics against the possible quality metrics defined in
-    ## qualityMetrics(chromatograms), throw an error if there are metrics that
-    ## are not defined in qualityMetrics(chromatograms)
-    metrics <- match.arg(
-        metrics,
-        choices = qualityMetrics(chromatograms),
-        several.ok = TRUE
-    )
+    metrics <- match.arg(metrics, choices = qualityMetrics(chromatograms),
+                         several.ok = TRUE)
 
     if (length(filterEmptyObject) != 1 | !is.logical(filterEmptyObject))
         stop("'filterEmptyObject' has to be either TRUE or FALSE")
-
-        if (!is(chromatograms, "Chromatograms"))
-            stop("'chromatograms' is not of class 'Chromatograms'")
-
+    if (!is(chromatograms, "Chromatograms"))
+        stop("'chromatograms' is not of class 'Chromatograms'")
     if (length(unique(f)) != 1)
-                stop("'chromatograms' should only contain data from one origin")
+        stop("'chromatograms' should only contain data from one origin")
 
-    ## in case of filterEmptyObject == TRUE, remove the entries with
-    ## zero or Inf intensity and remove empty chromatograms
     if (filterEmptyObject) {
         int <- intensity(chromatograms)
         keep <- vapply(
@@ -103,32 +93,22 @@ calculateMetricsFromOneSampleChromatograms <- function(
         chromatograms <- chromatograms[keep]
     }
 
-    ## lapply iterates through the functions `metrics`
     metrics_vals <- lapply(metrics, function(metric_name) {
-        metric_fn <- get(metric_name)
-        result <- metric_fn(chromatograms, ...)
+        result <- get(metric_name)(chromatograms, ...)
         result_attrs <- attributes(result)
+        result_names <- names(result)
         result <- unname(result)
-        for (attr_name in names(result_attrs)) {
-            if (attr_name != "names") {
-                attr(result, attr_name) <- result_attrs[[attr_name]]
-            }
-        }
+        if (length(result) > 1 && !is.null(result_names))
+            names(result) <- result_names
+        for (attr_name in setdiff(names(result_attrs), "names"))
+            attr(result, attr_name) <- result_attrs[[attr_name]]
         result
     })
-
-    dots <- list(...)
     names(metrics_vals) <- metrics
-    metrics_vals_attributes <- lapply(metrics_vals, attributes)
-    names(metrics_vals_attributes) <- NULL
-    metrics_vals_attributes <- unlist(metrics_vals_attributes)
-
-    metrics_vals <- unlist(metrics_vals)
-    attributes(metrics_vals) <- c(
-        attributes(metrics_vals),
-        metrics_vals_attributes,
-        dots
-    )
+    metrics_vals_attributes <- unlist(lapply(metrics_vals, attributes)[[1]])
+    metrics_vals <- unlist(metrics_vals, use.names = TRUE)
+    attributes(metrics_vals) <- c(attributes(metrics_vals), 
+                                   metrics_vals_attributes, list(...))
     metrics_vals
 }
 
@@ -209,15 +189,10 @@ calculateMetricsFromChromatograms <- function(
     ...,
     BPPARAM = bpparam()
 ) {
-    ## match metrics against the possible quality metrics defined in
-    ## qualityMetrics(chromatograms), throw an error if there are metrics that
-    ## are not defined in qualityMetrics(chromatograms)
     metrics <- match.arg(metrics, choices = qualityMetrics(chromatograms),
-        several.ok = TRUE)
-
-    if (length(filterEmptyObject) != 1 | !is.logical(filterEmptyObject)) {
+                         several.ok = TRUE)
+    if (length(filterEmptyObject) != 1 | !is.logical(filterEmptyObject))
         stop("'filterEmptyObject' has to be either TRUE or FALSE")
-    }
     format <- match.arg(format)
     if (format != "data.frame")
         stop("Only format = 'data.frame' is supported currently")
@@ -228,8 +203,6 @@ calculateMetricsFromChromatograms <- function(
     if (is.null(f) || all(is.na(f))) f <- rep("sample", length(chromatograms))
     f_unique <- unique(f)
 
-    ## iterate through the different chromatograms per dataOrigin and calculate
-    ## the quality metrics using calculateMetricsFromOneSampleChromatograms
     chromatograms_metrics <- bplapply(f_unique, function(f_unique_i, ...) {
         calculateMetricsFromOneSampleChromatograms(
             chromatograms = chromatograms[f == f_unique_i], metrics = metrics,

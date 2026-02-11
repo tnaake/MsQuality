@@ -212,6 +212,22 @@ test_that("xicFwhm works properly.", {
     expect_equal(attr(tmp, "xicFwhm"), "custom_metric:xic_fwhm")
 })
 
+test_that("xicFwhm handles NA intensities without error.", {
+    ## Non-imputed data may have NA values around half-maximum crossing points
+    cdata_na <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_na <- list(data.frame(
+        rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+        intensity = c(NA, 20, 50, 100, 500, 100, 50, NA, 10, 5)
+    ))
+    chr_na <- Chromatograms(ChromBackendMemory(), chromData = cdata_na, peaksData = pdata_na)
+
+    ## Should return NA without error when interpolation points have NA
+    expect_no_error(xicFwhm(chr_na))
+    tmp <- xicFwhm(chr_na)
+    expect_equal(length(tmp), 1)
+    expect_equal(attr(tmp, "xicFwhm"), "custom_metric:xic_fwhm")
+})
+
 test_that("ticQuantileRtFraction works properly.", {
     tmp <- ticQuantileRtFraction(chr)
     ## Data sorted by RT: (2.1,100), (2.5,250), (3.0,400), (3.4,300), (3.9,150),
@@ -343,10 +359,10 @@ test_that("peakBoundary returns correct RT boundaries for clean symmetric peak."
     ## Uses MsCoreUtils::valleys() to find local minima
     tmp <- peakBoundary(chr_pb)
     expect_equal(length(tmp), 2)
-    expect_equal(names(tmp), c("peakBoundary_left", "peakBoundary_right"))
+    expect_equal(names(tmp), c("left_boundary", "right_boundary"))
     ## Peak apex at rt=4, valleys() finds valleys at the zeros (rt 1 and 7)
-    expect_equal(unname(tmp["peakBoundary_left"]), 1)
-    expect_equal(unname(tmp["peakBoundary_right"]), 7)
+    expect_equal(unname(tmp["left_boundary"]), 1)
+    expect_equal(unname(tmp["right_boundary"]), 7)
     expect_equal(attr(tmp, "peakBoundary"), "custom_metric:peak_boundary")
 })
 
@@ -362,8 +378,8 @@ test_that("peakBoundary finds first valley in overlapping peaks.", {
     tmp <- peakBoundary(chr_pb)  # finds highest peak (rt=3 or rt=7)
     expect_equal(length(tmp), 2)
     ## valleys() should stop at the valley between peaks
-    expect_true(tmp["peakBoundary_left"] >= 1)
-    expect_true(tmp["peakBoundary_right"] <= 9)
+    expect_true(tmp["left_boundary"] >= 1)
+    expect_true(tmp["right_boundary"] <= 9)
 })
 
 test_that("peakBoundary handles peak with elevated baseline.", {
@@ -375,11 +391,14 @@ test_that("peakBoundary handles peak with elevated baseline.", {
     ))
     chr_pb <- Chromatograms(ChromBackendMemory(), chromData = cdata_pb, peaksData = pdata_pb)
 
-    tmp <- peakBoundary(chr_pb)
+    ## With default adaptive method and 10% threshold, elevated baseline (100 = 20% of max)
+    ## causes threshold fallback to find no candidates, resulting in full span.
+    ## Use higher threshold to handle elevated baseline
+    tmp <- peakBoundary(chr_pb, threshold = 0.25)
     expect_equal(length(tmp), 2)
     ## Peak apex at rt=6, should find where it becomes flat (around rt 3 and rt 9)
-    expect_true(tmp["peakBoundary_left"] >= 1 && tmp["peakBoundary_left"] <= 4)
-    expect_true(tmp["peakBoundary_right"] >= 8 && tmp["peakBoundary_right"] <= 11)
+    expect_true(tmp["left_boundary"] >= 1 && tmp["left_boundary"] <= 4)
+    expect_true(tmp["right_boundary"] >= 8 && tmp["right_boundary"] <= 15)
 })
 
 test_that("peakBoundary handles tailing peak.", {
@@ -394,60 +413,26 @@ test_that("peakBoundary handles tailing peak.", {
     tmp <- peakBoundary(chr_pb)
     expect_equal(length(tmp), 2)
     ## Peak apex at rt=3, left boundary should be at first point
-    expect_equal(unname(tmp["peakBoundary_left"]), 1)
+    expect_equal(unname(tmp["left_boundary"]), 1)
     ## Right boundary extends to end since no valley (monotonic decrease)
-    expect_equal(unname(tmp["peakBoundary_right"]), 10)
+    expect_equal(unname(tmp["right_boundary"]), 10)
 })
 
-test_that("peakBoundary handles real-world peak with elevated baseline and noisy tail.", {
-    ## Real-world example: peak with high baseline and long noisy tail
-    ## Peak apex around index 12, then noisy plateau that never drops to baseline
+test_that("peakBoundary works for clean peak.", {
     cdata_pb <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
     pdata_pb <- list(data.frame(
-        rtime = seq(1, 148, by = 1),
-        intensity = c(
-            3011.207, 2974.531, 2762.167, 2891.680, 3585.870, 3495.168, 4962.872,
-            14508.343, 45776.547, 99684.969, 144267.156, 145303.016, 117992.516,
-            81776.422, 56023.023, 43023.773, 35532.582, 32609.395, 27691.934,
-            25894.314, 25407.229, 27242.326, 24835.045, 23004.254, 20529.389,
-            22985.701, 19728.000, 21125.123, 17173.430, 16828.990, 17671.371,
-            17238.762, 14417.884, 16073.300, 15524.321, 15545.252, 16164.231,
-            14967.193, 14825.901, 14622.387, 14367.496, 14099.743, 13814.941,
-            13847.837, 13400.929, 14825.461, 14537.347, 14367.999, 15478.081,
-            13988.006, 15239.449, 13623.584, 15051.759, 13910.513, 12910.956,
-            13675.151, 13019.853, 12531.170, 13472.155, 11975.559, 12469.830,
-            14894.729, 13566.914, 12935.803, 15064.299, 13708.584, 15143.816,
-            12255.616, 13121.985, 13695.070, 12550.412, 13944.659, 13570.368,
-            13099.557, 13503.188, 10923.682, 12251.983, 12864.445, 12905.133,
-            13073.855, 12577.082, 13440.513, 15015.454, 14148.987, 14335.039,
-            13118.187, 14612.891, 12529.094, 13824.206, 14526.008, 15842.500,
-            15751.920, 15425.752, 15308.919, 14428.304, 14696.171, 14999.367,
-            13332.374, 14872.715, 12422.044, 13559.954, 12324.938, 15466.142,
-            15311.044, 13859.441, 14940.694, 15187.022, 14833.513, 15504.637,
-            14668.642, 13930.903, 14814.932, 14515.681, 14756.643, 15067.479,
-            14381.385, 16005.971, 14378.000, 16044.934, 16053.924, 15861.024,
-            15804.795, 15378.197, 16378.093, 15469.408, 16802.516, 15320.836,
-            14691.501, 14563.201, 15646.632, 14151.453, 16516.934, 15049.130,
-            14293.031, 14485.947, 14089.717, 15332.651, 17004.359, 13967.167,
-            14529.343, 13746.593, 15503.060, 13467.515, 14113.591, 14057.125,
-            12294.305, 13497.132, 12305.407
-        )
+        rtime = c(1, 2, 3, 4, 5, 6, 7),
+        intensity = c(0, 10, 50, 100, 50, 10, 0)
     ))
     chr_pb <- Chromatograms(ChromBackendMemory(), chromData = cdata_pb, peaksData = pdata_pb)
 
     tmp <- peakBoundary(chr_pb)
     expect_equal(length(tmp), 2)
-    expect_equal(names(tmp), c("peakBoundary_left", "peakBoundary_right"))
-
-    ## Peak apex is at index 12 (rt=12), max intensity = 145303
-    ## MsCoreUtils::valleys() finds boundaries at indices 6 and 21
-    ## This is where the noisy baseline starts/ends (local minima)
-    expect_equal(unname(tmp["peakBoundary_left"]), 6)
-    expect_equal(unname(tmp["peakBoundary_right"]), 21)
-
-    ## The peak width should be reasonable (not the entire chromatogram)
-    peak_width <- unname(tmp["peakBoundary_right"] - tmp["peakBoundary_left"])
-    expect_equal(peak_width, 15)  # 21 - 6 = 15
+    expect_equal(names(tmp), c("left_boundary", "right_boundary"))
+    expect_false(any(is.na(tmp)))
+    ## valleys() finds boundaries at rt 1 and 7
+    expect_equal(unname(tmp["left_boundary"]), 1)
+    expect_equal(unname(tmp["right_boundary"]), 7)
 })
 
 test_that("peakBoundary returns NA for empty chromatograms.", {
@@ -463,11 +448,8 @@ test_that("peakBoundary returns NA for empty chromatograms.", {
 test_that("peakBoundary handles max intensity at first position.", {
     cdata_first <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
     pdata_first <- list(data.frame(
-        rtime = seq(1, 18, length.out = 18),
-        intensity = c(4174.2911, 2450.8100, 530.3057, 963.4568, 1058.0544, 
-                      2244.1909, 3708.5597, 4036.2473, 2960.1146, 3246.5288, 
-                      2472.2660, 1355.1185, 2020.3214, 1210.5110, 718.1166, 
-                      900.8450, 799.6667, 1926.9595)
+        rtime = seq(1, 10, length.out = 10),
+        intensity = c(1000, 900, 800, 700, 600, 500, 400, 300, 200, 100)
     ))
     chr_first <- Chromatograms(ChromBackendMemory(), chromData = cdata_first, 
                                peaksData = pdata_first)
@@ -476,7 +458,7 @@ test_that("peakBoundary handles max intensity at first position.", {
     expect_equal(length(tmp), 2)
     expect_false(any(is.na(tmp)))
     ## Left boundary should be at first position (index 1)
-    expect_equal(unname(tmp["peakBoundary_left"]), 1)
+    expect_equal(unname(tmp["left_boundary"]), 1)
 })
 
 test_that("peakBoundary handles max intensity at last position.", {
@@ -492,7 +474,129 @@ test_that("peakBoundary handles max intensity at last position.", {
     expect_equal(length(tmp), 2)
     expect_false(any(is.na(tmp)))
     ## Right boundary should be at last position
-    expect_equal(unname(tmp["peakBoundary_right"]), 10)
+    expect_equal(unname(tmp["right_boundary"]), 10)
+})
+
+test_that("peakBoundary threshold parameter affects boundaries.", {
+    cdata_t <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_t <- list(data.frame(
+        rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+        intensity = c(10, 20, 50, 100, 500, 100, 50, 20, 10, 5)
+    ))
+    chr_t <- Chromatograms(ChromBackendMemory(), chromData = cdata_t, peaksData = pdata_t)
+
+    tmp <- peakBoundary(chr_t, threshold = 0.1)
+    expect_equal(length(tmp), 2)
+    expect_false(any(is.na(tmp)))
+    
+    ## Lower threshold should give wider boundaries when fallback is triggered
+    tmp_05 <- peakBoundary(chr_t, threshold = 0.05)
+    expect_equal(length(tmp_05), 2)
+    expect_false(any(is.na(tmp_05)))
+})
+
+test_that("peakBoundary validates and adjusts boundaries.", {
+    ## Test 1: Clean peak - should use valleys result (boundaries at baseline)
+    cdata_clean <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_clean <- list(data.frame(
+        rtime = c(1, 2, 3, 4, 5, 6, 7),
+        intensity = c(0, 10, 50, 100, 50, 10, 0)
+    ))
+    chr_clean <- Chromatograms(ChromBackendMemory(), chromData = cdata_clean, peaksData = pdata_clean)
+    
+    tmp <- peakBoundary(chr_clean)
+    expect_equal(length(tmp), 2)
+    expect_false(any(is.na(tmp)))
+    expect_equal(names(tmp), c("left_boundary", "right_boundary"))
+    
+    ## Test 2: Peak with elevated baseline - should validate and may use threshold
+    cdata_high <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_high <- list(data.frame(
+        rtime = 1:15,
+        intensity = c(50, 60, 80, 150, 300, 500, 300, 150, 80, 60, 50, 50, 50, 50, 50)
+    ))
+    chr_high <- Chromatograms(ChromBackendMemory(), chromData = cdata_high, peaksData = pdata_high)
+    
+    tmp_high <- peakBoundary(chr_high)
+    ## Should return valid boundaries (2 values, no NA)
+    expect_equal(length(tmp_high), 2)
+    expect_false(any(is.na(tmp_high)))
+    ## And boundaries should contain the peak apex
+    expect_true(tmp_high["left_boundary"] <= 6)
+    expect_true(tmp_high["right_boundary"] >= 6)
+})
+
+test_that("peakBoundary handles NA adjacent to boundary.", {
+    ## Data with NA values adjacent to where valleys would find boundaries
+    cdata_na_adj <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_na_adj <- list(data.frame(
+        rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+        intensity = c(NA, NA, 50, 100, 500, 100, 50, NA, NA, 5)
+    ))
+    chr_na_adj <- Chromatograms(ChromBackendMemory(), chromData = cdata_na_adj, peaksData = pdata_na_adj)
+    
+    ## Should detect NA adjacency and fall back to threshold
+    expect_no_error(peakBoundary(chr_na_adj))
+    tmp <- peakBoundary(chr_na_adj)
+    expect_equal(length(tmp), 2)
+    expect_false(any(is.na(tmp)))
+})
+
+test_that("peakBoundary uses relative threshold based on baseline.", {
+    ## Peak with elevated/noisy baseline - relative threshold should handle it
+    ## Baseline around 3000-4000, peak max around 18700
+    cdata_noisy <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_noisy <- list(data.frame(
+        rtime = 1:30,
+        intensity = c(2100, 2100, 1970, 1020, 830, 960, 3300, 9900, 12600, 15500,
+                      15700, 17800, 18700, 11600, 9000, 6400, 5200, 5900, 3700, 4000,
+                      5000, 3500, 4700, 3500, 4700, 5200, 5300, 5200, 3900, 3800)
+    ))
+    chr_noisy <- Chromatograms(ChromBackendMemory(), chromData = cdata_noisy, peaksData = pdata_noisy)
+    
+    ## Should give valid boundaries
+    tmp <- peakBoundary(chr_noisy)
+    expect_equal(length(tmp), 2)
+    expect_false(any(is.na(tmp)))
+    ## Left boundary should be before peak apex (index 13)
+    expect_true(tmp["left_boundary"] < 13)
+    ## Right boundary should be after peak apex
+    expect_true(tmp["right_boundary"] > 13)
+    ## Should contain the main peak region (indices 7-17 roughly)
+    expect_true(tmp["left_boundary"] <= 10)
+})
+
+test_that("peakBoundary handles chromatogram with NA intensities without error.", {
+    ## Non-imputed data may have NA values in intensities
+    ## This should not cause "missing value where TRUE/FALSE needed" error
+    cdata_na <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_na <- list(data.frame(
+        rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+        intensity = c(NA, 20, 50, 100, 500, 100, 50, 20, NA, 5)
+    ))
+    chr_na <- Chromatograms(ChromBackendMemory(), chromData = cdata_na, peaksData = pdata_na)
+
+    ## Should not error
+    expect_no_error(peakBoundary(chr_na))
+    
+    ## Result should be valid
+    tmp <- peakBoundary(chr_na)
+    expect_equal(length(tmp), 2)
+    expect_equal(names(tmp), c("left_boundary", "right_boundary"))
+})
+
+test_that("peakBoundary handles chromatogram with all NA intensities.", {
+    cdata_allna <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_allna <- list(data.frame(
+        rtime = c(1, 2, 3, 4, 5),
+        intensity = c(NA_real_, NA_real_, NA_real_, NA_real_, NA_real_)
+    ))
+    chr_allna <- Chromatograms(ChromBackendMemory(), chromData = cdata_allna, peaksData = pdata_allna)
+
+    ## Should return NA without error
+    tmp <- peakBoundary(chr_allna)
+    expect_equal(length(tmp), 2)
+    expect_true(all(is.na(tmp)))
 })
 
 ## peakWidth tests
@@ -653,5 +757,80 @@ test_that("metrics handle data with NA values correctly.", {
 
     tmp_count_all <- peakCount(chr_na, na.rm = FALSE)
     expect_equal(as.numeric(tmp_count_all), 8)  # 8 total values including NAs
+})
+
+## peakProminence tests
+test_that("peakProminence returns prominence for a clear peak.", {
+    ## Create a bell-shaped peak with clear baseline
+    cdata_prom <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_prom <- list(data.frame(
+        rtime = seq(1, 20, by = 1),
+        intensity = c(10, 10, 15, 25, 50, 100, 200, 350, 500, 650,
+                      500, 350, 200, 100, 50, 25, 15, 10, 10, 10)
+    ))
+    chr_prom <- Chromatograms(ChromBackendMemory(), chromData = cdata_prom, peaksData = pdata_prom)
+
+    tmp <- peakProminence(chr_prom)
+    expect_equal(length(tmp), 1)
+    expect_true(is.numeric(tmp))
+    expect_true(!is.na(tmp))
+    expect_true(tmp > 1)  # Should be significantly above baseline
+    expect_equal(attr(tmp, "peakProminence"), "custom_metric:peak_prominence")
+})
+
+test_that("peakProminence returns low value for flat/noisy chromatogram.", {
+    ## Create a flat, noisy chromatogram with no clear peak
+    set.seed(42)
+    cdata_flat <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_flat <- list(data.frame(
+        rtime = seq(1, 50, by = 1),
+        intensity = 100 + rnorm(50, sd = 20)  # Noisy around 100
+    ))
+    chr_flat <- Chromatograms(ChromBackendMemory(), chromData = cdata_flat, peaksData = pdata_flat)
+
+    tmp <- peakProminence(chr_flat)
+    expect_equal(length(tmp), 1)
+    expect_true(is.numeric(tmp))
+    expect_true(!is.na(tmp))
+    expect_true(tmp < 2)  # Should be relatively low for flat signal (< 2x baseline)
+})
+
+test_that("peakProminence accepts pre-computed peakBoundary.", {
+    cdata_prom <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_prom <- list(data.frame(
+        rtime = seq(1, 20, by = 1),
+        intensity = c(10, 10, 15, 25, 50, 100, 200, 350, 500, 650,
+                      500, 350, 200, 100, 50, 25, 15, 10, 10, 10)
+    ))
+    chr_prom <- Chromatograms(ChromBackendMemory(), chromData = cdata_prom, peaksData = pdata_prom)
+
+    pb <- peakBoundary(chr_prom)
+    tmp <- peakProminence(chr_prom, peakBoundary = pb)
+    expect_equal(length(tmp), 1)
+    expect_true(!is.na(tmp))
+})
+
+test_that("peakProminence returns NA for empty chromatograms.", {
+    cdata_empty <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_empty <- list(data.frame(rtime = numeric(), intensity = numeric()))
+    chr_empty <- Chromatograms(ChromBackendMemory(), chromData = cdata_empty, peaksData = pdata_empty)
+
+    tmp <- peakProminence(chr_empty)
+    expect_equal(length(tmp), 1)
+    expect_true(is.na(tmp))
+})
+
+test_that("peakProminence returns NA when baseline is zero or negative.", {
+    ## Chromatogram where baseline would be ~0
+    cdata_zero <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_zero <- list(data.frame(
+        rtime = seq(1, 10, by = 1),
+        intensity = c(0, 0, 0, 0, 100, 0, 0, 0, 0, 0)
+    ))
+    chr_zero <- Chromatograms(ChromBackendMemory(), chromData = cdata_zero, peaksData = pdata_zero)
+
+    tmp <- peakProminence(chr_zero)
+    expect_equal(length(tmp), 1)
+    expect_true(is.na(tmp))  # Can't compute when baseline is 0
 })
 

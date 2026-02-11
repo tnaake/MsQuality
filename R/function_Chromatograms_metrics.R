@@ -154,12 +154,12 @@ numberEmptyChrom <- function(chromatograms, ...) {
 NULL
 
 #' @noRd
-.rtAcquisitionRange_chromatograms <- function(chromatograms, ...) {
+.rtAcquisitionRange_chromatograms <- function(chromatograms, na.rm = TRUE, ...) {
     rts <- unlist(rtime(chromatograms), use.names = FALSE)
     if (length(rts) == 0) {
         res <- c(min = NA_real_, max = NA_real_)
     } else {
-        res <- range(rts, ...)
+        res <- range(rts, na.rm = na.rm)
         names(res) <- c("min", "max")
     }
     attr(res, "rtAcquisitionRange") <- "MS:4000070"
@@ -355,7 +355,7 @@ intensityQuartiles <- function(chromatograms, ...) {
     rts <- unlist(rtime(chromatograms), use.names = FALSE)
     ord <- order(rts)
     res <- res[ord]
-    qt <- summary(res, ...)
+    qt <- summary(res)
     ## name the output, add attributes
     names(qt) <- c("Min", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max")
     attr(qt, "intensityQuartiles") <- "custom_metric:intensity_quartiles"
@@ -740,8 +740,8 @@ medianIntensityRtIqr <- function(chromatograms, na.rm = TRUE, ...) {
 #' This metric is analogous to MS:4000051 (XIC-FWHM quantiles).
 #'
 #' @param chromatograms `Chromatograms` object containing a single chromatogram
-#' @param peakBoundary optional `numeric(2)` named vector with `peakBoundary_left`
-#'   and `peakBoundary_right` values from a previous call to `peakBoundary()`.
+#' @param peakBoundary optional `numeric(2)` named vector with `left_boundary`
+#'   and `right_boundary` values from a previous call to `peakBoundary()`.
 #'   If not provided, the full chromatogram is used.
 #' @param ... further arguments
 #'
@@ -772,8 +772,8 @@ xicFwhm <- function(chromatograms, peakBoundary = NULL, ...) {
 
     ## If peakBoundary provided, subset to peak region
     if (!is.null(peakBoundary) && !any(is.na(peakBoundary))) {
-        left_rt <- peakBoundary["peakBoundary_left"]
-        right_rt <- peakBoundary["peakBoundary_right"]
+        left_rt <- peakBoundary["left_boundary"]
+        right_rt <- peakBoundary["right_boundary"]
         mask <- rts >= left_rt & rts <= right_rt
         rts <- rts[mask]
         ints <- ints[mask]
@@ -810,14 +810,19 @@ xicFwhm <- function(chromatograms, peakBoundary = NULL, ...) {
         return(res)
     }
     right_idx <- max_idx + right_candidates[1] - 1
-
-    rt_left <- approx(x = ints[c(left_idx, left_idx + 1)],
-                      y = rts[c(left_idx, left_idx + 1)],
-                      xout = half_max)$y
-    rt_right <- approx(x = ints[c(right_idx, right_idx - 1)],
-                       y = rts[c(right_idx, right_idx - 1)],
-                       xout = half_max)$y
-
+    left_ints <- ints[c(left_idx, left_idx + 1)]
+    left_rts <- rts[c(left_idx, left_idx + 1)]
+    right_ints <- ints[c(right_idx - 1, right_idx)]
+    right_rts <- rts[c(right_idx - 1, right_idx)]
+    
+    if (any(is.na(left_ints)) || any(is.na(left_rts)) ||
+        any(is.na(right_ints)) || any(is.na(right_rts))) {
+        res <- NA_real_
+        attr(res, "xicFwhm") <- "custom_metric:xic_fwhm"
+        return(res)
+    }
+    rt_left <- approx(x = left_ints, y = left_rts, xout = half_max)$y
+    rt_right <- approx(x = right_ints, y = right_rts, xout = half_max)$y
     res <- rt_right - rt_left
     attr(res, "xicFwhm") <- "custom_metric:xic_fwhm"
     res
@@ -830,19 +835,35 @@ xicFwhm <- function(chromatograms, peakBoundary = NULL, ...) {
 #' of the main peak in a single chromatogram (EIC).
 #'
 #' @details
-#' The peak boundaries are determined by finding the valleys (local minima)
-#' on each side of the peak apex using `MsCoreUtils::valleys()`.
+#' The function uses an adaptive approach to find peak boundaries:
 #'
-#' This approach is robust for:
-#' - Overlapping peaks (stops at the valley between peaks)
-#' - Noisy baselines (finds the first local minimum)
-#' - Peaks with elevated baselines that never drop to zero
+#' 1. First attempts to find boundaries using local minima (valleys) on each
+#'    side of the peak apex via `MsCoreUtils::valleys()`.
+#'
+#' 2. Validates the boundaries by checking if intensities at boundaries are
+#'    near baseline level.
+#'
+#' 3. If boundaries are not at baseline (e.g., for peaks with elevated baseline
+#'    or monotonic slopes), falls back to a relative threshold method that
+#'    finds where intensity drops below a fraction of peak height above baseline.
+#'
+#' The baseline is estimated from a lower quantile of intensities (default 10th
+#' percentile), and the threshold is calculated relative to peak height above
+#' this baseline.
 #'
 #' @param chromatograms `Chromatograms` object containing a single chromatogram
+#' @param threshold `numeric(1)` fraction of peak height above baseline used
+#'   as fallback threshold (default 0.1 = 10\%). The boundary is placed where
+#'   intensity drops below: `baseline + (max - baseline) * threshold`.
+#' @param baselineThreshold `numeric(1)` maximum acceptable intensity at 
+#'   boundaries as a fraction of peak height above baseline. If boundary 
+#'   intensity exceeds this, falls back to threshold method. Default is 0.1.
+#' @param baselineQuantile `numeric(1)` quantile used to estimate the baseline
+#'   intensity (default 0.1 = 10th percentile of intensities).
 #' @param ... further arguments (currently unused)
 #'
-#' @return `numeric(2)` named vector with `peakBoundary_left` and `peakBoundary_right` values.
-#'   Returns `NA` values if boundaries cannot be determined.
+#' @return `numeric(2)` named vector with `left_boundary` and `right_boundary` 
+#'   values. Returns `NA` values if boundaries cannot be determined.
 #'
 #' @author Philippine Louail
 #'
@@ -857,43 +878,54 @@ xicFwhm <- function(chromatograms, peakBoundary = NULL, ...) {
 #'                intensity = c(100, 250, 400, 300, 150))
 #' )
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
+#'
+#' ## Find peak boundaries
 #' peakBoundary(chr)
-peakBoundary <- function(chromatograms, ...) {
-
+#'
+#' ## Adjust threshold for different sensitivity
+#' peakBoundary(chr, threshold = 0.05)
+peakBoundary <- function(chromatograms, 
+                         threshold = 0.1,
+                         baselineThreshold = 0.1,
+                         baselineQuantile = 0.1,
+                         ...) {
     rts <- rtime(chromatograms)[[1L]]
     ints <- intensity(chromatograms)[[1L]]
+    n <- length(ints)
+    na_result <- c(left_boundary = NA_real_, right_boundary = NA_real_)
+    attr(na_result, "peakBoundary") <- "custom_metric:peak_boundary"
 
-    if (length(ints) < 3 || all(is.na(ints))) {
-        res <- c(peakBoundary_left = NA_real_, peakBoundary_right = NA_real_)
-        attr(res, "peakBoundary") <- "custom_metric:peak_boundary"
-        return(res)
-    }
-
+    if (n < 3 || all(is.na(ints))) return(na_result)
+    
     max_int <- max(ints, na.rm = TRUE)
-    if (max_int == 0) {
-        res <- c(peakBoundary_left = NA_real_, peakBoundary_right = NA_real_)
-        attr(res, "peakBoundary") <- "custom_metric:peak_boundary"
-        return(res)
-    }
-
+    if (max_int == 0) return(na_result)
+    
     max_idx <- which.max(ints)
+    baseline_int <- quantile(ints, probs = baselineQuantile, na.rm = TRUE)
+    peak_height <- max_int - baseline_int
+    baseline_thresh <- baseline_int + peak_height * baselineThreshold
 
+    ## Try valley-based boundaries first
     v <- MsCoreUtils::valleys(ints, max_idx)
-    
-    ## Handle edge cases where peak is at boundary (valleys may not return left/right)
-    if (!"left" %in% colnames(v)) {
-        left_idx <- 1L
-    } else {
-        left_idx <- v[1L, "left"]
-    }
-    
-    if (!"right" %in% colnames(v)) {
-        right_idx <- length(ints)
-    } else {
-        right_idx <- v[1L, "right"]
+    left_idx <- if ("left" %in% colnames(v)) v[1L, "left"] else 1L
+    right_idx <- if ("right" %in% colnames(v)) v[1L, "right"] else n
+
+    ## Check if valleys are valid (at baseline level, not NA, not adjacent to NA)
+    left_ok <- !is.na(ints[left_idx]) && ints[left_idx] <= baseline_thresh &&
+               !(left_idx > 1 && is.na(ints[left_idx - 1]))
+    right_ok <- !is.na(ints[right_idx]) && ints[right_idx] <= baseline_thresh &&
+                !(right_idx < n && is.na(ints[right_idx + 1]))
+
+    ## Fallback to threshold method if needed
+    if (!left_ok || !right_ok) {
+        thresh_val <- baseline_int + peak_height * threshold
+        left_cand <- which(ints[seq_len(max_idx)] <= thresh_val)
+        right_cand <- which(ints[max_idx:n] <= thresh_val)
+        left_idx <- if (length(left_cand)) max(left_cand) else 1L
+        right_idx <- if (length(right_cand)) max_idx + min(right_cand) - 1L else n
     }
 
-    res <- c(peakBoundary_left = rts[left_idx], peakBoundary_right = rts[right_idx])
+    res <- c(left_boundary = rts[left_idx], right_boundary = rts[right_idx])
     attr(res, "peakBoundary") <- "custom_metric:peak_boundary"
     res
 }
@@ -916,8 +948,8 @@ peakBoundary <- function(chromatograms, ...) {
 #' chromatogram (EIC) for a specific compound/feature.
 #'
 #' @param chromatograms `Chromatograms` object containing a single chromatogram
-#' @param peakBoundary optional `numeric(2)` named vector with `peakBoundary_left`
-#'   and `peakBoundary_right` values from a previous call to `peakBoundary()`.
+#' @param peakBoundary optional `numeric(2)` named vector with `left_boundary`
+#'   and `right_boundary` values from a previous call to `peakBoundary()`.
 #'   If not provided, boundaries are calculated automatically.
 #' @param ... further arguments passed to `peakBoundary()`
 #'
@@ -946,7 +978,7 @@ peakWidth <- function(chromatograms, peakBoundary = NULL, ...) {
     if (is.null(peakBoundary)) {
         peakBoundary <- peakBoundary(chromatograms, ...)
     }
-    res <- unname(peakBoundary["peakBoundary_right"] - peakBoundary["peakBoundary_left"])
+    res <- unname(peakBoundary["right_boundary"] - peakBoundary["left_boundary"])
     attr(res, "peakWidth") <- "custom_metric:peak_width"
     res
 }
@@ -962,10 +994,11 @@ peakWidth <- function(chromatograms, peakBoundary = NULL, ...) {
 #' This function wraps `MetaboCoreUtils::betaValues()` which compares the
 #' chromatographic peak to Beta distribution curves. It returns two values:
 #' - `beta_cor`: correlation/similarity to the best-fit beta distribution curve
-#' - `beta_snr`: signal-to-noise ratio of the residuals after fitting
+#' - `beta_snr`: signal-to-noise ratio of the peak relative to residuals
 #'
-#' Higher `beta_cor` values indicate more symmetric, bell-shaped peaks.
-#' Lower `beta_snr` values indicate cleaner peaks with less noise.
+#' Higher `beta_cor` values (close to 1.0) indicate more symmetric, bell-shaped peaks.
+#' Higher `beta_snr` values indicate stronger peak signal relative to noise/residuals,
+#' meaning cleaner, better-defined peaks.
 #'
 #' If `peakBoundary` is provided, only the peak region is analyzed. Otherwise,
 #' boundaries are calculated automatically using `peakBoundary()`.
@@ -978,15 +1011,15 @@ peakWidth <- function(chromatograms, peakBoundary = NULL, ...) {
 #' BMC Bioinformatics 24(1):404. doi: 10.1186/s12859-023-05533-4
 #'
 #' @param chromatograms `Chromatograms` object containing a single chromatogram
-#' @param peakBoundary optional `numeric(2)` named vector with `peakBoundary_left`
-#'   and `peakBoundary_right` values from a previous call to `peakBoundary()`.
+#' @param peakBoundary optional `numeric(2)` named vector with `left_boundary`
+#'   and `right_boundary` values from a previous call to `peakBoundary()`.
 #'   If not provided, boundaries are calculated automatically.
-#' @param ... further arguments passed to `MetaboCoreUtils::betaValues()`
+#' @param ... further arguments (currently unused)
 #'
 #' @return `numeric(2)` named vector with `beta_cor` and `beta_snr` values.
 #'   Returns `NA` for both if values cannot be calculated.
 #'
-#' @author Philippine Louail
+#' @author  William Kumler, Philippine Louail
 #'
 #' @importFrom MetaboCoreUtils betaValues
 #' @export
@@ -1024,8 +1057,8 @@ peakBeta <- function(chromatograms, peakBoundary = NULL, ...) {
     }
 
     ## Subset to peak region
-    left_rt <- peakBoundary["peakBoundary_left"]
-    right_rt <- peakBoundary["peakBoundary_right"]
+    left_rt <- peakBoundary["left_boundary"]
+    right_rt <- peakBoundary["right_boundary"]
     mask <- rts >= left_rt & rts <= right_rt
     peak_rts <- rts[mask]
     peak_ints <- ints[mask]
@@ -1037,15 +1070,107 @@ peakBeta <- function(chromatograms, peakBoundary = NULL, ...) {
         return(res)
     }
 
-    ## Calculate beta values using MetaboCoreUtils
     beta_vals <- MetaboCoreUtils::betaValues(
         intensity = peak_ints,
-        rtime = peak_rts,
-        ...
+        rtime = peak_rts
     )
 
     res <- c(beta_cor = unname(beta_vals[1]), beta_snr = unname(beta_vals[2]))
     attr(res, "peakBeta") <- "custom_metric:peak_beta"
+    res
+}
+
+#' @title Peak Prominence (Peak-to-Baseline Ratio)
+#'
+#' @description
+#' The function `peakProminence` calculates the prominence of a chromatographic
+#' peak relative to its baseline, useful for filtering out flat/noisy signals.
+#'
+#' @details
+#' Peak prominence is calculated as the ratio of peak height above baseline
+#' to the baseline level:
+#' 
+#' \deqn{prominence = \frac{max - baseline}{baseline}}{prominence = (max - baseline) / baseline}
+#' 
+#' Where baseline is estimated from the lower quantile of intensities 
+#' (controlled by `baselineQuantile`).
+#'
+#' Higher values indicate more prominent peaks that stand out clearly from
+#' the baseline. Typical good peaks have prominence > 5-10, while noisy
+#' plateaus or flat signals have prominence < 3-5.
+#'
+#' This metric is particularly useful for filtering out:
+#' - Noisy chromatograms with no clear peak
+#' - Flat plateau signals
+#' - Weak peaks barely above baseline
+#'
+#' @param chromatograms `Chromatograms` object containing a single chromatogram
+#' @param peakBoundary optional `numeric(2)` named vector with `left_boundary`
+#'   and `right_boundary` values from a previous call to `peakBoundary()`.
+#'   If provided, only the peak region is analyzed.
+#' @param baselineQuantile `numeric(1)` quantile used to estimate the baseline
+#'   intensity (default 0.1 = 10th percentile of intensities).
+#' @param ... further arguments (currently unused)
+#'
+#' @return `numeric(1)` peak prominence value. Returns `NA` if prominence 
+#'   cannot be calculated (e.g., baseline is zero or NA).
+#'
+#' @author Philippine Louail
+#'
+#' @export
+#'
+#' @examples
+#' library(Chromatograms)
+#' 
+#' ## Good peak with high prominence
+#' cdata <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+#' pdata_good <- list(data.frame(
+#'     rtime = 1:20,
+#'     intensity = c(100, 100, 100, 200, 500, 1000, 2000, 5000, 10000, 15000,
+#'                   10000, 5000, 2000, 1000, 500, 200, 100, 100, 100, 100)
+#' ))
+#' chr_good <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata_good)
+#' peakProminence(chr_good)  # High value (~150)
+#' 
+#' ## Bad peak (noisy plateau) with low prominence
+#' pdata_bad <- list(data.frame(
+#'     rtime = 1:20,
+#'     intensity = c(3000, 3500, 4000, 5000, 8000, 10000, 12000, 11000, 10000,
+#'                   11000, 12000, 10000, 9000, 8000, 7000, 6000, 5000, 4000, 3500, 3000)
+#' ))
+#' chr_bad <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata_bad)
+#' peakProminence(chr_bad)  # Low value (~3)
+peakProminence <- function(chromatograms, peakBoundary = NULL, 
+                           baselineQuantile = 0.1, ...) {
+    rts <- rtime(chromatograms)[[1L]]
+    ints <- intensity(chromatograms)[[1L]]
+    
+    ## If peakBoundary provided, subset to peak region
+    if (!is.null(peakBoundary) && !any(is.na(peakBoundary))) {
+        left_rt <- peakBoundary["left_boundary"]
+        right_rt <- peakBoundary["right_boundary"]
+        mask <- rts >= left_rt & rts <= right_rt
+        ints <- ints[mask]
+    }
+    
+    if (length(ints) < 3 || all(is.na(ints))) {
+        res <- NA_real_
+        attr(res, "peakProminence") <- "custom_metric:peak_prominence"
+        return(res)
+    }
+    
+    max_int <- max(ints, na.rm = TRUE)
+    baseline_int <- quantile(ints, probs = baselineQuantile, na.rm = TRUE)
+    
+    ## Avoid division by zero or negative baseline
+    if (is.na(baseline_int) || baseline_int <= 0) {
+        res <- NA_real_
+        attr(res, "peakProminence") <- "custom_metric:peak_prominence"
+        return(res)
+    }
+    
+    res <- (max_int - baseline_int) / baseline_int
+    attr(res, "peakProminence") <- "custom_metric:peak_prominence"
     res
 }
 
@@ -1412,6 +1537,8 @@ setMethod("areaUnderTicRtQuantiles", "Chromatograms", function(object, msLevel =
 #' relationship: has_metric_category MS:4000009 ! ID free metric
 #' relationship: has_metric_category MS:4000017 ! chromatogram metric
 #'
+#' @param na.rm `logical(1)` whether to remove `NA` values (default `TRUE`)
+#'
 #' @return `numeric(1)`
 #'
 #' @author Philippine Louail
@@ -1434,9 +1561,9 @@ setMethod("areaUnderTicRtQuantiles", "Chromatograms", function(object, msLevel =
 #' chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 #' ## Returns total area under TIC
 #' areaUnderTic(chr)
-setMethod("areaUnderTic", "Chromatograms", function(object, ...) {
+setMethod("areaUnderTic", "Chromatograms", function(object, na.rm = TRUE, ...) {
     all_ints <- unlist(intensity(object), use.names = FALSE)
-    res <- sum(all_ints, ...)
+    res <- sum(all_ints, na.rm = na.rm)
     attr(res, "areaUnderTic") <- "MS:4000155"
     res
 })

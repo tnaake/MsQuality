@@ -9,11 +9,11 @@ peakBeta(chromatograms, peakBoundary = NULL, ...)
 \arguments{
 \item{chromatograms}{`Chromatograms` object containing a single chromatogram}
 
-\item{peakBoundary}{optional `numeric(2)` named vector with `peakBoundary_left`
-and `peakBoundary_right` values from a previous call to `peakBoundary()`.
+\item{peakBoundary}{optional `numeric(2)` named vector with `left_boundary`
+and `right_boundary` values from a previous call to `peakBoundary()`.
 If not provided, boundaries are calculated automatically.}
 
-\item{...}{further arguments passed to `MetaboCoreUtils::betaValues()`}
+\item{...}{further arguments (currently unused)}
 }
 \value{
 `numeric(2)` named vector with `beta_cor` and `beta_snr` values.
@@ -28,10 +28,11 @@ of the peak shape.
 This function wraps `MetaboCoreUtils::betaValues()` which compares the
 chromatographic peak to Beta distribution curves. It returns two values:
 - `beta_cor`: correlation/similarity to the best-fit beta distribution curve
-- `beta_snr`: signal-to-noise ratio of the residuals after fitting
+- `beta_snr`: signal-to-noise ratio of the peak relative to residuals
 
-Higher `beta_cor` values indicate more symmetric, bell-shaped peaks.
-Lower `beta_snr` values indicate cleaner peaks with less noise.
+Higher `beta_cor` values (close to 1.0) indicate more symmetric, bell-shaped peaks.
+Higher `beta_snr` values indicate stronger peak signal relative to noise/residuals,
+meaning cleaner, better-defined peaks.
 
 If `peakBoundary` is provided, only the peak region is analyzed. Otherwise,
 boundaries are calculated automatically using `peakBoundary()`.
@@ -61,5 +62,5 @@ assessing chromatographic peak quality with simple metrics in metabolomics"
 BMC Bioinformatics 24(1):404. doi: 10.1186/s12859-023-05533-4
 }
 \author{
-Philippine Louail
+William Kumler, Philippine Louail
 }

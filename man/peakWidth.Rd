@@ -9,8 +9,8 @@ peakWidth(chromatograms, peakBoundary = NULL, ...)
 \arguments{
 \item{chromatograms}{`Chromatograms` object containing a single chromatogram}
 
-\item{peakBoundary}{optional `numeric(2)` named vector with `peakBoundary_left`
-and `peakBoundary_right` values from a previous call to `peakBoundary()`.
+\item{peakBoundary}{optional `numeric(2)` named vector with `left_boundary`
+and `right_boundary` values from a previous call to `peakBoundary()`.
 If not provided, boundaries are calculated automatically.}
 
 \item{...}{further arguments passed to `peakBoundary()`}
