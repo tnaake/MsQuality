@@ -906,7 +906,7 @@ peakBoundary <- function(chromatograms,
     baseline_thresh <- baseline_int + peak_height * baselineThreshold
 
     ## Try valley-based boundaries first
-    v <- MsCoreUtils::valleys(ints, max_idx)
+    v <- valleys(ints, max_idx)
     left_idx <- if ("left" %in% colnames(v)) v[1L, "left"] else 1L
     right_idx <- if ("right" %in% colnames(v)) v[1L, "right"] else n
 
@@ -1070,7 +1070,7 @@ peakBeta <- function(chromatograms, peakBoundary = NULL, ...) {
         return(res)
     }
 
-    beta_vals <- MetaboCoreUtils::betaValues(
+    beta_vals <- betaValues(
         intensity = peak_ints,
         rtime = peak_rts
     )
