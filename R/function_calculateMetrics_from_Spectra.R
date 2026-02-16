@@ -368,7 +368,10 @@ transformIntoMzQC <- function(spectra_metrics) {
             metadata = rmzqc::MzQCmetadata$new(
                 label = raw_file,
                 inputFiles = list(rmzqc::MzQCinputFile$new(
-                    basename(raw_file), raw_file, file_format)),
+                    basename(raw_file),
+                    rmzqc::localFileToURI(raw_file),
+                    file_format)
+                ),
                 analysisSoftware = list(software)),
             qualityMetrics = qc_metric_i
         )
