@@ -266,6 +266,7 @@ jobs:
         env:
           DISPLAY: 99.0
         run: |
+          BiocManager::install("BiocCheck", ask = FALSE, update = TRUE)
           BiocCheck::BiocCheck(
               dir('check', 'tar.gz$', full.names = TRUE),
               `quit-with-status` = TRUE,
