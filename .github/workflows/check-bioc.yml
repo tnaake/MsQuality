@@ -192,7 +192,8 @@ jobs:
 
           ## For running the checks
           message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))
-          install.packages(c("rcmdcheck", "BiocCheck"), repos = BiocManager::repositories())
+          install.packages("rcmdcheck", repos = BiocManager::repositories())
+          BiocManager::install("BiocCheck", ask = FALSE, update = TRUE)
 
           ## Pass #1 at installing dependencies
           message(paste('****', Sys.time(), 'pass number 1 at installing dependencies: local dependencies ****'))
