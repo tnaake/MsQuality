@@ -17,7 +17,7 @@ medianPrecursorMz(
 
 \item{msLevel}{\code{integer}}
 
-\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"},
 \code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
@@ -27,17 +27,17 @@ medianPrecursorMz(
 }
 \description{
 MS:4000152 \cr
-"Median m/z value for MS2 precursors of all quantification data points after 
-user-defined acceptance criteria are applied. These data points may be for 
-example XIC profiles, isotopic pattern areas, or reporter ions 
-(see MS:1001805). The used type should be noted in the metadata or 
-analysis methods section of the recording file for the respective run. In 
-case of multiple acceptance criteria (FDR) available in proteomics, PSM-level 
+"Median m/z value for MS2 precursors of all quantification data points after
+user-defined acceptance criteria are applied. These data points may be for
+example XIC profiles, isotopic pattern areas, or reporter ions
+(see MS:1001805). The used type should be noted in the metadata or
+analysis methods section of the recording file for the respective run. In
+case of multiple acceptance criteria (FDR) available in proteomics, PSM-level
 FDR should be used for better comparability." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the precursor m/z values are obtained, \cr 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the precursor m/z values are obtained, \cr
 (3) the median value is returned (\code{NA}s are removed). \cr
 }
 \details{
@@ -48,11 +48,11 @@ is_a: MS:4000020 ! ion source metric \cr
 relationship: has_metric_category MS:4000022 ! MS2 metric \cr
 relationship: has_units MS:1000040 ! m/z
 
-An attribute containing the PSI:MS term will only be returned if 
+An attribute containing the PSI:MS term will only be returned if
 \code{identificationLevel} is \code{"identified"} and \code{msLevel} is 1.
 }
 \note{
-\code{medianPrecursorMz} will calculate the *precursor* median m/z of all 
+\code{medianPrecursorMz} will calculate the *precursor* median m/z of all
 Spectra within \code{spectra}. If the calculation needs be done according to
 *MS:4000152*, the \code{Spectra} object should be prepared accordingly, i.e.
 filtered with e.g. [filterPrecursorMz()] or subsetted to spectra with

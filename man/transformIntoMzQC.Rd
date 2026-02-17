@@ -14,8 +14,8 @@ transformIntoMzQC(spectra_metrics)
 \code{Spectra} with same \code{dataOrigin}
 }
 \description{
-The function \code{transformIntoMzQC} transfers the metrics stored in 
-\code{spectra_metrics} into a list of \code{MzQCmzQC} objects. Each list 
+The function \code{transformIntoMzQC} transfers the metrics stored in
+\code{spectra_metrics} into a list of \code{MzQCmzQC} objects. Each list
 entry will refer to the corresponding entry in \code{spectra_metrics}.
 As such, each entry contains information from a single \code{dataOrigin}
 of a \code{Spectra} object.
@@ -25,7 +25,7 @@ The function \code{transformIntoMzQC} is a helper function within
 }
 \details{
 The \code{MzQCmzQC} object will only contain those quality metrics
-that have a corresponding attribute with a [PSI:MS] identifier. The 
+that have a corresponding attribute with a [PSI:MS] identifier. The
 matching is done via the names of each vector in \code{spectra_metrics}.
 
 The Field \code{"version"} is set to the current version of the \code{rmzqc}

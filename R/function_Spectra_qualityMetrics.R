@@ -5,22 +5,22 @@
 #' @description
 #' The function \code{qualityMetrics} returns a character vector with available
 #' quality metrics depending on \code{object}.
-#' 
+#'
 #' @details
-#' \code{object} is a \code{Spectra} or \code{MsExperiment}. 
-#' 
+#' \code{object} is a \code{Spectra} or \code{MsExperiment}.
+#'
 #' @param object object of type \code{Spectra} or \code{MsExperiment}
-#' 
+#'
 #' @return \code{character}
-#' 
+#'
 #' @author Thomas Naake
-#' 
+#'
 #' @importFrom Spectra Spectra
 #' @importFrom MsExperiment MsExperiment
-#' 
+#'
 #' @export
-#' 
-#' @examples 
+#'
+#' @examples
 #' library(Spectra)
 #' spd <- DataFrame(
 #'     msLevel = c(2L, 2L, 2L),
@@ -39,36 +39,36 @@
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$dataOrigin <- rep("sample_1", 3)
 #' sps <- Spectra(spd)
-#' 
+#'
 #' qualityMetrics(object = sps)
 qualityMetrics <- function(object) {
     if (is(object, "Spectra"))
         .metrics <- c(
             "chromatographyDuration", "ticQuantileRtFraction", "rtOverMsQuarters",
             "ticQuartileToQuartileLogRatio", "numberSpectra", "numberEmptyScans",
-            "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic", 
+            "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic",
             "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity",
             "medianTicRtIqr", "medianTicOfRtRange", "mzAcquisitionRange",
-            "rtAcquisitionRange", "precursorIntensityRange", 
+            "rtAcquisitionRange", "precursorIntensityRange",
             "precursorIntensityQuartiles", "precursorIntensityMean",
-            "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2", 
-            "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
+            "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2",
+            "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
             "medianCharge"
         )
-    
+
     if (is(object, "MsExperiment"))
         .metrics <-  c(
             "chromatographyDuration", "ticQuantileRtFraction", "rtOverMsQuarters",
             "ticQuartileToQuartileLogRatio", "numberSpectra", "numberEmptyScans",
-            "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic", 
-            "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity", 
+            "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic",
+            "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity",
             "medianTicRtIqr", "medianTicOfRtRange", "mzAcquisitionRange",
-            "rtAcquisitionRange", "precursorIntensityRange", 
+            "rtAcquisitionRange", "precursorIntensityRange",
             "precursorIntensityQuartiles", "precursorIntensityMean",
-            "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2", 
-            "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
+            "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2",
+            "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
             "medianCharge"
       )
-    
+
     .metrics
 }

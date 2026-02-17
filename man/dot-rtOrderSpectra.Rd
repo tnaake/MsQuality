@@ -10,7 +10,7 @@
 \item{spectra}{\code{Spectra} object}
 }
 \value{
-\code{Spectra} object with the features ordered according to the 
+\code{Spectra} object with the features ordered according to the
 (increasing) retention time
 }
 \description{

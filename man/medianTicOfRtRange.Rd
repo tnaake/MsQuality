@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{medianTicOfRtRange}
 \alias{medianTicOfRtRange}
-\title{median of TIC values in the shortest RT range in which half of the 
+\title{median of TIC values in the shortest RT range in which half of the
 quantification data points are identified (MS:4000159)}
 \usage{
 medianTicOfRtRange(
@@ -17,7 +17,7 @@ medianTicOfRtRange(
 
 \item{msLevel}{\code{integer}}
 
-\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"},
 \code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
@@ -27,24 +27,24 @@ medianTicOfRtRange(
 }
 \description{
 MS:4000159 \cr
-"Median of TIC values in the shortest RT range in which half of the 
-quantification data points are identified. These data points may be for 
-example XIC profiles, isotopic pattern areas, or reporter ions 
-(see MS:1001805). The used type should be noted in the metadata or analysis 
-methods section of the recording file for the respective run. In case of 
-multiple acceptance criteria (FDR) available in proteomics, PSM-level FDR 
+"Median of TIC values in the shortest RT range in which half of the
+quantification data points are identified. These data points may be for
+example XIC profiles, isotopic pattern areas, or reporter ions
+(see MS:1001805). The used type should be noted in the metadata or analysis
+methods section of the recording file for the respective run. In case of
+multiple acceptance criteria (FDR) available in proteomics, PSM-level FDR
 should be used for better comparability." [PSI:MS]  \cr
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the \code{Spectra} object is ordered according to the retention time, \cr 
-(3) the number of features in the \code{Spectra} object is obtained and 
-the number for half of the features is calculated, \cr 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the \code{Spectra} object is ordered according to the retention time, \cr
+(3) the number of features in the \code{Spectra} object is obtained and
+the number for half of the features is calculated, \cr
 (4) iterate through the features (always by taking the neighbouring
 half of features) and calculate the retention time range of the
-set of features, \cr 
-(5) retrieve the set of features with the minimum retention time 
-range, \cr 
+set of features, \cr
+(5) retrieve the set of features with the minimum retention time
+range, \cr
 (6) calculate from the set of (5) the median TIC (\code{NA} values are removed)
 and return it.
 }
@@ -55,15 +55,15 @@ is_a: MS:4000003 ! single value \cr
 is_a: MS:4000008 ! ID based \cr
 synonym: "MS1-2B"  RELATED [PMID:19837981]
 
-The function \code{medianTicOfRtRange} uses the function \code{ionCount} as an 
+The function \code{medianTicOfRtRange} uses the function \code{ionCount} as an
 equivalent to the TIC.
 
-An attribute containing the PSI:MS term will only be returned if 
+An attribute containing the PSI:MS term will only be returned if
 \code{identificationLevel} is \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If
-the calculation needs to be done according to *MS:4000159*, the 
+the calculation needs to be done according to *MS:4000159*, the
 \code{Spectra} object should be prepared accordingly, i.e. being subsetted to
 spectra with identification data.
 }

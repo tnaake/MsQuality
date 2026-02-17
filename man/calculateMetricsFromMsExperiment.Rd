@@ -15,35 +15,35 @@ calculateMetricsFromMsExperiment(
 \arguments{
 \item{msexp}{\code{MsExperiment} object}
 
-\item{metrics}{\code{character} specifying the quality metrics to be 
+\item{metrics}{\code{character} specifying the quality metrics to be
 calculated on \code{msexp}}
 
 \item{filterEmptySpectra}{\code{logical(1)} specifying if empty entries and
 entries with intensity zero of the \code{Spectra} object will be removed}
 
-\item{...}{arguments passed to the quality metrics functions defined in 
+\item{...}{arguments passed to the quality metrics functions defined in
 \code{metrics}}
 
 \item{BPPARAM}{Parallel processing setup. Defaults to \code{BPPARAM = bpparam()}.
 See [bpparam()] for details on parallel processing with \code{BiocParallel}.}
 }
 \value{
-\code{data.frame} containing in the columns the metrics for the 
+\code{data.frame} containing in the columns the metrics for the
 different spectra (in rows)
 }
 \description{
-The function \code{calculateMetricsFromMsExperiment} calculates quality 
-metrics from a \code{MsExperiment} object. Each spectra in the 
+The function \code{calculateMetricsFromMsExperiment} calculates quality
+metrics from a \code{MsExperiment} object. Each spectra in the
 \code{msexp} object should refer to one mzML file/to one sample.
 }
 \details{
-The metrics are defined by the argument \code{metrics}. Further arguments 
+The metrics are defined by the argument \code{metrics}. Further arguments
 passed to the quality metric functions can be specified by the \code{params}
 argument. \code{params} can contain named entries which are matched against
 the formal arguments of the quality metric functions.
 
 Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
-zero-length entries, zero-intensity entries, and entries with 
+zero-length entries, zero-intensity entries, and entries with
 intensities that are \code{Inf} from the \code{Spectra} object.
 }
 \examples{
@@ -82,7 +82,7 @@ metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
     msLevel = 1, change = "jump", relativeTo = "Q1")
 
-calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
+calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
     msLevel = 1, change = "fall", relativeTo = "previous")
 
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{ratioCharge4over2}
 \alias{ratioCharge4over2}
-\title{ratio of 4+ over 2+ of all MS2 known precursor charges (MS:4000171) or 
+\title{ratio of 4+ over 2+ of all MS2 known precursor charges (MS:4000171) or
 ratio of 4+ over 2+ of identified MS2 known precursor charges (MS:4000172)}
 \usage{
 ratioCharge4over2(
@@ -17,7 +17,7 @@ ratioCharge4over2(
 
 \item{msLevel}{\code{integer}}
 
-\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"},
 \code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
@@ -27,22 +27,22 @@ ratioCharge4over2(
 }
 \description{
 MS:4000171 \cr
-"The ratio of 4+ over 2+ MS2 precursor charge count of all spectra. Higher 
-ratios of 4+/2+ MS2 precursor charge count may preferentially favor longer 
+"The ratio of 4+ over 2+ MS2 precursor charge count of all spectra. Higher
+ratios of 4+/2+ MS2 precursor charge count may preferentially favor longer
 e.g. peptides." [PSI:MS] \cr
 
 MS:4000172 \cr
-"The ratio of 4+ over 2+ MS2 precursor charge count of identified spectra. 
-Higher ratios of 4+/2+ MS2 precursor charge count may preferentially favor 
-longer e.g. peptides. The used type of identification should be noted in the 
+"The ratio of 4+ over 2+ MS2 precursor charge count of identified spectra.
+Higher ratios of 4+/2+ MS2 precursor charge count may preferentially favor
+longer e.g. peptides. The used type of identification should be noted in the
 metadata or analysis methods section of the recording file for the respective
 run. In case of multiple acceptance criteria (FDR) available in proteomics,
 PSM-level FDR should be used for better comparability." [PSI:MS] \cr
- 
+
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the precursor charge is obtained, \cr 
-(3) the number of precursors with charge 4+ is divided by the number of 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the precursor charge is obtained, \cr
+(3) the number of precursors with charge 4+ is divided by the number of
 precursors with charge 2+ and the ratio is returned.
 }
 \details{
@@ -70,15 +70,15 @@ synonym: "MS2 known precursor charges fractions"  RELATED [] \cr
 synonym: "MS2-PrecZ-2" RELATED [PMID:24494671] \cr
 synonym: "MS2-PrecZ-4" RELATED [PMID:24494671] \cr
 
-An attribute containing the PSI:MS term will only be returned if 
+An attribute containing the PSI:MS term will only be returned if
 \code{identificationLevel} is either \code{"all"} or \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If
-the calculation needs to be done according to *MS:4000172*, the 
+the calculation needs to be done according to *MS:4000172*, the
 \code{Spectra} object should be prepared accordingly. \cr
 
-\code{NA} is returned if there are no features with precursor charge of 2+ or 
+\code{NA} is returned if there are no features with precursor charge of 2+ or
 3+.
 }
 \examples{

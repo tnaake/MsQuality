@@ -18,12 +18,12 @@ mzAcquisitionRange(spectra, msLevel = 2L, ...)
 }
 \description{
 MS:4000069 \cr
-"Upper and lower limit of m/z precursor values at which MSn spectra are 
+"Upper and lower limit of m/z precursor values at which MSn spectra are
 recorded." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the precursor m/z values of the peaks within the \code{Spectra} object are obtained, \cr 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the precursor m/z values of the peaks within the \code{Spectra} object are obtained, \cr
 (3) the minimum and maximum precursor m/z values are obtained and returned.
 }
 \details{

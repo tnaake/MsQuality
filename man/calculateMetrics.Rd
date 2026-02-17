@@ -14,33 +14,33 @@ calculateMetrics(
 \arguments{
 \item{object}{\code{Spectra} or \code{MsExperiment} object}
 
-\item{metrics}{\code{character} specifying the quality metrics to be 
+\item{metrics}{\code{character} specifying the quality metrics to be
 calculated on \code{object}}
 
 \item{filterEmptySpectra}{\code{logical(1)} specifying if empty entries and
 entries with intensity zero of the \code{Spectra} object will be removed}
 
-\item{...}{arguments passed to the quality metrics functions defined in 
+\item{...}{arguments passed to the quality metrics functions defined in
 \code{metrics}}
 }
 \value{
-\code{data.frame} containing in the columns the metrics for the 
+\code{data.frame} containing in the columns the metrics for the
 different spectra and in rows the samples
 }
 \description{
-Calculate QC metrics from a \code{Spectra} or \code{MsExperiment} object. 
+Calculate QC metrics from a \code{Spectra} or \code{MsExperiment} object.
 \code{calculateMetrics} is a wrapper for the functions
-\code{calculateMetricsFromSpectra} and 
+\code{calculateMetricsFromSpectra} and
 \code{calculateMetricsFromMsExperiment}.
 }
 \details{
-The metrics are defined by the argument \code{metrics}. Further arguments 
+The metrics are defined by the argument \code{metrics}. Further arguments
 passed to the quality metric functions can be specified by the \code{params}
-argument. \code{params} can contain named entries which are matched against 
-the formal arguments of the quality metric functions. 
+argument. \code{params} can contain named entries which are matched against
+the formal arguments of the quality metric functions.
 
 Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
-zero-length entries, zero-intensity entries, and entries with 
+zero-length entries, zero-intensity entries, and entries with
 intensities that are \code{Inf} from the \code{Spectra} object.
 }
 \examples{
@@ -51,14 +51,14 @@ spectra <- Spectra(fls, backend = MsBackendMzR())
 
 ## define the quality metrics to be calculated
 metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
-    
+
 ## calculate the metrics
 ## additional parameters passed to the quality metrics functions
 ## (MsLevel is an argument of areaUnderTic and msSignal10xChange,
 ## relativeTo is an argument of msSignal10xChange) passed to ...
-calculateMetrics(object = spectra, metrics = metrics, 
+calculateMetrics(object = spectra, metrics = metrics,
     msLevel = 1, change = "jump", relativeTo = "Q1")
-calculateMetrics(object = spectra, metrics = metrics, 
+calculateMetrics(object = spectra, metrics = metrics,
     msLevel = 1, change = "fall", relativeTo = "previous")
 }
 \author{

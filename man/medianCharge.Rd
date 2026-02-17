@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{medianCharge}
 \alias{medianCharge}
-\title{median MS2 precursor charge in all spectra (MS:4000175) or median MS2 
+\title{median MS2 precursor charge in all spectra (MS:4000175) or median MS2
 precursor charge in identified spectra (MS:4000176)}
 \usage{
 medianCharge(
@@ -17,7 +17,7 @@ medianCharge(
 
 \item{msLevel}{\code{integer}}
 
-\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"},
 \code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
@@ -30,15 +30,15 @@ MS:4000175 \cr
 "Median MS2 precursor charge in all spectra" [PSI:MS] \cr
 
 MS:4000176 \cr
-"Median MS2 precursor charge in identified spectra. The used type of 
-identification should be noted in the metadata or analysis methods section 
+"Median MS2 precursor charge in identified spectra. The used type of
+identification should be noted in the metadata or analysis methods section
 of the recording file for the respective run. In case of multiple acceptance
-criteria (FDR) available in proteomics, PSM-level FDR should be used for 
+criteria (FDR) available in proteomics, PSM-level FDR should be used for
 better comparability." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the precursor charge is obtained, \cr 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the precursor charge is obtained, \cr
 (3) the median of the precursor charge values is calculated and returned.
 }
 \details{
@@ -72,12 +72,12 @@ synonym: "MS2-PrecZ-4" RELATED [PMID:24494671] \cr
 synonym: "MS2-PrecZ-5" RELATED [PMID:24494671] \cr
 synonym: "MS2-PrecZ-more" RELATED [PMID:24494671] \cr
 
-An attribute containing the PSI:MS term will only be returned if 
+An attribute containing the PSI:MS term will only be returned if
 \code{identificationLevel} is either \code{"all"} or \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If
-the calculation needs to be done according to *MS:4000176*, the 
+the calculation needs to be done according to *MS:4000176*, the
 \code{Spectra} object should be prepared accordingly.
 }
 \examples{

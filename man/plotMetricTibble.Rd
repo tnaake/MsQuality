@@ -21,12 +21,12 @@ by \code{ggplot2}.
 }
 \details{
 \code{plotMetricRibble} will select all columns that start with
-\code{metric}. The different levels in the \code{name} column in the returned 
+\code{metric}. The different levels in the \code{name} column in the returned
 tibble correspond to the columns that were selected and do not contain the
-\code{metric} prefix. In case there is no additional specification 
-(e.g. for the metric \code{chromatographyDuration} only the column 
-\code{chromatographyDuration} will 
-be selected), the \code{name} column will include the \code{metric} 
+\code{metric} prefix. In case there is no additional specification
+(e.g. for the metric \code{chromatographyDuration} only the column
+\code{chromatographyDuration} will
+be selected), the \code{name} column will include the \code{metric}
 (\code{chromatographyDuration}).
 }
 \examples{
@@ -62,7 +62,7 @@ metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 ## relativeTo is an argument of msSignal10xChange)
-qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics, 
+qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
     msLevel = 1, relativeTo = "Q1", change = "jump")
 rownames(qc) <- c("Sample 1", "Sample 2")
 plotMetricTibble(qc, metric = "areaUnderTic")

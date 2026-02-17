@@ -19,7 +19,7 @@ ticQuantileRtFraction(
 
 \item{msLevel}{\code{integer}}
 
-\item{relative}{\code{logical}, if set to \code{TRUE} the relative retention time 
+\item{relative}{\code{logical}, if set to \code{TRUE} the relative retention time
 will be returned instead of the abolute retention time}
 
 \item{...}{not used here}
@@ -31,25 +31,25 @@ will be returned instead of the abolute retention time}
 }
 \description{
 MS:4000183
-"The interval when the respective quantile of the TIC accumulates divided by 
-retention time duration. The number of values in the tuple implies the 
+"The interval when the respective quantile of the TIC accumulates divided by
+retention time duration. The number of values in the tuple implies the
 quantile mode." [PSI:MS] \cr
 
-The metric informs about the dynamic range of the acquisition along the 
-chromatographic separation. The metric provides information on the sample 
-(compound) flow along the chromatographic run, potentially revealing poor 
-chromatographic performance, such as the absence of a signal for a 
+The metric informs about the dynamic range of the acquisition along the
+chromatographic separation. The metric provides information on the sample
+(compound) flow along the chromatographic run, potentially revealing poor
+chromatographic performance, such as the absence of a signal for a
 significant portion of the run.
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is ordered according to the retention time, \cr 
-(2) the cumulative sum of the ion count is calculated (TIC), \cr 
+(1) the \code{Spectra} object is ordered according to the retention time, \cr
+(2) the cumulative sum of the ion count is calculated (TIC), \cr
 (3) the quantiles are calculated according to the \code{probs} argument, e.g.
-when \code{probs} is set to \code{c(0, 0.25, 0.5, 0.75, 1)} the 0\%, 25\%, 
-50\%, 75\%, and 100\% quantile is calculated, \cr 
-(4) the retention time/relative retention time (retention time divided by 
-the total run time taking into account the minimum retention time) is 
-calculated, \cr 
+when \code{probs} is set to \code{c(0, 0.25, 0.5, 0.75, 1)} the 0\%, 25\%,
+50\%, 75\%, and 100\% quantile is calculated, \cr
+(4) the retention time/relative retention time (retention time divided by
+the total run time taking into account the minimum retention time) is
+calculated, \cr
 (5) the (relative) duration of the LC run after which the cumulative
 TIC exceeds (for the first time) the respective quantile of the
 cumulative TIC is calculated and returned. \cr

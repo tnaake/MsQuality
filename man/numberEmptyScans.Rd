@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{numberEmptyScans}
 \alias{numberEmptyScans}
-\title{number of empty MS1 scans (MS:4000099), number of empty MS2 scans 
+\title{number of empty MS1 scans (MS:4000099), number of empty MS2 scans
 (MS:4000100), or number of empty MS3 scans (MS:4000101)}
 \usage{
 numberEmptyScans(spectra, msLevel = 1L, ...)
@@ -19,22 +19,22 @@ numberEmptyScans(spectra, msLevel = 1L, ...)
 }
 \description{
 MS:4000099 \cr
-"Number of MS1 scans where the scans' peaks intensity sums to 0 
+"Number of MS1 scans where the scans' peaks intensity sums to 0
 (i.e. no peaks or only 0-intensity peaks)." [PSI:MS] \cr
 
 MS:4000100 \cr
-"Number of MS2 scans where the scans' peaks intensity sums to 0 
+"Number of MS2 scans where the scans' peaks intensity sums to 0
 (i.e. no peaks or only 0-intensity peaks)." [PSI:MS] \cr
 
 MS:4000101 \cr
-"Number of MS3 scans where the scans' peaks intensity sums to 0 
+"Number of MS3 scans where the scans' peaks intensity sums to 0
 (i.e. no peaks or only 0-intensity peaks)." [PSI:MS] \cr
 
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
 (2) the intensities per entry are obtained, \cr
-(3) the number of intensity entries that are \code{NULL}, \code{NA}, or 
+(3) the number of intensity entries that are \code{NULL}, \code{NA}, or
 that have a sum of \code{0} are obtained and returned.
 }
 \details{
@@ -44,7 +44,7 @@ relationship: has_metric_category MS:4000009 ! ID free metric \cr
 relationship: has_metric_category MS:4000012 ! single run based metric \cr
 relationship: has_metric_category MS:4000021 ! MS1 metric \cr
 relationship: has_units UO:0000189 ! count unit \cr
-relationship: has_value_type xsd:integer ! The allowed value-type for this 
+relationship: has_value_type xsd:integer ! The allowed value-type for this
 CV term \cr
 
 MS:4000100 \cr
@@ -53,7 +53,7 @@ relationship: has_metric_category MS:4000009 ! ID free metric \cr
 relationship: has_metric_category MS:4000012 ! single run based metric \cr
 relationship: has_metric_category MS:4000022 ! MS2 metric \cr
 relationship: has_units UO:0000189 ! count unit \cr
-relationship: has_value_type xsd:integer ! The allowed value-type for this 
+relationship: has_value_type xsd:integer ! The allowed value-type for this
 CV term \cr
 
 MS:4000101 \cr
@@ -61,13 +61,13 @@ is_a: MS:4000003 ! single value \cr
 relationship: has_metric_category MS:4000009 ! ID free metric \cr
 relationship: has_metric_category MS:4000012 ! single run based metric \cr
 relationship: has_units UO:0000189 ! count unit \cr
-relationship: has_value_type xsd:integer ! The allowed value-type for this CV 
+relationship: has_value_type xsd:integer ! The allowed value-type for this CV
 term \cr
 
-#' For *MS:4000099*, \code{msLevel} is set to 1. For *MS:4000100*, 
+#' For *MS:4000099*, \code{msLevel} is set to 1. For *MS:4000100*,
 \code{msLevel} is set to 2. For *MS:4000101*, \code{msLevel} is set to 3.
 
-An attribute containing the PSI:MS term will only be returned if 
+An attribute containing the PSI:MS term will only be returned if
 \code{msLevel} is either 1, 2, or 3.
 }
 \examples{

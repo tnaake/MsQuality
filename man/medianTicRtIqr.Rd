@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{medianTicRtIqr}
 \alias{medianTicRtIqr}
-\title{median of TIC values in the RT range in which the middle half of 
+\title{median of TIC values in the RT range in which the middle half of
 quantification data points are identified (MS:4000158)}
 \usage{
 medianTicRtIqr(
@@ -17,7 +17,7 @@ medianTicRtIqr(
 
 \item{msLevel}{\code{integer}}
 
-\item{identificationLevel}{\code{character(1)}, one of \code{"all"}, 
+\item{identificationLevel}{\code{character(1)}, one of \code{"all"},
 \code{"identified"}, or \code{"unidentified"}}
 
 \item{...}{not used here}
@@ -27,22 +27,22 @@ medianTicRtIqr(
 }
 \description{
 MS:4000158 \cr
-"Median of TIC values in the RT range in which half of quantification data 
-points are identified (RT values of Q1 to Q3 of identifications). These 
-data points may be for example XIC profiles, isotopic pattern areas, or 
-reporter ions (see MS:1001805). The used type should be noted in the metadata 
-or analysis methods section of the recording file for the respective run. 
-In case of multiple acceptance criteria (FDR) available in proteomics, 
+"Median of TIC values in the RT range in which half of quantification data
+points are identified (RT values of Q1 to Q3 of identifications). These
+data points may be for example XIC profiles, isotopic pattern areas, or
+reporter ions (see MS:1001805). The used type should be noted in the metadata
+or analysis methods section of the recording file for the respective run.
+In case of multiple acceptance criteria (FDR) available in proteomics,
 PSM-level FDR should be used for better comparability." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
-(2) the \code{Spectra} object is ordered according to the retention time, \cr 
-(3) the features between the 1st and 3rd quartile are obtained 
-(half of the features that are present in the \code{Spectra} object), \cr 
-(4) the ion count of the features within the 1st and 3rd quartile is 
-obtained, \cr 
-(5) the median value of the ion count is calculated (\code{NA} values are 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
+(2) the \code{Spectra} object is ordered according to the retention time, \cr
+(3) the features between the 1st and 3rd quartile are obtained
+(half of the features that are present in the \code{Spectra} object), \cr
+(4) the ion count of the features within the 1st and 3rd quartile is
+obtained, \cr
+(5) the median value of the ion count is calculated (\code{NA} values are
 removed) and the median value is returned. \cr
 }
 \details{
@@ -51,15 +51,15 @@ is_a: MS:4000001 ! QC metric \cr
 is_a: MS:4000003 ! single value \cr
 is_a: MS:4000008 ! ID based \cr
 
-The function \code{medianTicRtIqr} uses the function [ionCount()] as an 
+The function \code{medianTicRtIqr} uses the function [ionCount()] as an
 equivalent to the TIC.
 
-An attribute containing the PSI:MS term will only be returned if 
+An attribute containing the PSI:MS term will only be returned if
 \code{identificationLevel} is \code{"identified"}.
 }
 \note{
 The \code{Spectra} object might contain features that were not identified. If
-the calculation needs to be done according to *MS:4000158*, the 
+the calculation needs to be done according to *MS:4000158*, the
 \code{Spectra} object should be prepared accordingly, i.e. being subsetted to
 spectra with identification data.
 }

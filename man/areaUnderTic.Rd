@@ -21,7 +21,7 @@ MS:4000155 \cr
 "The area under the total ion chromatogram." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr 
+(1) the \code{Spectra} object is filtered according to the MS level, \cr
 (2) the sum of the ion counts are obtained and returned.
 }
 \details{
