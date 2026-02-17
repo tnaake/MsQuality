@@ -132,6 +132,9 @@ synonym: "IS-1B"  RELATED [] <br></p>
 equivalent to the TIC.</p>
 <p>An attribute containing the PSI:MS term will only be returned if
 <code>msLevel</code> is 1.</p>
+<p>The metric is sensitive to noise. Small oscillations near zero could
+generate many 10x jumps. Consider to add optional smoothing or filtering of
+low-intensity signals.</p>
     </div>
     <div id="author">
     <h2>Author</h2>

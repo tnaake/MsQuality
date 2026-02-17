@@ -118,12 +118,12 @@ intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## define the quality metrics to be calculated</span></span></span>
 <span class="r-in"><span><span class="va">metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"areaUnderTic"</span>, <span class="st">"chromatographyDuration"</span>, <span class="st">"msSignal10xChange"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    </span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## calculate the metrics</span></span></span>
 <span class="r-in"><span><span class="co">## additional parameters passed to the quality metrics functions</span></span></span>
 <span class="r-in"><span><span class="co">## (MsLevel is an argument of areaUnderTic and msSignal10xChange,</span></span></span>
 <span class="r-in"><span><span class="co">## relativeTo is an argument of msSignal10xChange) passed to ...</span></span></span>
-<span class="r-in"><span><span class="fu">calculateMetrics</span><span class="op">(</span>object <span class="op">=</span> <span class="va">spectra</span>, metrics <span class="op">=</span> <span class="va">metrics</span>, </span></span>
+<span class="r-in"><span><span class="fu">calculateMetrics</span><span class="op">(</span>object <span class="op">=</span> <span class="va">spectra</span>, metrics <span class="op">=</span> <span class="va">metrics</span>,</span></span>
 <span class="r-in"><span>    msLevel <span class="op">=</span> <span class="fl">1</span>, change <span class="op">=</span> <span class="st">"jump"</span>, relativeTo <span class="op">=</span> <span class="st">"Q1"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                                  areaUnderTic</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> /__w/_temp/Library/msdata/sciex/20171016_POOL_POS_1_105-134.mzML    650969677</span>
@@ -146,7 +146,7 @@ intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "jump"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"relativeTo")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Q1"</span>
-<span class="r-in"><span><span class="fu">calculateMetrics</span><span class="op">(</span>object <span class="op">=</span> <span class="va">spectra</span>, metrics <span class="op">=</span> <span class="va">metrics</span>, </span></span>
+<span class="r-in"><span><span class="fu">calculateMetrics</span><span class="op">(</span>object <span class="op">=</span> <span class="va">spectra</span>, metrics <span class="op">=</span> <span class="va">metrics</span>,</span></span>
 <span class="r-in"><span>    msLevel <span class="op">=</span> <span class="fl">1</span>, change <span class="op">=</span> <span class="st">"fall"</span>, relativeTo <span class="op">=</span> <span class="st">"previous"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                                  areaUnderTic</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> /__w/_temp/Library/msdata/sciex/20171016_POOL_POS_1_105-134.mzML    650969677</span>
