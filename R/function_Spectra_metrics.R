@@ -741,6 +741,10 @@ rtAcquisitionRange <- function(spectra, msLevel = 1L, ...) {
 #' An attribute containing the PSI:MS term will only be returned if 
 #' \code{msLevel} is 1.
 #' 
+#' The metric is sensitive to noise. Small oscillations near zero could 
+#' generate many 10x jumps. Consider to add optional smoothing or filtering of 
+#' low-intensity signals.
+#' 
 #' @param spectra \code{Spectra} object
 #' @param change \code{character(1)}, one of \code{"jump"} or \code{"fall"}
 #' @param msLevel \code{integer}
