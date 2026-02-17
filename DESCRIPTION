@@ -1,14 +1,16 @@
 Package: MsQuality
 Type: Package
 Title: MsQuality - Quality metric calculation from Spectra and MsExperiment objects
-Version: 1.11.0
+Version: 1.11.1
 Date: 2025-10-23
 Authors@R: c(person(given = "Thomas", family = "Naake", 
 		email = "thomasnaake@googlemail.com", role = c("aut", "cre"),
 		comment = c(ORCID = "0000-0001-7917-5580")),
 	person(given = "Johannes", family = "Rainer",
 		email = "johannes.rainer@eurac.edu", role = "aut",
-		comment = c(ORCID = "0000-0002-6977-7147")))
+		comment = c(ORCID = "0000-0002-6977-7147")),
+    person(given = "Helge", family = "Hecht",
+        email="helge.hecht@recetox.muni.cz", role="ctb"))
 VignetteBuilder: knitr
 Description: 
 	The MsQuality provides functionality to calculate quality metrics 
@@ -59,4 +61,4 @@ URL: https://www.github.com/tnaake/MsQuality/
 BugReport: https://www.github.com/tnaake/MsQuality/issues/
 License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3

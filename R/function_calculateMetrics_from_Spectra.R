@@ -299,6 +299,7 @@ calculateMetricsFromSpectra <- function(spectra, metrics,
 #' @importFrom rmzqc MzQCmzQC MzQCDateTime
 #' @importFrom utils packageDescription
 #' 
+#' @export
 #' @examples 
 #' library(msdata)
 #' library(Spectra)
