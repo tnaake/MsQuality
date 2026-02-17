@@ -1,34 +1,59 @@
+# MsQuality 1.11
+
+## Changes in version 1.11.1 (2026-02-17)
+
+- added conversion to uri from local file to the export function in 
+  transformIntoMzQC (contribution by Helge Hecht, PR #20)
+
+## Changes in version 1.11.0 (2025-10-29)
+
+- bump version to 1.11.0
+
 # MsQuality 1.9
 
-## Changes in version 1.9.3
+## Changes in version 1.9.3 (2025-10-23)
 
 - change unit tests for filterEmptySpectra after update
-## Changes in version 1.9.2
+
+## Changes in version 1.9.2 (2025-08-05)
 
 - resolve NAMESPACE issue of unexported objects
 
-## Changes in version 1.9.1
+## Changes in version 1.9.1 (2025-07-30)
+
 - fix bug due to update in rmzqc package, use $new for constructing 
   R6 objects
 
 # MsQuality 1.7
 
-## Changes in version 1.7.1
+## Changes in version 1.7.1 (2025-01-22)
+
 - rename ticQuartersRtFraction to ticQuantileRtFraction
 - update tests after update of OBO file / rmzqc
 
+# MsQualitzy 1.3
+
+## Changes in version 1.3.2 (2024-02-21)
+
+- bug fix: MS:40000155 in specification file added, adjust tests
+
+## Changes in version 1.3.1 (2023-12-14)
+
+- compress data set
+- update to new Spectra version
+
 # MsQuality 1.1
 
-## Changes in version 1.1.3
+## Changes in version 1.1.3 (2023-08-31)
 - update tests after update of OBO file / rmzqc
 
-## Changes in version 1.1.2
+## Changes in version 1.1.2 (2023-08-16)
 - Fix implementation of `mzAquisitionRange`
 - add numberEmptyScans in qualityMetrics function
 - add unit tests for export in rmzqc format
 - add interpretation aid of metrics in vignette
 
-## Changes in version 1.1.1
+## Changes in version 1.1.1 (2023-08-01)
 - move msdata from Suggests to Imports
 - rename function rtDuration to chromatographyDuration
 - rename function rtOverTicQuantiles to ticQuartersRtFraction
