@@ -1512,6 +1512,18 @@ test_that("calculateMetrics, format = 'mzQC'.", {
         metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$unit,
         list())
 })
+
+test_that("transformIntoMzQC has URIs", {
+    fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+    spectra <- Spectra(fls, backend = MsBackendMzR())
+
+    suppressWarnings(
+        metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra,
+            metrics = c("areaUnderTic"), filterEmptySpectra = FALSE, msLevel = 1,
+            relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC")
+    )
+    expect_true(stringr::str_starts((metrics_spectra[[1]]$runQualities[[1]]$metadata$inputFiles[[1]]$location), "file://"))
+})
 ## END unit test calculateMetrics ##
 
 ################################################################################

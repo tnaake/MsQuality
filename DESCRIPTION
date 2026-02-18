@@ -1,32 +1,35 @@
 Package: MsQuality
 Type: Package
-Title: MsQuality - Quality metric calculation from Spectra, MsExperiment and Chromatograms objects
-Version: 1.9.4
-Date: 2026-01-20
-Authors@R: c(person(given = "Thomas", family = "Naake", 
+Title: MsQuality - Quality metric calculation from Spectra and MsExperiment objects
+Version: 1.11.1
+Date: 2025-10-23
+Authors@R: c(person(given = "Thomas", family = "Naake",
 		email = "thomasnaake@googlemail.com", role = c("aut", "cre"),
 		comment = c(ORCID = "0000-0001-7917-5580")),
 	person(given = "Johannes", family = "Rainer",
 		email = "johannes.rainer@eurac.edu", role = "aut",
 		comment = c(ORCID = "0000-0002-6977-7147")),
+    person(given = "Helge", family = "Hecht",
+        email="helge.hecht@recetox.muni.cz", role="ctb"))
+		comment = c(ORCID = "0000-0002-6977-7147")),
 	person(given = "Philippine", family = "Louail",
 		email = "philippine.louail@outlook.com", role = "aut",
 		comment = c(ORCID = "0009-0007-5429-6846")))
 VignetteBuilder: knitr
-Description: 
-	The MsQuality provides functionality to calculate quality metrics 
-	for mass spectrometry-derived, spectral data at the per-sample level. 
-	MsQuality relies on the mzQC framework of quality metrics defined by the 
-	Human Proteom Organization-Proteomics Standards Initiative (HUPO-PSI). 
-	These metrics quantify the quality of spectral raw files using a controlled 
-	vocabulary. The package is especially addressed towards users that acquire 
-	mass spectrometry data on a large scale (e.g. data sets from clinical 
+Description:
+	The MsQuality provides functionality to calculate quality metrics
+	for mass spectrometry-derived, spectral data at the per-sample level.
+	MsQuality relies on the mzQC framework of quality metrics defined by the
+	Human Proteom Organization-Proteomics Standards Initiative (HUPO-PSI).
+	These metrics quantify the quality of spectral raw files using a controlled
+	vocabulary. The package is especially addressed towards users that acquire
+	mass spectrometry data on a large scale (e.g. data sets from clinical
 	settings consisting of several thousands of samples).
-	The MsQuality package allows to calculate low-level quality metrics that 
-	require minimum information on mass spectrometry data: retention time, 
-	m/z values, and associated intensities. MsQuality relies on the 
-	Spectra package, or alternatively the MsExperiment package, and its infrastructure 
-	to store spectral data. Additionally, MsQuality supports Chromatograms objects 
+	The MsQuality package allows to calculate low-level quality metrics that
+	require minimum information on mass spectrometry data: retention time,
+	m/z values, and associated intensities. MsQuality relies on the
+	Spectra package, or alternatively the MsExperiment package, and its infrastructure
+	to store spectral data. Additionally, MsQuality supports Chromatograms objects
 	from the Chromatograms package for chromatographic quality metrics.
 Depends:
     R (>= 4.2.0)

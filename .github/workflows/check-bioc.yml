@@ -53,9 +53,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: ubuntu-latest, r: 'devel', bioc: '3.23', cont: "bioconductor/bioconductor_docker:devel", rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest" }
-          - { os: macOS-latest, r: 'latest', bioc: '3.22'}
-          - { os: windows-latest, r: 'latest', bioc: '3.22'}
+          - { os: ubuntu-latest, r: '4.5', bioc: '3.23', cont: "bioconductor/bioconductor_docker:devel", rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest" }
+          - { os: macOS-latest, r: 'devel', bioc: '3.23'}
+          - { os: windows-latest, r: 'devel', bioc: '3.23'}
           ## Check https://github.com/r-lib/actions/tree/master/examples
           ## for examples using the http-user-agent
     env:
@@ -129,10 +129,27 @@ jobs:
         run: |
           ## Enable installing XML from source if needed
           brew install libxml2
-          echo "XML_CONFIG=/usr/local/opt/libxml2/bin/xml2-config" >> $GITHUB_ENV
+          echo "XML_CONFIG=$(brew --prefix libxml2)/bin/xml2-config" >> $GITHUB_ENV
 
           brew install curl
           brew install wget
+
+          ## Install netcdf
+          brew install netcdf
+
+          ## Install gettext
+          brew install gettext
+          brew link --force gettext
+
+          ## Set compilation flags for gettext
+          mkdir -p ~/.R
+          cat <<EOF >> ~/.R/Makevars
+          PKG_CPPFLAGS += -I$(brew --prefix gettext)/include -I$(brew --prefix libxml2)/include
+          PKG_LIBS += -L$(brew --prefix gettext)/lib -L$(brew --prefix libxml2)/lib
+          EOF
+
+          #echo "PKG_CPPFLAGS=-I$(brew --prefix gettext)/include" >> ~/.R/Makevars
+          #echo "PKG_LIBS=-L$(brew --prefix gettext)/lib" >> ~/.R/Makevars
 
           ## Required to install magick as noted at
           ## https://github.com/r-lib/usethis/commit/f1f1e0d10c1ebc75fd4c18fa7e2de4551fd9978f#diff-9bfee71065492f63457918efcd912cf2
@@ -175,7 +192,9 @@ jobs:
 
           ## For running the checks
           message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))
-          install.packages(c("rcmdcheck", "BiocCheck"), repos = BiocManager::repositories())
+          install.packages("rcmdcheck", repos = BiocManager::repositories())
+          BiocManager::install("BiocCheck", ask = FALSE, update = TRUE)
+          BiocManager::install("MsExperiment", ask = FALSE, update = TRUE)
 
           ## Pass #1 at installing dependencies
           message(paste('****', Sys.time(), 'pass number 1 at installing dependencies: local dependencies ****'))
@@ -191,6 +210,7 @@ jobs:
           BiocManager::install(c("Rcpp"), force = TRUE)
           BiocManager::install(c("mzR"), force = TRUE)
           BiocManager::install(c("rmzqc"), force = TRUE)
+          BiocManager::install("BiocCheck", ask = FALSE, update = TRUE)
         shell: Rscript {0}
 
       - name: Install BiocGenerics
@@ -248,6 +268,7 @@ jobs:
         env:
           DISPLAY: 99.0
         run: |
+          BiocManager::install("BiocCheck", ask = FALSE, update = TRUE)
           BiocCheck::BiocCheck(
               dir('check', 'tar.gz$', full.names = TRUE),
               `quit-with-status` = TRUE,

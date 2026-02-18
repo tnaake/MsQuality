@@ -6,6 +6,7 @@
 #' The function \code{qualityMetrics} returns a character vector with available
 #' quality metrics depending on \code{object}.
 #'
+#'
 #' @details
 #' \code{object} is a \code{Spectra}, \code{MsExperiment}, or \code{Chromatograms}.
 #'
@@ -19,7 +20,10 @@
 #' @importFrom Spectra Spectra
 #' @importFrom MsExperiment MsExperiment
 #'
+#'
 #' @export
+#'
+#' @examples
 #'
 #' @examples
 #' library(Spectra)
@@ -41,6 +45,7 @@
 #' spd$dataOrigin <- rep("sample_1", 3)
 #' sps <- Spectra(spd)
 #'
+#'
 #' qualityMetrics(object = sps)
 qualityMetrics <- function(object) {
     if (is(object, "Spectra"))
@@ -48,14 +53,19 @@ qualityMetrics <- function(object) {
             "chromatographyDuration", "ticQuantileRtFraction", "rtOverMsQuarters",
             "ticQuartileToQuartileLogRatio", "numberSpectra", "numberEmptyScans",
             "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic",
+            "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic",
             "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity",
             "medianTicRtIqr", "medianTicOfRtRange", "mzAcquisitionRange",
+            "rtAcquisitionRange", "precursorIntensityRange",
             "rtAcquisitionRange", "precursorIntensityRange",
             "precursorIntensityQuartiles", "precursorIntensityMean",
             "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2",
             "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
+            "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2",
+            "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
             "medianCharge"
         )
+
 
     if (is(object, "MsExperiment"))
         .metrics <-  c(
@@ -63,9 +73,14 @@ qualityMetrics <- function(object) {
             "ticQuartileToQuartileLogRatio", "numberSpectra", "numberEmptyScans",
             "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic",
             "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity",
+            "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic",
+            "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity",
             "medianTicRtIqr", "medianTicOfRtRange", "mzAcquisitionRange",
             "rtAcquisitionRange", "precursorIntensityRange",
+            "rtAcquisitionRange", "precursorIntensityRange",
             "precursorIntensityQuartiles", "precursorIntensityMean",
+            "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2",
+            "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
             "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2",
             "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
             "medianCharge"

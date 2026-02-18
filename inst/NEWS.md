@@ -1,45 +1,21 @@
+# MsQuality 1.11
+
+## Changes in version 1.11.1 (2026-02-17)
+
+- added conversion to uri from local file to the export function in
+  transformIntoMzQC (contribution by Helge Hecht, PR #20)
+
+## Changes in version 1.11.0 (2025-10-29)
+
+- bump version to 1.11.0
+
 # MsQuality 1.9
 
-## Changes in version 1.9.4
-
-- Implementation of metrics for Chromatograms objects
-- Add `peakBoundary()` function to find peak left/right boundaries using
-  `MsCoreUtils::valleys()`
-- Add `peakBeta()` function wrapping `MetaboCoreUtils::betaValues()` to assess
-  peak shape quality (similarity to beta distribution)
-- Add optional `peakBoundary` parameter to `xicFwhm()`, `peakWidth()`, and
-  `peakBeta()` for efficiency when calculating multiple peak-based metrics
-- Created S4 generic functions and methods for shared metrics:
-  - `areaUnderTic`: Generic function with methods for Spectra and Chromatograms
-  classes
-  - `ticQuantileRtFraction`: Generic function with methods for Spectra and
-  Chromatograms classes
-  - `calculateMetrics`: Generic function dispatching to appropriate methods
-  based on input object class
-- renaming of argument filterEmptySpectra to filterEmptyObject
-  in calculateMetricsFromSpectra and calculateMetricsFromMsExperiment.
-- Refactored `areaUnderTic` and `ticQuantileRtFraction` to support both
-  Spectra and Chromatograms objects:
-  - `areaUnderTic`: Returns MS:4000155 for both Spectra (MS level filtered)
-  and Chromatograms (all intensities summed)
-  - `ticQuantileRtFraction`: Unified to use `probs = seq(0, 1, 0.25)` by default
-    for both Spectra and Chromatograms, returns 5 values with percentage names
-    ("0%", "25%", "50%", "75%", "100%") using dynamic name generation
-- Changed `calculateMetrics` function argument from `spectra` to `object` to
-  reflect its generic nature and support for multiple object types
-  (Spectra, MsExperiment, and Chromatograms)
-- Consolidated and refactored test suite:
-  - Added comprehensive unit tests validating exact metric calculations
-  - Added integration tests ensuring calculateMetrics* wrappers work correctly
-- Fixed output of calculateMetrics() if format = "data.frame", to actually
-  return a "data.frame"
-- Fixed `shinyMsQuality()` documentation example to convert data.frame to matrix
-  before passing to `shinyMsQuality()` function.
-
-## Changes in version 1.9.3
+## Changes in version 1.9.3 (2025-10-23)
 
 - change unit tests for filterEmptySpectra after update
-## Changes in version 1.9.2
+
+## Changes in version 1.9.2 (2025-08-05)
 
 - resolve NAMESPACE issue of unexported objects
 
@@ -49,22 +25,34 @@
 
 # MsQuality 1.7
 
-## Changes in version 1.7.1
+## Changes in version 1.7.1 (2025-01-22)
+
 - rename ticQuartersRtFraction to ticQuantileRtFraction
 - update tests after update of OBO file / rmzqc
 
+# MsQualitzy 1.3
+
+## Changes in version 1.3.2 (2024-02-21)
+
+- bug fix: MS:40000155 in specification file added, adjust tests
+
+## Changes in version 1.3.1 (2023-12-14)
+
+- compress data set
+- update to new Spectra version
+
 # MsQuality 1.1
 
-## Changes in version 1.1.3
+## Changes in version 1.1.3 (2023-08-31)
 - update tests after update of OBO file / rmzqc
 
-## Changes in version 1.1.2
+## Changes in version 1.1.2 (2023-08-16)
 - Fix implementation of `mzAquisitionRange`
 - add numberEmptyScans in qualityMetrics function
 - add unit tests for export in rmzqc format
 - add interpretation aid of metrics in vignette
 
-## Changes in version 1.1.1
+## Changes in version 1.1.1 (2023-08-01)
 - move msdata from Suggests to Imports
 - rename function rtDuration to chromatographyDuration
 - rename function rtOverTicQuantiles to ticQuartersRtFraction
