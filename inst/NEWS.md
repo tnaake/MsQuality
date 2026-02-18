@@ -2,7 +2,7 @@
 
 ## Changes in version 1.11.1 (2026-02-17)
 
-- added conversion to uri from local file to the export function in 
+- added conversion to uri from local file to the export function in
   transformIntoMzQC (contribution by Helge Hecht, PR #20)
 
 ## Changes in version 1.11.0 (2025-10-29)
@@ -21,7 +21,7 @@
 
 ## Changes in version 1.9.1 (2025-07-30)
 
-- fix bug due to update in rmzqc package, use $new for constructing 
+- fix bug due to update in rmzqc package, use $new for constructing
   R6 objects
 
 # MsQuality 1.7
@@ -58,10 +58,10 @@
 - rename function rtDuration to chromatographyDuration
 - rename function rtOverTicQuantiles to ticQuartersRtFraction
 - create function numberEmptyScans
-- add attributes (MS QC terms) to the output of the Spectra metrics functions 
+- add attributes (MS QC terms) to the output of the Spectra metrics functions
   if the output matches the described term
 - add rmzqc to IMPORTS
-- add functionality to export quality metrics as in rmzqc format 
+- add functionality to export quality metrics as in rmzqc format
 - adjust documentation to newest version of PSI MS CV obo file
 - add to the vignette information on how the metrics are calculated
 - add argument filterEmptySpectra to remove entries of length 0 or that
@@ -79,7 +79,7 @@
 - add mzR to Suggests in DESCRIPTION
 
 ## Changes in version 0.99.8 (2023-09-02)
-- adjust behaviour of metrics function when Spectra object of 
+- adjust behaviour of metrics function when Spectra object of
   length 0 is presented, return NA values instead of raising an
   error
 
@@ -91,14 +91,14 @@
 - extend section Description in `DESCRIPTION`
 - add sections BugReports and URL in `DESCRIPTION`
 - update dependency to `R` version 4.2.0
-- transfer source code in R/Lee2019-data.R to 
+- transfer source code in R/Lee2019-data.R to
   inst/sources/Lee2019-data-source.R
 - use partial_bundle to reduce the file size of plotly graphics
 
 ## Changes in version 0.99.5 (2022-10-12):
 - add section on alternative software in vignette
 - simplify the vignette with regard to dealing with the RPLC and HILIC
-  example data set and adjust the Lee2019-data.R accordingly to keep 
+  example data set and adjust the Lee2019-data.R accordingly to keep
   the RPLC/HILIC information in the dataOrigin slot of the Spectra object
 
 ## Changes in version 0.99.4 (2022-10-11):
@@ -114,17 +114,17 @@
   `MsExperiment` objects
 - remove `MsExperiment` objects since this is still in BioC review and solely
   rely on `Spectra` objects
-- adjust documentation for the implemented changes (removal of `MsExperiment`)  
+- adjust documentation for the implemented changes (removal of `MsExperiment`)
   
 ## Changes in version 0.99.1 (2021-11-23)
 - simplify `calculateMetricsFromSpectra`:
-  - the function does not any longer match the arguments by the formal 
+  - the function does not any longer match the arguments by the formal
     arguments of the metric functions
   - the function does not any longer combine the parameters
-  - the additional arguments do not take longer the parameter list of 
+  - the additional arguments do not take longer the parameter list of
     arguments but comma-separated arguments given to `...`
   - for all metric functions the `...` parameter is added
-  - adjust the vignette and help pages  
+  - adjust the vignette and help pages
 - rename functions to camel case
 
 ## Changes in version 0.99.0 (2021-09-10)
@@ -155,8 +155,8 @@
   - `meanCharge` (QC:4000177, QC:4000182),
   - `medianCharge` (QC:4000178, QC:4000183)
   - `.rt_order_spectra` (helper function)
-- add the functions `calculateMetricsFromSpectra`, 
-  `calculateMetricsFromMsExperiment` to calculate the metrics based on 
+- add the functions `calculateMetricsFromSpectra`,
+  `calculateMetricsFromMsExperiment` to calculate the metrics based on
   `Spectra` and `MsExperiment` objects
 - add functions `plotMetric`, `plotMetric_tibble` to visualize the metrics
 - add shiny application `shinyMsQuality` to interactively visualize the metrics

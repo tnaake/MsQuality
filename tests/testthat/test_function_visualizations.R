@@ -11,11 +11,11 @@ metrics <- c("areaUnderTic", "rtDuration", "msSignal10xChange")
 ## additional parameters passed to the quality metrics functions
 ## (MSLevel is an argument of areaUnderTIC and msSignal10XChange,
 ## relativeTo is an argument of msSignal10XChange)
-qc <- calculateMetricsFromSpectra(spectra = spectra, metrics = metrics, 
+qc <- calculateMetricsFromSpectra(spectra = spectra, metrics = metrics,
     msLevel = 1, relativeTo = "Q1", change = "jump")
 rownames(qc) <- c("Sample 1", "Sample 2")
 
-## START unit test plotMetric ## 
+## START unit test plotMetric ##
 test_that("plotMetric", {
     expect_is(plotMetric(qc = qc, metric = "areaUnderTic"), "plotly")
     expect_error(plotMetric(qc = NULL, metric = "areaUnderTic"),
@@ -39,11 +39,11 @@ test_that("plotMetricTibble", {
                  "'metric' not in qc")
     expect_error(plotMetricTibble(qc = qc, metric = "foo"), "'metric' not in qc")
 })
-## END unit test plotMetricTibble ## 
+## END unit test plotMetricTibble ##
 
 ## START unit test shinyMsQuality ##
 test_that("shinyMsQuality", {
     expect_error(shinyMsQuality(qc = matrix()), "'qc' has to be numeric")
     expect_error(shinyMsQuality(qc = NULL), "'qc' is not a matrix")
 })
-## END unit test shinyMsQuality ## 
+## END unit test shinyMsQuality ##

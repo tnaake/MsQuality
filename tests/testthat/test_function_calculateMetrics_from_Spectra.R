@@ -9,8 +9,8 @@ spectra <- Spectra(fls, backend = MsBackendMzR())
 
 ## build the results
 ## define the quality metrics to be calculated
-metrics <- c("chromatographyDuration", "ticQuantileRtFraction", 
-    "ticQuartileToQuartileLogRatio", "numberSpectra", "areaUnderTic", 
+metrics <- c("chromatographyDuration", "ticQuantileRtFraction",
+    "ticQuartileToQuartileLogRatio", "numberSpectra", "areaUnderTic",
     "msSignal10xChange")
 
 ## additional parameters passed to the quality metrics functions
@@ -18,11 +18,11 @@ metrics <- c("chromatographyDuration", "ticQuantileRtFraction",
 ## relativeTo is an argument of msSignal10XChange)
 suppressWarnings(
     metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra,
-        metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1, 
+        metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(
     metrics_spectra_filtered <- calculateMetricsFromSpectra(spectra = spectra,
-        metrics = metrics, filterEmptySpectra = TRUE, msLevel = 1, 
+        metrics = metrics, filterEmptySpectra = TRUE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump"))
 
 ## calculate the metrics from Spectra
@@ -30,22 +30,22 @@ dO <- unique(spectra$dataOrigin)
 spectra_1 <- spectra[spectra$dataOrigin == dO[1], ]
 spectra_2 <- spectra[spectra$dataOrigin == dO[2], ]
 suppressWarnings(metrics_spectra_1 <- calculateMetricsFromOneSampleSpectra(
-    spectra = spectra_1, metrics = metrics, filterEmptySpectra = FALSE, 
+    spectra = spectra_1, metrics = metrics, filterEmptySpectra = FALSE,
     msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(
     metrics_spectra_1_filtered <- calculateMetricsFromOneSampleSpectra(
-        spectra = spectra_1, metrics = metrics, filterEmptySpectra = TRUE, 
+        spectra = spectra_1, metrics = metrics, filterEmptySpectra = TRUE,
         msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(metrics_spectra_2 <- calculateMetricsFromOneSampleSpectra(
-    spectra = spectra_2, metrics = metrics, filterEmptySpectra = FALSE, 
+    spectra = spectra_2, metrics = metrics, filterEmptySpectra = FALSE,
     msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(
     metrics_spectra_2_filtered <- calculateMetricsFromOneSampleSpectra(
-        spectra = spectra_2, metrics = metrics, filterEmptySpectra = TRUE, 
+        spectra = spectra_2, metrics = metrics, filterEmptySpectra = TRUE,
         msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
 
-## START unit test calculateMetricsFromOneSampleSpectra ## 
-colnames_metrics <- c("chromatographyDuration", "ticQuantileRtFraction.0%",                  
+## START unit test calculateMetricsFromOneSampleSpectra ##
+colnames_metrics <- c("chromatographyDuration", "ticQuantileRtFraction.0%",
     "ticQuantileRtFraction.25%", "ticQuantileRtFraction.50%",
     "ticQuantileRtFraction.75%", "ticQuantileRtFraction.100%",
     "ticQuartileToQuartileLogRatio.Q2/Q1",
@@ -105,30 +105,30 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     expect_error(
         calculateMetricsFromOneSampleSpectra(spectra, metrics = metrics),
         "'spectra' should only contain data from one origin")
-    
+
     ## spectra_1
     expect_true(is.numeric(metrics_spectra_1))
     expect_equal(length(metrics_spectra_1), 12)
     expect_equal(names(metrics_spectra_1), colnames_metrics)
     expect_true(is.numeric(metrics_spectra_1))
-    expect_equal(as.numeric(metrics_spectra_1), metrics_spectra_1_vals, 
+    expect_equal(as.numeric(metrics_spectra_1), metrics_spectra_1_vals,
         tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_spectra_1_filtered), metrics_spectra_1_vals, 
+    expect_equal(as.numeric(metrics_spectra_1_filtered), metrics_spectra_1_vals,
         tolerance = 1e-06)
     expect_error(calculateMetricsFromOneSampleSpectra(NULL, metrics = metrics),
         "object '.metrics' not found")
     expect_error(calculateMetricsFromOneSampleSpectra("foo", metrics = metrics),
         "object '.metrics' not found")
-    expect_error(calculateMetricsFromOneSampleSpectra(spectra_1, 
+    expect_error(calculateMetricsFromOneSampleSpectra(spectra_1,
         metrics = metrics, filterEmptySpectra = "foo"),
         "'filterEmptySpectra' has to be either TRUE or FALSE")
     expect_error(
         calculateMetricsFromOneSampleSpectra(spectra_1, metrics = "foo"),
         "should be one of")
-    expect_error(calculateMetricsFromOneSampleSpectra(spectra_1, 
-        metrics = "msSignal10xChange", change = c("jump", "fall")), 
+    expect_error(calculateMetricsFromOneSampleSpectra(spectra_1,
+        metrics = "msSignal10xChange", change = c("jump", "fall")),
         "'change' has to be of length 1")
-    
+
     ## spectra_2
     expect_true(is.numeric(metrics_spectra_2))
     expect_true(is.numeric(metrics_spectra_2_filtered))
@@ -138,58 +138,58 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     expect_equal(names(metrics_spectra_2_filtered), colnames_metrics)
     expect_true(is.numeric(metrics_spectra_2))
     expect_true(is.numeric(metrics_spectra_2_filtered))
-    expect_equal(as.numeric(metrics_spectra_2), metrics_spectra_2_vals, 
+    expect_equal(as.numeric(metrics_spectra_2), metrics_spectra_2_vals,
         tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_spectra_2_filtered), metrics_spectra_2_vals, 
+    expect_equal(as.numeric(metrics_spectra_2_filtered), metrics_spectra_2_vals,
         tolerance = 1e-06)
     expect_error(calculateMetricsFromOneSampleSpectra(NULL, metrics = metrics),
         "object '.metrics' not found")
-    expect_error(calculateMetricsFromOneSampleSpectra(spectra_2, 
+    expect_error(calculateMetricsFromOneSampleSpectra(spectra_2,
         metrics = metrics, filterEmptySpectra = "foo"),
         "'filterEmptySpectra' has to be either TRUE or FALSE")
     expect_error(calculateMetricsFromOneSampleSpectra(spectra_2,
         metrics = "msSignal10xChange", change = c("jump", "fall")),
         "'change' has to be of length 1")
-    
+
     ## test filterEmptySpectra
     expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
-        spectra = sps_empty, metrics = "numberSpectra", 
+        spectra = sps_empty, metrics = "numberSpectra",
         filterEmptySpectra = FALSE, msLevel = 2L)), 3)
     #expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
-    #    spectra = sps_empty, metrics = "numberSpectra", 
+    #    spectra = sps_empty, metrics = "numberSpectra",
     #    filterEmptySpectra = TRUE, msLevel = 2L)), 1)
     expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
-        spectra = sps_multiple_empty, metrics = "numberSpectra", 
+        spectra = sps_multiple_empty, metrics = "numberSpectra",
         filterEmptySpectra = FALSE, msLevel = 2L)), 3)
     #expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
-    #    spectra = sps_multiple_empty, metrics = "numberSpectra", 
+    #    spectra = sps_multiple_empty, metrics = "numberSpectra",
     #    filterEmptySpectra = TRUE, msLevel = 2L)), 1)
     expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
-        spectra = sps_not_empty, metrics = "numberSpectra", 
+        spectra = sps_not_empty, metrics = "numberSpectra",
         filterEmptySpectra = FALSE, msLevel = 2L)), 3)
     expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
-        spectra = sps_not_empty, metrics = "numberSpectra", 
+        spectra = sps_not_empty, metrics = "numberSpectra",
         filterEmptySpectra = TRUE, msLevel = 2L)), 3)
-    
+
     ## test attributes
     expect_equal(attr(metrics_spectra_1, "names"), colnames_metrics)
     expect_equal(attr(metrics_spectra_1_filtered, "names"), colnames_metrics)
     expect_equal(attr(metrics_spectra_1, "chromatographyDuration"), "MS:4000053")
-    expect_equal(attr(metrics_spectra_1_filtered, "chromatographyDuration"), 
+    expect_equal(attr(metrics_spectra_1_filtered, "chromatographyDuration"),
         "MS:4000053")
     expect_equal(attr(metrics_spectra_1, "ticQuantileRtFraction"), "MS:4000183")
-    expect_equal(attr(metrics_spectra_1_filtered, "ticQuantileRtFraction"), 
+    expect_equal(attr(metrics_spectra_1_filtered, "ticQuantileRtFraction"),
         "MS:4000183")
     expect_equal(attr(metrics_spectra_1, "numberSpectra"), "MS:4000059")
-    expect_equal(attr(metrics_spectra_1_filtered, "numberSpectra"), 
+    expect_equal(attr(metrics_spectra_1_filtered, "numberSpectra"),
         "MS:4000059")
-    expect_equal(attr(metrics_spectra_1, "areaUnderTic"), 
+    expect_equal(attr(metrics_spectra_1, "areaUnderTic"),
         "MS:4000155")
-    expect_equal(attr(metrics_spectra_1_filtered, "areaUnderTic"), 
+    expect_equal(attr(metrics_spectra_1_filtered, "areaUnderTic"),
         "MS:4000155")
-    expect_equal(attr(metrics_spectra_1, "msSignal10xChange"), 
+    expect_equal(attr(metrics_spectra_1, "msSignal10xChange"),
         "MS:4000097")
-    expect_equal(attr(metrics_spectra_1_filtered, "msSignal10xChange"), 
+    expect_equal(attr(metrics_spectra_1_filtered, "msSignal10xChange"),
         "MS:4000097")
     expect_equal(attr(metrics_spectra_1, "msLevel"), 1)
     expect_equal(attr(metrics_spectra_1_filtered, "msLevel"), 1)
@@ -201,23 +201,23 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     expect_equal(attr(metrics_spectra_1_filtered, "change"), "jump")
     expect_equal(attr(metrics_spectra_2, "names"), colnames_metrics)
     expect_equal(attr(metrics_spectra_2_filtered, "names"), colnames_metrics)
-    expect_equal(attr(metrics_spectra_2, "chromatographyDuration"), 
+    expect_equal(attr(metrics_spectra_2, "chromatographyDuration"),
         "MS:4000053")
-    expect_equal(attr(metrics_spectra_2_filtered, "chromatographyDuration"), 
+    expect_equal(attr(metrics_spectra_2_filtered, "chromatographyDuration"),
         "MS:4000053")
-    expect_equal(attr(metrics_spectra_2, "ticQuantileRtFraction"), 
+    expect_equal(attr(metrics_spectra_2, "ticQuantileRtFraction"),
         "MS:4000183")
-    expect_equal(attr(metrics_spectra_2_filtered, "ticQuantileRtFraction"), 
+    expect_equal(attr(metrics_spectra_2_filtered, "ticQuantileRtFraction"),
         "MS:4000183")
-    expect_equal(attr(metrics_spectra_2, "numberSpectra"), 
+    expect_equal(attr(metrics_spectra_2, "numberSpectra"),
         "MS:4000059")
-    expect_equal(attr(metrics_spectra_2_filtered, "numberSpectra"), 
+    expect_equal(attr(metrics_spectra_2_filtered, "numberSpectra"),
         "MS:4000059")
     expect_equal(attr(metrics_spectra_2, "areaUnderTic"), "MS:4000155")
     expect_equal(attr(metrics_spectra_2_filtered, "areaUnderTic"), "MS:4000155")
-    expect_equal(attr(metrics_spectra_2, "msSignal10xChange"), 
+    expect_equal(attr(metrics_spectra_2, "msSignal10xChange"),
         "MS:4000097")
-    expect_equal(attr(metrics_spectra_2_filtered, "msSignal10xChange"), 
+    expect_equal(attr(metrics_spectra_2_filtered, "msSignal10xChange"),
         "MS:4000097")
     expect_equal(attr(metrics_spectra_2, "msLevel"), 1)
     expect_equal(attr(metrics_spectra_2_filtered, "msLevel"), 1)
@@ -237,72 +237,72 @@ test_that("calculateMetricsFromSpectra", {
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra), "sciex"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, 
-        c("20171016_POOL_POS_1_105-134.mzML", 
+    expect_equal(dirs,
+        c("20171016_POOL_POS_1_105-134.mzML",
           "20171016_POOL_POS_3_105-134.mzML"))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra_filtered), "sciex"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, 
-        c("20171016_POOL_POS_1_105-134.mzML", 
+    expect_equal(dirs,
+        c("20171016_POOL_POS_1_105-134.mzML",
             "20171016_POOL_POS_3_105-134.mzML"))
     expect_equal(colnames(metrics_spectra), colnames_metrics)
     expect_equal(colnames(metrics_spectra_filtered), colnames_metrics)
-    expect_equal(as.numeric(metrics_spectra[1, ]), 
+    expect_equal(as.numeric(metrics_spectra[1, ]),
         metrics_spectra_1_vals, tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_spectra_filtered[1, ]), 
+    expect_equal(as.numeric(metrics_spectra_filtered[1, ]),
         metrics_spectra_1_vals, tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_spectra[2, ]), 
+    expect_equal(as.numeric(metrics_spectra[2, ]),
         metrics_spectra_2_vals, tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_spectra_filtered[2, ]), 
+    expect_equal(as.numeric(metrics_spectra_filtered[2, ]),
         metrics_spectra_2_vals, tolerance = 1e-06)
-    
+
     expect_error(calculateMetricsFromSpectra("foo", metrics = metrics),
         "object '.metrics' not found")
     expect_error(calculateMetricsFromSpectra(spectra, metrics = "foo"),
         "should be one of ")
-    expect_error(calculateMetricsFromSpectra(spectra, 
+    expect_error(calculateMetricsFromSpectra(spectra,
         metrics = metrics, filterEmptySpectra = "foo"),
         "'filterEmptySpectra' has to be either TRUE or FALSE")
-    expect_error(calculateMetricsFromSpectra(spectra, 
-        metrics = "msSignal10xChange", change = c("jump", "fall")), 
+    expect_error(calculateMetricsFromSpectra(spectra,
+        metrics = "msSignal10xChange", change = c("jump", "fall")),
         "'change' has to be of length 1")
-    
+
     ## test filterEmptySpectra
     expect_equal(as.numeric(calculateMetricsFromSpectra(
-        spectra = sps_empty, metrics = "numberSpectra", 
+        spectra = sps_empty, metrics = "numberSpectra",
         filterEmptySpectra = FALSE, msLevel = 2L)), 3)
     #expect_equal(as.numeric(calculateMetricsFromSpectra(
-    #    spectra = sps_empty, metrics = "numberSpectra", 
+    #    spectra = sps_empty, metrics = "numberSpectra",
     #    filterEmptySpectra = TRUE, msLevel = 2L)), 1)
     expect_equal(as.numeric(calculateMetricsFromSpectra(
-        spectra = sps_multiple_empty, metrics = "numberSpectra", 
+        spectra = sps_multiple_empty, metrics = "numberSpectra",
         filterEmptySpectra = FALSE, msLevel = 2L)), 3)
     #expect_equal(as.numeric(calculateMetricsFromSpectra(
-    #    spectra = sps_multiple_empty, metrics = "numberSpectra", 
+    #    spectra = sps_multiple_empty, metrics = "numberSpectra",
     #    filterEmptySpectra = TRUE, msLevel = 2L)), 1)
     expect_equal(as.numeric(calculateMetricsFromSpectra(
-        spectra = sps_not_empty, metrics = "numberSpectra", 
+        spectra = sps_not_empty, metrics = "numberSpectra",
         filterEmptySpectra = FALSE, msLevel = 2L)), 3)
     expect_equal(as.numeric(calculateMetricsFromSpectra(
-        spectra = sps_not_empty, metrics = "numberSpectra", 
+        spectra = sps_not_empty, metrics = "numberSpectra",
         filterEmptySpectra = TRUE, msLevel = 2L)), 3)
-    
+
     ## test attributes
     expect_equal(attr(metrics_spectra, "names"), NULL)
     expect_equal(attr(metrics_spectra_filtered, "names"), NULL)
     expect_equal(attr(metrics_spectra, "chromatographyDuration"), "MS:4000053")
-    expect_equal(attr(metrics_spectra_filtered, "chromatographyDuration"), 
+    expect_equal(attr(metrics_spectra_filtered, "chromatographyDuration"),
         "MS:4000053")
     expect_equal(attr(metrics_spectra, "ticQuantileRtFraction"), "MS:4000183")
-    expect_equal(attr(metrics_spectra_filtered, "ticQuantileRtFraction"), 
+    expect_equal(attr(metrics_spectra_filtered, "ticQuantileRtFraction"),
         "MS:4000183")
     expect_equal(attr(metrics_spectra, "numberSpectra"), "MS:4000059")
     expect_equal(attr(metrics_spectra_filtered, "numberSpectra"), "MS:4000059")
     expect_equal(attr(metrics_spectra, "areaUnderTic"), "MS:4000155")
     expect_equal(attr(metrics_spectra_filtered, "areaUnderTic"), "MS:4000155")
     expect_equal(attr(metrics_spectra, "msSignal10xChange"), "MS:4000097")
-    expect_equal(attr(metrics_spectra_filtered, "msSignal10xChange"), 
+    expect_equal(attr(metrics_spectra_filtered, "msSignal10xChange"),
         "MS:4000097")
     expect_equal(attr(metrics_spectra, "msLevel"), 1)
     expect_equal(attr(metrics_spectra_filtered, "msLevel"), 1)
@@ -321,7 +321,7 @@ msexp <- MsExperiment()
 sd <- DataFrame(sample_id = c("QC1", "QC2"),
      sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
 sampleData(msexp) <- sd
- 
+
 ## define file names containing spectra data for the samples and
 ## add them, along with other arbitrary files to the experiment
 fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
@@ -337,15 +337,15 @@ msexp <- linkSampleData(msexp, with = "experimentFiles.annotations",
 
 ## import the data and add it to the mse object
 spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
- 
+
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 ## relativeTo is an argument of msSignal10xChange) passed to ...
-metrics_msexp <- calculateMetricsFromMsExperiment(msexp = msexp, 
-    metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1, 
+metrics_msexp <- calculateMetricsFromMsExperiment(msexp = msexp,
+    metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
     relativeTo = "Q1", mode = "TIC", change = "jump")
-metrics_msexp_filtered <- calculateMetricsFromMsExperiment(msexp = msexp, 
-    metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1, 
+metrics_msexp_filtered <- calculateMetricsFromMsExperiment(msexp = msexp,
+    metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
     relativeTo = "Q1", mode = "TIC", change = "jump")
 
 test_that("calculateMetricsFromMsExperiment", {
@@ -354,52 +354,52 @@ test_that("calculateMetricsFromMsExperiment", {
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_msexp), "sciex"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, 
-        c("20171016_POOL_POS_1_105-134.mzML", 
+    expect_equal(dirs,
+        c("20171016_POOL_POS_1_105-134.mzML",
             "20171016_POOL_POS_3_105-134.mzML"))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_msexp_filtered), "sciex"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, 
-        c("20171016_POOL_POS_1_105-134.mzML", 
+    expect_equal(dirs,
+        c("20171016_POOL_POS_1_105-134.mzML",
             "20171016_POOL_POS_3_105-134.mzML"))
     expect_equal(colnames(metrics_msexp), colnames_metrics)
     expect_equal(colnames(metrics_msexp_filtered), colnames_metrics)
-    expect_equal(as.numeric(metrics_msexp[1, ]), 
+    expect_equal(as.numeric(metrics_msexp[1, ]),
         metrics_spectra_1_vals, tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_msexp_filtered[1, ]), 
+    expect_equal(as.numeric(metrics_msexp_filtered[1, ]),
         metrics_spectra_1_vals, tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_msexp[2, ]), 
+    expect_equal(as.numeric(metrics_msexp[2, ]),
         metrics_spectra_2_vals, tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_msexp_filtered[2, ]), 
+    expect_equal(as.numeric(metrics_msexp_filtered[2, ]),
         metrics_spectra_2_vals, tolerance = 1e-06)
-    
+
     expect_error(calculateMetricsFromMsExperiment("foo", metrics = metrics),
         "object '.metrics' not found")
     expect_error(calculateMetricsFromMsExperiment(msexp, metrics = "foo"),
         "should be one of ")
-    expect_error(calculateMetricsFromMsExperiment(msexp, 
+    expect_error(calculateMetricsFromMsExperiment(msexp,
         metrics = metrics, filterEmptySpectra = "foo"),
         "'filterEmptySpectra' has to be either TRUE or FALSE")
-    expect_error(calculateMetricsFromMsExperiment(msexp, 
-        metrics = "msSignal10xChange", change = c("jump", "fall")), 
+    expect_error(calculateMetricsFromMsExperiment(msexp,
+        metrics = "msSignal10xChange", change = c("jump", "fall")),
         "'change' has to be of length 1")
-    
+
     ## test attributes
     expect_equal(attr(metrics_msexp, "names"), NULL)
     expect_equal(attr(metrics_msexp_filtered, "names"), NULL)
     expect_equal(attr(metrics_msexp, "chromatographyDuration"), "MS:4000053")
-    expect_equal(attr(metrics_msexp_filtered, "chromatographyDuration"), 
+    expect_equal(attr(metrics_msexp_filtered, "chromatographyDuration"),
                  "MS:4000053")
     expect_equal(attr(metrics_msexp, "ticQuantileRtFraction"), "MS:4000183")
-    expect_equal(attr(metrics_msexp_filtered, "ticQuantileRtFraction"), 
+    expect_equal(attr(metrics_msexp_filtered, "ticQuantileRtFraction"),
                  "MS:4000183")
     expect_equal(attr(metrics_msexp, "numberSpectra"), "MS:4000059")
     expect_equal(attr(metrics_msexp_filtered, "numberSpectra"), "MS:4000059")
     expect_equal(attr(metrics_msexp, "areaUnderTic"), "MS:4000155")
     expect_equal(attr(metrics_msexp_filtered, "areaUnderTic"), "MS:4000155")
     expect_equal(attr(metrics_msexp, "msSignal10xChange"), "MS:4000097")
-    expect_equal(attr(metrics_msexp_filtered, "msSignal10xChange"), 
+    expect_equal(attr(metrics_msexp_filtered, "msSignal10xChange"),
                  "MS:4000097")
     expect_equal(attr(metrics_msexp, "msLevel"), 1)
     expect_equal(attr(metrics_msexp_filtered, "msLevel"), 1)
@@ -410,25 +410,25 @@ test_that("calculateMetricsFromMsExperiment", {
     expect_equal(attr(metrics_msexp, "change"), "jump")
     expect_equal(attr(metrics_msexp_filtered, "change"), "jump")
 })
-## END unit test calculateMetricsFromMsExperiment ## 
+## END unit test calculateMetricsFromMsExperiment ##
 
 ## START unit test calculateMetrics ##
 ## calculate the metrics by the wrapper function
 suppressWarnings(
     metrics_spectra_wrapper <- calculateMetrics(object = spectra,
-        metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1, 
+        metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(
     metrics_spectra_wrapper_filtered <- calculateMetrics(object = spectra,
-        metrics = metrics, filteredEmptySpectra = TRUE, msLevel = 1, 
+        metrics = metrics, filteredEmptySpectra = TRUE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(
     metrics_msexp_wrapper <- calculateMetrics(object = msexp,
-        metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1, 
+        metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(
     metrics_msexp_wrapper_filtered <- calculateMetrics(object = msexp,
-        metrics = metrics, filteredEmptySpectra = TRUE, msLevel = 1, 
+        metrics = metrics, filteredEmptySpectra = TRUE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump"))
 
 test_that("calculateMetrics", {
@@ -439,26 +439,26 @@ test_that("calculateMetrics", {
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra_wrapper), "sciex"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, 
-        c("20171016_POOL_POS_1_105-134.mzML", 
+    expect_equal(dirs,
+        c("20171016_POOL_POS_1_105-134.mzML",
             "20171016_POOL_POS_3_105-134.mzML"))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra_wrapper_filtered), "sciex"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, 
-        c("20171016_POOL_POS_1_105-134.mzML", 
+    expect_equal(dirs,
+        c("20171016_POOL_POS_1_105-134.mzML",
             "20171016_POOL_POS_3_105-134.mzML"))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_msexp_wrapper), "sciex"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, 
-        c("20171016_POOL_POS_1_105-134.mzML", 
+    expect_equal(dirs,
+        c("20171016_POOL_POS_1_105-134.mzML",
             "20171016_POOL_POS_3_105-134.mzML"))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_msexp_wrapper_filtered), "sciex"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, 
-        c("20171016_POOL_POS_1_105-134.mzML", 
+    expect_equal(dirs,
+        c("20171016_POOL_POS_1_105-134.mzML",
             "20171016_POOL_POS_3_105-134.mzML"))
     expect_equal(length(metrics_spectra_wrapper), 24)
     expect_equal(length(metrics_spectra_wrapper_filtered), 24)
@@ -472,110 +472,110 @@ test_that("calculateMetrics", {
     expect_true(is.numeric(metrics_spectra_wrapper_filtered))
     expect_true(is.numeric(metrics_msexp_wrapper))
     expect_true(is.numeric(metrics_msexp_wrapper_filtered))
-    expect_equal(as.numeric(metrics_spectra_wrapper[1, ]), 
+    expect_equal(as.numeric(metrics_spectra_wrapper[1, ]),
         metrics_spectra_1_vals,  tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_spectra_wrapper_filtered[1, ]), 
+    expect_equal(as.numeric(metrics_spectra_wrapper_filtered[1, ]),
         metrics_spectra_1_vals,  tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_msexp_wrapper[1, ]), 
+    expect_equal(as.numeric(metrics_msexp_wrapper[1, ]),
         metrics_spectra_1_vals,  tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_msexp_wrapper_filtered[1, ]), 
+    expect_equal(as.numeric(metrics_msexp_wrapper_filtered[1, ]),
         metrics_spectra_1_vals,  tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_spectra_wrapper[2, ]), 
+    expect_equal(as.numeric(metrics_spectra_wrapper[2, ]),
         metrics_spectra_2_vals,  tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_spectra_wrapper_filtered[2, ]), 
+    expect_equal(as.numeric(metrics_spectra_wrapper_filtered[2, ]),
         metrics_spectra_2_vals,  tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_msexp_wrapper[2, ]), 
+    expect_equal(as.numeric(metrics_msexp_wrapper[2, ]),
         metrics_spectra_2_vals,  tolerance = 1e-06)
-    expect_equal(as.numeric(metrics_msexp_wrapper_filtered[2, ]), 
+    expect_equal(as.numeric(metrics_msexp_wrapper_filtered[2, ]),
         metrics_spectra_2_vals,  tolerance = 1e-06)
-    
+
     expect_error(calculateMetrics(NULL, metrics = metrics),
         "object '.metrics' not found")
     expect_error(calculateMetrics("foo", metrics = metrics),
         "object '.metrics' not found")
-    expect_error(calculateMetrics(spectra, 
+    expect_error(calculateMetrics(spectra,
         metrics = metrics, filterEmptySpectra = "foo"),
         "'filterEmptySpectra' has to be either TRUE or FALSE")
-    expect_error(calculateMetrics(msexp, 
+    expect_error(calculateMetrics(msexp,
         metrics = metrics, filterEmptySpectra = "foo"),
         "'filterEmptySpectra' has to be either TRUE or FALSE")
     expect_error(calculateMetrics(spectra, metrics = "foo"),
         "should be one of ")
     expect_error(calculateMetrics(msexp, metrics = "foo"),
         "should be one of ")
-    
+
     ## test filterEmptySpectra
-    expect_equal(as.numeric(calculateMetrics(object = sps_empty, 
-        metrics = "numberSpectra", filterEmptySpectra = FALSE, 
+    expect_equal(as.numeric(calculateMetrics(object = sps_empty,
+        metrics = "numberSpectra", filterEmptySpectra = FALSE,
         msLevel = 2L)), 3)
-    #expect_equal(as.numeric(calculateMetrics(object = sps_empty, 
-    #    metrics = "numberSpectra", filterEmptySpectra = TRUE, 
+    #expect_equal(as.numeric(calculateMetrics(object = sps_empty,
+    #    metrics = "numberSpectra", filterEmptySpectra = TRUE,
     #    msLevel = 2L)), 1)
-    expect_equal(as.numeric(calculateMetrics(object = sps_multiple_empty, 
-        metrics = "numberSpectra", filterEmptySpectra = FALSE, 
+    expect_equal(as.numeric(calculateMetrics(object = sps_multiple_empty,
+        metrics = "numberSpectra", filterEmptySpectra = FALSE,
         msLevel = 2L)), 3)
-    #expect_equal(as.numeric(calculateMetrics(object = sps_multiple_empty, 
-    #    metrics = "numberSpectra", filterEmptySpectra = TRUE, 
+    #expect_equal(as.numeric(calculateMetrics(object = sps_multiple_empty,
+    #    metrics = "numberSpectra", filterEmptySpectra = TRUE,
     #    msLevel = 2L)), 1)
-    expect_equal(as.numeric(calculateMetrics(object = sps_not_empty, 
-        metrics = "numberSpectra", filterEmptySpectra = FALSE, 
+    expect_equal(as.numeric(calculateMetrics(object = sps_not_empty,
+        metrics = "numberSpectra", filterEmptySpectra = FALSE,
         msLevel = 2L)), 3)
-    expect_equal(as.numeric(calculateMetrics(object = sps_not_empty, 
-        metrics = "numberSpectra", filterEmptySpectra = TRUE, 
+    expect_equal(as.numeric(calculateMetrics(object = sps_not_empty,
+        metrics = "numberSpectra", filterEmptySpectra = TRUE,
         msLevel = 2L)), 3)
-    
+
     ## test attributes
-    expect_equal(attributes(metrics_spectra_wrapper)$dimnames[[2]], 
+    expect_equal(attributes(metrics_spectra_wrapper)$dimnames[[2]],
         colnames_metrics)
-    expect_equal(attributes(metrics_spectra_wrapper_filtered)$dimnames[[2]], 
+    expect_equal(attributes(metrics_spectra_wrapper_filtered)$dimnames[[2]],
         colnames_metrics)
-    expect_equal(attributes(metrics_msexp_wrapper)$dimnames[[2]], 
+    expect_equal(attributes(metrics_msexp_wrapper)$dimnames[[2]],
         colnames_metrics)
-    expect_equal(attributes(metrics_msexp_wrapper_filtered)$dimnames[[2]], 
+    expect_equal(attributes(metrics_msexp_wrapper_filtered)$dimnames[[2]],
         colnames_metrics)
     expect_equal(attr(metrics_spectra_wrapper, "names"), NULL)
     expect_equal(attr(metrics_spectra_wrapper_filtered, "names"), NULL)
     expect_equal(attr(metrics_msexp_wrapper, "names"), NULL)
     expect_equal(attr(metrics_msexp_wrapper_filtered, "names"), NULL)
-    expect_equal(attr(metrics_spectra_wrapper, "chromatographyDuration"), 
+    expect_equal(attr(metrics_spectra_wrapper, "chromatographyDuration"),
         "MS:4000053")
-    expect_equal(attr(metrics_spectra_wrapper_filtered, "chromatographyDuration"), 
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "chromatographyDuration"),
         "MS:4000053")
-    expect_equal(attr(metrics_msexp_wrapper, "chromatographyDuration"), 
+    expect_equal(attr(metrics_msexp_wrapper, "chromatographyDuration"),
         "MS:4000053")
-    expect_equal(attr(metrics_msexp_wrapper_filtered, "chromatographyDuration"), 
+    expect_equal(attr(metrics_msexp_wrapper_filtered, "chromatographyDuration"),
         "MS:4000053")
     expect_equal(attr(metrics_spectra_wrapper, "ticQuantileRtFraction"),
         "MS:4000183")
-    expect_equal(attr(metrics_spectra_wrapper_filtered, "ticQuantileRtFraction"), 
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "ticQuantileRtFraction"),
         "MS:4000183")
     expect_equal(attr(metrics_msexp_wrapper, "ticQuantileRtFraction"),
         "MS:4000183")
-    expect_equal(attr(metrics_msexp_wrapper_filtered, "ticQuantileRtFraction"), 
+    expect_equal(attr(metrics_msexp_wrapper_filtered, "ticQuantileRtFraction"),
         "MS:4000183")
-    expect_equal(attr(metrics_spectra_wrapper, "numberSpectra"), 
+    expect_equal(attr(metrics_spectra_wrapper, "numberSpectra"),
         "MS:4000059")
-    expect_equal(attr(metrics_spectra_wrapper_filtered, "numberSpectra"), 
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "numberSpectra"),
         "MS:4000059")
-    expect_equal(attr(metrics_msexp_wrapper, "numberSpectra"), 
+    expect_equal(attr(metrics_msexp_wrapper, "numberSpectra"),
         "MS:4000059")
-    expect_equal(attr(metrics_msexp_wrapper_filtered, "numberSpectra"), 
+    expect_equal(attr(metrics_msexp_wrapper_filtered, "numberSpectra"),
         "MS:4000059")
-    expect_equal(attr(metrics_spectra_wrapper, "areaUnderTic"), 
+    expect_equal(attr(metrics_spectra_wrapper, "areaUnderTic"),
         "MS:4000155")
-    expect_equal(attr(metrics_spectra_wrapper_filtered, "areaUnderTic"), 
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "areaUnderTic"),
         "MS:4000155")
-    expect_equal(attr(metrics_msexp_wrapper, "areaUnderTic"), 
+    expect_equal(attr(metrics_msexp_wrapper, "areaUnderTic"),
         "MS:4000155")
-    expect_equal(attr(metrics_msexp_wrapper_filtered, "areaUnderTic"), 
+    expect_equal(attr(metrics_msexp_wrapper_filtered, "areaUnderTic"),
         "MS:4000155")
-    expect_equal(attr(metrics_spectra_wrapper, "msSignal10xChange"), 
+    expect_equal(attr(metrics_spectra_wrapper, "msSignal10xChange"),
         "MS:4000097")
-    expect_equal(attr(metrics_spectra_wrapper_filtered, "msSignal10xChange"), 
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "msSignal10xChange"),
         "MS:4000097")
-    expect_equal(attr(metrics_msexp_wrapper, "msSignal10xChange"), 
+    expect_equal(attr(metrics_msexp_wrapper, "msSignal10xChange"),
         "MS:4000097")
-    expect_equal(attr(metrics_msexp_wrapper_filtered, "msSignal10xChange"), 
+    expect_equal(attr(metrics_msexp_wrapper_filtered, "msSignal10xChange"),
         "MS:4000097")
     expect_equal(attr(metrics_spectra_wrapper, "msLevel"), 1)
     expect_equal(attr(metrics_spectra_wrapper_filtered, "msLevel"), 1)
@@ -594,7 +594,7 @@ test_that("calculateMetrics", {
     expect_equal(attr(metrics_msexp_wrapper, "change"), "jump")
     expect_equal(attr(metrics_msexp_wrapper_filtered, "change"), "jump")
 })
-## END unit test calculateMetrics ## 
+## END unit test calculateMetrics ##
 
 ################################################################################
 ################################ format = 'mzQC' ###############################
@@ -605,12 +605,12 @@ library("rmzqc")
 dO <- unique(spectra$dataOrigin)
 spectra_1 <- spectra[spectra$dataOrigin == dO[1], ]
 
-## START unit test calculateMetricsFromOneSampleSpectra ## 
+## START unit test calculateMetricsFromOneSampleSpectra ##
 test_that("calculateMetricsFromOneSampleSpectra, format = 'mzQC'.", {
-    
+
     metrics_spectra_1 <- calculateMetricsFromOneSampleSpectra(
-        spectra = spectra_1, metrics = metrics, filterEmptySpectra = FALSE, 
-        msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump", 
+        spectra = spectra_1, metrics = metrics, filterEmptySpectra = FALSE,
+        msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump",
         format = "mzQC")
     ## spectra_1
     expect_equal(length(metrics_spectra_1), 12)
@@ -622,11 +622,11 @@ test_that("calculateMetricsFromOneSampleSpectra, format = 'mzQC'.", {
 ## START unit test calculateMetricsFromSpectra ##
 ## calculate the metrics from Spectra
 test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
-   
+
    metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra,
-            metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1, 
+            metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
             relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC")
-    
+
     expect_equal(length(metrics_spectra), 2)
     expect_equal(is(metrics_spectra[[1]]), c("MzQCmzQC", "oldClass"))
     expect_equal(is(metrics_spectra[[2]]), c("MzQCmzQC", "oldClass"))
@@ -634,128 +634,128 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
     expect_equal(metrics_spectra[[2]]$contactAddress, as.character(NA))
 
     ## controlled vocabularies and description
-    expect_equal(metrics_spectra[[1]]$controlledVocabularies[[1]]$name, 
+    expect_equal(metrics_spectra[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra[[1]]$description,
         "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
-    expect_equal(metrics_spectra[[2]]$controlledVocabularies[[1]]$name, 
+    expect_equal(metrics_spectra[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra[[2]]$description,
         "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
-    
+
     ## software
     expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
     expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
-    expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
+    expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
-    expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+    expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
         "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
     expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
     expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
-    expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
+    expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
-    expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+    expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
         "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
-    
+
     ## chromatographyDuration
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[1]]$accession, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[1]]$accession,
         "MS:4000053")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[1]]$name, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[1]]$name,
         "chromatography duration")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[1]]$description, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[1]]$description,
         "\"The retention time duration of the chromatography in seconds.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[1]]$value, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[1]]$value,
         2.594770e+02, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[1]]$unit, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[1]]$unit,
         list())
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[1]]$accession, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[1]]$accession,
         "MS:4000053")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[1]]$name, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[1]]$name,
         "chromatography duration")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[1]]$description, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[1]]$description,
         "\"The retention time duration of the chromatography in seconds.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[1]]$value, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[1]]$value,
         2.594770e+02, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[1]]$unit, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[1]]$unit,
         list())
-    
+
     ## ticQuantileRtFraction
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[2]]$accession, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[2]]$accession,
         "MS:4000183")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[2]]$name, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[2]]$name,
         "TIC quantile RT fraction")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[2]]$description, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[2]]$description,
         "\"The interval when the respective quantile of the TIC accumulates divided by retention time duration. The number of values in the tuple implies the quantile mode.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[2]]$value, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[2]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[2]]$unit, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[2]]$unit,
         list())
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[2]]$accession, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[2]]$accession,
         "MS:4000183")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[2]]$name, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[2]]$name,
         "TIC quantile RT fraction")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[2]]$description, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[2]]$description,
         "\"The interval when the respective quantile of the TIC accumulates divided by retention time duration. The number of values in the tuple implies the quantile mode.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[2]]$value, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[2]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[2]]$unit, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[2]]$unit,
         list())
-    
+
     ## ticQuartileToQuartileLogRatio
     ## no entry for this metric since relativeTo = "Q1"
-    
+
     ## numberSpectra
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[3]]$accession, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[3]]$accession,
         "MS:4000059")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[3]]$name, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[3]]$name,
         "number of MS1 spectra")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[3]]$description, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[3]]$description,
         "\"The number of MS1 events in the run.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[3]]$value, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[3]]$value,
         9.310000e02, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[3]]$unit, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[3]]$unit,
         list())
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[3]]$accession, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[3]]$accession,
         "MS:4000059")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[3]]$name, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[3]]$name,
         "number of MS1 spectra")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[3]]$description, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[3]]$description,
         "\"The number of MS1 events in the run.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[3]]$value, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[3]]$value,
         9.310000e02, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[3]]$unit, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[3]]$unit,
         list())
-    
+
     ## areaUnderTic
     expect_equal(
         metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[4]]$accession,
@@ -787,37 +787,37 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
     expect_equal(
         metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[4]]$unit,
         list())
-    
+
     ## msSignal10xChange
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$accession,
         "MS:4000097")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$name,
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$description,
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
+        metrics_spectra[[1]]$runQualities[[1]]$qualityMetrics[[5]]$unit,
         list())
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$accession,
         "MS:4000097")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$name,
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$description,
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
+        metrics_spectra[[2]]$runQualities[[1]]$qualityMetrics[[5]]$unit,
         list())
 })
 ## END unit test calculateMetricsFromSpectra ##
@@ -849,140 +849,140 @@ spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 ## relativeTo is an argument of msSignal10xChange) passed to ...
 test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
-    suppressWarnings(metrics_msexp <- calculateMetricsFromMsExperiment(msexp = msexp, 
-        metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1, 
+    suppressWarnings(metrics_msexp <- calculateMetricsFromMsExperiment(msexp = msexp,
+        metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC"))
-    
+
     expect_equal(length(metrics_msexp), 2)
     expect_equal(is(metrics_msexp[[1]]), c("MzQCmzQC", "oldClass"))
     expect_equal(is(metrics_msexp[[2]]), c("MzQCmzQC", "oldClass"))
     expect_equal(metrics_msexp[[1]]$contactAddress, as.character(NA))
     expect_equal(metrics_msexp[[2]]$contactAddress, as.character(NA))
-    
-    
+
+
     ## controlled vocabularies and description
-    expect_equal(metrics_msexp[[1]]$controlledVocabularies[[1]]$name, 
+    expect_equal(metrics_msexp[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp[[1]]$description,
         "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
-    expect_equal(metrics_msexp[[2]]$controlledVocabularies[[1]]$name, 
+    expect_equal(metrics_msexp[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp[[2]]$description,
         "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
-    
+
     ## software
     expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
     expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
-    expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
+    expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
-    expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+    expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
         "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
     expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
     expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
-    expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
+    expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
-    expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+    expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
         "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
-    
+
     ## chromatographyDuration
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[1]]$accession, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[1]]$accession,
         "MS:4000053")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[1]]$name, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[1]]$name,
         "chromatography duration")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[1]]$description, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[1]]$description,
         "\"The retention time duration of the chromatography in seconds.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[1]]$value, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[1]]$value,
         2.594770e+02, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[1]]$unit, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[1]]$unit,
         list())
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[1]]$accession, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[1]]$accession,
         "MS:4000053")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[1]]$name, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[1]]$name,
         "chromatography duration")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[1]]$description, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[1]]$description,
         "\"The retention time duration of the chromatography in seconds.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[1]]$value, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[1]]$value,
         2.594770e+02, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[1]]$unit, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[1]]$unit,
         list())
-    
+
     ## ticQuantileRtFraction
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[2]]$accession, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[2]]$accession,
         "MS:4000183")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[2]]$name, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[2]]$name,
         "TIC quantile RT fraction")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[2]]$description, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[2]]$description,
         "\"The interval when the respective quantile of the TIC accumulates divided by retention time duration. The number of values in the tuple implies the quantile mode.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[2]]$value, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[2]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[2]]$unit, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[2]]$unit,
         list())
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[2]]$accession, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[2]]$accession,
         "MS:4000183")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[2]]$name, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[2]]$name,
         "TIC quantile RT fraction")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[2]]$description, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[2]]$description,
         "\"The interval when the respective quantile of the TIC accumulates divided by retention time duration. The number of values in the tuple implies the quantile mode.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[2]]$value, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[2]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[2]]$unit, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[2]]$unit,
         list())
-    
+
     ## ticQuartileToQuartileLogRatio
     ## no entry for this metric since relativeTo = "Q1"
-    
+
     ## numberSpectra
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[3]]$accession, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[3]]$accession,
         "MS:4000059")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[3]]$name, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[3]]$name,
         "number of MS1 spectra")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[3]]$description, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[3]]$description,
         "\"The number of MS1 events in the run.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[3]]$value, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[3]]$value,
         9.310000e02, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[3]]$unit, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[3]]$unit,
         list())
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[3]]$accession, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[3]]$accession,
         "MS:4000059")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[3]]$name, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[3]]$name,
         "number of MS1 spectra")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[3]]$description, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[3]]$description,
         "\"The number of MS1 events in the run.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[3]]$value, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[3]]$value,
         9.310000e02, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[3]]$unit, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[3]]$unit,
         list())
-    
+
     ## areaUnderTic
     expect_equal(
         metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[4]]$accession,
@@ -1014,184 +1014,184 @@ test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
     expect_equal(
         metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[4]]$unit,
         list())
-    
+
     ## msSignal10xChange
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$accession,
         "MS:4000097")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$name,
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$description,
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
+        metrics_msexp[[1]]$runQualities[[1]]$qualityMetrics[[5]]$unit,
         list())
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$accession,
         "MS:4000097")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$name,
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$description,
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
+        metrics_msexp[[2]]$runQualities[[1]]$qualityMetrics[[5]]$unit,
         list())
 })
-## END unit test calculateMetricsFromMsExperiment ## 
+## END unit test calculateMetricsFromMsExperiment ##
 
 ## START unit test calculateMetrics ##
 ## calculate the metrics by the wrapper function
 test_that("calculateMetrics, format = 'mzQC'.", {
-    
+
     suppressWarnings(
         metrics_spectra_wrapper <- calculateMetrics(object = spectra,
-            metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1, 
+            metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
             relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC"))
     suppressWarnings(
         metrics_msexp_wrapper <- calculateMetrics(object = msexp,
-            metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1, 
+            metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
             relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC"))
-    
+
     ## metrics_spectra_wrapper
     expect_equal(length(metrics_spectra_wrapper), 2)
     expect_equal(is(metrics_spectra_wrapper[[1]]), c("MzQCmzQC", "oldClass"))
     expect_equal(is(metrics_spectra_wrapper[[2]]), c("MzQCmzQC", "oldClass"))
     expect_equal(metrics_spectra_wrapper[[1]]$contactAddress, as.character(NA))
     expect_equal(metrics_spectra_wrapper[[2]]$contactAddress, as.character(NA))
-    
+
     ## controlled vocabularies and description
-    expect_equal(metrics_spectra_wrapper[[1]]$controlledVocabularies[[1]]$name, 
+    expect_equal(metrics_spectra_wrapper[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra_wrapper[[1]]$description,
         "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
-    expect_equal(metrics_spectra_wrapper[[2]]$controlledVocabularies[[1]]$name, 
+    expect_equal(metrics_spectra_wrapper[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra_wrapper[[2]]$description,
         "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
-    
+
     ## software
     expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
     expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
-    expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
+    expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
-    expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+    expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
          "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
     expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
     expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
-    expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
+    expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
-    expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+    expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
         "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
-    
+
     ## chromatographyDuration
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$accession, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$accession,
         "MS:4000053")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$name, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$name,
         "chromatography duration")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$description, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$description,
         "\"The retention time duration of the chromatography in seconds.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$value, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$value,
         2.594770e+02, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$unit, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$unit,
         list())
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$accession, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$accession,
         "MS:4000053")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$name, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$name,
         "chromatography duration")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$description, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$description,
         "\"The retention time duration of the chromatography in seconds.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$value, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$value,
         2.594770e+02, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$unit, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$unit,
         list())
-    
+
     ## ticQuantileRtFraction
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$accession, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$accession,
         "MS:4000183")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$name, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$name,
         "TIC quantile RT fraction")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$description, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$description,
         "\"The interval when the respective quantile of the TIC accumulates divided by retention time duration. The number of values in the tuple implies the quantile mode.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$value, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$unit, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$unit,
         list())
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$accession, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$accession,
         "MS:4000183")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$name, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$name,
         "TIC quantile RT fraction")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$description, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$description,
         "\"The interval when the respective quantile of the TIC accumulates divided by retention time duration. The number of values in the tuple implies the quantile mode.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$value, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$unit, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$unit,
         list())
-    
+
     ## ticQuartileToQuartileLogRatio
     ## no entry for this metric since relativeTo = "Q1"
-    
+
     ## numberSpectra
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$accession, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$accession,
         "MS:4000059")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$name, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$name,
         "number of MS1 spectra")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$description, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$description,
         "\"The number of MS1 events in the run.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$value, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$value,
         9.310000e02, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$unit, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$unit,
         list())
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$accession, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$accession,
         "MS:4000059")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$name, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$name,
         "number of MS1 spectra")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$description, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$description,
         "\"The number of MS1 events in the run.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$value, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$value,
         9.310000e02, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$unit, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$unit,
         list())
-    
+
     ## areaUnderTic
     expect_equal(
         metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$accession,
@@ -1223,170 +1223,170 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     expect_equal(
         metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$unit,
         list())
-    
+
     ## msSignal10xChange
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$accession,
         "MS:4000097")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$name,
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$description,
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
+        metrics_spectra_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$unit,
         list())
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$accession,
         "MS:4000097")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$name,
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$description,
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
+        metrics_spectra_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$unit,
         list())
-    
-    ## 
+
+    ##
     ## metrics_msexp_wrapper
     expect_equal(length(metrics_msexp_wrapper), 2)
     expect_equal(is(metrics_msexp_wrapper[[1]]), c("MzQCmzQC", "oldClass"))
     expect_equal(is(metrics_msexp_wrapper[[2]]), c("MzQCmzQC", "oldClass"))
     expect_equal(metrics_msexp_wrapper[[1]]$contactAddress, as.character(NA))
     expect_equal(metrics_msexp_wrapper[[2]]$contactAddress, as.character(NA))
-    
+
     ## controlled vocabularies and description
-    expect_equal(metrics_msexp_wrapper[[1]]$controlledVocabularies[[1]]$name, 
+    expect_equal(metrics_msexp_wrapper[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp_wrapper[[1]]$description,
         "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
-    expect_equal(metrics_msexp_wrapper[[2]]$controlledVocabularies[[1]]$name, 
+    expect_equal(metrics_msexp_wrapper[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp_wrapper[[2]]$description,
         "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
-    
+
     ## software
     expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
     expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
-    expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
+    expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
-    expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+    expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
         "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
     expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
     expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
-    expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version, 
+    expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
-    expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description, 
+    expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
         "\"MsQuality – an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
-    
+
     ## chromatographyDuration
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$accession, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$accession,
         "MS:4000053")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$name, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$name,
         "chromatography duration")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$description, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$description,
         "\"The retention time duration of the chromatography in seconds.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$value, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$value,
         2.594770e+02, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$unit, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[1]]$unit,
         list())
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$accession, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$accession,
         "MS:4000053")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$name, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$name,
         "chromatography duration")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$description, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$description,
         "\"The retention time duration of the chromatography in seconds.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$value, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$value,
         2.594770e+02, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$unit, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[1]]$unit,
         list())
-    
+
     ## ticQuantileRtFraction
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$accession, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$accession,
         "MS:4000183")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$name, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$name,
         "TIC quantile RT fraction")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$description, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$description,
         "\"The interval when the respective quantile of the TIC accumulates divided by retention time duration. The number of values in the tuple implies the quantile mode.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$value, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$unit, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[2]]$unit,
         list())
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$accession, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$accession,
         "MS:4000183")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$name, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$name,
         "TIC quantile RT fraction")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$description, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$description,
         "\"The interval when the respective quantile of the TIC accumulates divided by retention time duration. The number of values in the tuple implies the quantile mode.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$value, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$unit, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[2]]$unit,
         list())
-    
+
     ## ticQuartileToQuartileLogRatio
     ## no entry for this metric since relativeTo = "Q1"
-    
+
     ## numberSpectra
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$accession, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$accession,
         "MS:4000059")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$name, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$name,
         "number of MS1 spectra")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$description, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$description,
         "\"The number of MS1 events in the run.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$value, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$value,
         9.310000e02, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$unit, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[3]]$unit,
         list())
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$accession, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$accession,
         "MS:4000059")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$name, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$name,
         "number of MS1 spectra")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$description, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$description,
         "\"The number of MS1 events in the run.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$value, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$value,
         9.310000e02, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$unit, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[3]]$unit,
         list())
-    
+
     ## areaUnderTic
     expect_equal(
         metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[4]]$accession,
@@ -1418,37 +1418,37 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     expect_equal(
         metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[4]]$unit,
         list())
-    
+
     ## msSignal10xChange
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$accession,
         "MS:4000097")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$name,
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$description,
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
+        metrics_msexp_wrapper[[1]]$runQualities[[1]]$qualityMetrics[[5]]$unit,
         list())
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$accession, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$accession,
         "MS:4000097")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$name, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$name,
         "MS1 signal jump (10x) count")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$description, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$description,
         "\"The number of times where MS1 TIC increased more than 10-fold between adjacent MS1 scans.\" [PSI:MS]")
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$value, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$value,
         0, tolerance = 1e-06)
     expect_equal(
-        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$unit, 
+        metrics_msexp_wrapper[[2]]$runQualities[[1]]$qualityMetrics[[5]]$unit,
         list())
 })
 
@@ -1458,10 +1458,10 @@ test_that("transformIntoMzQC has URIs", {
 
     suppressWarnings(
         metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra,
-            metrics = c("areaUnderTic"), filterEmptySpectra = FALSE, msLevel = 1, 
+            metrics = c("areaUnderTic"), filterEmptySpectra = FALSE, msLevel = 1,
             relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC")
     )
     expect_true(stringr::str_starts((metrics_spectra[[1]]$runQualities[[1]]$metadata$inputFiles[[1]]$location), "file://"))
 })
-## END unit test calculateMetrics ## 
+## END unit test calculateMetrics ##
 

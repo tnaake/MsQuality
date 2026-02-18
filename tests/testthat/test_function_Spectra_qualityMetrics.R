@@ -31,25 +31,25 @@ library(Spectra)
 spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 
 
-qm_spectra <- c("chromatographyDuration", "ticQuantileRtFraction", 
-    "rtOverMsQuarters", "ticQuartileToQuartileLogRatio", "numberSpectra", 
-    "numberEmptyScans", "medianPrecursorMz", "rtIqr", "rtIqrRate", 
-    "areaUnderTic", "areaUnderTicRtQuantiles", 
-    "extentIdentifiedPrecursorIntensity", "medianTicRtIqr", 
-    "medianTicOfRtRange", "mzAcquisitionRange", "rtAcquisitionRange", 
-    "precursorIntensityRange", "precursorIntensityQuartiles", 
-    "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange", 
-    "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", "meanCharge", 
+qm_spectra <- c("chromatographyDuration", "ticQuantileRtFraction",
+    "rtOverMsQuarters", "ticQuartileToQuartileLogRatio", "numberSpectra",
+    "numberEmptyScans", "medianPrecursorMz", "rtIqr", "rtIqrRate",
+    "areaUnderTic", "areaUnderTicRtQuantiles",
+    "extentIdentifiedPrecursorIntensity", "medianTicRtIqr",
+    "medianTicOfRtRange", "mzAcquisitionRange", "rtAcquisitionRange",
+    "precursorIntensityRange", "precursorIntensityQuartiles",
+    "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange",
+    "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
     "medianCharge")
-qm_mse <- c("chromatographyDuration", "ticQuantileRtFraction", 
-    "rtOverMsQuarters", "ticQuartileToQuartileLogRatio", "numberSpectra", 
-    "numberEmptyScans", "medianPrecursorMz", "rtIqr", "rtIqrRate", 
-    "areaUnderTic", "areaUnderTicRtQuantiles", 
-    "extentIdentifiedPrecursorIntensity", "medianTicRtIqr", 
-    "medianTicOfRtRange", "mzAcquisitionRange", "rtAcquisitionRange", 
-    "precursorIntensityRange", "precursorIntensityQuartiles", 
-    "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange", 
-    "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2", 
+qm_mse <- c("chromatographyDuration", "ticQuantileRtFraction",
+    "rtOverMsQuarters", "ticQuartileToQuartileLogRatio", "numberSpectra",
+    "numberEmptyScans", "medianPrecursorMz", "rtIqr", "rtIqrRate",
+    "areaUnderTic", "areaUnderTicRtQuantiles",
+    "extentIdentifiedPrecursorIntensity", "medianTicRtIqr",
+    "medianTicOfRtRange", "mzAcquisitionRange", "rtAcquisitionRange",
+    "precursorIntensityRange", "precursorIntensityQuartiles",
+    "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange",
+    "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2",
     "meanCharge", "medianCharge")
 
 test_that("qualityMetrics", {
