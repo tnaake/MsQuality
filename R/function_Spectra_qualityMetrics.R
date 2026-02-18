@@ -24,8 +24,6 @@
 #' @export
 #'
 #' @examples
-#'
-#' @examples
 #' library(Spectra)
 #' spd <- DataFrame(
 #'     msLevel = c(2L, 2L, 2L),
@@ -53,14 +51,10 @@ qualityMetrics <- function(object) {
             "chromatographyDuration", "ticQuantileRtFraction", "rtOverMsQuarters",
             "ticQuartileToQuartileLogRatio", "numberSpectra", "numberEmptyScans",
             "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic",
-            "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic",
             "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity",
             "medianTicRtIqr", "medianTicOfRtRange", "mzAcquisitionRange",
             "rtAcquisitionRange", "precursorIntensityRange",
-            "rtAcquisitionRange", "precursorIntensityRange",
             "precursorIntensityQuartiles", "precursorIntensityMean",
-            "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2",
-            "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
             "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2",
             "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
             "medianCharge"
@@ -73,14 +67,9 @@ qualityMetrics <- function(object) {
             "ticQuartileToQuartileLogRatio", "numberSpectra", "numberEmptyScans",
             "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic",
             "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity",
-            "medianPrecursorMz", "rtIqr", "rtIqrRate", "areaUnderTic",
-            "areaUnderTicRtQuantiles", "extentIdentifiedPrecursorIntensity",
             "medianTicRtIqr", "medianTicOfRtRange", "mzAcquisitionRange",
             "rtAcquisitionRange", "precursorIntensityRange",
-            "rtAcquisitionRange", "precursorIntensityRange",
             "precursorIntensityQuartiles", "precursorIntensityMean",
-            "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2",
-            "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
             "precursorIntensitySd", "msSignal10xChange", "ratioCharge1over2",
             "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
             "medianCharge"

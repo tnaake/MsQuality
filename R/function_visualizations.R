@@ -4,10 +4,7 @@
 #'
 #' @description
 #' The function \code{plotMetric} visualizes the metric values per sample. The
-#' The function \code{plotMetric} visualizes the metric values per sample. The
 #' function accepts the output of \code{calculateMetrics} or,
-#' \code{calculateMetricsFromSpectra}, or
-#' \code{calculateMetricsFromMsExperiment} and a vector specifying the metric
 #' \code{calculateMetricsFromSpectra}, or
 #' \code{calculateMetricsFromMsExperiment} and a vector specifying the metric
 #' to display.
@@ -15,11 +12,6 @@
 #'
 #' @details
 #' \code{plotMetric} will select all columns that start with
-#' \code{metric}. The different levels in the \code{name} column in the
-#' returned tibble correspond to the columns that were selected and do not
-#' contain the \code{metric} prefix. In case there is no additional specification
-#' (e.g. for the metric \code{chromatographyDuration} only the column \code{chromatographyDuration} will
-#' be selected), the \code{name} column will include the \code{metric}
 #' \code{metric}. The different levels in the \code{name} column in the
 #' returned tibble correspond to the columns that were selected and do not
 #' contain the \code{metric} prefix. In case there is no additional specification
@@ -47,8 +39,6 @@
 #'
 #'
 #' @export
-#'
-#' @examples
 #'
 #' @examples
 #' library(msdata)
@@ -79,10 +69,8 @@
 #' ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 #' ## relativeTo is an argument of msSignal10xChange)
 #' qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
-#' qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
 #'     msLevel = 1, relativeTo = "Q1", change = "jump")
 #' rownames(qc) <- c("Sample 1", "Sample 2")
-#'
 #'
 #' ## do the actual plotting
 #' plotMetric(qc, metric = "areaUnderTic", plotly = TRUE)
@@ -101,15 +89,11 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
         theme(
             axis.text.x = element_text(angle = 90, size = 10),
             panel.grid.major = element_blank(),
-            axis.text.x = element_text(angle = 90, size = 10),
-            panel.grid.major = element_blank(),
             panel.grid.minor = element_blank())
     if (plotly)
         g |>
-        g |>
             ggplotly(tooltip = c("x", "y")) |>
             partial_bundle()
-    else
     else
         g
 }
@@ -127,14 +111,7 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
 #' @details
 #' \code{plotMetricRibble} will select all columns that start with
 #' \code{metric}. The different levels in the \code{name} column in the returned
-#' \code{metric}. The different levels in the \code{name} column in the returned
 #' tibble correspond to the columns that were selected and do not contain the
-#' \code{metric} prefix. In case there is no additional specification
-#' (e.g. for the metric \code{chromatographyDuration} only the column
-#' \code{chromatographyDuration} will
-#' be selected), the \code{name} column will include the \code{metric}
-#' (\code{chromatographyDuration}).
-#'
 #' \code{metric} prefix. In case there is no additional specification
 #' (e.g. for the metric \code{chromatographyDuration} only the column
 #' \code{chromatographyDuration} will
@@ -158,8 +135,6 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
 #'
 #'
 #' @export
-#'
-#' @examples
 #'
 #' @examples
 #' library(msdata)
@@ -197,7 +172,6 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
 #' ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 #' ## relativeTo is an argument of msSignal10xChange)
 #' qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
-#' qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
 #'     msLevel = 1, relativeTo = "Q1", change = "jump")
 #' rownames(qc) <- c("Sample 1", "Sample 2")
 #' plotMetricTibble(qc, metric = "areaUnderTic")
@@ -229,8 +203,6 @@ plotMetricTibble <- function(qc, metric) {
     qc_df <- rownames_to_column(qc_df)
 
     ## convert the table into the long format
-
-    ## convert the table into the long format
     qc_df_l <- pivot_longer(qc_df, cols = seq_len(ncol(qc_df))[-1])
     qc_df_l$rowname <- factor(qc_df_l$rowname, levels = qc_df$rowname)
 
@@ -244,10 +216,7 @@ plotMetricTibble <- function(qc, metric) {
 #'
 #' @description
 #' The function \code{shinyMsQuality} function starts a shiny application to
-#' The function \code{shinyMsQuality} function starts a shiny application to
 #' visualize the quality metrics interactively. It allows to display all metrics
-#' contained in \code{qc}.
-#'
 #' contained in \code{qc}.
 #'
 #' The function accepts the output of \code{calculateMetrics},
@@ -255,7 +224,6 @@ plotMetricTibble <- function(qc, metric) {
 #'
 #'
 #' @details
-#' The plots within the shiny application can be saved by clicking on the
 #' The plots within the shiny application can be saved by clicking on the
 #' download button.
 #'
@@ -320,7 +288,6 @@ plotMetricTibble <- function(qc, metric) {
 #' ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 #' ## relativeTo is an argument of msSignal10xChange)
 #' qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
-#' qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
 #'     msLevel = 1, relativeTo = "Q1", change = "jump")
 #' qc <- as.matrix(qc)
 #' rownames(qc) <- c("Sample 1", "Sample 2")
@@ -338,8 +305,6 @@ shinyMsQuality <- function(qc) {
     metrics <- str_split(colnames(qc), pattern = "_", simplify = TRUE)[, 1]
     metrics <- unique(metrics)
 
-    ## define the user interface of the application: create a sidebar that
-    ## allows to select the metrics and a body that displays the plot and
     ## define the user interface of the application: create a sidebar that
     ## allows to select the metrics and a body that displays the plot and
     ## allows for downloading the plot

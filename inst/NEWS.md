@@ -1,5 +1,26 @@
 # MsQuality 1.11
 
+## 1.11.2 (2026-02-18)
+
+- Implementation of metrics for Chromatograms objects
+- Created S4 generic functions and methods for shared metrics:
+  - `areaUnderTic`: Generic function with methods for Spectra and Chromatograms
+  classes
+  - `ticQuantileRtFraction`: Generic function with methods for Spectra and
+  Chromatograms classes
+  - `calculateMetrics`: Generic function dispatching to appropriate methods
+  based on input object class
+- renaming of argument filterEmptySpectra to filterEmptyObject
+  in calculateMetricsFromSpectra and calculateMetricsFromMsExperiment.
+- Changed `calculateMetrics` function argument from `spectra` to `object` to
+  reflect its generic nature and support for multiple object types
+  (Spectra, MsExperiment, and Chromatograms)
+- Fixed output of calculateMetrics() if format = "data.frame", to actually
+  return a "data.frame".
+Fixed `shinyMsQuality()` documentation example to convert data.frame to matrix
+  before passing to `shinyMsQuality()` function.-
+
+
 ## Changes in version 1.11.1 (2026-02-17)
 
 - added conversion to uri from local file to the export function in

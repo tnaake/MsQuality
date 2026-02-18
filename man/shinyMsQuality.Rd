@@ -34,6 +34,7 @@ sd <- DataFrame(sample_id = c("QC1", "QC2"),
     sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
 sampleData(msexp) <- sd
 
+
 ## define file names containing spectra data for the samples and
 ## add them, along with other arbitrary files to the experiment
 fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
@@ -47,12 +48,15 @@ msexp <- linkSampleData(msexp, with = "experimentFiles.mzML_files",
 msexp <- linkSampleData(msexp, with = "experimentFiles.annotations",
     sampleIndex = c(1, 2), withIndex = c(1, 1))
 
+
 library(Spectra)
 ## import the data and add it to the mse object
 spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
 
+
 ## define the quality metrics to be calculated
 metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
+
 
 ## calculate the metrics
 ## additional parameters passed to the quality metrics functions
@@ -62,6 +66,7 @@ qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
     msLevel = 1, relativeTo = "Q1", change = "jump")
 qc <- as.matrix(qc)
 rownames(qc) <- c("Sample 1", "Sample 2")
+
 
 if (interactive())
     shinyMsQuality(qc = qc)

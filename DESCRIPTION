@@ -10,8 +10,7 @@ Authors@R: c(person(given = "Thomas", family = "Naake",
 		email = "johannes.rainer@eurac.edu", role = "aut",
 		comment = c(ORCID = "0000-0002-6977-7147")),
     person(given = "Helge", family = "Hecht",
-        email="helge.hecht@recetox.muni.cz", role="ctb"))
-		comment = c(ORCID = "0000-0002-6977-7147")),
+        email="helge.hecht@recetox.muni.cz", role="ctb"),
 	person(given = "Philippine", family = "Louail",
 		email = "philippine.louail@outlook.com", role = "aut",
 		comment = c(ORCID = "0009-0007-5429-6846")))

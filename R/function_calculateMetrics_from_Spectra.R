@@ -367,7 +367,10 @@ transformIntoMzQC <- function(spectra_metrics) {
             metadata = rmzqc::MzQCmetadata$new(
                 label = raw_file,
                 inputFiles = list(rmzqc::MzQCinputFile$new(
-                    basename(raw_file), raw_file, file_format)),
+                    basename(raw_file),
+                    rmzqc::localFileToURI(raw_file),
+                    file_format)
+                ),
                 analysisSoftware = list(software)),
             qualityMetrics = qc_metric_i
         )
@@ -534,7 +537,7 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #' @author Thomas Naake
 #'
 #' @export
-#' @aliases calculateMetrics,Spectra-method calculateMetrics,MsExperiment-method calculateMetrics,Chromatograms-method
+#' @aliases calculateMetrics,Spectra-method calculateMetrics,MsExperiment-method calculateMetrics,Chromatograms-method calculateMetrics,Chromatograms-method
 #'
 #' @importFrom methods setGeneric setMethod
 #' @import msdata

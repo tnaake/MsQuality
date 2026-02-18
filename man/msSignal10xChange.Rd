@@ -66,10 +66,6 @@ equivalent to the TIC.
 
 An attribute containing the PSI:MS term will only be returned if
 \code{msLevel} is 1.
-
-The metric is sensitive to noise. Small oscillations near zero could
-generate many 10x jumps. Consider to add optional smoothing or filtering of
-low-intensity signals.
 }
 \examples{
 library(S4Vectors)
