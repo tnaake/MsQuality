@@ -355,11 +355,11 @@ test_that("calculateMetricsFromMsExperiment", {
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, c(dO[1], dO[2]))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra_filtered), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, c(dO[1], dO[2]))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     expect_equal(colnames(metrics_msexp), colnames_metrics)
     expect_equal(colnames(metrics_msexp_filtered), colnames_metrics)
     expect_equal(as.numeric(metrics_msexp[1, ]),
@@ -387,10 +387,10 @@ test_that("calculateMetricsFromMsExperiment", {
     expect_equal(attr(metrics_msexp_filtered, "names"), NULL)
     expect_equal(attr(metrics_msexp, "chromatographyDuration"), "MS:4000053")
     expect_equal(attr(metrics_msexp_filtered, "chromatographyDuration"),
-                 "MS:4000053")
+        "MS:4000053")
     expect_equal(attr(metrics_msexp, "ticQuantileRtFraction"), "MS:4000183")
     expect_equal(attr(metrics_msexp_filtered, "ticQuantileRtFraction"),
-                 "MS:4000183")
+        "MS:4000183")
     expect_equal(attr(metrics_msexp, "numberSpectra"), "MS:4000059")
     expect_equal(attr(metrics_msexp_filtered, "numberSpectra"), "MS:4000059")
     expect_equal(attr(metrics_msexp, "areaUnderTic"), "MS:4000155")
@@ -436,20 +436,20 @@ test_that("calculateMetrics", {
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra_wrapper), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, c(dO[1], dO[2]))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra_wrapper_filtered), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs,
-        c(dO[1], dO[2]))
+        c(dO_cut[1], dO_cut[2]))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_msexp_wrapper), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, c(dO[1], dO[2]))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_msexp_wrapper_filtered), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, c(dO[1], dO[2]))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     expect_equal(length(metrics_spectra_wrapper), 24)
     expect_equal(length(metrics_spectra_wrapper_filtered), 24)
     expect_equal(length(metrics_msexp_wrapper), 24)
