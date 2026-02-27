@@ -11,6 +11,11 @@ sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
 ## import the data and assign it to the spectra object
 spectra <- Spectra(sciex_file)
 
+## obtain the file paths
+dO <- unique(spectra$dataOrigin)
+dO_cut <- lapply(strsplit(dO, split = "ExperimentHub/"), "[", 2) |>
+    unlist()
+
 ## build the results
 ## define the quality metrics to be calculated
 metrics <- c("chromatographyDuration", "ticQuantileRtFraction",
