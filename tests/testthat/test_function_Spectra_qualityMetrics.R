@@ -1,5 +1,5 @@
 ## create toy example data set (Spectra)
-library(msdata)
+library(MsDataHub)
 library(Spectra)
 ## define file names containing spectra data for the samples
 sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
