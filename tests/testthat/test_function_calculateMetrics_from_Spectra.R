@@ -13,7 +13,8 @@ spectra <- Spectra(sciex_file)
 
 ## obtain the file paths
 dO <- unique(spectra$dataOrigin)
-dO_cut <- lapply(strsplit(dO, split = "ExperimentHub/"), "[", 2) |>
+dO_replaced <- gsub("[\\]", "/", dO)
+dO_cut <- lapply(strsplit(dO_replaced, split = "ExperimentHub/"), "[", 2) |>
     unlist()
 
 ## build the results
@@ -598,7 +599,8 @@ library("rmzqc")
 
 ## calculate the metrics from Spectra
 dO <- unique(spectra$dataOrigin)
-dO_cut <- lapply(strsplit(dO, split = "ExperimentHub/"), "[", 2) |>
+dO_replaced <- gsub("[\\]", "/", dO)
+dO_cut <- lapply(strsplit(dO_replaced, split = "ExperimentHub/"), "[", 2) |>
     unlist()
 spectra_1 <- spectra[spectra$dataOrigin == dO[1], ]
 
