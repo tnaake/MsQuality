@@ -630,11 +630,11 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
     expect_equal(metrics_spectra[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra[[1]]$description,
-        paste("A mzQC document on the sample" dO_cut[1]))
+        paste("A mzQC document on the sample", dO_cut[1]))
     expect_equal(metrics_spectra[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra[[2]]$description,
-        paste("A mzQC document on the sample" dO_cut[2]))
+        paste("A mzQC document on the sample", dO_cut[2]))
 
     ## software
     expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
@@ -860,11 +860,11 @@ test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
     expect_equal(metrics_msexp[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp[[1]]$description,
-        paste("A mzQC document on the sample" dO_cut[1]))
+        paste("A mzQC document on the sample", dO_cut[1]))
     expect_equal(metrics_msexp[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp[[2]]$description,
-        paste("A mzQC document on the sample" dO_cut[2]))
+        paste("A mzQC document on the sample", dO_cut[2]))
 
     ## software
     expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
