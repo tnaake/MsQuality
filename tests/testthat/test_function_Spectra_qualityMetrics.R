@@ -1,8 +1,12 @@
 ## create toy example data set (Spectra)
 library(msdata)
 library(Spectra)
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
-spectra <- Spectra(fls, backend = MsBackendMzR())
+## define file names containing spectra data for the samples
+sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
+
+## import the data and assign it to the spectra object
+spectra <- Spectra(files = sciex_file)
 
 ## create toy example data set (MsExperiment)
 library(msdata)

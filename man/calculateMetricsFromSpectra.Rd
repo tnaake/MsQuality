@@ -73,14 +73,15 @@ zero-length entries, zero-intensity entries, and entries with
 intensities that are \code{Inf} from the \code{Spectra} object.
 }
 \examples{
-library(msdata)
+library(MsDataHub)
 library(Spectra)
 
 ## define file names containing spectra data for the samples
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+   MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
 
-## import the data and add it to the spectra object
-spectra <- Spectra(fls, backend = MsBackendMzR())
+## import the data and assign it to the spectra object
+spectra <- Spectra(sciex_file)
 
 ## define the quality metrics to be calculated
 metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")

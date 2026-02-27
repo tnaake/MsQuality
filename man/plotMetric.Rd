@@ -33,7 +33,7 @@ be selected), the \code{name} column will include the \code{metric}
 (\code{chromatographyDuration}).
 }
 \examples{
-library(msdata)
+library(MsDataHub)
 library(MsExperiment)
 library(S4Vectors)
 msexp <- MsExperiment()
@@ -43,11 +43,12 @@ sampleData(msexp) <- sd
 
 ## define file names containing spectra data for the samples and
 ## add them, along with other arbitrary files to the experiment
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
 
 library(Spectra)
 ## import the data and add it to the msexp object
-spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
+spectra(msexp) <- Spectra(sciex_file)
 
 ## define the quality metrics to be calculated
 metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")

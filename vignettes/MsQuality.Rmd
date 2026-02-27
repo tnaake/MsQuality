@@ -180,14 +180,17 @@ There are several options available to create a `Spectra` object. One way, as
 outlined in the vignette of the `r BiocStyle::Biocpkg("Spectra")` package is
 by specifying the location of mass spectrometry raw files in `mzML`, `mzXML` or
 `CDF` format and using the `MsBackendMzR` backend. Here we load the example
-files from the `sciex` data set of the `msdata` package and create a `Spectra`
+files from the `sciex` data set of the `MsDataHub` package and create a `Spectra`
 object from the two provided `mzML` files. The example is taken from the
 `Spectra` vignette.
 
 ```{r spectra_sciex, eval = FALSE, echo = TRUE}
-## this example is taken from the Spectra vignette
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
-sps_sciex <- Spectra(fls, backend = MsBackendMzR())
+## define file names containing spectra data for the samples
+sciex_file <- unname(c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+    MsDataHub::X20171016_POOL_POS_3_105.134.mzML()))
+
+## import the data and assign it to the spectra object
+sps_sciex <- Spectra(MsBackendMzR(), files = sciex_file)
 ```
 
 The data set consists of a single sample measured in two different
@@ -205,10 +208,12 @@ sd <- DataFrame(sample_id = c("QC1", "QC2"),
     sample_name = c("QC Pool", "QC Pool"),
     injection_idx = c(1, 3))
 sampleData(lmse) <- sd
+
 ## add mzML files to the experiment
 experimentFiles(lmse) <- MsExperimentFiles(mzML_files = fls)
 ## add the Spectra object to the experiment
 spectra(lmse) <- sps_sciex
+
 ## use linkSampleData to establish and define relationships between sample
 ## annotations and MS data
 lmse <- linkSampleData(lmse, with = "experimentFiles.mzML_file",

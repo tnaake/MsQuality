@@ -37,13 +37,17 @@
 #'
 #' @importFrom methods is
 #' @importFrom Spectra Spectra filterIntensity filterEmptySpectra
-#' @import msdata
+#' @import MsDataHub
 #'
 #' @examples
-#' library(msdata)
+#' library(MsDataHub)
 #' library(Spectra)
-#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)[1]
-#' spectra <- Spectra(fls, backend = MsBackendMzR())
+#'
+#' ## define file names containing spectra data for the samples
+#' sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML())
+#'
+#' ## import the data and assign it to the spectra object
+#' spectra <- Spectra(sciex_file)
 #'
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
@@ -175,17 +179,18 @@ calculateMetricsFromOneSampleSpectra <- function(spectra,
 #' @importFrom methods is
 #' @importMethodsFrom Spectra dataOrigin
 #' @importFrom BiocParallel bplapply bpparam
-#' @import msdata
+#' @import MsDataHub
 #'
 #' @examples
-#' library(msdata)
+#' library(MsDataHub)
 #' library(Spectra)
 #'
 #' ## define file names containing spectra data for the samples
-#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+#' sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+#'    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
 #'
-#' ## import the data and add it to the spectra object
-#' spectra <- Spectra(fls, backend = MsBackendMzR())
+#' ## import the data and assign it to the spectra object
+#' spectra <- Spectra(sciex_file)
 #'
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
@@ -301,14 +306,15 @@ calculateMetricsFromSpectra <- function(spectra, metrics,
 #'
 #' @export
 #' @examples
-#' library(msdata)
+#' library(MsDataHub)
 #' library(Spectra)
 #'
 #' ## define file names containing spectra data for the samples
-#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+#' sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+#'    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
 #'
-#' ## import the data and add it to the spectra object
-#' spectra <- Spectra(fls, backend = MsBackendMzR())
+#' ## import the data and assign it to the spectra object
+#' spectra <- Spectra(sciex_file)
 #'
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
@@ -433,10 +439,10 @@ transformIntoMzQC <- function(spectra_metrics) {
 #' @importFrom ProtGenerics spectra
 #' @importFrom MsExperiment MsExperiment sampleData
 #' @importFrom methods is
-#' @import msdata
+#' @import MsDataHub
 #'
 #' @examples
-#' library(msdata)
+#' library(MsDataHub)
 #' library(MsExperiment)
 #' library(S4Vectors)
 #'
@@ -447,10 +453,14 @@ transformIntoMzQC <- function(spectra_metrics) {
 #'
 #' ## define file names containing spectra data for the samples and
 #' ## add them, along with other arbitrary files to the experiment
-#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+#' sciex_file <- unname(c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+#'     MsDataHub::X20171016_POOL_POS_3_105.134.mzML()))
+#'
+#' ## import the data and assign it to the msexp object
 #' experimentFiles(msexp) <- MsExperimentFiles(
-#'     mzML_files = fls,
+#'     mzML_files = sciex_file,
 #'     annotations = "internal_standards.txt")
+#'
 #' ## link samples to data files: first sample to first file in "mzML_files",
 #' ## second sample to second file in "mzML_files"
 #' msexp <- linkSampleData(msexp, with = "experimentFiles.mzML_files",
@@ -459,8 +469,12 @@ transformIntoMzQC <- function(spectra_metrics) {
 #'      sampleIndex = c(1, 2), withIndex = c(1, 1))
 #'
 #' library(Spectra)
-#' ## import the data and add it to the mse object
-#' spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
+#' ## import the data and add it to the msexp object
+#' sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+#'    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
+#'
+#' ## import the data and assign it to the spectra object
+#' spectra(msexp) <- Spectra(sciex_file)
 #'
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
@@ -539,13 +553,18 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #'
 #' @importFrom methods is
 #' @importFrom Spectra Spectra
-#' @import msdata
+#' @import MsDataHub
 #'
 #' @examples
-#' library(msdata)
+#' library(MsDataHub)
 #' library(Spectra)
-#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
-#' spectra <- Spectra(fls, backend = MsBackendMzR())
+#'
+#' ## define file names containing spectra data for the samples
+#' sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+#'    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
+#'
+#' ## import the data and assign it to the spectra object
+#' spectra <- Spectra(sciex_file)
 #'
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")

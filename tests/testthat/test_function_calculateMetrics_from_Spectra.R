@@ -4,8 +4,12 @@
 library("Spectra")
 library("MsExperiment")
 
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
-spectra <- Spectra(fls, backend = MsBackendMzR())
+## define file names containing spectra data for the samples
+sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
+
+## import the data and assign it to the spectra object
+spectra <- Spectra(sciex_file)
 
 ## build the results
 ## define the quality metrics to be calculated
@@ -235,17 +239,13 @@ test_that("calculateMetricsFromSpectra", {
     expect_equal(dim(metrics_spectra), c(2, 12))
     expect_equal(dim(metrics_spectra_filtered), c(2, 12))
     dirs <- unlist(lapply(
-        strsplit(rownames(metrics_spectra), "sciex"), "[", 2))
+        strsplit(rownames(metrics_spectra), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-          "20171016_POOL_POS_3_105-134.mzML"))
+    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
     dirs <- unlist(lapply(
-        strsplit(rownames(metrics_spectra_filtered), "sciex"), "[", 2))
+        strsplit(rownames(metrics_spectra_filtered), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
+    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
     expect_equal(colnames(metrics_spectra), colnames_metrics)
     expect_equal(colnames(metrics_spectra_filtered), colnames_metrics)
     expect_equal(as.numeric(metrics_spectra[1, ]),
@@ -324,9 +324,10 @@ sampleData(msexp) <- sd
 
 ## define file names containing spectra data for the samples and
 ## add them, along with other arbitrary files to the experiment
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
 experimentFiles(msexp) <- MsExperimentFiles(
-    mzML_files = fls,
+    mzML_files = sciex_file,
     annotations = "internal_standards.txt")
 ## link samples to data files: first sample to first file in "mzML_files",
 ## second sample to second file in "mzML_files"
@@ -336,7 +337,7 @@ msexp <- linkSampleData(msexp, with = "experimentFiles.annotations",
     sampleIndex = c(1, 2), withIndex = c(1, 1))
 
 ## import the data and add it to the mse object
-spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
+spectra(msexp) <- Spectra(sciex_file)
 
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
@@ -352,17 +353,13 @@ test_that("calculateMetricsFromMsExperiment", {
     expect_equal(dim(metrics_msexp), c(2, 12))
     expect_equal(dim(metrics_msexp_filtered), c(2, 12))
     dirs <- unlist(lapply(
-        strsplit(rownames(metrics_msexp), "sciex"), "[", 2))
+        strsplit(rownames(metrics_spectra), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
+    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
     dirs <- unlist(lapply(
-        strsplit(rownames(metrics_msexp_filtered), "sciex"), "[", 2))
+        strsplit(rownames(metrics_spectra_filtered), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
+    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
     expect_equal(colnames(metrics_msexp), colnames_metrics)
     expect_equal(colnames(metrics_msexp_filtered), colnames_metrics)
     expect_equal(as.numeric(metrics_msexp[1, ]),
@@ -437,29 +434,22 @@ test_that("calculateMetrics", {
     expect_equal(dim(metrics_msexp_wrapper), c(2, 12))
     expect_equal(dim(metrics_msexp_wrapper_filtered), c(2, 12))
     dirs <- unlist(lapply(
-        strsplit(rownames(metrics_spectra_wrapper), "sciex"), "[", 2))
+        strsplit(rownames(metrics_spectra_wrapper), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
+    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
     dirs <- unlist(lapply(
-        strsplit(rownames(metrics_spectra_wrapper_filtered), "sciex"), "[", 2))
+        strsplit(rownames(metrics_spectra_wrapper_filtered), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
+        c("c6b05d0be8e8_7859", "c6b059907091_7860"))
     dirs <- unlist(lapply(
-        strsplit(rownames(metrics_msexp_wrapper), "sciex"), "[", 2))
+        strsplit(rownames(metrics_msexp_wrapper), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
+    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
     dirs <- unlist(lapply(
-        strsplit(rownames(metrics_msexp_wrapper_filtered), "sciex"), "[", 2))
+        strsplit(rownames(metrics_msexp_wrapper_filtered), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
+    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
     expect_equal(length(metrics_spectra_wrapper), 24)
     expect_equal(length(metrics_spectra_wrapper_filtered), 24)
     expect_equal(length(metrics_msexp_wrapper), 24)
@@ -623,9 +613,10 @@ test_that("calculateMetricsFromOneSampleSpectra, format = 'mzQC'.", {
 ## calculate the metrics from Spectra
 test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
 
-   metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra,
+   metrics_spectra <- suppressWarnings(
+       calculateMetricsFromSpectra(spectra = spectra,
             metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
-            relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC")
+            relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC"))
 
     expect_equal(length(metrics_spectra), 2)
     expect_equal(is(metrics_spectra[[1]]), c("MzQCmzQC", "oldClass"))
@@ -637,11 +628,11 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
     expect_equal(metrics_spectra[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra[[1]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
+        "A mzQC document on the sample c6b05d0be8e8_7859")
     expect_equal(metrics_spectra[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra[[2]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
+        "A mzQC document on the sample c6b059907091_7860")
 
     ## software
     expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
@@ -831,10 +822,13 @@ sampleData(msexp) <- sd
 
 ## define file names containing spectra data for the samples and
 ## add them, along with other arbitrary files to the experiment
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
+
 experimentFiles(msexp) <- MsExperimentFiles(
-    mzML_files = fls,
+    mzML_files = sciex_file,
     annotations = "internal_standards.txt")
+
 ## link samples to data files: first sample to first file in "mzML_files",
 ## second sample to second file in "mzML_files"
 msexp <- linkSampleData(msexp, with = "experimentFiles.mzML_files",
@@ -843,7 +837,7 @@ msexp <- linkSampleData(msexp, with = "experimentFiles.annotations",
     sampleIndex = c(1, 2), withIndex = c(1, 1))
 
 ## import the data and add it to the mse object
-spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
+spectra(msexp) <- Spectra(sciex_file)
 
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
@@ -864,11 +858,11 @@ test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
     expect_equal(metrics_msexp[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp[[1]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
+        "A mzQC document on the sample c6b05d0be8e8_7859")
     expect_equal(metrics_msexp[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp[[2]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
+        "A mzQC document on the sample c6b059907091_7860")
 
     ## software
     expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
@@ -1073,11 +1067,11 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     expect_equal(metrics_spectra_wrapper[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra_wrapper[[1]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
+        "A mzQC document on the sample c6b05d0be8e8_7859")
     expect_equal(metrics_spectra_wrapper[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra_wrapper[[2]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
+        "A mzQC document on the sample c6b059907091_7860")
 
     ## software
     expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
@@ -1268,11 +1262,11 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     expect_equal(metrics_msexp_wrapper[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp_wrapper[[1]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
+        "A mzQC document on the sample c6b05d0be8e8_7859")
     expect_equal(metrics_msexp_wrapper[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp_wrapper[[2]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
+        "A mzQC document on the sample c6b059907091_7860")
 
     ## software
     expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
@@ -1453,8 +1447,12 @@ test_that("calculateMetrics, format = 'mzQC'.", {
 })
 
 test_that("transformIntoMzQC has URIs", {
-    fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
-    spectra <- Spectra(fls, backend = MsBackendMzR())
+    ## define file names containing spectra data for the samples
+    sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+        MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
+
+    ## import the data and assign it to the spectra object
+    spectra <- Spectra(sciex_file)
 
     suppressWarnings(
         metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra,

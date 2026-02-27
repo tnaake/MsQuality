@@ -35,7 +35,7 @@
 #' @export
 #'
 #' @examples
-#' library(msdata)
+#' library(MsDataHub)
 #' library(MsExperiment)
 #' library(S4Vectors)
 #' msexp <- MsExperiment()
@@ -45,11 +45,12 @@
 #'
 #' ## define file names containing spectra data for the samples and
 #' ## add them, along with other arbitrary files to the experiment
-#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+#' sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+#'     MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
 #'
 #' library(Spectra)
 #' ## import the data and add it to the msexp object
-#' spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
+#' spectra(msexp) <- Spectra(sciex_file)
 #'
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
@@ -120,7 +121,7 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
 #' @export
 #'
 #' @examples
-#' library(msdata)
+#' library(MsDataHub)
 #' library(MsExperiment)
 #' library(S4Vectors)
 #' msexp <- MsExperiment()
@@ -130,10 +131,14 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
 #'
 #' ## define file names containing spectra data for the samples and
 #' ## add them, along with other arbitrary files to the experiment
-#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+#' ## define file names containing spectra data for the samples
+#' sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+#'     MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
+#'
 #' experimentFiles(msexp) <- MsExperimentFiles(
-#'     mzML_files = fls,
+#'     mzML_files = sciex_file,
 #'     annotations = "internal_standards.txt")
+#'
 #' ## link samples to data files: first sample to first file in "mzML_files",
 #' ## second sample to second file in "mzML_files"
 #' msexp <- linkSampleData(msexp, with = "experimentFiles.mzML_files",
@@ -143,7 +148,7 @@ plotMetric <- function(qc, metric = "areaUnderTic", plotly = TRUE) {
 #'
 #' library(Spectra)
 #' ## import the data and add it to the mse object
-#' spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
+#' spectra(msexp) <- Spectra(sciex_file)
 #'
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
@@ -218,7 +223,7 @@ plotMetricTibble <- function(qc, metric) {
 #' @importFrom stringr str_split
 #'
 #' @examples
-#' library(msdata)
+#' library(MsDataHub)
 #' library(MsExperiment)
 #' library(S4Vectors)
 #' msexp <- MsExperiment()
@@ -228,9 +233,12 @@ plotMetricTibble <- function(qc, metric) {
 #'
 #' ## define file names containing spectra data for the samples and
 #' ## add them, along with other arbitrary files to the experiment
-#' fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+#' ## define file names containing spectra data for the samples
+#' sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+#'     MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
+#'
 #' experimentFiles(msexp) <- MsExperimentFiles(
-#'     mzML_files = fls,
+#'     mzML_files = sciex_file,
 #'     annotations = "internal_standards.txt")
 #' ## link samples to data files: first sample to first file in "mzML_files",
 #' ## second sample to second file in "mzML_files"
@@ -241,7 +249,7 @@ plotMetricTibble <- function(qc, metric) {
 #'
 #' library(Spectra)
 #' ## import the data and add it to the mse object
-#' spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
+#' spectra(msexp) <- Spectra(sciex_file)
 #'
 #' ## define the quality metrics to be calculated
 #' metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
