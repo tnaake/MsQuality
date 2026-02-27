@@ -241,11 +241,11 @@ test_that("calculateMetricsFromSpectra", {
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
+    expect_equal(dirs, c(dO[1], dO[2]))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra_filtered), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
+    expect_equal(dirs, c(dO[1], dO[2]))
     expect_equal(colnames(metrics_spectra), colnames_metrics)
     expect_equal(colnames(metrics_spectra_filtered), colnames_metrics)
     expect_equal(as.numeric(metrics_spectra[1, ]),
@@ -355,11 +355,11 @@ test_that("calculateMetricsFromMsExperiment", {
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
+    expect_equal(dirs, c(dO[1], dO[2]))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra_filtered), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
+    expect_equal(dirs, c(dO[1], dO[2]))
     expect_equal(colnames(metrics_msexp), colnames_metrics)
     expect_equal(colnames(metrics_msexp_filtered), colnames_metrics)
     expect_equal(as.numeric(metrics_msexp[1, ]),
@@ -436,20 +436,20 @@ test_that("calculateMetrics", {
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra_wrapper), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
+    expect_equal(dirs, c(dO[1], dO[2]))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra_wrapper_filtered), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs,
-        c("c6b05d0be8e8_7859", "c6b059907091_7860"))
+        c(dO[1], dO[2]))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_msexp_wrapper), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
+    expect_equal(dirs, c(dO[1], dO[2]))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_msexp_wrapper_filtered), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs, c("c6b05d0be8e8_7859", "c6b059907091_7860"))
+    expect_equal(dirs, c(dO[1], dO[2]))
     expect_equal(length(metrics_spectra_wrapper), 24)
     expect_equal(length(metrics_spectra_wrapper_filtered), 24)
     expect_equal(length(metrics_msexp_wrapper), 24)
@@ -593,6 +593,8 @@ library("rmzqc")
 
 ## calculate the metrics from Spectra
 dO <- unique(spectra$dataOrigin)
+dO_cut <- lapply(strsplit(dO, split = "ExperimentHub/"), "[", 2) |>
+    unlist()
 spectra_1 <- spectra[spectra$dataOrigin == dO[1], ]
 
 ## START unit test calculateMetricsFromOneSampleSpectra ##
@@ -628,11 +630,11 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
     expect_equal(metrics_spectra[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra[[1]]$description,
-        "A mzQC document on the sample c6b05d0be8e8_7859")
+        paste("A mzQC document on the sample" dO_cut[1]))
     expect_equal(metrics_spectra[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra[[2]]$description,
-        "A mzQC document on the sample c6b059907091_7860")
+        paste("A mzQC document on the sample" dO_cut[2]))
 
     ## software
     expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
@@ -858,11 +860,11 @@ test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
     expect_equal(metrics_msexp[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp[[1]]$description,
-        "A mzQC document on the sample c6b05d0be8e8_7859")
+        paste("A mzQC document on the sample" dO_cut[1]))
     expect_equal(metrics_msexp[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp[[2]]$description,
-        "A mzQC document on the sample c6b059907091_7860")
+        paste("A mzQC document on the sample" dO_cut[2]))
 
     ## software
     expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
@@ -1067,11 +1069,11 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     expect_equal(metrics_spectra_wrapper[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra_wrapper[[1]]$description,
-        "A mzQC document on the sample c6b05d0be8e8_7859")
+        paste("A mzQC document on the sample" dO_cut[1]))
     expect_equal(metrics_spectra_wrapper[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra_wrapper[[2]]$description,
-        "A mzQC document on the sample c6b059907091_7860")
+        paste("A mzQC document on the sample" dO_cut[2]))
 
     ## software
     expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
@@ -1262,11 +1264,11 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     expect_equal(metrics_msexp_wrapper[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp_wrapper[[1]]$description,
-        "A mzQC document on the sample c6b05d0be8e8_7859")
+        paste("A mzQC document on the sample" dO_cut[1]))
     expect_equal(metrics_msexp_wrapper[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp_wrapper[[2]]$description,
-        "A mzQC document on the sample c6b059907091_7860")
+        paste("A mzQC document on the sample" dO_cut[2]))
 
     ## software
     expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
