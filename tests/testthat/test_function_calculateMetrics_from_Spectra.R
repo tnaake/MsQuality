@@ -13,11 +13,7 @@ spectra <- Spectra(sciex_file)
 
 ## obtain the file paths
 dO <- unique(spectra$dataOrigin)
-#dO_replaced <- gsub("[\\\\]", "/", dO)
-#dO_replaced <- gsub("[\\]", "/", dO_replaced)
 dO_cut <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", dO)
-#dO_cut <- lapply(strsplit(dO_replaced, split = "ExperimentHub/"), "[", 2) |>
-#    unlist()
 
 ## build the results
 ## define the quality metrics to be calculated
@@ -247,14 +243,8 @@ test_that("calculateMetricsFromSpectra", {
     expect_equal(dim(metrics_spectra), c(2, 12))
     expect_equal(dim(metrics_spectra_filtered), c(2, 12))
     dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra))
-    #dirs <- unlist(lapply(
-    #    strsplit(rownames(metrics_spectra), "ExperimentHub/"), "[", 2))
-    #dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra_filtered))
-    #dirs <- unlist(lapply(
-    #    strsplit(rownames(metrics_spectra_filtered), "ExperimentHub/"), "[", 2))
-    #dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     expect_equal(colnames(metrics_spectra), colnames_metrics)
     expect_equal(colnames(metrics_spectra_filtered), colnames_metrics)
@@ -363,13 +353,9 @@ test_that("calculateMetricsFromMsExperiment", {
     expect_equal(dim(metrics_msexp), c(2, 12))
     expect_equal(dim(metrics_msexp_filtered), c(2, 12))
     dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra))
-    #dirs <- unlist(lapply(
-    #    strsplit(rownames(metrics_spectra), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra_filtered))
-    #dirs <- unlist(lapply(
-    #    strsplit(rownames(metrics_spectra_filtered), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     expect_equal(colnames(metrics_msexp), colnames_metrics)
@@ -446,28 +432,12 @@ test_that("calculateMetrics", {
     expect_equal(dim(metrics_msexp_wrapper), c(2, 12))
     expect_equal(dim(metrics_msexp_wrapper_filtered), c(2, 12))
     dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra_wrapper))
-
-#    dirs <- unlist(lapply(
- #       strsplit(rownames(metrics_spectra_wrapper), "ExperimentHub/"), "[", 2))
- #   dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra_wrapper_filtered))
-
-    #dirs <- unlist(lapply(
-    #    strsplit(rownames(metrics_spectra_wrapper_filtered), "ExperimentHub/"), "[", 2))
- #   dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_msexp_wrapper))
-
-    #dirs <- unlist(lapply(
-    #    strsplit(rownames(metrics_msexp_wrapper), "ExperimentHub/"), "[", 2))
-    #dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_msexp_wrapper_filtered))
-
-    #dirs <- unlist(lapply(
-    #    strsplit(rownames(metrics_msexp_wrapper_filtered), "ExperimentHub/"), "[", 2))
-    #dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     expect_equal(length(metrics_spectra_wrapper), 24)
     expect_equal(length(metrics_spectra_wrapper_filtered), 24)
@@ -613,9 +583,6 @@ library("rmzqc")
 ## calculate the metrics from Spectra
 dO <- unique(spectra$dataOrigin)
 dO_cut <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", dO)
-#dO_replaced <- gsub("[\\]", "/", dO)
-#dO_cut <- lapply(strsplit(dO_replaced, split = "ExperimentHub/"), "[", 2) |>
-#    unlist()
 spectra_1 <- spectra[spectra$dataOrigin == dO[1], ]
 
 ## START unit test calculateMetricsFromOneSampleSpectra ##
