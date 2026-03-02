@@ -441,13 +441,17 @@ test_that("calculateMetrics", {
     expect_equal(dim(metrics_spectra_wrapper_filtered), c(2, 12))
     expect_equal(dim(metrics_msexp_wrapper), c(2, 12))
     expect_equal(dim(metrics_msexp_wrapper_filtered), c(2, 12))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_spectra_wrapper), "ExperimentHub/"), "[", 2))
-    dirs <- gsub("[\\]|[/]", "", dirs)
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra_wrapper))
+
+#    dirs <- unlist(lapply(
+ #       strsplit(rownames(metrics_spectra_wrapper), "ExperimentHub/"), "[", 2))
+ #   dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_spectra_wrapper_filtered), "ExperimentHub/"), "[", 2))
-    dirs <- gsub("[\\]|[/]", "", dirs)
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra_wrapper_filtered))
+
+    #dirs <- unlist(lapply(
+    #    strsplit(rownames(metrics_spectra_wrapper_filtered), "ExperimentHub/"), "[", 2))
+ #   dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs,
         c(dO_cut[1], dO_cut[2]))
     dirs <- unlist(lapply(
