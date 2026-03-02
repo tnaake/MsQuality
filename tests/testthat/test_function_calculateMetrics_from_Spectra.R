@@ -13,6 +13,7 @@ spectra <- Spectra(sciex_file)
 
 ## obtain the file paths
 dO <- unique(spectra$dataOrigin)
+stop(dO)
 dO_replaced <- gsub("[\\]", "/", dO)
 dO_cut <- lapply(strsplit(dO_replaced, split = "ExperimentHub/"), "[", 2) |>
     unlist()
@@ -247,7 +248,7 @@ test_that("calculateMetricsFromSpectra", {
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra), "ExperimentHub/"), "[", 2))
     #dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal("a", c(dO_cut[1], dO_cut[2]))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     dirs <- unlist(lapply(
         strsplit(rownames(metrics_spectra_filtered), "ExperimentHub/"), "[", 2))
     dirs <- gsub("[\\]|[/]", "", dirs)
