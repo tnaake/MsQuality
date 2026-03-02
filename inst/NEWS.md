@@ -1,5 +1,10 @@
 # MsQuality 1.11
 
+## Changes in version 1.11.2 (2026-03-02)
+
+- replace msdata by MsDataHub package (issue #19)
+- adjust all examples, unit tests and vignette to the MsDataHub package
+
 ## Changes in version 1.11.1 (2026-02-17)
 
 - added conversion to uri from local file to the export function in
