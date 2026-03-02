@@ -452,15 +452,18 @@ test_that("calculateMetrics", {
     #dirs <- unlist(lapply(
     #    strsplit(rownames(metrics_spectra_wrapper_filtered), "ExperimentHub/"), "[", 2))
  #   dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c(dO_cut[1], dO_cut[2]))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_msexp_wrapper), "ExperimentHub/"), "[", 2))
-    dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_msexp_wrapper_filtered), "ExperimentHub/"), "[", 2))
-    dirs <- gsub("[\\]|[/]", "", dirs)
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_msexp_wrapper))
+
+    #dirs <- unlist(lapply(
+    #    strsplit(rownames(metrics_msexp_wrapper), "ExperimentHub/"), "[", 2))
+    #dirs <- gsub("[\\]|[/]", "", dirs)
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_msexp_wrapper_filtered))
+
+    #dirs <- unlist(lapply(
+    #    strsplit(rownames(metrics_msexp_wrapper_filtered), "ExperimentHub/"), "[", 2))
+    #dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     expect_equal(length(metrics_spectra_wrapper), 24)
     expect_equal(length(metrics_spectra_wrapper_filtered), 24)
