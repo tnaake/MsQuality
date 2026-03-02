@@ -246,13 +246,15 @@ test_that("calculateMetricsFromOneSampleSpectra", {
 test_that("calculateMetricsFromSpectra", {
     expect_equal(dim(metrics_spectra), c(2, 12))
     expect_equal(dim(metrics_spectra_filtered), c(2, 12))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_spectra), "ExperimentHub/"), "[", 2))
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra))
+    #dirs <- unlist(lapply(
+    #    strsplit(rownames(metrics_spectra), "ExperimentHub/"), "[", 2))
     #dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_spectra_filtered), "ExperimentHub/"), "[", 2))
-    dirs <- gsub("[\\]|[/]", "", dirs)
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra_filtered))
+    #dirs <- unlist(lapply(
+    #    strsplit(rownames(metrics_spectra_filtered), "ExperimentHub/"), "[", 2))
+    #dirs <- gsub("[\\]|[/]", "", dirs)
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     expect_equal(colnames(metrics_spectra), colnames_metrics)
     expect_equal(colnames(metrics_spectra_filtered), colnames_metrics)
