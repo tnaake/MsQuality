@@ -13,7 +13,8 @@ spectra <- Spectra(sciex_file)
 
 ## obtain the file paths
 dO <- unique(spectra$dataOrigin)
-dO_replaced <- gsub("[\\]|[\]", "/", dO)
+dO_replaced <- gsub("[\\\\]", "/", dO)
+dO_replaced <- gsub("[\\]", "/", dO_replaced)
 dO_cut <- lapply(strsplit(dO_replaced, split = "ExperimentHub/"), "[", 2) |>
     unlist()
 
