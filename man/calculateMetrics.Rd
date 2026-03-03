@@ -68,10 +68,15 @@ For \code{Chromatograms} objects, the argument \code{filterEmptyObject}
 is interpreted as \code{filterEmptyChromatograms}.
 }
 \examples{
-library(msdata)
+library(MsDataHub)
 library(Spectra)
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
-spectra <- Spectra(fls, backend = MsBackendMzR())
+
+## define file names containing spectra data for the samples
+sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+   MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
+
+## import the data and assign it to the spectra object
+spectra <- Spectra(sciex_file)
 
 ## define the quality metrics to be calculated
 metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")

@@ -1,7 +1,11 @@
 ## create test sets for test_function_Spectra_metrics.R
 ## create toy example data set
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
-sps_sciex <- Spectra(fls, backend = MsBackendMzR())
+## define file names containing spectra data for the samples
+sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
+
+## import the data and assign it to the spectra object
+sps_sciex <- Spectra(sciex_file)
 set.seed(1)
 
 ## add some fake charges

@@ -1,6 +1,6 @@
 # MsQuality 1.11
 
-## 1.11.2 (2026-02-18)
+## 1.11.3
 
 - Implementation of metrics for Chromatograms objects
 - Created S4 generic functions and methods for shared metrics:
@@ -20,6 +20,10 @@
 Fixed `shinyMsQuality()` documentation example to convert data.frame to matrix
   before passing to `shinyMsQuality()` function.-
 
+## Changes in version 1.11.2 (2026-03-02)
+
+- replace msdata by MsDataHub package (issue #19)
+- adjust all examples, unit tests and vignette to the MsDataHub package
 
 ## Changes in version 1.11.1 (2026-02-17)
 
@@ -40,7 +44,8 @@ Fixed `shinyMsQuality()` documentation example to convert data.frame to matrix
 
 - resolve NAMESPACE issue of unexported objects
 
-## Changes in version 1.9.1
+## Changes in version 1.9.1 (2025-07-30)
+
 - fix bug due to update in rmzqc package, use $new for constructing
   R6 objects
 

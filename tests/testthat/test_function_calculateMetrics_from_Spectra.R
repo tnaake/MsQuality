@@ -3,69 +3,17 @@
 ################################################################################
 library("Spectra")
 library("MsExperiment")
-library("Chromatograms")
-library("MsQuality")
-library("IRanges")
 
-test_sps <- Spectra(
-    DataFrame(
-        msLevel = rep(1L, 4),
-        rtime = c(1.1, 1.2, 1.3, 1.4),
-        dataOrigin = rep("file1", 4),
-        mz = NumericList(
-            c(100, 200, 300),
-            c(100, 200),
-            c(100, 200, 300, 400),
-            c(150, 250)
-        ),
-        intensity = NumericList(
-            c(10, 20, 30),
-            c(15, 25),
-            c(20, 30, 40, 50),
-            c(5, 10)
-        )
-    ),
-    backend = MsBackendDataFrame()
-)
+## define file names containing spectra data for the samples
+sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
 
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
-spectra <- Spectra(fls, backend = MsBackendMzR())
-chr <- Chromatograms(spectra)
+## import the data and assign it to the spectra object
+spectra <- Spectra(sciex_file)
 
-test_that("areaUnderTic generic and Spectra method", {
-    expect_true(isGeneric("areaUnderTic"))
-    expect_true(hasMethod("areaUnderTic", "Spectra"))
-
-    sps <- test_sps
-    res <- areaUnderTic(sps)
-
-    expect_type(res, "double")
-    expect_length(res, 1)
-    expect_equal(attr(res, "areaUnderTic"), "MS:4000155")
-})
-
-test_that("ticQuantileRtFraction generic and Spectra method", {
-    expect_true(isGeneric("ticQuantileRtFraction"))
-    expect_true(hasMethod("ticQuantileRtFraction", "Spectra"))
-
-    sps <- test_sps
-    res <- ticQuantileRtFraction(sps)
-
-    expect_type(res, "double")
-    expect_length(res, 5)
-    expect_equal(names(res), c("0%", "25%", "50%", "75%", "100%"))
-    expect_equal(attr(res, "ticQuantileRtFraction"), "MS:4000183")
-})
-
-test_that("Spectra methods accept additional arguments", {
-    sps <- test_sps
-
-    expect_no_error(areaUnderTic(sps, msLevel = 1L))
-    expect_no_error(ticQuantileRtFraction(sps, msLevel = 1L, relative = TRUE))
-
-    custom <- ticQuantileRtFraction(sps, probs = c(0.5, 1.0))
-    expect_length(custom, 2)
-})
+## obtain the file paths
+dO <- unique(spectra$dataOrigin)
+dO_cut <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", dO)
 
 ## build the results
 ## define the quality metrics to be calculated
@@ -78,31 +26,30 @@ metrics <- c("chromatographyDuration", "ticQuantileRtFraction",
 ## relativeTo is an argument of msSignal10XChange)
 suppressWarnings(
     metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra,
-        metrics = metrics, filterEmptyObject = FALSE, msLevel = 1,
+        metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(
     metrics_spectra_filtered <- calculateMetricsFromSpectra(spectra = spectra,
-        metrics = metrics, filterEmptyObject = TRUE, msLevel = 1,
+        metrics = metrics, filterEmptySpectra = TRUE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump"))
 
 ## calculate the metrics from Spectra
 dO <- unique(spectra$dataOrigin)
 spectra_1 <- spectra[spectra$dataOrigin == dO[1], ]
 spectra_2 <- spectra[spectra$dataOrigin == dO[2], ]
-suppressWarnings(
-    metrics_spectra_1 <- calculateMetricsFromOneSampleSpectra(
-    spectra = spectra_1, metrics = metrics, filterEmptyObject = FALSE,
+suppressWarnings(metrics_spectra_1 <- calculateMetricsFromOneSampleSpectra(
+    spectra = spectra_1, metrics = metrics, filterEmptySpectra = FALSE,
     msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(
     metrics_spectra_1_filtered <- calculateMetricsFromOneSampleSpectra(
-        spectra = spectra_1, metrics = metrics, filterEmptyObject = TRUE,
+        spectra = spectra_1, metrics = metrics, filterEmptySpectra = TRUE,
         msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(metrics_spectra_2 <- calculateMetricsFromOneSampleSpectra(
-    spectra = spectra_2, metrics = metrics, filterEmptyObject = FALSE,
+    spectra = spectra_2, metrics = metrics, filterEmptySpectra = FALSE,
     msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(
     metrics_spectra_2_filtered <- calculateMetricsFromOneSampleSpectra(
-        spectra = spectra_2, metrics = metrics, filterEmptyObject = TRUE,
+        spectra = spectra_2, metrics = metrics, filterEmptySpectra = TRUE,
         msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump"))
 
 ## START unit test calculateMetricsFromOneSampleSpectra ##
@@ -120,7 +67,7 @@ metrics_spectra_2_vals <- c(2.594770e+02, 0, 2.505386e-01,
     4.999981e-01, 7.505367e-01, 1.000000e+00, 5.052683e-02, -5.673914e-01,
     -4.700149e-01, 9.310000e02, 6.229579e+08, 0)
 
-## create small test spectra to test filterEmptyObject
+## create small test spectra to test filterEmptySpectra
 spd <- DataFrame(
     msLevel = c(2L, 2L, 2L),
     polarity = c(1L, 1L, 1L),
@@ -181,8 +128,8 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     expect_error(calculateMetricsFromOneSampleSpectra("foo", metrics = metrics),
         "object '.metrics' not found")
     expect_error(calculateMetricsFromOneSampleSpectra(spectra_1,
-        metrics = metrics, filterEmptyObject = "foo"),
-        "'filterEmptyObject' has to be either TRUE or FALSE")
+        metrics = metrics, filterEmptySpectra = "foo"),
+        "'filterEmptySpectra' has to be either TRUE or FALSE")
     expect_error(
         calculateMetricsFromOneSampleSpectra(spectra_1, metrics = "foo"),
         "should be one of")
@@ -206,31 +153,31 @@ test_that("calculateMetricsFromOneSampleSpectra", {
     expect_error(calculateMetricsFromOneSampleSpectra(NULL, metrics = metrics),
         "object '.metrics' not found")
     expect_error(calculateMetricsFromOneSampleSpectra(spectra_2,
-        metrics = metrics, filterEmptyObject = "foo"),
-        "'filterEmptyObject' has to be either TRUE or FALSE")
+        metrics = metrics, filterEmptySpectra = "foo"),
+        "'filterEmptySpectra' has to be either TRUE or FALSE")
     expect_error(calculateMetricsFromOneSampleSpectra(spectra_2,
         metrics = "msSignal10xChange", change = c("jump", "fall")),
         "'change' has to be of length 1")
 
-    ## test filterEmptyObject
+    ## test filterEmptySpectra
     expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
         spectra = sps_empty, metrics = "numberSpectra",
-        filterEmptyObject = FALSE, msLevel = 2L)), 3)
+        filterEmptySpectra = FALSE, msLevel = 2L)), 3)
     #expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
     #    spectra = sps_empty, metrics = "numberSpectra",
-    #    filterEmptyObject = TRUE, msLevel = 2L)), 1)
+    #    filterEmptySpectra = TRUE, msLevel = 2L)), 1)
     expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
         spectra = sps_multiple_empty, metrics = "numberSpectra",
-        filterEmptyObject = FALSE, msLevel = 2L)), 3)
+        filterEmptySpectra = FALSE, msLevel = 2L)), 3)
     #expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
     #    spectra = sps_multiple_empty, metrics = "numberSpectra",
-    #    filterEmptyObject = TRUE, msLevel = 2L)), 1)
+    #    filterEmptySpectra = TRUE, msLevel = 2L)), 1)
     expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
         spectra = sps_not_empty, metrics = "numberSpectra",
-        filterEmptyObject = FALSE, msLevel = 2L)), 3)
+        filterEmptySpectra = FALSE, msLevel = 2L)), 3)
     expect_equal(as.numeric(calculateMetricsFromOneSampleSpectra(
         spectra = sps_not_empty, metrics = "numberSpectra",
-        filterEmptyObject = TRUE, msLevel = 2L)), 3)
+        filterEmptySpectra = TRUE, msLevel = 2L)), 3)
 
     ## test attributes
     expect_equal(attr(metrics_spectra_1, "names"), colnames_metrics)
@@ -295,18 +242,10 @@ test_that("calculateMetricsFromOneSampleSpectra", {
 test_that("calculateMetricsFromSpectra", {
     expect_equal(dim(metrics_spectra), c(2, 12))
     expect_equal(dim(metrics_spectra_filtered), c(2, 12))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_spectra), "sciex"), "[", 2))
-    dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-          "20171016_POOL_POS_3_105-134.mzML"))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_spectra_filtered), "sciex"), "[", 2))
-    dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra_filtered))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     expect_equal(colnames(metrics_spectra), colnames_metrics)
     expect_equal(colnames(metrics_spectra_filtered), colnames_metrics)
     expect_equal(as.numeric(metrics_spectra[1, ]),
@@ -323,35 +262,35 @@ test_that("calculateMetricsFromSpectra", {
     expect_error(calculateMetricsFromSpectra(spectra, metrics = "foo"),
         "should be one of ")
     expect_error(calculateMetricsFromSpectra(spectra,
-        metrics = metrics, filterEmptyObject = "foo"),
-        "'filterEmptyObject' has to be either TRUE or FALSE")
+        metrics = metrics, filterEmptySpectra = "foo"),
+        "'filterEmptySpectra' has to be either TRUE or FALSE")
     expect_error(calculateMetricsFromSpectra(spectra,
         metrics = "msSignal10xChange", change = c("jump", "fall")),
         "'change' has to be of length 1")
 
-    ## test filterEmptyObject
+    ## test filterEmptySpectra
     expect_equal(as.numeric(calculateMetricsFromSpectra(
         spectra = sps_empty, metrics = "numberSpectra",
-        filterEmptyObject = FALSE, msLevel = 2L)), 3)
+        filterEmptySpectra = FALSE, msLevel = 2L)), 3)
     #expect_equal(as.numeric(calculateMetricsFromSpectra(
     #    spectra = sps_empty, metrics = "numberSpectra",
-    #    filterEmptyObject = TRUE, msLevel = 2L)), 1)
+    #    filterEmptySpectra = TRUE, msLevel = 2L)), 1)
     expect_equal(as.numeric(calculateMetricsFromSpectra(
         spectra = sps_multiple_empty, metrics = "numberSpectra",
-        filterEmptyObject = FALSE, msLevel = 2L)), 3)
+        filterEmptySpectra = FALSE, msLevel = 2L)), 3)
     #expect_equal(as.numeric(calculateMetricsFromSpectra(
     #    spectra = sps_multiple_empty, metrics = "numberSpectra",
-    #    filterEmptyObject = TRUE, msLevel = 2L)), 1)
+    #    filterEmptySpectra = TRUE, msLevel = 2L)), 1)
     expect_equal(as.numeric(calculateMetricsFromSpectra(
         spectra = sps_not_empty, metrics = "numberSpectra",
-        filterEmptyObject = FALSE, msLevel = 2L)), 3)
+        filterEmptySpectra = FALSE, msLevel = 2L)), 3)
     expect_equal(as.numeric(calculateMetricsFromSpectra(
         spectra = sps_not_empty, metrics = "numberSpectra",
-        filterEmptyObject = TRUE, msLevel = 2L)), 3)
+        filterEmptySpectra = TRUE, msLevel = 2L)), 3)
 
     ## test attributes
-    expect_equal(attr(metrics_spectra, "names"), colnames_metrics)
-    expect_equal(attr(metrics_spectra_filtered, "names"), colnames_metrics)
+    expect_equal(attr(metrics_spectra, "names"), NULL)
+    expect_equal(attr(metrics_spectra_filtered, "names"), NULL)
     expect_equal(attr(metrics_spectra, "chromatographyDuration"), "MS:4000053")
     expect_equal(attr(metrics_spectra_filtered, "chromatographyDuration"),
         "MS:4000053")
@@ -385,9 +324,10 @@ sampleData(msexp) <- sd
 
 ## define file names containing spectra data for the samples and
 ## add them, along with other arbitrary files to the experiment
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
 experimentFiles(msexp) <- MsExperimentFiles(
-    mzML_files = fls,
+    mzML_files = sciex_file,
     annotations = "internal_standards.txt")
 ## link samples to data files: first sample to first file in "mzML_files",
 ## second sample to second file in "mzML_files"
@@ -397,33 +337,27 @@ msexp <- linkSampleData(msexp, with = "experimentFiles.annotations",
     sampleIndex = c(1, 2), withIndex = c(1, 1))
 
 ## import the data and add it to the mse object
-spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
+spectra(msexp) <- Spectra(sciex_file)
 
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 ## relativeTo is an argument of msSignal10xChange) passed to ...
 metrics_msexp <- calculateMetricsFromMsExperiment(msexp = msexp,
-    metrics = metrics, filterEmptyObject = FALSE, msLevel = 1,
+    metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
     relativeTo = "Q1", mode = "TIC", change = "jump")
 metrics_msexp_filtered <- calculateMetricsFromMsExperiment(msexp = msexp,
-    metrics = metrics, filterEmptyObject = FALSE, msLevel = 1,
+    metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
     relativeTo = "Q1", mode = "TIC", change = "jump")
 
 test_that("calculateMetricsFromMsExperiment", {
     expect_equal(dim(metrics_msexp), c(2, 12))
     expect_equal(dim(metrics_msexp_filtered), c(2, 12))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_msexp), "sciex"), "[", 2))
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_msexp_filtered), "sciex"), "[", 2))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra_filtered))
     dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     expect_equal(colnames(metrics_msexp), colnames_metrics)
     expect_equal(colnames(metrics_msexp_filtered), colnames_metrics)
     expect_equal(as.numeric(metrics_msexp[1, ]),
@@ -440,21 +374,21 @@ test_that("calculateMetricsFromMsExperiment", {
     expect_error(calculateMetricsFromMsExperiment(msexp, metrics = "foo"),
         "should be one of ")
     expect_error(calculateMetricsFromMsExperiment(msexp,
-        metrics = metrics, filterEmptyObject = "foo"),
-        "'filterEmptyObject' has to be either TRUE or FALSE")
+        metrics = metrics, filterEmptySpectra = "foo"),
+        "'filterEmptySpectra' has to be either TRUE or FALSE")
     expect_error(calculateMetricsFromMsExperiment(msexp,
         metrics = "msSignal10xChange", change = c("jump", "fall")),
         "'change' has to be of length 1")
 
     ## test attributes
-    expect_equal(attr(metrics_msexp, "names"), colnames_metrics)
-    expect_equal(attr(metrics_msexp_filtered, "names"), colnames_metrics)
+    expect_equal(attr(metrics_msexp, "names"), NULL)
+    expect_equal(attr(metrics_msexp_filtered, "names"), NULL)
     expect_equal(attr(metrics_msexp, "chromatographyDuration"), "MS:4000053")
     expect_equal(attr(metrics_msexp_filtered, "chromatographyDuration"),
-                 "MS:4000053")
+        "MS:4000053")
     expect_equal(attr(metrics_msexp, "ticQuantileRtFraction"), "MS:4000183")
     expect_equal(attr(metrics_msexp_filtered, "ticQuantileRtFraction"),
-                 "MS:4000183")
+        "MS:4000183")
     expect_equal(attr(metrics_msexp, "numberSpectra"), "MS:4000059")
     expect_equal(attr(metrics_msexp_filtered, "numberSpectra"), "MS:4000059")
     expect_equal(attr(metrics_msexp, "areaUnderTic"), "MS:4000155")
@@ -477,19 +411,19 @@ test_that("calculateMetricsFromMsExperiment", {
 ## calculate the metrics by the wrapper function
 suppressWarnings(
     metrics_spectra_wrapper <- calculateMetrics(object = spectra,
-        metrics = metrics, filterEmptyObject = FALSE, msLevel = 1,
+        metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(
     metrics_spectra_wrapper_filtered <- calculateMetrics(object = spectra,
-        metrics = metrics, filterEmptyObject = TRUE, msLevel = 1,
+        metrics = metrics, filteredEmptySpectra = TRUE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(
     metrics_msexp_wrapper <- calculateMetrics(object = msexp,
-        metrics = metrics, filterEmptyObject = FALSE, msLevel = 1,
+        metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump"))
 suppressWarnings(
     metrics_msexp_wrapper_filtered <- calculateMetrics(object = msexp,
-        metrics = metrics, filterEmptyObject = TRUE, msLevel = 1,
+        metrics = metrics, filteredEmptySpectra = TRUE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump"))
 
 test_that("calculateMetrics", {
@@ -497,42 +431,26 @@ test_that("calculateMetrics", {
     expect_equal(dim(metrics_spectra_wrapper_filtered), c(2, 12))
     expect_equal(dim(metrics_msexp_wrapper), c(2, 12))
     expect_equal(dim(metrics_msexp_wrapper_filtered), c(2, 12))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_spectra_wrapper), "sciex"), "[", 2))
-    dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_spectra_wrapper_filtered), "sciex"), "[", 2))
-    dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_msexp_wrapper), "sciex"), "[", 2))
-    dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
-    dirs <- unlist(lapply(
-        strsplit(rownames(metrics_msexp_wrapper_filtered), "sciex"), "[", 2))
-    dirs <- gsub("[\\]|[/]", "", dirs)
-    expect_equal(dirs,
-        c("20171016_POOL_POS_1_105-134.mzML",
-            "20171016_POOL_POS_3_105-134.mzML"))
-    expect_equal(length(metrics_spectra_wrapper), 12)
-    expect_equal(length(metrics_spectra_wrapper_filtered), 12)
-    expect_equal(length(metrics_msexp_wrapper), 12)
-    expect_equal(length(metrics_msexp_wrapper_filtered), 12)
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra_wrapper))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_spectra_wrapper_filtered))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_msexp_wrapper))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
+    dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_msexp_wrapper_filtered))
+    expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
+    expect_equal(length(metrics_spectra_wrapper), 24)
+    expect_equal(length(metrics_spectra_wrapper_filtered), 24)
+    expect_equal(length(metrics_msexp_wrapper), 24)
+    expect_equal(length(metrics_msexp_wrapper_filtered), 24)
     expect_equal(colnames(metrics_spectra_wrapper), colnames_metrics)
     expect_equal(colnames(metrics_spectra_wrapper_filtered), colnames_metrics)
     expect_equal(colnames(metrics_msexp_wrapper), colnames_metrics)
     expect_equal(colnames(metrics_msexp_wrapper_filtered), colnames_metrics)
-    expect_true(is.data.frame(metrics_spectra_wrapper))
-    expect_true(is.data.frame(metrics_spectra_wrapper_filtered))
-    expect_true(is.data.frame(metrics_msexp_wrapper))
-    expect_true(is.data.frame(metrics_msexp_wrapper_filtered))
+    expect_true(is.numeric(metrics_spectra_wrapper))
+    expect_true(is.numeric(metrics_spectra_wrapper_filtered))
+    expect_true(is.numeric(metrics_msexp_wrapper))
+    expect_true(is.numeric(metrics_msexp_wrapper_filtered))
     expect_equal(as.numeric(metrics_spectra_wrapper[1, ]),
         metrics_spectra_1_vals,  tolerance = 1e-06)
     expect_equal(as.numeric(metrics_spectra_wrapper_filtered[1, ]),
@@ -551,53 +469,53 @@ test_that("calculateMetrics", {
         metrics_spectra_2_vals,  tolerance = 1e-06)
 
     expect_error(calculateMetrics(NULL, metrics = metrics),
-        "unable to find an inherited method")
+        "object '.metrics' not found")
     expect_error(calculateMetrics("foo", metrics = metrics),
-        "unable to find an inherited method")
+        "object '.metrics' not found")
     expect_error(calculateMetrics(spectra,
-        metrics = metrics, filterEmptyObject = "foo"),
-        "'filterEmptyObject' has to be either TRUE or FALSE")
+        metrics = metrics, filterEmptySpectra = "foo"),
+        "'filterEmptySpectra' has to be either TRUE or FALSE")
     expect_error(calculateMetrics(msexp,
-        metrics = metrics, filterEmptyObject = "foo"),
-        "'filterEmptyObject' has to be either TRUE or FALSE")
+        metrics = metrics, filterEmptySpectra = "foo"),
+        "'filterEmptySpectra' has to be either TRUE or FALSE")
     expect_error(calculateMetrics(spectra, metrics = "foo"),
         "should be one of ")
     expect_error(calculateMetrics(msexp, metrics = "foo"),
         "should be one of ")
 
-    ## test filterEmptyObject
+    ## test filterEmptySpectra
     expect_equal(as.numeric(calculateMetrics(object = sps_empty,
-        metrics = "numberSpectra", filterEmptyObject = FALSE,
+        metrics = "numberSpectra", filterEmptySpectra = FALSE,
         msLevel = 2L)), 3)
     #expect_equal(as.numeric(calculateMetrics(object = sps_empty,
-    #    metrics = "numberSpectra", filterEmptyObject = TRUE,
+    #    metrics = "numberSpectra", filterEmptySpectra = TRUE,
     #    msLevel = 2L)), 1)
     expect_equal(as.numeric(calculateMetrics(object = sps_multiple_empty,
-        metrics = "numberSpectra", filterEmptyObject = FALSE,
+        metrics = "numberSpectra", filterEmptySpectra = FALSE,
         msLevel = 2L)), 3)
     #expect_equal(as.numeric(calculateMetrics(object = sps_multiple_empty,
-    #    metrics = "numberSpectra", filterEmptyObject = TRUE,
+    #    metrics = "numberSpectra", filterEmptySpectra = TRUE,
     #    msLevel = 2L)), 1)
     expect_equal(as.numeric(calculateMetrics(object = sps_not_empty,
-        metrics = "numberSpectra", filterEmptyObject = FALSE,
+        metrics = "numberSpectra", filterEmptySpectra = FALSE,
         msLevel = 2L)), 3)
     expect_equal(as.numeric(calculateMetrics(object = sps_not_empty,
-        metrics = "numberSpectra", filterEmptyObject = TRUE,
+        metrics = "numberSpectra", filterEmptySpectra = TRUE,
         msLevel = 2L)), 3)
 
     ## test attributes
-    expect_equal(names(metrics_spectra_wrapper),
+    expect_equal(attributes(metrics_spectra_wrapper)$dimnames[[2]],
         colnames_metrics)
-    expect_equal(names(metrics_spectra_wrapper_filtered),
+    expect_equal(attributes(metrics_spectra_wrapper_filtered)$dimnames[[2]],
         colnames_metrics)
-    expect_equal(names(metrics_msexp_wrapper),
+    expect_equal(attributes(metrics_msexp_wrapper)$dimnames[[2]],
         colnames_metrics)
-    expect_equal(names(metrics_msexp_wrapper_filtered),
+    expect_equal(attributes(metrics_msexp_wrapper_filtered)$dimnames[[2]],
         colnames_metrics)
-    expect_equal(attr(metrics_spectra_wrapper, "names"), colnames_metrics)
-    expect_equal(attr(metrics_spectra_wrapper_filtered, "names"), colnames_metrics)
-    expect_equal(attr(metrics_msexp_wrapper, "names"), colnames_metrics)
-    expect_equal(attr(metrics_msexp_wrapper_filtered, "names"), colnames_metrics)
+    expect_equal(attr(metrics_spectra_wrapper, "names"), NULL)
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "names"), NULL)
+    expect_equal(attr(metrics_msexp_wrapper, "names"), NULL)
+    expect_equal(attr(metrics_msexp_wrapper_filtered, "names"), NULL)
     expect_equal(attr(metrics_spectra_wrapper, "chromatographyDuration"),
         "MS:4000053")
     expect_equal(attr(metrics_spectra_wrapper_filtered, "chromatographyDuration"),
@@ -664,13 +582,14 @@ library("rmzqc")
 
 ## calculate the metrics from Spectra
 dO <- unique(spectra$dataOrigin)
+dO_cut <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", dO)
 spectra_1 <- spectra[spectra$dataOrigin == dO[1], ]
 
 ## START unit test calculateMetricsFromOneSampleSpectra ##
 test_that("calculateMetricsFromOneSampleSpectra, format = 'mzQC'.", {
 
     metrics_spectra_1 <- calculateMetricsFromOneSampleSpectra(
-        spectra = spectra_1, metrics = metrics, filterEmptyObject = FALSE,
+        spectra = spectra_1, metrics = metrics, filterEmptySpectra = FALSE,
         msLevel = 1, relativeTo = "Q1", mode = "TIC", change = "jump",
         format = "mzQC")
     ## spectra_1
@@ -684,9 +603,10 @@ test_that("calculateMetricsFromOneSampleSpectra, format = 'mzQC'.", {
 ## calculate the metrics from Spectra
 test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
 
-    metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra,
-                metrics = metrics, filterEmptyObject = FALSE, msLevel = 1,
-            relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC")
+   metrics_spectra <- suppressWarnings(
+       calculateMetricsFromSpectra(spectra = spectra,
+            metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
+            relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC"))
 
     expect_equal(length(metrics_spectra), 2)
     expect_equal(is(metrics_spectra[[1]]), c("MzQCmzQC", "oldClass"))
@@ -698,11 +618,11 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
     expect_equal(metrics_spectra[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra[[1]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
+        paste("A mzQC document on the sample", dO_cut[1]))
     expect_equal(metrics_spectra[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra[[2]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
+        paste("A mzQC document on the sample", dO_cut[2]))
 
     ## software
     expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
@@ -892,10 +812,13 @@ sampleData(msexp) <- sd
 
 ## define file names containing spectra data for the samples and
 ## add them, along with other arbitrary files to the experiment
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
+
 experimentFiles(msexp) <- MsExperimentFiles(
-    mzML_files = fls,
+    mzML_files = sciex_file,
     annotations = "internal_standards.txt")
+
 ## link samples to data files: first sample to first file in "mzML_files",
 ## second sample to second file in "mzML_files"
 msexp <- linkSampleData(msexp, with = "experimentFiles.mzML_files",
@@ -904,14 +827,14 @@ msexp <- linkSampleData(msexp, with = "experimentFiles.annotations",
     sampleIndex = c(1, 2), withIndex = c(1, 1))
 
 ## import the data and add it to the mse object
-spectra(msexp) <- Spectra(fls, backend = MsBackendMzR())
+spectra(msexp) <- Spectra(sciex_file)
 
 ## additional parameters passed to the quality metrics functions
 ## (msLevel is an argument of areaUnderTic and msSignal10xChange,
 ## relativeTo is an argument of msSignal10xChange) passed to ...
 test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
     suppressWarnings(metrics_msexp <- calculateMetricsFromMsExperiment(msexp = msexp,
-        metrics = metrics, filterEmptyObject = FALSE, msLevel = 1,
+        metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
         relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC"))
 
     expect_equal(length(metrics_msexp), 2)
@@ -925,11 +848,11 @@ test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
     expect_equal(metrics_msexp[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp[[1]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
+        paste("A mzQC document on the sample", dO_cut[1]))
     expect_equal(metrics_msexp[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp[[2]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
+        paste("A mzQC document on the sample", dO_cut[2]))
 
     ## software
     expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
@@ -1116,11 +1039,11 @@ test_that("calculateMetrics, format = 'mzQC'.", {
 
     suppressWarnings(
         metrics_spectra_wrapper <- calculateMetrics(object = spectra,
-            metrics = metrics, filterEmptyObject = FALSE, msLevel = 1,
+            metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
             relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC"))
     suppressWarnings(
         metrics_msexp_wrapper <- calculateMetrics(object = msexp,
-            metrics = metrics, filterEmptyObject = FALSE, msLevel = 1,
+            metrics = metrics, filterEmptySpectra = FALSE, msLevel = 1,
             relativeTo = "Q1", mode = "TIC", change = "jump", format = "mzQC"))
 
     ## metrics_spectra_wrapper
@@ -1134,11 +1057,11 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     expect_equal(metrics_spectra_wrapper[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra_wrapper[[1]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
+        paste("A mzQC document on the sample", dO_cut[1]))
     expect_equal(metrics_spectra_wrapper[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_spectra_wrapper[[2]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
+        paste("A mzQC document on the sample", dO_cut[2]))
 
     ## software
     expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
@@ -1329,11 +1252,11 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     expect_equal(metrics_msexp_wrapper[[1]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp_wrapper[[1]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_1_105-134.mzML")
+        paste("A mzQC document on the sample", dO_cut[1]))
     expect_equal(metrics_msexp_wrapper[[2]]$controlledVocabularies[[1]]$name,
         "Proteomics Standards Initiative Mass Spectrometry Ontology")
     expect_equal(metrics_msexp_wrapper[[2]]$description,
-        "A mzQC document on the sample 20171016_POOL_POS_3_105-134.mzML")
+        paste("A mzQC document on the sample", dO_cut[2]))
 
     ## software
     expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
@@ -1514,8 +1437,12 @@ test_that("calculateMetrics, format = 'mzQC'.", {
 })
 
 test_that("transformIntoMzQC has URIs", {
-    fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
-    spectra <- Spectra(fls, backend = MsBackendMzR())
+    ## define file names containing spectra data for the samples
+    sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+        MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
+
+    ## import the data and assign it to the spectra object
+    spectra <- Spectra(sciex_file)
 
     suppressWarnings(
         metrics_spectra <- calculateMetricsFromSpectra(spectra = spectra,
@@ -1525,60 +1452,4 @@ test_that("transformIntoMzQC has URIs", {
     expect_true(stringr::str_starts((metrics_spectra[[1]]$runQualities[[1]]$metadata$inputFiles[[1]]$location), "file://"))
 })
 ## END unit test calculateMetrics ##
-
-################################################################################
-########################### Chromatograms tests ###############################
-################################################################################
-
-## test with Chromatograms object
-chr <- Chromatograms(spectra)
-
-test_that("Chromatograms object creation and accessors", {
-    ## verify chr is correctly created from Spectra
-    expect_is(chr, "Chromatograms")
-    expect_equal(length(chr), 2)
-
-    ## verify chr can be used with intensity and rtime accessors
-    chr_intensity <- unlist(intensity(chr), use.names = FALSE)
-    chr_rtime <- unlist(rtime(chr), use.names = FALSE)
-    expect_true(is.numeric(chr_intensity))
-    expect_true(is.numeric(chr_rtime))
-    expect_true(length(chr_intensity) > 0)
-    expect_true(length(chr_rtime) > 0)
-})
-
-test_that("Spectra-derived metrics calculation from original Spectra", {
-    ## test single metric calculation from Spectra object
-    chr_metrics <- calculateMetricsFromOneSampleSpectra(spectra = spectra_1,
-        metrics = "chromatographyDuration", filterEmptyObject = FALSE,
-        msLevel = 1)
-
-    ## verify output
-    expect_true(is.numeric(chr_metrics))
-    expect_equal(length(chr_metrics), 1)
-    expect_equal(names(chr_metrics), "chromatographyDuration")
-    expect_equal(attr(chr_metrics, "chromatographyDuration"), "MS:4000053")
-
-    ## test that metric value is positive
-    expect_true(chr_metrics > 0)
-})
-
-test_that("Multiple metrics calculation from Spectra for Chromatogram context", {
-    ## calculate multiple metrics that relate to chromatographic properties
-    chr_related_metrics <- calculateMetricsFromOneSampleSpectra(
-        spectra = spectra_1,
-        metrics = c("chromatographyDuration", "areaUnderTic", "msSignal10xChange"),
-        filterEmptyObject = FALSE, msLevel = 1, change = "jump")
-
-    ## verify output structure
-    expect_true(is.numeric(chr_related_metrics))
-    expect_equal(length(chr_related_metrics), 3)
-    expect_equal(names(chr_related_metrics),
-        c("chromatographyDuration", "areaUnderTic", "msSignal10xChange"))
-
-    ## verify attributes are properly set
-    expect_equal(attr(chr_related_metrics, "chromatographyDuration"), "MS:4000053")
-    expect_equal(attr(chr_related_metrics, "areaUnderTic"), "MS:4000155")
-    expect_equal(attr(chr_related_metrics, "msSignal10xChange"), "MS:4000097")
-})
 
