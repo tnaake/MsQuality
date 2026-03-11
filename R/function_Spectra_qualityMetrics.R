@@ -6,7 +6,6 @@
 #' The function \code{qualityMetrics} returns a character vector with available
 #' quality metrics depending on \code{object}.
 #'
-#'
 #' @details
 #' \code{object} is a \code{Spectra}, \code{MsExperiment}, or \code{Chromatograms}.
 #'
@@ -19,7 +18,6 @@
 #'
 #' @importFrom Spectra Spectra
 #' @importFrom MsExperiment MsExperiment
-#'
 #'
 #' @export
 #'
@@ -43,7 +41,6 @@
 #' spd$dataOrigin <- rep("sample_1", 3)
 #' sps <- Spectra(spd)
 #'
-#'
 #' qualityMetrics(object = sps)
 qualityMetrics <- function(object) {
     if (is(object, "Spectra"))
@@ -59,7 +56,6 @@ qualityMetrics <- function(object) {
             "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
             "medianCharge"
         )
-
 
     if (is(object, "MsExperiment"))
         .metrics <-  c(
@@ -77,17 +73,13 @@ qualityMetrics <- function(object) {
 
     if (is(object, "Chromatograms"))
         .metrics <- c(
-            "chromatographyDuration", "peakCount",
-            "rtAcquisitionRange", "maxIntensity",
-            "intensityQuartiles", "intensityMean", "intensitySd",
-            "intensityRange", "rtIqr",
-            "baselineIntensity", "signalToNoiseRatio",
-            "msSignal10xChange",
-            "numberEmptyScans",
-            "medianTicRtIqr",
-            "xicFwhm", "peakBoundary", "peakWidth", "gaussianSimilarity",
-            "peakProminence",
-            "ticQuantileRtFraction", "areaUnderTic", "areaUnderTicRtQuantiles"
+            "chromatographyDuration", "peakCount", "rtAcquisitionRange",
+            "maxIntensity", "intensityQuartiles", "intensityMean",
+            "intensitySd", "intensityRange", "rtIqr", "baselineIntensity",
+            "signalToNoiseRatio", "msSignal10xChange", "numberEmptyScans",
+            "medianTicRtIqr", "xicFwhm", "peakBoundary", "peakWidth",
+            "gaussianSimilarity", "peakProminence", "ticQuantileRtFraction",
+            "areaUnderTic", "areaUnderTicRtQuantiles"
         )
 
     .metrics

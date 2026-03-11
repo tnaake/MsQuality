@@ -78,6 +78,8 @@ chromatographyDuration <- function(object, ...) {
             if (length(RT) == 0 || all(is.na(RT))) return(NA_real_)
             max(RT, na.rm = TRUE) - min(RT, na.rm = TRUE)
         }, numeric(1))
+    } else {
+        stop("'object' is not of class 'Spectra' or 'Chromatograms'")
     }
 
     ## add attributes and return
@@ -542,6 +544,8 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
     if (is(spectra, "Spectra")) {
         spectra <- filterMsLevel(object = spectra, msLevel)
         res <- length(spectra)
+    } else {
+        stop("'spectra' is not of class 'Spectra'")
     }
 
     ## add attributes and return
@@ -713,6 +717,8 @@ rtAcquisitionRange <- function(object, msLevel = 1L, ...) {
             c(min = r[1], max = r[2])
         }, numeric(2)))
         colnames(res) <- c("min", "max")
+    } else {
+        stop("'object' is not of class 'Spectra' or 'Chromatograms'")
     }
 
     ## add attributes and return
@@ -866,6 +872,8 @@ msSignal10xChange <- function(spectra, change = "jump", msLevel = 1L,
             ratios <- ints[-1] / ints[-length(ints)]
             if (change == "jump") sum(ratios >= 10) else sum(ratios <= 0.1)
         }, integer(1))
+    } else {
+        stop("'spectra' is not of class 'Spectra' or 'Chromatograms'")
     }
 
     ## add attributes and return
@@ -996,6 +1004,8 @@ numberEmptyScans <- function(spectra, msLevel = 1L, ...) {
                 all(is.na(ints)) || sum(ints, na.rm = TRUE) == 0
         }, logical(1))
         res <- sum(empty)
+    } else {
+        stop("'spectra' is not of class 'Spectra' or 'Chromatograms'")
     }
 
     ## add attributes and return
@@ -1615,6 +1625,8 @@ rtIqr <- function(object, msLevel = 1L,
             if (length(rts) < 2) return(NA_real_)
             IQR(rts, na.rm = TRUE)
         }, numeric(1))
+    } else {
+        stop("'object' is not of class 'Spectra' or 'Chromatograms'")
     }
 
     ## add attributes and return
@@ -1828,6 +1840,8 @@ areaUnderTic <- function(object, msLevel = 1L, na.rm = TRUE, ...) {
                 sum(ints, na.rm = na.rm)
             }, numeric(1))
         }
+    } else {
+        stop("'object' is not of class 'Spectra' or 'Chromatograms'")
     }
 
     ## add attributes and return
@@ -2006,6 +2020,8 @@ areaUnderTicRtQuantiles <- function(object, msLevel = 1L, ...) {
 
         colnames(res) <- col_names
         attr(res, "areaUnderTicRtQuantiles") <- "MS:4000156"
+    } else {
+        stop("'object' is not of class 'Spectra' or 'Chromatograms'")
     }
 
     if (is(object, "Spectra") || !is.matrix(res)) {
@@ -2244,6 +2260,8 @@ medianTicRtIqr <- function(spectra, msLevel = 1L,
             if (!any(mask)) return(NA_real_)
             median(ints[mask], na.rm = TRUE)
         }, numeric(1))
+    } else {
+        stop("'spectra' is not of class 'Spectra' or 'Chromatograms'")
     }
 
     ## add attributes and return
@@ -3247,6 +3265,8 @@ ticQuantileRtFraction <- function(object, probs = seq(0, 1, 0.25),
 
         colnames(res) <- prob_names
         attr(res, "ticQuantileRtFraction") <- "MS:4000183"
+    } else {
+        stop("'object' is not of class 'Spectra' or 'Chromatograms'")
     }
 
     res
