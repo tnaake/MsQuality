@@ -62,6 +62,11 @@ colnames_metrics <- c("chromatographyDuration", "ticQuantileRtFraction.0%",
     "ticQuartileToQuartileLogRatio.Q3/Q1",
     "ticQuartileToQuartileLogRatio.Q4/Q1",
     "numberSpectra", "areaUnderTic", "msSignal10xChange")
+expected_description <- paste0(
+    "\"MsQuality \u2013 an interoperable open-source package for the ",
+    "calculation of standardized quality metrics of mass spectrometry ",
+    "data.\" [DOI:10.1101/2023.05.12.540477, ",
+    "https://github.com/tnaake/MsQuality/]")
 metrics_spectra_1_vals <- c(2.594770e+02, 0, 2.505386e-01,
     4.999981e-01, 7.505367e-01, 1.000000e+00, -1.603689e-01, -7.040791e-01,
     -5.018226e-01, 9.310000e02, 6.509697e+08, 0)
@@ -291,8 +296,8 @@ test_that("calculateMetricsFromSpectra", {
         filterEmptyObject = TRUE, msLevel = 2L)), 3)
 
     ## test attributes
-    expect_equal(attr(metrics_spectra, "names"), NULL)
-    expect_equal(attr(metrics_spectra_filtered, "names"), NULL)
+    expect_equal(attr(metrics_spectra, "names"), colnames_metrics)
+    expect_equal(attr(metrics_spectra_filtered, "names"), colnames_metrics)
     expect_equal(attr(metrics_spectra, "chromatographyDuration"), "MS:4000053")
     expect_equal(attr(metrics_spectra_filtered, "chromatographyDuration"),
         "MS:4000053")
@@ -383,8 +388,8 @@ test_that("calculateMetricsFromMsExperiment", {
         "'change' has to be of length 1")
 
     ## test attributes
-    expect_equal(attr(metrics_msexp, "names"), NULL)
-    expect_equal(attr(metrics_msexp_filtered, "names"), NULL)
+    expect_equal(attr(metrics_msexp, "names"), colnames_metrics)
+    expect_equal(attr(metrics_msexp_filtered, "names"), colnames_metrics)
     expect_equal(attr(metrics_msexp, "chromatographyDuration"), "MS:4000053")
     expect_equal(attr(metrics_msexp_filtered, "chromatographyDuration"),
         "MS:4000053")
@@ -441,18 +446,18 @@ test_that("calculateMetrics", {
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
     dirs <- sub(".*ExperimentHub[/\\\\]([^/\\\\]+)$", "\\1", rownames(metrics_msexp_wrapper_filtered))
     expect_equal(dirs, c(dO_cut[1], dO_cut[2]))
-    expect_equal(length(metrics_spectra_wrapper), 24)
-    expect_equal(length(metrics_spectra_wrapper_filtered), 24)
-    expect_equal(length(metrics_msexp_wrapper), 24)
-    expect_equal(length(metrics_msexp_wrapper_filtered), 24)
+    expect_equal(length(metrics_spectra_wrapper), 12)
+    expect_equal(length(metrics_spectra_wrapper_filtered), 12)
+    expect_equal(length(metrics_msexp_wrapper), 12)
+    expect_equal(length(metrics_msexp_wrapper_filtered), 12)
     expect_equal(colnames(metrics_spectra_wrapper), colnames_metrics)
     expect_equal(colnames(metrics_spectra_wrapper_filtered), colnames_metrics)
     expect_equal(colnames(metrics_msexp_wrapper), colnames_metrics)
     expect_equal(colnames(metrics_msexp_wrapper_filtered), colnames_metrics)
-    expect_true(is.numeric(metrics_spectra_wrapper))
-    expect_true(is.numeric(metrics_spectra_wrapper_filtered))
-    expect_true(is.numeric(metrics_msexp_wrapper))
-    expect_true(is.numeric(metrics_msexp_wrapper_filtered))
+    expect_true(is.data.frame(metrics_spectra_wrapper))
+    expect_true(is.data.frame(metrics_spectra_wrapper_filtered))
+    expect_true(is.data.frame(metrics_msexp_wrapper))
+    expect_true(is.data.frame(metrics_msexp_wrapper_filtered))
     expect_equal(as.numeric(metrics_spectra_wrapper[1, ]),
         metrics_spectra_1_vals,  tolerance = 1e-06)
     expect_equal(as.numeric(metrics_spectra_wrapper_filtered[1, ]),
@@ -506,18 +511,18 @@ test_that("calculateMetrics", {
         msLevel = 2L)), 3)
 
     ## test attributes
-    expect_equal(attributes(metrics_spectra_wrapper)$dimnames[[2]],
+    expect_equal(names(metrics_spectra_wrapper),
         colnames_metrics)
-    expect_equal(attributes(metrics_spectra_wrapper_filtered)$dimnames[[2]],
+    expect_equal(names(metrics_spectra_wrapper_filtered),
         colnames_metrics)
-    expect_equal(attributes(metrics_msexp_wrapper)$dimnames[[2]],
+    expect_equal(names(metrics_msexp_wrapper),
         colnames_metrics)
-    expect_equal(attributes(metrics_msexp_wrapper_filtered)$dimnames[[2]],
+    expect_equal(names(metrics_msexp_wrapper_filtered),
         colnames_metrics)
-    expect_equal(attr(metrics_spectra_wrapper, "names"), NULL)
-    expect_equal(attr(metrics_spectra_wrapper_filtered, "names"), NULL)
-    expect_equal(attr(metrics_msexp_wrapper, "names"), NULL)
-    expect_equal(attr(metrics_msexp_wrapper_filtered, "names"), NULL)
+    expect_equal(attr(metrics_spectra_wrapper, "names"), colnames_metrics)
+    expect_equal(attr(metrics_spectra_wrapper_filtered, "names"), colnames_metrics)
+    expect_equal(attr(metrics_msexp_wrapper, "names"), colnames_metrics)
+    expect_equal(attr(metrics_msexp_wrapper_filtered, "names"), colnames_metrics)
     expect_equal(attr(metrics_spectra_wrapper, "chromatographyDuration"),
         "MS:4000053")
     expect_equal(attr(metrics_spectra_wrapper_filtered, "chromatographyDuration"),
@@ -632,13 +637,13 @@ test_that("calculateMetricsFromSpectra, format = 'mzQC'.", {
     expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
     expect_equal(metrics_spectra[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
-        "\"MsQuality G혀 an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
+        expected_description)
     expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
     expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
     expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
     expect_equal(metrics_spectra[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
-        "\"MsQuality G혀 an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
+        expected_description)
 
     ## chromatographyDuration
     expect_equal(
@@ -862,13 +867,13 @@ test_that("calculateMetricsFromMsExperiment, format = 'mzQC'.", {
     expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
     expect_equal(metrics_msexp[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
-        "\"MsQuality G혀 an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
+        expected_description)
     expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
     expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
     expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
     expect_equal(metrics_msexp[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
-        "\"MsQuality G혀 an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
+        expected_description)
 
     ## chromatographyDuration
     expect_equal(
@@ -1071,13 +1076,13 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
     expect_equal(metrics_spectra_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
-         "\"MsQuality G혀 an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
+         expected_description)
     expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
     expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
     expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
     expect_equal(metrics_spectra_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
-        "\"MsQuality G혀 an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
+        expected_description)
 
     ## chromatographyDuration
     expect_equal(
@@ -1266,13 +1271,13 @@ test_that("calculateMetrics, format = 'mzQC'.", {
     expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
     expect_equal(metrics_msexp_wrapper[[1]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
-        "\"MsQuality G혀 an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
+        expected_description)
     expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$accession, "MS:4000151")
     expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$name, "MsQuality")
     expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$version,
         packageDescription("MsQuality")$Version)
     expect_equal(metrics_msexp_wrapper[[2]]$runQualities[[1]]$metadata$analysisSoftware[[1]]$description,
-        "\"MsQuality G혀 an interoperable open-source package for the calculation of standardized quality metrics of mass spectrometry data.\" [DOI:10.1101/2023.05.12.540477, https://github.com/tnaake/MsQuality/]")
+        expected_description)
 
     ## chromatographyDuration
     expect_equal(

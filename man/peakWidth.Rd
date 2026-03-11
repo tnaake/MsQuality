@@ -2,47 +2,51 @@
 % Please edit documentation in R/function_Chromatograms_metrics.R
 \name{peakWidth}
 \alias{peakWidth}
-\title{Peak Width for a Chromatogram}
+\title{Peak Width per Chromatogram}
 \usage{
 peakWidth(chromatograms, peakBoundary = NULL, ...)
 }
 \arguments{
-\item{chromatograms}{`Chromatograms` object containing a single chromatogram}
+\item{chromatograms}{`Chromatograms` object}
 
-\item{peakBoundary}{optional `numeric(2)` named vector with `left_boundary`
-and `right_boundary` values from a previous call to `peakBoundary()`.
-If not provided, boundaries are calculated automatically.}
+\item{peakBoundary}{optional peak boundary: either a `matrix` with columns
+`left_boundary` and `right_boundary` (one row per chromatogram, as returned
+by `peakBoundary()`), or a `numeric(2)` named vector applied to all
+chromatograms. If not provided, boundaries are calculated automatically.}
 
 \item{...}{further arguments passed to `peakBoundary()`}
 }
 \value{
-`numeric(1)` peak width value. Returns `NA` if width cannot be
-  calculated.
+`numeric` of length equal to `length(chromatograms)`. Returns `NA`
+  for chromatograms where width cannot be calculated.
 }
 \description{
-The function `peakWidth` calculates the width of the main peak in a single
-chromatogram (EIC).
+The function `peakWidth` calculates the width of the main peak in each
+chromatogram. \cr
+
+The metric is calculated as follows (per chromatogram): \cr
+(1) if not provided, peak boundaries are determined using
+\code{peakBoundary()}, \cr
+(2) the peak width is calculated as the difference between the right
+and left boundary retention times and returned.
 }
 \details{
-The peak width is calculated as the difference between the right and left
-peak boundaries determined by `peakBoundary()`, which uses
-`MsCoreUtils::valleys()` to find the local minima (valleys) on each side
-of the peak apex.
-
 This is different from FWHM which measures width at 50\% of max intensity.
-
-The user should provide a single chromatogram representing an extracted ion
-chromatogram (EIC) for a specific compound/feature.
 }
 \examples{
 library(Chromatograms)
-cdata <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+cdata <- data.frame(
+    msLevel = c(1L, 1L),
+    mz = c(100.0, 200.0),
+    dataOrigin = c("mem1", "mem1")
+)
 pdata <- list(
     data.frame(rtime = c(2.1, 2.5, 3.0, 3.4, 3.9),
-               intensity = c(100, 250, 400, 300, 150))
+               intensity = c(100, 250, 400, 300, 150)),
+    data.frame(rtime = c(1, 2, 3, 4, 5, 6, 7),
+               intensity = c(0, 10, 50, 100, 50, 10, 0))
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-## Returns peak width for the chromatogram
 peakWidth(chr)
 
 ## Use pre-computed peak boundaries for efficiency

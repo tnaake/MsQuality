@@ -993,24 +993,23 @@ objects), `MsQuality` includes metrics specifically designed for `Chromatograms`
 objects. These metrics assess chromatographic quality and include:
 
 - *chromatographyDuration* (MS:4000053): Duration of chromatographic run (same generic as for `Spectra`)
-- *chromatogramCount* (MS:4000071): Total number of chromatograms
+- *peakCount*: Number of detected peaks per chromatogram
 - *rtAcquisitionRange* (MS:4000070): RT range across chromatograms (same generic as for `Spectra`)
 - *maxIntensity*, *intensityMean*, *intensitySd*: Intensity statistics
 - *intensityQuartiles*, *intensityRange*: Intensity distributions
-- *numberEmptyChrom*: Count of empty chromatograms
+- *numberEmptyScans*: Count of empty chromatograms
 - *xicFwhm*: Full Width at Half Maximum (FWHM) per chromatogram
 - *peakBoundary*: Left/right peak boundaries using valley detection
 - *peakWidth*: Peak width based on valley boundaries
-- *peakBeta*: Peak shape quality metrics (correlation to beta distribution)
+- *gaussianSimilarity*: Peak shape quality (correlation to beta distribution, residual SD)
+- *peakProminence*: Peak prominence relative to baseline
 - *ticQuantileRtFraction* (MS:4000183): RT fraction when TIC quantiles accumulate
 - *areaUnderTic* (MS:4000155): Total area under TIC
 - *areaUnderTicRtQuantiles* (MS:4000156): Area under TIC per RT quartile
-- *areaUnderTicMs1* (MS:4000029): Area under TIC for MS1
-- *areaUnderTicMs2* (MS:4000030): Area under TIC for MS2
-- *intensity10xChange*: Count of 10x intensity jumps/falls
-- *medianIntensityRtIqr*: Median intensity in RT IQR
+- *msSignal10xChange*: Count of 10x intensity jumps/falls
+- *medianTicRtIqr*: Median TIC in RT IQR
 - *baselineIntensity*: 5th percentile (baseline estimate)
-- *signalToNoiseRatio*: Max/baseline ratio
+- *signalToNoiseRatio*: Classical S/N ratio (MAD-based noise estimate)
 - *rtIqr*: RT interquartile range
 
 For complete documentation of each metric, including calculation details and

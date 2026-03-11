@@ -31,7 +31,8 @@ all \code{NA}, all chromatograms are treated as one sample.}
 \code{metrics}}
 }
 \value{
-named \code{numeric} vector
+named \code{list}. Each element is named by the metric and contains
+either a \code{numeric} vector or a \code{matrix} (for multi-value metrics).
 }
 \description{
 The function \code{calculateMetricsFromOneSampleChromatograms} calculates
@@ -51,6 +52,10 @@ grouping is specified by the argument \code{f}.
 Setting the argument \code{filterEmptyObject} to \code{TRUE} will
 remove zero-length entries and entries with intensities that are \code{Inf}
 from the \code{Chromatograms} object.
+
+Each metric returns a per-chromatogram result: scalar metrics return a
+\code{numeric} vector of \code{length(chromatograms)}, while multi-value
+metrics return a \code{matrix} with \code{nrow = length(chromatograms)}.
 }
 \examples{
 library(Chromatograms)

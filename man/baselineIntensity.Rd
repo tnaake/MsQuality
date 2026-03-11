@@ -16,16 +16,32 @@ baselineIntensity(chromatograms, probs = 0.05, na.rm = TRUE, ...)
 \item{...}{further arguments passed to `quantile`}
 }
 \value{
-`numeric(1)`
+`numeric` of length equal to `length(chromatograms)`, one baseline
+intensity per chromatogram
 }
 \description{
 The function `baselineIntensity` estimates the baseline intensity as the
-5th percentile of intensity values across all chromatograms.
+5th percentile of intensity values across all chromatograms. \cr
+
+The metric is calculated as follows: \cr
+(1) the intensity values from all chromatograms are extracted and
+unlisted into a single numeric vector, \cr
+(2) the quantile at the specified probability (default 5th percentile)
+is calculated and returned.
 }
 \details{
-The function returns the 5th percentile of intensities across all chromatograms.
+In chromatograms with many zero-intensity points the chosen quantile may
+fall within the zero-valued portion of the distribution, causing the
+function to return \code{0}. This can propagate to downstream metrics that
+rely on a non-zero baseline (e.g. \code{peakProminence} divides by the
+baseline and would return \code{Inf}). Consider increasing \code{probs}
+(e.g. \code{0.10} or higher) or pre-filtering zero-intensity data points
+when working with zero-dominated chromatograms.
 
-No specific PSI:MS term exists. It should be created.
+This function returns a single summary value per chromatogram. For a
+point-wise baseline estimate (one value per retention-time point),
+see \code{\link[MsCoreUtils]{estimateBaseline}} which offers SNIP,
+TopHat, ConvexHull, and median methods.
 }
 \examples{
 library(Chromatograms)

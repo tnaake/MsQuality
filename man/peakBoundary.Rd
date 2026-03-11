@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Chromatograms_metrics.R
 \name{peakBoundary}
 \alias{peakBoundary}
-\title{Peak Boundary for a Chromatogram}
+\title{Peak Boundary per Chromatogram}
 \usage{
 peakBoundary(
   chromatograms,
@@ -13,15 +13,13 @@ peakBoundary(
 )
 }
 \arguments{
-\item{chromatograms}{`Chromatograms` object containing a single chromatogram}
+\item{chromatograms}{`Chromatograms` object}
 
 \item{threshold}{`numeric(1)` fraction of peak height above baseline used
-as fallback threshold (default 0.1 = 10\%). The boundary is placed where
-intensity drops below: `baseline + (max - baseline) * threshold`.}
+as fallback threshold (default 0.1 = 10\%).}
 
-\item{baselineThreshold}{`numeric(1)` maximum acceptable intensity at 
-boundaries as a fraction of peak height above baseline. If boundary 
-intensity exceeds this, falls back to threshold method. Default is 0.1.}
+\item{baselineThreshold}{`numeric(1)` maximum acceptable intensity at
+boundaries as a fraction of peak height above baseline. Default is 0.1.}
 
 \item{baselineQuantile}{`numeric(1)` quantile used to estimate the baseline
 intensity (default 0.1 = 10th percentile of intensities).}
@@ -29,44 +27,48 @@ intensity (default 0.1 = 10th percentile of intensities).}
 \item{...}{further arguments (currently unused)}
 }
 \value{
-`numeric(2)` named vector with `left_boundary` and `right_boundary` 
-  values. Returns `NA` values if boundaries cannot be determined.
+`matrix` with `nrow` equal to `length(chromatograms)` and 2 columns
+  (`left_boundary`, `right_boundary`). Returns `NA` values for chromatograms
+  where boundaries cannot be determined.
 }
 \description{
 The function `peakBoundary` finds the left and right retention time boundaries
-of the main peak in a single chromatogram (EIC).
+of the main peak in each chromatogram (EIC). \cr
+
+The metric is calculated as follows (per chromatogram): \cr
+(1) the retention time and intensity values are extracted, \cr
+(2) the peak apex (maximum intensity) is identified, \cr
+(3) the baseline intensity is estimated from the \code{baselineQuantile}
+of all intensities, \cr
+(4) local minima (valleys) on each side of the apex are found via
+\code{MsCoreUtils::valleys()}, \cr
+(5) boundaries are validated by checking if intensities are near
+baseline level, \cr
+(6) if valley-based boundaries are not at baseline, a fallback
+threshold method is used, \cr
+(7) the left and right boundary retention times are returned.
 }
 \details{
-The function uses an adaptive approach to find peak boundaries:
-
-1. First attempts to find boundaries using local minima (valleys) on each
-   side of the peak apex via `MsCoreUtils::valleys()`.
-
-2. Validates the boundaries by checking if intensities at boundaries are
-   near baseline level.
-
-3. If boundaries are not at baseline (e.g., for peaks with elevated baseline
-   or monotonic slopes), falls back to a relative threshold method that
-   finds where intensity drops below a fraction of peak height above baseline.
-
 The baseline is estimated from a lower quantile of intensities (default 10th
 percentile), and the threshold is calculated relative to peak height above
 this baseline.
 }
 \examples{
 library(Chromatograms)
-cdata <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+cdata <- data.frame(
+    msLevel = c(1L, 1L),
+    mz = c(100.0, 200.0),
+    dataOrigin = c("mem1", "mem1")
+)
 pdata <- list(
     data.frame(rtime = c(2.1, 2.5, 3.0, 3.4, 3.9),
-               intensity = c(100, 250, 400, 300, 150))
+               intensity = c(100, 250, 400, 300, 150)),
+    data.frame(rtime = c(1, 2, 3, 4, 5, 6, 7),
+               intensity = c(0, 10, 50, 100, 50, 10, 0))
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-
-## Find peak boundaries
+## Find peak boundaries for each chromatogram
 peakBoundary(chr)
-
-## Adjust threshold for different sensitivity
-peakBoundary(chr, threshold = 0.05)
 }
 \author{
 Philippine Louail

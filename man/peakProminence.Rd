@@ -2,16 +2,16 @@
 % Please edit documentation in R/function_Chromatograms_metrics.R
 \name{peakProminence}
 \alias{peakProminence}
-\title{Peak Prominence (Peak-to-Baseline Ratio)}
+\title{Peak Prominence (Peak-to-Baseline Ratio) per Chromatogram}
 \usage{
 peakProminence(chromatograms, peakBoundary = NULL, baselineQuantile = 0.1, ...)
 }
 \arguments{
-\item{chromatograms}{`Chromatograms` object containing a single chromatogram}
+\item{chromatograms}{`Chromatograms` object}
 
-\item{peakBoundary}{optional `numeric(2)` named vector with `left_boundary`
-and `right_boundary` values from a previous call to `peakBoundary()`.
-If provided, only the peak region is analyzed.}
+\item{peakBoundary}{optional peak boundary: either a `matrix` with columns
+`left_boundary` and `right_boundary` (one row per chromatogram), or a
+`numeric(2)` named vector applied to all chromatograms.}
 
 \item{baselineQuantile}{`numeric(1)` quantile used to estimate the baseline
 intensity (default 0.1 = 10th percentile of intensities).}
@@ -19,52 +19,48 @@ intensity (default 0.1 = 10th percentile of intensities).}
 \item{...}{further arguments (currently unused)}
 }
 \value{
-`numeric(1)` peak prominence value. Returns `NA` if prominence 
-  cannot be calculated (e.g., baseline is zero or NA).
+`numeric` of length equal to `length(chromatograms)`. Returns `NA`
+  for chromatograms where prominence cannot be calculated.
 }
 \description{
-The function `peakProminence` calculates the prominence of a chromatographic
-peak relative to its baseline, useful for filtering out flat/noisy signals.
+The function `peakProminence` calculates the prominence of the main
+chromatographic peak relative to its baseline in each chromatogram. \cr
+
+The metric is calculated as follows (per chromatogram): \cr
+(1) the retention time and intensity values are extracted, \cr
+(2) if \code{peakBoundary} is provided, the data is subset to the peak
+region, \cr
+(3) the maximum intensity is determined, \cr
+(4) the baseline intensity is estimated from the
+\code{baselineQuantile} of intensities, \cr
+(5) the prominence is calculated as
+\code{(max - baseline) / baseline} and returned.
 }
 \details{
-Peak prominence is calculated as the ratio of peak height above baseline
-to the baseline level:
-
-\deqn{prominence = \frac{max - baseline}{baseline}}{prominence = (max - baseline) / baseline}
-
-Where baseline is estimated from the lower quantile of intensities 
-(controlled by `baselineQuantile`).
-
 Higher values indicate more prominent peaks that stand out clearly from
-the baseline. Typical good peaks have prominence > 5-10, while noisy
-plateaus or flat signals have prominence < 3-5.
-
-This metric is particularly useful for filtering out:
-- Noisy chromatograms with no clear peak
-- Flat plateau signals
-- Weak peaks barely above baseline
+the baseline.
 }
 \examples{
 library(Chromatograms)
 
-## Good peak with high prominence
-cdata <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-pdata_good <- list(data.frame(
-    rtime = 1:20,
-    intensity = c(100, 100, 100, 200, 500, 1000, 2000, 5000, 10000, 15000,
-                  10000, 5000, 2000, 1000, 500, 200, 100, 100, 100, 100)
-))
-chr_good <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata_good)
-peakProminence(chr_good)  # High value (~150)
-
-## Bad peak (noisy plateau) with low prominence
-pdata_bad <- list(data.frame(
-    rtime = 1:20,
-    intensity = c(3000, 3500, 4000, 5000, 8000, 10000, 12000, 11000, 10000,
-                  11000, 12000, 10000, 9000, 8000, 7000, 6000, 5000, 4000, 3500, 3000)
-))
-chr_bad <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata_bad)
-peakProminence(chr_bad)  # Low value (~3)
+cdata <- data.frame(
+    msLevel = c(1L, 1L),
+    mz = c(100.0, 200.0),
+    dataOrigin = c("mem1", "mem1")
+)
+## Good peak with high prominence and noisy plateau with low prominence
+pdata <- list(
+    data.frame(rtime = 1:20,
+               intensity = c(100, 100, 100, 200, 500, 1000, 2000, 5000,
+                             10000, 15000, 10000, 5000, 2000, 1000, 500,
+                             200, 100, 100, 100, 100)),
+    data.frame(rtime = 1:20,
+               intensity = c(3000, 3500, 4000, 5000, 8000, 10000, 12000,
+                             11000, 10000, 11000, 12000, 10000, 9000,
+                             8000, 7000, 6000, 5000, 4000, 3500, 3000))
+)
+chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
+peakProminence(chr)
 }
 \author{
 Philippine Louail

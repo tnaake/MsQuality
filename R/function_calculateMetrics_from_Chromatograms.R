@@ -22,6 +22,10 @@
 #' remove zero-length entries and entries with intensities that are \code{Inf}
 #' from the \code{Chromatograms} object.
 #'
+#' Each metric returns a per-chromatogram result: scalar metrics return a
+#' \code{numeric} vector of \code{length(chromatograms)}, while multi-value
+#' metrics return a \code{matrix} with \code{nrow = length(chromatograms)}.
+#'
 #' @param chromatograms \code{Chromatograms} object
 #' @param metrics \code{character} specifying the quality metrics to be
 #' calculated on \code{chromatograms}
@@ -34,7 +38,8 @@
 #' @param ... arguments passed to the quality metrics functions defined in
 #' \code{metrics}
 #'
-#' @return named \code{numeric} vector
+#' @return named \code{list}. Each element is named by the metric and contains
+#' either a \code{numeric} vector or a \code{matrix} (for multi-value metrics).
 #'
 #' @author Philippine Louail
 #'
@@ -94,21 +99,9 @@ calculateMetricsFromOneSampleChromatograms <- function(
     }
 
     metrics_vals <- lapply(metrics, function(metric_name) {
-        result <- get(metric_name)(chromatograms, ...)
-        result_attrs <- attributes(result)
-        result_names <- names(result)
-        result <- unname(result)
-        if (length(result) > 1 && !is.null(result_names))
-            names(result) <- result_names
-        for (attr_name in setdiff(names(result_attrs), "names"))
-            attr(result, attr_name) <- result_attrs[[attr_name]]
-        result
+        get(metric_name)(chromatograms, ...)
     })
     names(metrics_vals) <- metrics
-    metrics_vals_attributes <- unlist(lapply(metrics_vals, attributes)[[1]])
-    metrics_vals <- unlist(metrics_vals, use.names = TRUE)
-    attributes(metrics_vals) <- c(attributes(metrics_vals), 
-                                   metrics_vals_attributes, list(...))
     metrics_vals
 }
 
@@ -216,26 +209,28 @@ calculateMetricsFromChromatograms <- function(
     }
 
     if (format == "data.frame") {
-        obj_attributes <- lapply(chromatograms_metrics, attributes)[[1]]
-        obj <- do.call("rbind", chromatograms_metrics)
-        col_names <- names(chromatograms_metrics[[1]])
-        obj <- as.data.frame(obj)
-        colnames(obj) <- col_names
-        rownames(obj) <- f_unique
-        dots <- list(...)
-        attributes(obj) <- c(attributes(obj), obj_attributes, dots)
+        ## Convert each sample's named list into a data.frame row-block.
+        ## Scalar metrics become columns; matrix metrics get one column per
+        ## original column, named "metric.colname".
+        sample_dfs <- lapply(chromatograms_metrics, function(sample_res) {
+            cols <- list()
+            for (nm in names(sample_res)) {
+                val <- sample_res[[nm]]
+                if (is.matrix(val)) {
+                    for (cn in colnames(val)) {
+                        cols[[paste0(nm, ".", cn)]] <- val[, cn]
+                    }
+                } else {
+                    cols[[nm]] <- val
+                }
+            }
+            ## All vectors should be the same length (= number of chroms
+            ## in this sample).
+            as.data.frame(cols, check.names = FALSE)
+        })
+        obj <- do.call(rbind, sample_dfs)
     }
     obj
 }
 
-#' @rdname calculateMetrics
-#' @export
-setMethod("calculateMetrics", "Chromatograms", function(object, metrics = qualityMetrics(object),
-    filterEmptyObject = FALSE, ...) {
-    metrics <- match.arg(metrics, choices = qualityMetrics(object),
-        several.ok = TRUE)
-    if (length(filterEmptyObject) != 1 | !is.logical(filterEmptyObject))
-        stop("'filterEmptyObject' has to be either TRUE or FALSE")
-    calculateMetricsFromChromatograms(chromatograms = object, metrics = metrics,
-        filterEmptyObject = filterEmptyObject, ...)
-})
+

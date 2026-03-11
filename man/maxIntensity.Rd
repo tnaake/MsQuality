@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Chromatograms_metrics.R
 \name{maxIntensity}
 \alias{maxIntensity}
-\title{Maximum intensity across chromatograms}
+\title{Maximum intensity per chromatogram}
 \usage{
 maxIntensity(chromatograms, na.rm = TRUE, ...)
 }
@@ -14,17 +14,17 @@ maxIntensity(chromatograms, na.rm = TRUE, ...)
 \item{...}{further arguments passed to `max`}
 }
 \value{
-`numeric(1)`
+`numeric` of length equal to `length(chromatograms)`, one maximum
+  intensity value per chromatogram
 }
 \description{
 The function `maxIntensity` returns the maximum intensity value observed
-across all chromatograms.
-}
-\details{
-The function returns the maximum intensity across all chromatograms.
+within each chromatogram. \cr
 
-No specific PSI:MS term exists for chromatogram maximum intensity.
-Note: MS:4000063 is "MS2 known precursor charges fractions", not max intensity.
+The metric is calculated as follows: \cr
+(1) for each chromatogram in the `Chromatograms` object, the intensity
+values are extracted, \cr
+(2) the maximum value per chromatogram is obtained and returned.
 }
 \examples{
 library(Chromatograms)
@@ -40,7 +40,7 @@ pdata <- list(
                intensity = c(80, 500, 1200, 600, 120))
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-## Returns max intensity across all chromatograms: 1200
+## Returns max intensity per chromatogram: c(400, 1200)
 maxIntensity(chr)
 }
 \author{

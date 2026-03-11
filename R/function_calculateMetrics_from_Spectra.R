@@ -551,9 +551,8 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #' @author Thomas Naake
 #'
 #' @export
-#' @aliases calculateMetrics,Spectra-method calculateMetrics,MsExperiment-method calculateMetrics,Chromatograms-method calculateMetrics,Chromatograms-method
 #'
-#' @importFrom methods setGeneric setMethod
+#' @importFrom methods is
 #' @import MsDataHub
 #'
 #' @examples
@@ -580,25 +579,24 @@ calculateMetricsFromMsExperiment <- function(msexp,
 #'     msLevel = 1, change = "fall", relativeTo = "previous")
 #' @rdname calculateMetrics
 #' @export
-setMethod("calculateMetrics", "Spectra", function(object, metrics = qualityMetrics(object),
+calculateMetrics <- function(object, metrics = qualityMetrics(object),
     filterEmptyObject = FALSE, ...) {
     metrics <- match.arg(metrics, choices = qualityMetrics(object),
         several.ok = TRUE)
     if (length(filterEmptyObject) != 1 | !is.logical(filterEmptyObject))
         stop("'filterEmptyObject' has to be either TRUE or FALSE")
-    calculateMetricsFromSpectra(spectra = object, metrics = metrics,
-        filterEmptyObject = filterEmptyObject, ...)
-})
 
-#' @rdname calculateMetrics
-#' @export
-setMethod("calculateMetrics", "MsExperiment", function(object, metrics = qualityMetrics(object),
-    filterEmptyObject = FALSE, ...) {
-    metrics <- match.arg(metrics, choices = qualityMetrics(object),
-        several.ok = TRUE)
-    if (length(filterEmptyObject) != 1 | !is.logical(filterEmptyObject))
-        stop("'filterEmptyObject' has to be either TRUE or FALSE")
-    calculateMetricsFromMsExperiment(msexp = object, metrics = metrics,
-        filterEmptyObject = filterEmptyObject, ...)
-})
+    if (is(object, "Spectra")) {
+        calculateMetricsFromSpectra(spectra = object, metrics = metrics,
+            filterEmptyObject = filterEmptyObject, ...)
+    } else if (is(object, "MsExperiment")) {
+        calculateMetricsFromMsExperiment(msexp = object, metrics = metrics,
+            filterEmptyObject = filterEmptyObject, ...)
+    } else if (is(object, "Chromatograms")) {
+        calculateMetricsFromChromatograms(chromatograms = object,
+            metrics = metrics, filterEmptyObject = filterEmptyObject, ...)
+    } else {
+        stop("'object' must be of class 'Spectra', 'MsExperiment', or 'Chromatograms'")
+    }
+}
 

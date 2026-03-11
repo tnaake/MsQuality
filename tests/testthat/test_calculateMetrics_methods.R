@@ -27,24 +27,24 @@ test_chr <- Chromatograms(
 ## Define quality metrics to test
 metrics <- c("chromatographyDuration", "ticQuantileRtFraction", "numberSpectra")
 
-test_that("areaUnderTic Chromatograms method dispatch", {
-    expect_true(hasMethod("areaUnderTic", "Chromatograms"))
-
+test_that("areaUnderTic Chromatograms dispatch", {
     chr <- test_chr
     res <- areaUnderTic(chr)
 
-    expect_equal(as.numeric(res), 3700)
+    expect_equal(length(res), 2)
+    expect_equal(res[1], sum(c(100, 250, 400, 300, 150)))
+    expect_equal(res[2], sum(c(80, 500, 1200, 600, 120)))
     expect_equal(attr(res, "areaUnderTic"), "MS:4000155")
 })
 
-test_that("ticQuantileRtFraction Chromatograms method dispatch", {
-    expect_true(hasMethod("ticQuantileRtFraction", "Chromatograms"))
-
+test_that("ticQuantileRtFraction Chromatograms dispatch", {
     chr <- test_chr
     res <- ticQuantileRtFraction(chr)
 
-    expect_length(res, 5)
-    expect_equal(names(res), c("0%", "25%", "50%", "75%", "100%"))
+    expect_true(is.matrix(res))
+    expect_equal(nrow(res), 2)
+    expect_equal(ncol(res), 5)
+    expect_equal(colnames(res), c("0%", "25%", "50%", "75%", "100%"))
     expect_true(all(res >= 0 & res <= 1, na.rm = TRUE))
     expect_equal(attr(res, "ticQuantileRtFraction"), "MS:4000183")
 })
@@ -56,7 +56,9 @@ test_that("Chromatograms methods accept additional arguments and are consistent"
     expect_no_error(ticQuantileRtFraction(chr, probs = c(0.25, 0.5, 0.75, 1)))
 
     custom <- ticQuantileRtFraction(chr, probs = c(0.5, 1.0))
-    expect_length(custom, 2)
+    expect_true(is.matrix(custom))
+    expect_equal(nrow(custom), 2)
+    expect_equal(ncol(custom), 2)
 
     expect_equal(areaUnderTic(chr), areaUnderTic(chr))
     expect_equal(ticQuantileRtFraction(chr), ticQuantileRtFraction(chr))
@@ -212,6 +214,7 @@ test_that("calculateMetrics returns correct column names with multiple metrics",
     )
 
     expect_s3_class(result, "data.frame")
+    expect_equal(nrow(result), 2)
     ## Column names should be the metric names, not "5%", NA, etc.
     expect_equal(colnames(result), chrom_metrics)
     ## All values should be numeric
@@ -222,7 +225,7 @@ test_that("calculateMetrics returns correct column names with multiple metrics",
 
 test_that("calculateMetrics works with metrics returning multiple values",
 {    chr <- test_chr
-    chrom_metrics <- c("xicFwhm", "peakBoundary", "peakBeta")
+    chrom_metrics <- c("xicFwhm", "peakBoundary", "gaussianSimilarity")
     expect_no_error({
         result <- calculateMetrics(
             object = chr,
@@ -230,21 +233,21 @@ test_that("calculateMetrics works with metrics returning multiple values",
             filterEmptyObject = FALSE
         )
     })
-    
+
     result <- calculateMetrics(
         object = chr,
         metrics = chrom_metrics,
         filterEmptyObject = FALSE
     )
-    
+
     expect_s3_class(result, "data.frame")
     ## Check that multi-value metrics have proper column names
     ## peakBoundary returns left_boundary and right_boundary
     expect_true("peakBoundary.left_boundary" %in% colnames(result))
     expect_true("peakBoundary.right_boundary" %in% colnames(result))
-    ## peakBeta returns beta_cor and beta_snr
-    expect_true("peakBeta.beta_cor" %in% colnames(result))
-    expect_true("peakBeta.beta_snr" %in% colnames(result))
+    ## gaussianSimilarity returns gaussian_similarity and gaussian_residuals
+    expect_true("gaussianSimilarity.gaussian_similarity" %in% colnames(result))
+    expect_true("gaussianSimilarity.gaussian_residuals" %in% colnames(result))
     ## xicFwhm returns a single value
     expect_true("xicFwhm" %in% colnames(result))
 })
@@ -279,6 +282,7 @@ test_that("calculateMetrics handles na.rm parameter without errors", {
     )
 
     expect_s3_class(result, "data.frame")
+    expect_equal(nrow(result), 2)
     expect_equal(ncol(result), length(chrom_metrics))
     expect_equal(colnames(result), chrom_metrics)
 })

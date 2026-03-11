@@ -2,43 +2,58 @@
 % Please edit documentation in R/function_Chromatograms_metrics.R
 \name{xicFwhm}
 \alias{xicFwhm}
-\title{Full Width at Half Maximum (FWHM) for a Chromatogram}
+\title{Full Width at Half Maximum (FWHM) per Chromatogram}
 \usage{
 xicFwhm(chromatograms, peakBoundary = NULL, ...)
 }
 \arguments{
-\item{chromatograms}{`Chromatograms` object containing a single chromatogram}
+\item{chromatograms}{`Chromatograms` object}
 
-\item{peakBoundary}{optional `numeric(2)` named vector with `left_boundary`
-and `right_boundary` values from a previous call to `peakBoundary()`.
-If not provided, the full chromatogram is used.}
+\item{peakBoundary}{optional peak boundary: either a `matrix` with columns
+`left_boundary` and `right_boundary` (one row per chromatogram), or a
+`numeric(2)` named vector applied to all chromatograms.}
 
 \item{...}{further arguments}
 }
 \value{
-`numeric(1)` FWHM value. Returns `NA` if FWHM cannot be calculated.
+`numeric` of length equal to `length(chromatograms)`. Returns `NA`
+  for chromatograms where FWHM cannot be calculated.
 }
 \description{
 The function `xicFwhm` calculates the Full Width at Half Maximum (FWHM)
-for a single chromatogram.
+for each chromatogram in the `Chromatograms` object. \cr
+
+The metric is calculated as follows (per chromatogram): \cr
+(1) the retention time and intensity values are extracted, \cr
+(2) if \code{peakBoundary} is provided, the data is subset to the peak
+region, \cr
+(3) the maximum intensity and its index are determined, \cr
+(4) the half-maximum intensity (50\% of maximum) is calculated, \cr
+(5) the left and right crossing points where intensity equals the
+half-maximum are found by linear interpolation, \cr
+(6) the FWHM is returned as the difference between the right and left
+crossing retention times.
 }
 \details{
-The FWHM is calculated by finding the maximum intensity peak, determining
-50\% of that intensity, and linearly interpolating the time difference between
-the left and right crossing points.
+This metric is analogous to MS:4000051 (XIC-FWHM quantiles). \cr
 
-If `peakBoundary` is provided, the calculation is restricted to the peak
-region defined by those boundaries, which can improve accuracy for noisy
-chromatograms and efficiency when calculating multiple metrics.
-
-This metric is analogous to MS:4000051 (XIC-FWHM quantiles).
+If \code{peakBoundary} is provided, the calculation is restricted to the peak
+region defined by those boundaries. \code{peakBoundary} can be a `matrix`
+(one row per chromatogram, as returned by `peakBoundary()`) or a
+`numeric(2)` vector applied to all chromatograms.
 }
 \examples{
 library(Chromatograms)
-cdata <- data.frame(msLevel = 1L, mz = 112.2, dataOrigin = "mem1")
+cdata <- data.frame(
+    msLevel = c(1L, 1L),
+    mz = c(112.2, 123.3),
+    dataOrigin = c("mem1", "mem1")
+)
 pdata <- list(
     data.frame(rtime = c(2.1, 2.5, 3.0, 3.4, 3.9),
-               intensity = c(100, 250, 400, 300, 150))
+               intensity = c(100, 250, 400, 300, 150)),
+    data.frame(rtime = c(5.1, 5.8, 6.3, 6.9, 7.5),
+               intensity = c(80, 500, 1200, 600, 120))
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 xicFwhm(chr)

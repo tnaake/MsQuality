@@ -12,17 +12,18 @@ intensityQuartiles(chromatograms, ...)
 \item{...}{further arguments passed to `summary`}
 }
 \value{
-`numeric(6)` named vector with Min, 1st Qu., Median, Mean, 3rd Qu., Max
+`matrix` with `nrow` equal to `length(chromatograms)` and 6 columns
+  (Min, 1st Qu., Median, Mean, 3rd Qu., Max)
 }
 \description{
 The function `intensityQuartiles` calculates the minimum, 1st quartile,
-median, 3rd quartile, and maximum of intensity values for each chromatogram.
-}
-\details{
-The function returns a list of vectors, where each vector contains the
-summary statistics for a chromatogram.
+median, 3rd quartile, and maximum of intensity values within each
+chromatogram. \cr
 
-No specific PSI:MS term exists. It should be created.
+The metric is calculated as follows: \cr
+(1) for each chromatogram, the intensity values are extracted, \cr
+(2) the summary statistics (Min, 1st Qu., Median, Mean, 3rd Qu., Max)
+are calculated and returned as a row of the result matrix.
 }
 \examples{
 library(Chromatograms)
@@ -38,7 +39,7 @@ pdata <- list(
                intensity = c(80, 500, 1200, 600, 120))
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-## Returns Min, 1st Qu., Median, Mean, 3rd Qu., Max for the overall intensities
+## Returns a 2x6 matrix with summary statistics per chromatogram
 intensityQuartiles(chr)
 }
 \author{

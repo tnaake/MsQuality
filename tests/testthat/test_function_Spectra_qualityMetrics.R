@@ -53,18 +53,17 @@ qm_mse <- c("chromatographyDuration", "ticQuantileRtFraction",
     "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange",
     "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2",
     "meanCharge", "medianCharge")
-qm_chr <-  c("chromatographyDuration", "chromatogramCount",
+qm_chr <-  c("chromatographyDuration", "peakCount",
             "rtAcquisitionRange", "maxIntensity",
             "intensityQuartiles", "intensityMean", "intensitySd",
-            "intensityRange", "peakCount", "rtIqr",
+            "intensityRange", "rtIqr",
             "baselineIntensity", "signalToNoiseRatio",
-            "intensity10xChange",
-            "numberEmptyChrom",
-            "medianIntensityRtIqr",
-            "xicFwhm", "peakBoundary", "peakWidth", "peakBeta",
+            "msSignal10xChange",
+            "numberEmptyScans",
+            "medianTicRtIqr",
+            "xicFwhm", "peakBoundary", "peakWidth", "gaussianSimilarity",
             "peakProminence",
-            "ticQuantileRtFraction", "areaUnderTic", "areaUnderTicRtQuantiles",
-            "areaUnderTicMs1", "areaUnderTicMs2")
+            "ticQuantileRtFraction", "areaUnderTic", "areaUnderTicRtQuantiles")
 
 test_that("qualityMetrics for Spectra", {
     expect_equal(qualityMetrics(spectra), qm_spectra)

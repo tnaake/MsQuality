@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Chromatograms_metrics.R
 \name{intensitySd}
 \alias{intensitySd}
-\title{Intensity statistics (Standard Deviation) across chromatograms}
+\title{Intensity statistics (Standard Deviation) per chromatogram}
 \usage{
 intensitySd(chromatograms, na.rm = TRUE, ...)
 }
@@ -14,16 +14,16 @@ intensitySd(chromatograms, na.rm = TRUE, ...)
 \item{...}{further arguments passed to `sd`}
 }
 \value{
-`numeric(1)`
+`numeric` of length equal to `length(chromatograms)`
 }
 \description{
 The function `intensitySd` calculates the standard deviation of intensity
-values across all chromatograms.
-}
-\details{
-The function returns the standard deviation of the intensity across all chromatograms.
+values within each chromatogram. \cr
 
-No specific PSI:MS term exists. It should be created.
+The metric is calculated as follows: \cr
+(1) for each chromatogram in the `Chromatograms` object, the intensity
+values are extracted, \cr
+(2) the standard deviation per chromatogram is calculated and returned.
 }
 \examples{
 library(Chromatograms)
@@ -39,7 +39,7 @@ pdata <- list(
                intensity = c(80, 500, 1200, 600, 120))
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-## Returns standard deviation of intensities across all chromatograms
+## Returns standard deviation of intensities per chromatogram
 intensitySd(chr)
 }
 \author{

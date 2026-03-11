@@ -1,0 +1,540 @@
+                                             file
+1                 test_calculateMetrics_methods.R
+2                 test_calculateMetrics_methods.R
+3                 test_calculateMetrics_methods.R
+4                 test_calculateMetrics_methods.R
+5                 test_calculateMetrics_methods.R
+6                 test_calculateMetrics_methods.R
+7                 test_calculateMetrics_methods.R
+8                 test_calculateMetrics_methods.R
+9                 test_calculateMetrics_methods.R
+10                test_calculateMetrics_methods.R
+11                test_calculateMetrics_methods.R
+12                test_calculateMetrics_methods.R
+13                test_calculateMetrics_methods.R
+14                test_calculateMetrics_methods.R
+15                test_calculateMetrics_methods.R
+16  test_function_calculateMetrics_from_Spectra.R
+17  test_function_calculateMetrics_from_Spectra.R
+18  test_function_calculateMetrics_from_Spectra.R
+19  test_function_calculateMetrics_from_Spectra.R
+20  test_function_calculateMetrics_from_Spectra.R
+21  test_function_calculateMetrics_from_Spectra.R
+22  test_function_calculateMetrics_from_Spectra.R
+23  test_function_calculateMetrics_from_Spectra.R
+24  test_function_calculateMetrics_from_Spectra.R
+25  test_function_calculateMetrics_from_Spectra.R
+26  test_function_calculateMetrics_from_Spectra.R
+27  test_function_calculateMetrics_from_Spectra.R
+28          test_function_Chromatograms_metrics.R
+29          test_function_Chromatograms_metrics.R
+30          test_function_Chromatograms_metrics.R
+31          test_function_Chromatograms_metrics.R
+32          test_function_Chromatograms_metrics.R
+33          test_function_Chromatograms_metrics.R
+34          test_function_Chromatograms_metrics.R
+35          test_function_Chromatograms_metrics.R
+36          test_function_Chromatograms_metrics.R
+37          test_function_Chromatograms_metrics.R
+38          test_function_Chromatograms_metrics.R
+39          test_function_Chromatograms_metrics.R
+40          test_function_Chromatograms_metrics.R
+41          test_function_Chromatograms_metrics.R
+42          test_function_Chromatograms_metrics.R
+43          test_function_Chromatograms_metrics.R
+44          test_function_Chromatograms_metrics.R
+45          test_function_Chromatograms_metrics.R
+46          test_function_Chromatograms_metrics.R
+47          test_function_Chromatograms_metrics.R
+48          test_function_Chromatograms_metrics.R
+49          test_function_Chromatograms_metrics.R
+50          test_function_Chromatograms_metrics.R
+51          test_function_Chromatograms_metrics.R
+52          test_function_Chromatograms_metrics.R
+53          test_function_Chromatograms_metrics.R
+54          test_function_Chromatograms_metrics.R
+55          test_function_Chromatograms_metrics.R
+56          test_function_Chromatograms_metrics.R
+57          test_function_Chromatograms_metrics.R
+58          test_function_Chromatograms_metrics.R
+59          test_function_Chromatograms_metrics.R
+60          test_function_Chromatograms_metrics.R
+61          test_function_Chromatograms_metrics.R
+62          test_function_Chromatograms_metrics.R
+63          test_function_Chromatograms_metrics.R
+64          test_function_Chromatograms_metrics.R
+65          test_function_Chromatograms_metrics.R
+66          test_function_Chromatograms_metrics.R
+67          test_function_Chromatograms_metrics.R
+68          test_function_Chromatograms_metrics.R
+69          test_function_Chromatograms_metrics.R
+70          test_function_Chromatograms_metrics.R
+71          test_function_Chromatograms_metrics.R
+72          test_function_Chromatograms_metrics.R
+73          test_function_Chromatograms_metrics.R
+74          test_function_Chromatograms_metrics.R
+75          test_function_Chromatograms_metrics.R
+76          test_function_Chromatograms_metrics.R
+77          test_function_Chromatograms_metrics.R
+78          test_function_Chromatograms_metrics.R
+79          test_function_Chromatograms_metrics.R
+80          test_function_Chromatograms_metrics.R
+81          test_function_Chromatograms_metrics.R
+82          test_function_Chromatograms_metrics.R
+83          test_function_Chromatograms_metrics.R
+84          test_function_Chromatograms_metrics.R
+85          test_function_Chromatograms_metrics.R
+86          test_function_Chromatograms_metrics.R
+87          test_function_Chromatograms_metrics.R
+88          test_function_Chromatograms_metrics.R
+89          test_function_Chromatograms_metrics.R
+90          test_function_Chromatograms_metrics.R
+91          test_function_Chromatograms_metrics.R
+92          test_function_Chromatograms_metrics.R
+93          test_function_Chromatograms_metrics.R
+94          test_function_Chromatograms_metrics.R
+95          test_function_Chromatograms_metrics.R
+96          test_function_Chromatograms_metrics.R
+97          test_function_Chromatograms_metrics.R
+98          test_function_Chromatograms_metrics.R
+99          test_function_Chromatograms_metrics.R
+100         test_function_Chromatograms_metrics.R
+101         test_function_Chromatograms_metrics.R
+102               test_function_Spectra_metrics.R
+103               test_function_Spectra_metrics.R
+104               test_function_Spectra_metrics.R
+105               test_function_Spectra_metrics.R
+106               test_function_Spectra_metrics.R
+107               test_function_Spectra_metrics.R
+108               test_function_Spectra_metrics.R
+109               test_function_Spectra_metrics.R
+110               test_function_Spectra_metrics.R
+111               test_function_Spectra_metrics.R
+112               test_function_Spectra_metrics.R
+113               test_function_Spectra_metrics.R
+114               test_function_Spectra_metrics.R
+115               test_function_Spectra_metrics.R
+116               test_function_Spectra_metrics.R
+117               test_function_Spectra_metrics.R
+118               test_function_Spectra_metrics.R
+119               test_function_Spectra_metrics.R
+120               test_function_Spectra_metrics.R
+121               test_function_Spectra_metrics.R
+122               test_function_Spectra_metrics.R
+123               test_function_Spectra_metrics.R
+124               test_function_Spectra_metrics.R
+125               test_function_Spectra_metrics.R
+126               test_function_Spectra_metrics.R
+127               test_function_Spectra_metrics.R
+128               test_function_Spectra_metrics.R
+129        test_function_Spectra_qualityMetrics.R
+130        test_function_Spectra_qualityMetrics.R
+131        test_function_Spectra_qualityMetrics.R
+132                test_function_visualizations.R
+133                test_function_visualizations.R
+134                test_function_visualizations.R
+                                   context
+1                 calculateMetrics_methods
+2                 calculateMetrics_methods
+3                 calculateMetrics_methods
+4                 calculateMetrics_methods
+5                 calculateMetrics_methods
+6                 calculateMetrics_methods
+7                 calculateMetrics_methods
+8                 calculateMetrics_methods
+9                 calculateMetrics_methods
+10                calculateMetrics_methods
+11                calculateMetrics_methods
+12                calculateMetrics_methods
+13                calculateMetrics_methods
+14                calculateMetrics_methods
+15                calculateMetrics_methods
+16  function_calculateMetrics_from_Spectra
+17  function_calculateMetrics_from_Spectra
+18  function_calculateMetrics_from_Spectra
+19  function_calculateMetrics_from_Spectra
+20  function_calculateMetrics_from_Spectra
+21  function_calculateMetrics_from_Spectra
+22  function_calculateMetrics_from_Spectra
+23  function_calculateMetrics_from_Spectra
+24  function_calculateMetrics_from_Spectra
+25  function_calculateMetrics_from_Spectra
+26  function_calculateMetrics_from_Spectra
+27  function_calculateMetrics_from_Spectra
+28          function_Chromatograms_metrics
+29          function_Chromatograms_metrics
+30          function_Chromatograms_metrics
+31          function_Chromatograms_metrics
+32          function_Chromatograms_metrics
+33          function_Chromatograms_metrics
+34          function_Chromatograms_metrics
+35          function_Chromatograms_metrics
+36          function_Chromatograms_metrics
+37          function_Chromatograms_metrics
+38          function_Chromatograms_metrics
+39          function_Chromatograms_metrics
+40          function_Chromatograms_metrics
+41          function_Chromatograms_metrics
+42          function_Chromatograms_metrics
+43          function_Chromatograms_metrics
+44          function_Chromatograms_metrics
+45          function_Chromatograms_metrics
+46          function_Chromatograms_metrics
+47          function_Chromatograms_metrics
+48          function_Chromatograms_metrics
+49          function_Chromatograms_metrics
+50          function_Chromatograms_metrics
+51          function_Chromatograms_metrics
+52          function_Chromatograms_metrics
+53          function_Chromatograms_metrics
+54          function_Chromatograms_metrics
+55          function_Chromatograms_metrics
+56          function_Chromatograms_metrics
+57          function_Chromatograms_metrics
+58          function_Chromatograms_metrics
+59          function_Chromatograms_metrics
+60          function_Chromatograms_metrics
+61          function_Chromatograms_metrics
+62          function_Chromatograms_metrics
+63          function_Chromatograms_metrics
+64          function_Chromatograms_metrics
+65          function_Chromatograms_metrics
+66          function_Chromatograms_metrics
+67          function_Chromatograms_metrics
+68          function_Chromatograms_metrics
+69          function_Chromatograms_metrics
+70          function_Chromatograms_metrics
+71          function_Chromatograms_metrics
+72          function_Chromatograms_metrics
+73          function_Chromatograms_metrics
+74          function_Chromatograms_metrics
+75          function_Chromatograms_metrics
+76          function_Chromatograms_metrics
+77          function_Chromatograms_metrics
+78          function_Chromatograms_metrics
+79          function_Chromatograms_metrics
+80          function_Chromatograms_metrics
+81          function_Chromatograms_metrics
+82          function_Chromatograms_metrics
+83          function_Chromatograms_metrics
+84          function_Chromatograms_metrics
+85          function_Chromatograms_metrics
+86          function_Chromatograms_metrics
+87          function_Chromatograms_metrics
+88          function_Chromatograms_metrics
+89          function_Chromatograms_metrics
+90          function_Chromatograms_metrics
+91          function_Chromatograms_metrics
+92          function_Chromatograms_metrics
+93          function_Chromatograms_metrics
+94          function_Chromatograms_metrics
+95          function_Chromatograms_metrics
+96          function_Chromatograms_metrics
+97          function_Chromatograms_metrics
+98          function_Chromatograms_metrics
+99          function_Chromatograms_metrics
+100         function_Chromatograms_metrics
+101         function_Chromatograms_metrics
+102               function_Spectra_metrics
+103               function_Spectra_metrics
+104               function_Spectra_metrics
+105               function_Spectra_metrics
+106               function_Spectra_metrics
+107               function_Spectra_metrics
+108               function_Spectra_metrics
+109               function_Spectra_metrics
+110               function_Spectra_metrics
+111               function_Spectra_metrics
+112               function_Spectra_metrics
+113               function_Spectra_metrics
+114               function_Spectra_metrics
+115               function_Spectra_metrics
+116               function_Spectra_metrics
+117               function_Spectra_metrics
+118               function_Spectra_metrics
+119               function_Spectra_metrics
+120               function_Spectra_metrics
+121               function_Spectra_metrics
+122               function_Spectra_metrics
+123               function_Spectra_metrics
+124               function_Spectra_metrics
+125               function_Spectra_metrics
+126               function_Spectra_metrics
+127               function_Spectra_metrics
+128               function_Spectra_metrics
+129        function_Spectra_qualityMetrics
+130        function_Spectra_qualityMetrics
+131        function_Spectra_qualityMetrics
+132                function_visualizations
+133                function_visualizations
+134                function_visualizations
+                                                                      test  nb
+1                                      areaUnderTic Chromatograms dispatch   4
+2                             ticQuantileRtFraction Chromatograms dispatch   6
+3     Chromatograms methods accept additional arguments and are consistent   7
+4                              calculateMetrics works with Spectra objects   3
+5                     calculateMetrics works with multiple Spectra metrics   5
+6                         calculateMetrics works with MsExperiment objects   3
+7                        calculateMetrics works with Chromatograms objects   3
+8               calculateMetrics works with multiple Chromatograms metrics  12
+9                     calculateMetrics dispatches correctly based on class   3
+10  calculateMetrics handles metrics with different parameter requirements   4
+11       calculateMetrics passes additional parameters to metric functions   6
+12                             calculateMetrics validates inputs correctly   3
+13     calculateMetrics returns correct column names with multiple metrics   5
+14           calculateMetrics works with metrics returning multiple values   7
+15                 calculateMetrics handles na.rm parameter without errors   5
+16                                    calculateMetricsFromOneSampleSpectra  69
+17                                             calculateMetricsFromSpectra  38
+18                                        calculateMetricsFromMsExperiment  34
+19                                                        calculateMetrics  82
+20                  calculateMetricsFromOneSampleSpectra, format = 'mzQC'.   2
+21                           calculateMetricsFromSpectra, format = 'mzQC'.  67
+22                      calculateMetricsFromMsExperiment, format = 'mzQC'.  67
+23                                      calculateMetrics, format = 'mzQC'. 134
+24                                              transformIntoMzQC has URIs   1
+25                             Chromatograms object creation and accessors   6
+26               Spectra-derived metrics calculation from original Spectra   5
+27      Multiple metrics calculation from Spectra for Chromatogram context   6
+28              chromatographyDuration returns per-chromatogram durations.   5
+29                   peakCount returns per-chromatogram data point counts.   4
+30                                numberEmptyScans works on Chromatograms.   1
+31                     rtAcquisitionRange returns per-chromatogram matrix.   8
+32                           maxIntensity returns per-chromatogram values.   5
+33                          intensityMean returns per-chromatogram values.   5
+34                            intensitySd returns per-chromatogram values.   5
+35                     intensityQuartiles returns per-chromatogram matrix.   8
+36                         intensityRange returns per-chromatogram matrix.   8
+37                                  rtIqr returns per-chromatogram values.   4
+38                      baselineIntensity returns per-chromatogram values.   5
+39                     signalToNoiseRatio returns per-chromatogram values.   5
+40     msSignal10xChange returns per-chromatogram values on Chromatograms.   6
+41        medianTicRtIqr returns per-chromatogram values on Chromatograms.   4
+42                                xicFwhm returns per-chromatogram values.   5
+43                           xicFwhm handles NA intensities without error.   3
+44                       xicFwhm accepts pre-computed peakBoundary matrix.   1
+45                           peakBoundary returns per-chromatogram matrix.  10
+46       peakBoundary returns correct boundaries for clean symmetric peak.   5
+47                                peakBoundary handles empty chromatogram.   3
+48                                peakBoundary handles all-NA intensities.   1
+49                            peakBoundary handles NA-adjacent boundaries.   3
+50                                 peakBoundary threshold parameter works.   2
+51                              peakWidth returns per-chromatogram values.   5
+52                         peakWidth returns correct width for clean peak.   2
+53                     peakWidth accepts pre-computed peakBoundary matrix.   2
+54                     gaussianSimilarity returns per-chromatogram matrix.   6
+55                   gaussianSimilarity returns NA for empty chromatogram.   3
+56                 gaussianSimilarity returns NA for peak with < 5 points.   1
+57            gaussianSimilarity accepts pre-computed peakBoundary matrix.   2
+58                         peakProminence returns per-chromatogram values.   5
+59               peakProminence returns NA for zero-baseline chromatogram.   1
+60                peakProminence accepts pre-computed peakBoundary matrix.   1
+61                  ticQuantileRtFraction returns per-chromatogram matrix.  10
+62                           areaUnderTic returns per-chromatogram values.   5
+63                areaUnderTicRtQuantiles returns per-chromatogram matrix.   8
+64                       areaUnderTic filters by msLevel per chromatogram.   7
+65                                  rtAcquisitionRange filters by msLevel.   2
+66                                               rtIqr filters by msLevel.   1
+67                                    numberEmptyScans filters by msLevel.   1
+68                                   msSignal10xChange filters by msLevel.   1
+69             scalar metrics handle NA values correctly per-chromatogram.   6
+70                            maxIntensity handles all-zero chromatograms.   3
+71                           intensityMean handles all-zero chromatograms.   2
+72                             intensitySd handles all-zero chromatograms.   2
+73                      intensityQuartiles handles all-zero chromatograms.   1
+74                          intensityRange handles all-zero chromatograms.   2
+75                               peakCount handles all-zero chromatograms.   2
+76                       baselineIntensity handles all-zero chromatograms.   2
+77                      signalToNoiseRatio handles all-zero chromatograms.   2
+78                                 xicFwhm handles all-zero chromatograms.   2
+79                            peakBoundary handles all-zero chromatograms.   1
+80                               peakWidth handles all-zero chromatograms.   2
+81                      gaussianSimilarity handles all-zero chromatograms.   1
+82                          peakProminence handles all-zero chromatograms.   2
+83                       msSignal10xChange handles all-zero chromatograms.   2
+84                            areaUnderTic handles all-zero chromatograms.   2
+85                          medianTicRtIqr handles all-zero chromatograms.   2
+86                                  maxIntensity handles NA chromatograms.   3
+87                                 intensityMean handles NA chromatograms.   3
+88                                   intensitySd handles NA chromatograms.   3
+89                            intensityQuartiles handles NA chromatograms.   0
+90                                intensityRange handles NA chromatograms.   3
+91                                     peakCount handles NA chromatograms.   6
+92                             baselineIntensity handles NA chromatograms.   2
+93                            signalToNoiseRatio handles NA chromatograms.   2
+94                                       xicFwhm handles NA chromatograms.   2
+95                                  peakBoundary handles NA chromatograms.   3
+96                                     peakWidth handles NA chromatograms.   2
+97                            gaussianSimilarity handles NA chromatograms.   3
+98                                peakProminence handles NA chromatograms.   2
+99                             msSignal10xChange handles NA chromatograms.   1
+100                                 areaUnderTic handles NA chromatograms.   2
+101                               medianTicRtIqr handles NA chromatograms.   2
+102                                        .rtOrderSpectra works properly.   3
+103                                 chromatographyDuration works properly.   5
+104                                  ticQuantileRtFraction works properly.   6
+105                                       rtOverMsQuarters works properly.  13
+106                          ticQuartileToQuartileLogRatio works properly.  20
+107                                          numberSpectra works properly.   9
+108                                     mzAcquisitionRange works properly.  12
+109                                     rtAcquisitionRange works properly.  12
+110                                      msSignal10xChange works properly.  12
+111                                       numberEmptyScans works properly.  12
+112                            precursorIntensityQuartiles works properly.  32
+113                                 precursorIntensityMean works properly.  20
+114                                   precursorIntensitySd works properly.  20
+115                                      medianPrecursorMz works properly.  13
+116                                                  rtIqr works properly.   8
+117                                              rtIqrRate works properly.  10
+118                                           areaUnderTic works properly.   8
+119                                areaUnderTicRtQuantiles works properly.  12
+120                     extentIdentifiedPrecursorIntensity works properly.  16
+121                                         medianTicRtIqr works properly.  12
+122                                     medianTicOfRtRange works properly.  12
+123                                precursorIntensityRange works properly.  12
+124                                      ratioCharge1over2 works properly.  12
+125                                      ratioCharge3over2 works properly.  12
+126                                      ratioCharge4over2 works properly.  12
+127                                             meanCharge works properly.  18
+128                                           medianCharge works properly.  18
+129                                             qualityMetrics for Spectra   3
+130                                       qualityMetrics for Chromatograms   1
+131                                        qualityMetrics for MsExperiment   3
+132                                                             plotMetric   4
+133                                                       plotMetricTibble   7
+134                                                         shinyMsQuality   2
+    failed skipped error warning user system real passed       result
+1        0   FALSE FALSE       0 0.03   0.00 0.05      4 list(mes....
+2        0   FALSE FALSE       0 0.02   0.05 0.07      6 list(mes....
+3        0   FALSE FALSE       0 0.09   0.01 0.11      7 list(mes....
+4        0   FALSE FALSE       0 1.44   0.14 1.68      3 list(mes....
+5        0   FALSE FALSE       0 0.11   0.02 0.12      5 list(mes....
+6        0   FALSE FALSE       0 0.83   0.12 0.97      3 list(mes....
+7        0   FALSE FALSE       0 4.99   0.41 5.55      3 list(mes....
+8        0   FALSE FALSE       0 6.86   0.66 7.53     12 list(mes....
+9        0   FALSE FALSE       0 1.09   0.15 1.23      3 list(mes....
+10       0   FALSE FALSE       0 0.05   0.00 0.05      4 list(mes....
+11       0   FALSE FALSE       0 1.26   0.10 1.42      6 list(mes....
+12       0   FALSE FALSE       0 0.11   0.00 0.11      3 list(mes....
+13       0   FALSE FALSE       0 0.06   0.01 0.08      5 list(mes....
+14       0   FALSE FALSE       0 0.10   0.05 0.12      7 list(mes....
+15       0   FALSE FALSE       0 0.05   0.02 0.07      5 list(mes....
+16       0   FALSE FALSE       0 0.25   0.07 0.31     69 list(mes....
+17       2   FALSE FALSE       0 0.16   0.02 0.19     36 list(mes....
+18       2   FALSE FALSE       0 0.11   0.06 0.20     32 list(mes....
+19      16   FALSE FALSE       0 0.36   0.07 0.47     66 list(mes....
+20       0   FALSE FALSE       0 1.31   0.30 1.61      2 list(mes....
+21       2   FALSE FALSE       0 5.27   0.66 6.50     65 list(mes....
+22       2   FALSE FALSE       0 3.44   0.50 3.99     65 list(mes....
+23       4   FALSE FALSE       0 6.86   0.78 7.79    130 list(mes....
+24       0   FALSE FALSE       0 2.20   0.39 3.86      1 list(mes....
+25       0   FALSE FALSE       0 2.73   0.28 3.13      6 list(mes....
+26       0   FALSE FALSE       0 0.04   0.00 0.03      5 list(mes....
+27       0   FALSE FALSE       0 0.67   0.11 0.75      6 list(mes....
+28       0   FALSE FALSE       0 0.00   0.00 0.03      5 list(mes....
+29       0   FALSE FALSE       0 0.03   0.00 0.01      4 list(mes....
+30       0   FALSE FALSE       0 0.02   0.00 0.02      1 list(mes....
+31       0   FALSE FALSE       0 0.03   0.00 0.05      8 list(mes....
+32       0   FALSE FALSE       0 0.00   0.01 0.01      5 list(mes....
+33       0   FALSE FALSE       0 0.00   0.02 0.03      5 list(mes....
+34       0   FALSE FALSE       0 0.00   0.01 0.03      5 list(mes....
+35       0   FALSE FALSE       0 0.00   0.04 0.04      8 list(mes....
+36       0   FALSE FALSE       0 0.03   0.04 0.04      8 list(mes....
+37       0   FALSE FALSE       0 0.00   0.01 0.03      4 list(mes....
+38       0   FALSE FALSE       0 0.02   0.00 0.02      5 list(mes....
+39       0   FALSE FALSE       0 0.01   0.04 0.03      5 list(mes....
+40       0   FALSE FALSE       0 0.00   0.01 0.03      6 list(mes....
+41       0   FALSE FALSE       0 0.03   0.00 0.05      4 list(mes....
+42       0   FALSE FALSE       0 0.03   0.00 0.03      5 list(mes....
+43       0   FALSE FALSE       0 0.03   0.00 0.02      3 list(mes....
+44       0   FALSE FALSE       0 0.00   0.00 0.01      1 list(mes....
+45       0   FALSE FALSE       0 0.05   0.02 0.08     10 list(mes....
+46       0   FALSE FALSE       0 0.02   0.01 0.03      5 list(mes....
+47       0   FALSE FALSE       0 0.01   0.02 0.03      3 list(mes....
+48       0   FALSE FALSE       0 0.02   0.00 0.02      1 list(mes....
+49       0   FALSE FALSE       0 0.01   0.01 0.03      3 list(mes....
+50       0   FALSE FALSE       0 0.02   0.02 0.03      2 list(mes....
+51       0   FALSE FALSE       0 0.01   0.01 0.03      5 list(mes....
+52       0   FALSE FALSE       0 0.02   0.00 0.02      2 list(mes....
+53       0   FALSE FALSE       0 0.02   0.00 0.01      2 list(mes....
+54       0   FALSE FALSE       0 0.03   0.02 0.05      6 list(mes....
+55       0   FALSE FALSE       0 0.00   0.03 0.03      3 list(mes....
+56       0   FALSE FALSE       0 0.00   0.02 0.02      1 list(mes....
+57       0   FALSE FALSE       0 0.03   0.01 0.03      2 list(mes....
+58       0   FALSE FALSE       0 0.01   0.02 0.04      5 list(mes....
+59       0   FALSE FALSE       0 0.01   0.00 0.02      1 list(mes....
+60       0   FALSE FALSE       0 0.02   0.00 0.03      1 list(mes....
+61       0   FALSE FALSE       0 0.06   0.00 0.06     10 list(mes....
+62       1   FALSE FALSE       0 0.03   0.01 0.04      4 list(mes....
+63       0   FALSE FALSE       0 0.07   0.04 0.09      8 list(mes....
+64       2   FALSE FALSE       0 0.03   0.01 0.05      5 list(mes....
+65       0   FALSE FALSE       0 0.01   0.00 0.03      2 list(mes....
+66       0   FALSE FALSE       0 0.02   0.00 0.01      1 list(mes....
+67       0   FALSE FALSE       0 0.03   0.02 0.03      1 list(mes....
+68       0   FALSE FALSE       0 0.03   0.00 0.02      1 list(mes....
+69       0   FALSE FALSE       0 0.02   0.00 0.03      6 list(mes....
+70       0   FALSE FALSE       0 0.00   0.02 0.02      3 list(mes....
+71       0   FALSE FALSE       0 0.00   0.00 0.01      2 list(mes....
+72       0   FALSE FALSE       0 0.01   0.00 0.02      2 list(mes....
+73       0   FALSE FALSE       0 0.00   0.02 0.01      1 list(mes....
+74       0   FALSE FALSE       0 0.00   0.01 0.00      2 list(mes....
+75       0   FALSE FALSE       0 0.00   0.00 0.01      2 list(mes....
+76       0   FALSE FALSE       0 0.00   0.00 0.02      2 list(mes....
+77       0   FALSE FALSE       0 0.00   0.02 0.03      2 list(mes....
+78       0   FALSE FALSE       0 0.01   0.02 0.03      2 list(mes....
+79       0   FALSE FALSE       0 0.02   0.00 0.02      1 list(mes....
+80       0   FALSE FALSE       0 0.02   0.02 0.03      2 list(mes....
+81       0   FALSE FALSE       0 0.00   0.01 0.02      1 list(mes....
+82       0   FALSE FALSE       0 0.01   0.02 0.03      2 list(mes....
+83       0   FALSE FALSE       0 0.00   0.01 0.01      2 list(mes....
+84       0   FALSE FALSE       0 0.02   0.00 0.03      2 list(mes....
+85       0   FALSE FALSE       0 0.01   0.00 0.02      2 list(mes....
+86       0   FALSE FALSE       0 0.00   0.00 0.01      3 list(mes....
+87       0   FALSE FALSE       0 0.01   0.00 0.04      3 list(mes....
+88       0   FALSE FALSE       0 0.02   0.00 0.03      3 list(mes....
+89       0   FALSE  TRUE       0 0.01   0.02 0.01      0             
+90       0   FALSE FALSE       0 0.02   0.00 0.03      3 list(mes....
+91       0   FALSE FALSE       0 0.03   0.00 0.05      6 list(mes....
+92       0   FALSE FALSE       0 0.03   0.00 0.03      2 list(mes....
+93       0   FALSE FALSE       0 0.01   0.02 0.05      2 list(mes....
+94       0   FALSE FALSE       0 0.02   0.00 0.01      2 list(mes....
+95       0   FALSE FALSE       0 0.03   0.00 0.04      3 list(mes....
+96       0   FALSE FALSE       0 0.02   0.01 0.01      2 list(mes....
+97       0   FALSE FALSE       0 0.03   0.00 0.05      3 list(mes....
+98       0   FALSE FALSE       0 0.01   0.00 0.01      2 list(mes....
+99       0   FALSE FALSE       0 0.02   0.00 0.02      1 list(mes....
+100      0   FALSE FALSE       0 0.03   0.00 0.02      2 list(mes....
+101      0   FALSE FALSE       0 0.00   0.02 0.03      2 list(mes....
+102      0   FALSE FALSE       0 0.06   0.00 0.06      3 list(mes....
+103      0   FALSE FALSE       0 0.04   0.00 0.02      5 list(mes....
+104      0   FALSE FALSE       0 0.75   0.07 0.83      6 list(mes....
+105      0   FALSE FALSE       0 0.09   0.00 0.11     13 list(mes....
+106      0   FALSE FALSE       0 3.50   0.35 3.87     20 list(mes....
+107      0   FALSE FALSE       0 0.05   0.00 0.05      9 list(mes....
+108      0   FALSE FALSE       0 0.04   0.00 0.06     12 list(mes....
+109      0   FALSE FALSE       0 0.03   0.02 0.05     12 list(mes....
+110      0   FALSE FALSE       0 1.27   0.25 1.50     12 list(mes....
+111      0   FALSE FALSE       0 1.52   0.22 1.69     12 list(mes....
+112      0   FALSE FALSE       0 0.12   0.01 0.15     32 list(mes....
+113      0   FALSE FALSE       0 0.11   0.04 0.13     20 list(mes....
+114      0   FALSE FALSE       0 0.09   0.01 0.09     20 list(mes....
+115      0   FALSE FALSE       0 0.05   0.02 0.08     13 list(mes....
+116      0   FALSE FALSE       0 0.02   0.01 0.05      8 list(mes....
+117      0   FALSE FALSE       0 0.09   0.00 0.07     10 list(mes....
+118      0   FALSE FALSE       0 1.94   0.30 2.33      8 list(mes....
+119      0   FALSE FALSE       0 2.00   0.31 2.39     12 list(mes....
+120      0   FALSE FALSE       0 0.08   0.00 0.10     16 list(mes....
+121      0   FALSE FALSE       0 0.39   0.08 0.43     12 list(mes....
+122      0   FALSE FALSE       0 0.79   0.08 0.88     12 list(mes....
+123      0   FALSE FALSE       0 0.05   0.01 0.05     12 list(mes....
+124      0   FALSE FALSE       0 0.09   0.02 0.11     12 list(mes....
+125      0   FALSE FALSE       0 0.11   0.00 0.11     12 list(mes....
+126      0   FALSE FALSE       0 0.03   0.03 0.11     12 list(mes....
+127      0   FALSE FALSE       0 0.05   0.03 0.11     18 list(mes....
+128      0   FALSE FALSE       0 0.08   0.00 0.08     18 list(mes....
+129      0   FALSE FALSE       0 0.03   0.00 0.02      3 list(mes....
+130      0   FALSE FALSE       0 0.00   0.00 0.01      1 list(mes....
+131      0   FALSE FALSE       0 0.02   0.00 0.02      3 list(mes....
+132      0   FALSE FALSE       0 0.34   0.04 0.77      4 list(mes....
+133      0   FALSE FALSE       0 0.05   0.00 0.05      7 list(mes....
+134      0   FALSE FALSE       0 0.05   0.00 0.06      2 list(mes....

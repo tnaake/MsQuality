@@ -29,7 +29,9 @@
 #'
 #' @param ... not used here
 #'
-#' @return \code{numeric(1)}
+#' @return For \code{Spectra}: \code{numeric(1)}.
+#'     For \code{Chromatograms}: \code{numeric} of length equal to
+#'     \code{length(object)}, one duration per chromatogram.
 #'
 #' @author Thomas Naake
 #'
@@ -61,20 +63,27 @@
 #' chromatographyDuration(object = sps)
 NULL
 
-#' @noRd
-.chromatographyDuration_spectra <- function(spectra, ...) {
-    RT <- rtime(object = spectra)
-    res <- max(RT, na.rm = TRUE) - min(RT, na.rm = TRUE)
+#' @rdname chromatographyDuration
+chromatographyDuration <- function(object, ...) {
+    if (is(object, "Spectra")) {
+        RT <- rtime(object = object)
+        if (length(RT) == 0 || all(is.na(RT))) {
+            res <- NA_real_
+        } else {
+            res <- max(RT, na.rm = TRUE) - min(RT, na.rm = TRUE)
+        }
+    } else if (is(object, "Chromatograms")) {
+        rts_list <- rtime(object)
+        res <- vapply(rts_list, function(RT) {
+            if (length(RT) == 0 || all(is.na(RT))) return(NA_real_)
+            max(RT, na.rm = TRUE) - min(RT, na.rm = TRUE)
+        }, numeric(1))
+    }
 
     ## add attributes and return
-    attributes(res) <- list(chromatographyDuration = "MS:4000053")
+    attr(res, "chromatographyDuration") <- "MS:4000053"
     res
 }
-
-#' @rdname chromatographyDuration
-setMethod("chromatographyDuration", "Spectra", function(object, ...) {
-    .chromatographyDuration_spectra(object, ...)
-})
 
 
 #' @title Order Spectra according to increasing retention time
@@ -530,8 +539,10 @@ numberSpectra <- function(spectra, msLevel = 1L, ...) {
     if (length(msLevel) != 1)
         stop("'msLevel' has to be of length 1")
 
-    spectra <- filterMsLevel(object = spectra, msLevel)
-    res <- length(spectra)
+    if (is(spectra, "Spectra")) {
+        spectra <- filterMsLevel(object = spectra, msLevel)
+        res <- length(spectra)
+    }
 
     ## add attributes and return
     if (msLevel == 1L)
@@ -681,28 +692,34 @@ mzAcquisitionRange <- function(spectra, msLevel = 2L, ...) {
 #' rtAcquisitionRange(object = sps, msLevel = 2L)
 NULL
 
-#' @noRd
-.rtAcquisitionRange_spectra <- function(spectra, msLevel = 1L, ...) {
-
-    spectra <- filterMsLevel(object = spectra, msLevel)
-
-    if (length(spectra) == 0) {
-        res <- c(NaN, NaN)
-    } else {
-        rt <- rtime(spectra)
-        res <- range(rt)
+#' @rdname rtAcquisitionRange
+rtAcquisitionRange <- function(object, msLevel = 1L, ...) {
+    if (is(object, "Spectra")) {
+        object <- filterMsLevel(object = object, msLevel)
+        if (length(object) == 0) {
+            res <- c(NaN, NaN)
+        } else {
+            rt <- rtime(object)
+            res <- range(rt)
+        }
+    } else if (is(object, "Chromatograms")) {
+        object <- filterChromData(object, variables = "msLevel",
+                                  ranges = c(msLevel, msLevel))
+        rts_list <- rtime(object)
+        res <- t(vapply(rts_list, function(rts) {
+            if (length(rts) == 0 || all(is.na(rts)))
+                return(c(min = NA_real_, max = NA_real_))
+            r <- range(rts, na.rm = TRUE)
+            c(min = r[1], max = r[2])
+        }, numeric(2)))
+        colnames(res) <- c("min", "max")
     }
 
     ## add attributes and return
-    attributes(res) <- list(names = c("min", "max"),
-        rtAcquisitionRange = "MS:4000070")
+    if (!is.matrix(res) && is.null(names(res))) names(res) <- c("min", "max")
+    attr(res, "rtAcquisitionRange") <- "MS:4000070"
     res
 }
-
-#' @rdname rtAcquisitionRange
-setMethod("rtAcquisitionRange", "Spectra", function(object, msLevel = 1L, ...) {
-    .rtAcquisitionRange_spectra(spectra = object, msLevel = msLevel, ...)
-})
 
 #' @name msSignal10xChange
 #'
@@ -754,12 +771,25 @@ setMethod("rtAcquisitionRange", "Spectra", function(object, msLevel = 1L, ...) {
 #' The function \code{msSignal10xChange} uses the function \code{ionCount} as an
 #' equivalent to the TIC.
 #'
+#' For \code{Chromatograms} objects the metric operates on raw point-by-point
+#' intensities rather than aggregated TIC values. This makes it sensitive to
+#' noise: small oscillations near zero can produce many spurious 10-fold
+#' jumps or falls. The \code{minIntensity} parameter (default \code{0})
+#' allows filtering out low-intensity points before computing ratios.
+#' Increasing \code{minIntensity} to the expected noise floor (e.g. the
+#' baseline intensity) is recommended for noisy chromatograms. Pre-smoothing
+#' the chromatogram before calling this function is another option.
+#'
 #' An attribute containing the PSI:MS term will only be returned if
 #' \code{msLevel} is 1.
 #'
-#' @param spectra \code{Spectra} object
+#' @param spectra \code{Spectra} or \code{Chromatograms} object
 #' @param change \code{character(1)}, one of \code{"jump"} or \code{"fall"}
 #' @param msLevel \code{integer}
+#' @param minIntensity \code{numeric(1)} minimum intensity threshold for
+#'   \code{Chromatograms} input. Data points with intensity below this
+#'   value are removed before computing ratios (default \code{0}, i.e.
+#'   only zero and negative values are removed).
 #' @param ... not used here
 #'
 #' @return \code{numeric(1)}
@@ -793,7 +823,8 @@ setMethod("rtAcquisitionRange", "Spectra", function(object, msLevel = 1L, ...) {
 #' sps <- Spectra(spd)
 #' msSignal10xChange(spectra = sps, change = "jump", msLevel = 2L)
 #' msSignal10xChange(spectra = sps, change = "fall", msLevel = 2L)
-msSignal10xChange <- function(spectra, change = "jump", msLevel = 1L, ...) {
+msSignal10xChange <- function(spectra, change = "jump", msLevel = 1L,
+                              minIntensity = 0, ...) {
 
     if (length(change) != 1) {
         stop("'change' has to be of length 1")
@@ -801,27 +832,40 @@ msSignal10xChange <- function(spectra, change = "jump", msLevel = 1L, ...) {
         change <- match.arg(change, choices = c("jump", "fall"))
     }
 
-    spectra <- filterMsLevel(object = spectra, msLevel)
+    if (is(spectra, "Spectra")) {
+        spectra <- filterMsLevel(object = spectra, msLevel)
 
-    if (length(spectra) == 0) {
-        res <- NaN
-    } else {
-        ## order spectra according to increasing retention time
-        spectra <- .rtOrderSpectra(spectra)
+        if (length(spectra) == 0) {
+            res <- NaN
+        } else {
+            ## order spectra according to increasing retention time
+            spectra <- .rtOrderSpectra(spectra)
 
-        tic <- ionCount(spectra)
+            tic <- ionCount(spectra)
 
-        precedingTic <- tic[seq_len(length(tic) - 1)]
-        followingTic <- tic[seq_len(length(tic))[-1]]
+            precedingTic <- tic[seq_len(length(tic) - 1)]
+            followingTic <- tic[seq_len(length(tic))[-1]]
 
-        ## calculate the ratio between following and preceding TICs and calculate
-        ## the number of 10X jumps or falls depending on the change argument
-        ratioTic <- followingTic / precedingTic
+            ## calculate the ratio between following and preceding TICs and calculate
+            ## the number of 10X jumps or falls depending on the change argument
+            ratioTic <- followingTic / precedingTic
 
-        if (change == "jump")
-            res <- sum(ratioTic >= 10)
-        if (change == "fall")
-            res <- sum(ratioTic <= 0.1)
+            if (change == "jump")
+                res <- sum(ratioTic >= 10)
+            if (change == "fall")
+                res <- sum(ratioTic <= 0.1)
+        }
+    } else if (is(spectra, "Chromatograms")) {
+        spectra <- filterChromData(spectra, variables = "msLevel",
+                                   ranges = c(msLevel, msLevel))
+        ints_list <- intensity(spectra)
+        res <- vapply(ints_list, function(ints) {
+            if (length(ints) < 2) return(0L)
+            ints <- ints[!is.na(ints) & ints > minIntensity]
+            if (length(ints) < 2) return(0L)
+            ratios <- ints[-1] / ints[-length(ints)]
+            if (change == "jump") sum(ratios >= 10) else sum(ratios <= 0.1)
+        }, integer(1))
     }
 
     ## add attributes and return
@@ -932,16 +976,27 @@ numberEmptyScans <- function(spectra, msLevel = 1L, ...) {
     if (length(msLevel) != 1)
         stop("'msLevel' has to be of length 1")
 
-    spectra <- filterMsLevel(object = spectra, msLevel)
+    if (is(spectra, "Spectra")) {
+        spectra <- filterMsLevel(object = spectra, msLevel)
 
-    ## three cases to take into account: 1) entry is NULL, 2) entry is NA,
-    ## or 3) entry is of length 0; in all three cases set to TRUE, otherwise
-    ## to FALSE
-    res <- intensity(spectra) |>
-        lapply(FUN = function(i)
-            ifelse(is.null(i), TRUE, is.na(i) | length(i) == 0 | sum(i) == 0)) |>
-        unlist() |>
-        sum()
+        ## three cases to take into account: 1) entry is NULL, 2) entry is NA,
+        ## or 3) entry is of length 0; in all three cases set to TRUE, otherwise
+        ## to FALSE
+        res <- intensity(spectra) |>
+            lapply(FUN = function(i)
+                ifelse(is.null(i), TRUE, is.na(i) | length(i) == 0 | sum(i) == 0)) |>
+            unlist() |>
+            sum()
+    } else if (is(spectra, "Chromatograms")) {
+        spectra <- filterChromData(spectra, variables = "msLevel",
+                                   ranges = c(msLevel, msLevel))
+        ints_list <- intensity(spectra)
+        empty <- vapply(ints_list, function(ints) {
+            is.null(ints) || length(ints) == 0 ||
+                all(is.na(ints)) || sum(ints, na.rm = TRUE) == 0
+        }, logical(1))
+        res <- sum(empty)
+    }
 
     ## add attributes and return
     if (msLevel == 1L)
@@ -1503,7 +1558,9 @@ medianPrecursorMz <- function(spectra, msLevel = 1L,
 #' \code{"identified"}, or \code{"unidentified"} (only used for \code{Spectra})
 #' @param ... not used here
 #'
-#' @return \code{numeric(1)}
+#' @return For \code{Spectra}: \code{numeric(1)}.
+#'     For \code{Chromatograms}: \code{numeric} of length equal to
+#'     \code{length(object)}, one RT IQR per chromatogram.
 #'
 #' @author Thomas Naake
 #'
@@ -1536,23 +1593,28 @@ medianPrecursorMz <- function(spectra, msLevel = 1L,
 #' rtIqr(object = sps, msLevel = 2L)
 NULL
 
-#' @noRd
-.rtIqr_spectra <- function(spectra, msLevel = 1L,
+#' @rdname rtIqr
+rtIqr <- function(object, msLevel = 1L,
         identificationLevel = c("all", "identified", "unidentified"), ...) {
 
     identificationLevel <- match.arg(identificationLevel)
 
-    spectra <- filterMsLevel(object = spectra, msLevel)
-
-    if (length(spectra) == 0) {
-        res <- NaN
-    } else {
-        ## get the retention time
-        rt <- rtime(spectra)
-
-        ## remove the retention time values that are NA and return the interquartile
-        ## range
-        res <- IQR(rt, na.rm = TRUE)
+    if (is(object, "Spectra")) {
+        object <- filterMsLevel(object = object, msLevel)
+        if (length(object) == 0) {
+            res <- NaN
+        } else {
+            rt <- rtime(object)
+            res <- IQR(rt, na.rm = TRUE)
+        }
+    } else if (is(object, "Chromatograms")) {
+        object <- filterChromData(object, variables = "msLevel",
+                                  ranges = c(msLevel, msLevel))
+        rts_list <- rtime(object)
+        res <- vapply(rts_list, function(rts) {
+            if (length(rts) < 2) return(NA_real_)
+            IQR(rts, na.rm = TRUE)
+        }, numeric(1))
     }
 
     ## add attributes and return
@@ -1561,13 +1623,6 @@ NULL
 
     res
 }
-
-#' @rdname rtIqr
-setMethod("rtIqr", "Spectra", function(object, msLevel = 1L,
-        identificationLevel = c("all", "identified", "unidentified"), ...) {
-    .rtIqr_spectra(object, msLevel = msLevel,
-        identificationLevel = identificationLevel, ...)
-})
 
 #' @name rtIqrRate
 #'
@@ -1699,7 +1754,8 @@ rtIqrRate <- function(spectra, msLevel = 1L,
 #'
 #' The metric is calculated as follows: \cr
 #' (1) the input object is filtered according to the MS level, \cr
-#' (2) the sum of the ion counts are obtained and returned.
+#' (2) the sum of the ion counts are obtained and returned
+#' (\code{NA} values are removed by default, controlled by \code{na.rm}).
 #'
 #' @details
 #' MS:4000155 \cr
@@ -1711,15 +1767,22 @@ rtIqrRate <- function(spectra, msLevel = 1L,
 #'
 #' @param object \code{Spectra} or \code{Chromatograms} object
 #' @param msLevel \code{integer}
+#' @param na.rm \code{logical(1)} whether to remove \code{NA} values before
+#'     computing the sum (default \code{TRUE})
 #' @param ... additional arguments passed to internal helpers
 #'
-#' @return \code{numeric(1)}
+#' @return For \code{Spectra}: \code{numeric(1)}.
+#'     For \code{Chromatograms}: \code{numeric} of length equal to
+#'     \code{length(object)}, one area per chromatogram.
 #'
 #' @author Thomas Naake
 #'
 #' @aliases areaUnderTic,Chromatograms-method areaUnderTic,Spectra-method
 #'
+#' @export
+#'
 #' @importFrom ProtGenerics tic ionCount
+#' @importFrom Chromatograms filterChromData
 #'
 #' @examples
 #' library(S4Vectors)
@@ -1744,27 +1807,33 @@ rtIqrRate <- function(spectra, msLevel = 1L,
 #' areaUnderTic(object = sps, msLevel = 2L)
 NULL
 
-#' @noRd
-.areaUnderTic_spectra <- function(spectra, msLevel = 1L, ...) {
-    spectra <- filterMsLevel(object = spectra, msLevel)
-
-    if (length(spectra) == 0) {
-        res <- NaN
-    } else {
-        TIC <- ionCount(spectra)
-
-        ## sum up the TIC (equivalent to the area) and return
-        res <- sum(TIC, na.rm = TRUE)
+#' @rdname areaUnderTic
+areaUnderTic <- function(object, msLevel = 1L, na.rm = TRUE, ...) {
+    if (is(object, "Spectra")) {
+        object <- filterMsLevel(object = object, msLevel)
+        if (length(object) == 0) {
+            res <- NaN
+        } else {
+            TIC <- ionCount(object)
+            res <- sum(TIC, na.rm = TRUE)
+        }
+    } else if (is(object, "Chromatograms")) {
+        object <- filterChromData(object, variables = "msLevel",
+                                  ranges = c(msLevel, msLevel))
+        if (length(object) == 0) {
+            res <- NaN
+        } else {
+            ints_list <- intensity(object)
+            res <- vapply(ints_list, function(ints) {
+                sum(ints, na.rm = na.rm)
+            }, numeric(1))
+        }
     }
 
     ## add attributes and return
-    attributes(res) <- list(areaUnderTic = "MS:4000155")
+    attr(res, "areaUnderTic") <- "MS:4000155"
     res
 }
-#' @rdname areaUnderTic
-setMethod("areaUnderTic", "Spectra", function(object, msLevel = 1L, ...) {
-    .areaUnderTic_spectra(object, msLevel = msLevel, ...)
-})
 
 
 
@@ -1808,8 +1877,10 @@ setMethod("areaUnderTic", "Spectra", function(object, msLevel = 1L, ...) {
 #'     via \code{msLevel} before computing the metric)
 #' @param ... not used here
 #'
-#' @return A numeric vector of length 4 with areas per quartile,
-#'     named "25%", "50%", "75%", and "100%".
+#' @return For \code{Spectra}: a named \code{numeric(4)} with areas per
+#'     quartile (\code{"25\%"}, \code{"50\%"}, \code{"75\%"}, \code{"100\%"}).
+#'     For \code{Chromatograms}: a \code{matrix} with \code{nrow} equal to
+#'     \code{length(object)} and 4 columns.
 #'
 #' @author Thomas Naake
 #'
@@ -1842,49 +1913,109 @@ setMethod("areaUnderTic", "Spectra", function(object, msLevel = 1L, ...) {
 #' areaUnderTicRtQuantiles(object = sps, msLevel = 2L)
 NULL
 
-#' @noRd
-.areaUnderTicRtQuantiles_spectra <- function(spectra, msLevel = 1L, ...) {
-    spectra <- filterMsLevel(object = spectra, msLevel)
+#' @rdname areaUnderTicRtQuantiles
+areaUnderTicRtQuantiles <- function(object, msLevel = 1L, ...) {
+    if (is(object, "Spectra")) {
+        object <- filterMsLevel(object = object, msLevel)
 
-    if (length(spectra) == 0) {
-        res <- c(NaN, NaN, NaN, NaN)
-    } else {
-        ## order spectra according to increasing retention time
-        spectra <- .rtOrderSpectra(spectra)
-        rt <- rtime(spectra)
+        if (length(object) == 0) {
+            res <- c(NaN, NaN, NaN, NaN)
+        } else {
+            ## order spectra according to increasing retention time
+            object <- .rtOrderSpectra(object)
+            rt <- rtime(object)
 
-        quantileRT <- quantile(rt, na.rm = TRUE)
+            quantileRT <- quantile(rt, na.rm = TRUE)
 
-        tic <- ionCount(spectra)
+            tic <- ionCount(object)
 
-        ## get the TICs for the 1st, 2nd, 3rd, and 4th quartile
-        ticQ1 <- tic[rt > quantileRT[["0%"]] & rt <= quantileRT[["25%"]]]
-        ticQ2 <- tic[rt > quantileRT[["25%"]] & rt <= quantileRT[["50%"]]]
-        ticQ3 <- tic[rt > quantileRT[["50%"]] & rt <= quantileRT[["75%"]]]
-        ticQ4 <- tic[rt > quantileRT[["75%"]] & rt <= quantileRT[["100%"]]]
+            ## get the TICs for the 1st, 2nd, 3rd, and 4th quartile
+            ticQ1 <- tic[rt > quantileRT[["0%"]] & rt <= quantileRT[["25%"]]]
+            ticQ2 <- tic[rt > quantileRT[["25%"]] & rt <= quantileRT[["50%"]]]
+            ticQ3 <- tic[rt > quantileRT[["50%"]] & rt <= quantileRT[["75%"]]]
+            ticQ4 <- tic[rt > quantileRT[["75%"]] & rt <= quantileRT[["100%"]]]
 
-        ## sum the TICs (area) for the 1st, 2nd, 3rd, and 4th quartile
-        areaTicQ1 <- sum(ticQ1, na.rm = TRUE)
-        areaTicQ2 <- sum(ticQ2, na.rm = TRUE)
-        areaTicQ3 <- sum(ticQ3, na.rm = TRUE)
-        areaTicQ4 <- sum(ticQ4, na.rm = TRUE)
+            ## sum the TICs (area) for the 1st, 2nd, 3rd, and 4th quartile
+            areaTicQ1 <- sum(ticQ1, na.rm = TRUE)
+            areaTicQ2 <- sum(ticQ2, na.rm = TRUE)
+            areaTicQ3 <- sum(ticQ3, na.rm = TRUE)
+            areaTicQ4 <- sum(ticQ4, na.rm = TRUE)
 
-        ## return the summed TICs as a named vector
-        res <- c(areaTicQ1, areaTicQ2, areaTicQ3, areaTicQ4)
+            ## return the summed TICs as a named vector
+            res <- c(areaTicQ1, areaTicQ2, areaTicQ3, areaTicQ4)
+        }
+    } else if (is(object, "Chromatograms")) {
+        col_names <- c("25%", "50%", "75%", "100%")
+        if (length(object) == 0) {
+            res <- t(matrix(rep(NA_real_, 4), nrow = 4))
+            colnames(res) <- col_names
+            attr(res, "areaUnderTicRtQuantiles") <- "MS:4000156"
+            return(res)
+        }
+
+        if (!is.null(msLevel)) {
+            object <- tryCatch(
+                filterChromData(object, variables = c("msLevel"),
+                    ranges = c(msLevel, msLevel)),
+                error = function(e) NULL
+            )
+
+            if (is.null(object) || length(object) == 0) {
+                res <- t(matrix(rep(NA_real_, 4), nrow = 4))
+                colnames(res) <- col_names
+                attr(res, "areaUnderTicRtQuantiles") <- "MS:4000156"
+                return(res)
+            }
+        }
+
+        n <- length(object)
+        rts_list <- rtime(object)
+        ints_list <- intensity(object)
+
+        res <- t(vapply(seq_len(n), function(i) {
+            rts <- rts_list[[i]]
+            ints <- ints_list[[i]]
+            if (length(rts) < 2 || all(is.na(rts)))
+                return(setNames(rep(NA_real_, 4), col_names))
+            rt_range <- range(rts, na.rm = TRUE)
+            if (diff(rt_range) == 0)
+                return(setNames(rep(NA_real_, 4), col_names))
+            cuts <- seq(rt_range[1], rt_range[2], length.out = 5)[2:4]
+            new_rts <- rts
+            new_ints <- ints
+            for (ct in cuts) {
+                interp_val <- approx(rts, ints, xout = ct)$y
+                if (!is.na(interp_val)) {
+                    new_rts <- c(new_rts, ct)
+                    new_ints <- c(new_ints, interp_val)
+                }
+            }
+            ord_new <- order(new_rts)
+            final_rts <- new_rts[ord_new]
+            final_ints <- new_ints[ord_new]
+            areas <- (final_ints[-1] + final_ints[-length(final_ints)]) / 2 *
+                diff(final_rts)
+            midpoints <- (final_rts[-1] + final_rts[-length(final_rts)]) / 2
+            breaks <- seq(rt_range[1], rt_range[2], length.out = 5)
+            bins <- cut(midpoints, breaks = breaks, include.lowest = TRUE,
+                labels = FALSE)
+            q_res <- numeric(4)
+            for (j in 1:4) q_res[j] <- sum(areas[which(bins == j)], na.rm = TRUE)
+            setNames(q_res, col_names)
+        }, numeric(4)))
+
+        colnames(res) <- col_names
+        attr(res, "areaUnderTicRtQuantiles") <- "MS:4000156"
     }
 
-    ## add attributes and return
-    attributes(res) <- list(
-        names = c("25%", "50%", "75%", "100%"),
-        areaUnderTicRtQuantiles = "MS:4000156")
-
+    if (is(object, "Spectra") || !is.matrix(res)) {
+        ## add attributes and return for Spectra (named vector)
+        attributes(res) <- list(
+            names = c("25%", "50%", "75%", "100%"),
+            areaUnderTicRtQuantiles = "MS:4000156")
+    }
     res
 }
-
-#' @rdname areaUnderTicRtQuantiles
-setMethod("areaUnderTicRtQuantiles", "Spectra", function(object, msLevel = 1L, ...) {
-    .areaUnderTicRtQuantiles_spectra(object, msLevel = msLevel, ...)
-})
 
 #' @name extentIdentifiedPrecursorIntensity
 #'
@@ -2077,26 +2208,42 @@ medianTicRtIqr <- function(spectra, msLevel = 1L,
 
     identificationLevel <- match.arg(identificationLevel)
 
-    spectra <- filterMsLevel(object = spectra, msLevel)
+    if (is(spectra, "Spectra")) {
+        spectra <- filterMsLevel(object = spectra, msLevel)
 
-    if (length(spectra) == 0) {
-        res <- NaN
-    } else {
+        if (length(spectra) == 0) {
+            res <- NaN
+        } else {
 
-        ## order spectra according to increasing retention time
-        spectra <- .rtOrderSpectra(spectra)
+            ## order spectra according to increasing retention time
+            spectra <- .rtOrderSpectra(spectra)
 
-        ## get the Q1 to Q3 of identifications
-        ## (half of peptides that are identitied)
-        ind <- rep(seq_len(4), length.out = length(spectra))
-        ind <- sort(ind)
-        Q1ToQ3 <- spectra[ind %in% c(2, 3), ]
+            ## get the Q1 to Q3 of identifications
+            ## (half of peptides that are identitied)
+            ind <- rep(seq_len(4), length.out = length(spectra))
+            ind <- sort(ind)
+            Q1ToQ3 <- spectra[ind %in% c(2, 3), ]
 
-        ## take the ionCount of the Q1 to Q3 of identifications
-        ticQ1ToQ3 <- ionCount(Q1ToQ3)
+            ## take the ionCount of the Q1 to Q3 of identifications
+            ticQ1ToQ3 <- ionCount(Q1ToQ3)
 
-        ## take the median value of the TIC within this interval and return it
-        res <- median(ticQ1ToQ3, na.rm = TRUE)
+            ## take the median value of the TIC within this interval and return it
+            res <- median(ticQ1ToQ3, na.rm = TRUE)
+        }
+    } else if (is(spectra, "Chromatograms")) {
+        spectra <- filterChromData(spectra, variables = "msLevel",
+                                   ranges = c(msLevel, msLevel))
+        rts_list <- rtime(spectra)
+        ints_list <- intensity(spectra)
+        res <- vapply(seq_along(rts_list), function(i) {
+            rts <- rts_list[[i]]
+            ints <- ints_list[[i]]
+            if (length(rts) == 0 || all(is.na(rts))) return(NA_real_)
+            q_rt <- quantile(rts, probs = c(0.25, 0.75), na.rm = TRUE)
+            mask <- rts >= q_rt[1] & rts <= q_rt[2] & !is.na(rts)
+            if (!any(mask)) return(NA_real_)
+            median(ints[mask], na.rm = TRUE)
+        }, numeric(1))
     }
 
     ## add attributes and return
@@ -3004,9 +3151,12 @@ medianCharge <- function(spectra, msLevel = 1L,
 #' will be returned instead of the abolute retention time
 #' @param ... additional arguments passed to internal helpers
 #'
-#' @return \code{numeric} of length equal to length \code{probs} with the relative
-#'    duration (duration divided by the total run time) after which the TIC
-#'    exceeds the respective quantile of the TIC.
+#' @return For \code{Spectra}: \code{numeric} of length equal to
+#'    \code{length(probs)} with the relative duration (duration divided by
+#'    the total run time) after which the TIC exceeds the respective
+#'    quantile of the TIC.
+#'    For \code{Chromatograms}: a \code{matrix} with \code{nrow} equal to
+#'    \code{length(object)} and \code{ncol} equal to \code{length(probs)}.
 #'
 #' @author Thomas Naake, Johannes Rainer
 #'
@@ -3042,33 +3192,63 @@ medianCharge <- function(spectra, msLevel = 1L,
 #' ticQuantileRtFraction(object = sps, msLevel = 2L)
 NULL
 
-#' @noRd
-.ticQuantileRtFraction_spectra <- function(spectra, probs = seq(0, 1, 0.25),
+#' @rdname ticQuantileRtFraction
+ticQuantileRtFraction <- function(object, probs = seq(0, 1, 0.25),
     msLevel = 1L, relative = TRUE, ...) {
-    spectra <- filterMsLevel(object = spectra, msLevel)
-    spectra <- .rtOrderSpectra(spectra)
-    RT <- rtime(spectra)
-    TIC <- cumsum(ionCount(spectra))
-    idxs <- lapply(probs * max(TIC), function(z) which(TIC >= z)[1]) |>
-        unlist()
 
-    if (relative) {
-        rtMin <- min(RT)
-        duration <- chromatographyDuration(spectra)
-        res <- (RT[idxs] - rtMin) / duration
-    } else {
-        res <- RT[idxs]
+    if (is(object, "Spectra")) {
+        object <- filterMsLevel(object = object, msLevel)
+        object <- .rtOrderSpectra(object)
+        RT <- rtime(object)
+        TIC <- cumsum(ionCount(object))
+        idxs <- lapply(probs * max(TIC), function(z) which(TIC >= z)[1]) |>
+            unlist()
+
+        if (relative) {
+            rtMin <- min(RT)
+            duration <- chromatographyDuration(object)
+            res <- (RT[idxs] - rtMin) / duration
+        } else {
+            res <- RT[idxs]
+        }
+
+        names(res) <- paste0(probs * 100, "%")
+        attr(res, "ticQuantileRtFraction") <- "MS:4000183"
+
+    } else if (is(object, "Chromatograms")) {
+        object <- filterChromData(object, variables = "msLevel",
+                                  ranges = c(msLevel, msLevel))
+        rts_list <- rtime(object)
+        ints_list <- intensity(object)
+        n <- length(object)
+        n_probs <- length(probs)
+        prob_names <- paste0(probs * 100, "%")
+
+        res <- t(vapply(seq_len(n), function(i) {
+            rts <- rts_list[[i]]
+            ints <- ints_list[[i]]
+            if (length(rts) < 2 || all(is.na(ints)))
+                return(setNames(rep(NA_real_, n_probs), prob_names))
+            cumsum_tic <- cumsum(ints)
+            total_tic <- sum(ints)
+            rt_duration <- max(rts) - min(rts)
+            if (rt_duration == 0 || total_tic == 0)
+                return(setNames(rep(NA_real_, n_probs), prob_names))
+            quantile_rts <- vapply(probs, function(p) {
+                target <- p * total_tic
+                idx <- which(cumsum_tic >= target)[1]
+                if (is.na(idx)) return(max(rts))
+                rts[idx]
+            }, numeric(1))
+            rt_start <- min(rts)
+            frac <- (quantile_rts - rt_start) / rt_duration
+            setNames(frac, prob_names)
+        }, numeric(n_probs)))
+
+        colnames(res) <- prob_names
+        attr(res, "ticQuantileRtFraction") <- "MS:4000183"
     }
 
-    names(res) <- paste0(probs * 100, "%")
-    attr(res, "ticQuantileRtFraction") <- "MS:4000183"
     res
 }
-
-#' @rdname ticQuantileRtFraction
-setMethod("ticQuantileRtFraction", "Spectra", function(object, probs = seq(0, 1, 0.25),
-    msLevel = 1L, relative = TRUE, ...) {
-    .ticQuantileRtFraction_spectra(object, probs = probs, msLevel = msLevel,
-        relative = relative, ...)
-})
 

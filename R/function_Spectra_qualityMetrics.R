@@ -77,18 +77,17 @@ qualityMetrics <- function(object) {
 
     if (is(object, "Chromatograms"))
         .metrics <- c(
-            "chromatographyDuration", "chromatogramCount",
+            "chromatographyDuration", "peakCount",
             "rtAcquisitionRange", "maxIntensity",
             "intensityQuartiles", "intensityMean", "intensitySd",
-            "intensityRange", "peakCount", "rtIqr",
+            "intensityRange", "rtIqr",
             "baselineIntensity", "signalToNoiseRatio",
-            "intensity10xChange",
-            "numberEmptyChrom",
-            "medianIntensityRtIqr",
-            "xicFwhm", "peakBoundary", "peakWidth", "peakBeta",
+            "msSignal10xChange",
+            "numberEmptyScans",
+            "medianTicRtIqr",
+            "xicFwhm", "peakBoundary", "peakWidth", "gaussianSimilarity",
             "peakProminence",
-            "ticQuantileRtFraction", "areaUnderTic", "areaUnderTicRtQuantiles",
-            "areaUnderTicMs1", "areaUnderTicMs2"
+            "ticQuantileRtFraction", "areaUnderTic", "areaUnderTicRtQuantiles"
         )
 
     .metrics

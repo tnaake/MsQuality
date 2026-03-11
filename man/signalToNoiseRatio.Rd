@@ -2,27 +2,48 @@
 % Please edit documentation in R/function_Chromatograms_metrics.R
 \name{signalToNoiseRatio}
 \alias{signalToNoiseRatio}
-\title{Signal-to-Noise Ratio across chromatograms}
+\title{Signal-to-Noise Ratio per chromatogram}
 \usage{
 signalToNoiseRatio(chromatograms, ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
 
-\item{...}{further arguments (currently ignored)}
+\item{...}{further arguments passed to \code{MsCoreUtils::noise()}}
 }
 \value{
-`numeric(1)`
+`numeric` of length equal to `length(chromatograms)`, one
+signal-to-noise ratio per chromatogram
 }
 \description{
-The function `signalToNoiseRatio` calculates a robust signal-to-noise ratio
-approximated as the Maximum Intensity divided by the Median of Non-Zero
-Intensities.
+The function `signalToNoiseRatio` estimates a classical signal-to-noise
+ratio for each chromatogram using the MAD-based noise estimate from
+\code{MsCoreUtils::noise()}. \cr
+
+The metric is calculated as follows (per chromatogram): \cr
+(1) the retention time and intensity values are extracted, \cr
+(2) a noise level is estimated at every data point using the Median
+Absolute Deviation (MAD) via \code{MsCoreUtils::noise()}, \cr
+(3) the signal is taken as the maximum intensity, \cr
+(4) the noise is summarised as the median of the MAD-estimated noise
+vector, \cr
+(5) the ratio \code{signal / noise} is returned.
 }
 \details{
-The noise is estimated as the median of all intensity values greater than 0.
-This avoids underestimating noise in sparse chromatograms where the
-5th percentile might be 0.
+The MAD method (\code{MsCoreUtils::noise(x, y, method = "MAD")}) computes
+a single global Median Absolute Deviation across all intensity values in
+the chromatogram and replicates it to every data point. Because the
+estimate is global, large peaks inflate the MAD, leading to a
+**conservative** (under-estimated) S/N ratio. This is acceptable for
+quality-control purposes where consistency across samples matters more
+than an absolute noise floor.
+
+The MAD estimator is statistically unstable with very few data points
+(roughly < 5); results from very short chromatograms should be
+interpreted with caution.
+
+Returns \code{NA_real_} when the noise estimate is zero (e.g. constant
+signal) or when the chromatogram is empty.
 }
 \author{
 Philippine Louail

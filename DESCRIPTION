@@ -38,7 +38,7 @@ Imports:
     ggplot2 (>= 3.3.5),
     htmlwidgets (>= 1.5.3),
     methods (>= 4.2.0),
-    MsDataHub (>= 1.11.0),
+    MsDataHub (>= 1.10.0),
     MsExperiment (>= 0.99.0),
     plotly (>= 4.9.4.1),
     ProtGenerics (>= 1.24.0),

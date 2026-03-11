@@ -14,16 +14,17 @@ intensityRange(chromatograms, na.rm = TRUE, ...)
 \item{...}{further arguments passed to `range`}
 }
 \value{
-`numeric(2)` named vector with min and max
+`matrix` with `nrow` equal to `length(chromatograms)` and
+  2 columns (min, max)
 }
 \description{
 The function `intensityRange` calculates the range (min, max) of intensity
-values for each chromatogram.
-}
-\details{
-The function returns a list of numeric vectors of length 2.
+values within each chromatogram. \cr
 
-No specific PSI:MS term exists. It should be created.
+The metric is calculated as follows: \cr
+(1) for each chromatogram, the intensity values are extracted, \cr
+(2) the minimum and maximum values per chromatogram are obtained and
+returned as a row of the result matrix.
 }
 \examples{
 library(Chromatograms)
@@ -39,7 +40,7 @@ pdata <- list(
                intensity = c(80, 500, 1200, 600, 120))
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-## Returns (min, max) intensity across all chromatograms
+## Returns a 2x2 matrix with (min, max) per chromatogram
 intensityRange(chr)
 }
 \author{

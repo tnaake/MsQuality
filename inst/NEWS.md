@@ -1,24 +1,20 @@
 # MsQuality 1.11
 
-## 1.11.3
+## 1.11.3 (2026-03-10)
 
-- Implementation of metrics for Chromatograms objects
-- Created S4 generic functions and methods for shared metrics:
-  - `areaUnderTic`: Generic function with methods for Spectra and Chromatograms
-  classes
-  - `ticQuantileRtFraction`: Generic function with methods for Spectra and
-  Chromatograms classes
-  - `calculateMetrics`: Generic function dispatching to appropriate methods
-  based on input object class
-- renaming of argument filterEmptySpectra to filterEmptyObject
-  in calculateMetricsFromSpectra and calculateMetricsFromMsExperiment.
-- Changed `calculateMetrics` function argument from `spectra` to `object` to
-  reflect its generic nature and support for multiple object types
-  (Spectra, MsExperiment, and Chromatograms)
-- Fixed output of calculateMetrics() if format = "data.frame", to actually
-  return a "data.frame".
-Fixed `shinyMsQuality()` documentation example to convert data.frame to matrix
-  before passing to `shinyMsQuality()` function.-
+- Implementation of per-chromatogram metrics for `Chromatograms` objects:
+  `maxIntensity`, `intensityMean`, `intensitySd`, `intensityQuartiles`,
+  `intensityRange`, `peakCount`, `baselineIntensity`, `signalToNoiseRatio`,
+  `xicFwhm`, `peakBoundary`, `peakWidth`, `gaussianSimilarity`,
+  `peakProminence`
+- Shared functions (`chromatographyDuration`, `rtAcquisitionRange`, `rtIqr`,
+  `areaUnderTic`, `areaUnderTicRtQuantiles`, `ticQuantileRtFraction`,
+  `msSignal10xChange`, `medianTicRtIqr`, `numberEmptyScans`,
+  `calculateMetrics`) now support both `Spectra` and `Chromatograms`
+- `msSignal10xChange` gains `minIntensity` parameter for noise robustness.
+- Renamed argument `filterEmptySpectra` to `filterEmptyObject`
+- Fixed `calculateMetrics()` `data.frame` output
+- Fixed `shinyMsQuality()` documentation example
 
 ## Changes in version 1.11.2 (2026-03-02)
 

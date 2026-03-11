@@ -2,7 +2,7 @@
 % Please edit documentation in R/function_Chromatograms_metrics.R
 \name{intensityMean}
 \alias{intensityMean}
-\title{Intensity statistics (Mean) across chromatograms}
+\title{Intensity statistics (Mean) per chromatogram}
 \usage{
 intensityMean(chromatograms, na.rm = TRUE, ...)
 }
@@ -14,16 +14,16 @@ intensityMean(chromatograms, na.rm = TRUE, ...)
 \item{...}{further arguments passed to `mean`}
 }
 \value{
-`numeric(1)`
+`numeric` of length equal to `length(chromatograms)`
 }
 \description{
 The function `intensityMean` calculates the mean of intensity values
-across all chromatograms.
-}
-\details{
-The function returns the mean intensity across all chromatograms.
+within each chromatogram. \cr
 
-No specific PSI:MS term exists. It should be created.
+The metric is calculated as follows: \cr
+(1) for each chromatogram in the `Chromatograms` object, the intensity
+values are extracted, \cr
+(2) the arithmetic mean per chromatogram is calculated and returned.
 }
 \examples{
 library(Chromatograms)
@@ -39,7 +39,7 @@ pdata <- list(
                intensity = c(80, 500, 1200, 600, 120))
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-## Returns mean intensity across all chromatograms
+## Returns mean intensity per chromatogram
 intensityMean(chr)
 }
 \author{

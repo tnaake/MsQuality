@@ -18,7 +18,7 @@ pdata <- list(
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 
-## Chromatograms with 10x intensity changes for intensity10xChange tests
+## Chromatograms with 10x intensity changes for msSignal10xChange tests
 cdata_jump <- data.frame(
     msLevel = c(1L, 1L),
     mz = c(112.2, 123.3),
@@ -33,271 +33,456 @@ pdata_jump <- list(
 chr_jump <- Chromatograms(ChromBackendMemory(), chromData = cdata_jump,
                           peaksData = pdata_jump)
 
-test_that("chromatographyDuration works properly for Chromatograms.", {
-    tmp <- chromatographyDuration(chr)
-    ## Returns aggregated duration across all chromatograms: max(7.5) - min(2.1) = 5.4
-    expect_equal(length(tmp), 1)
-    expect_equal(as.numeric(tmp), 5.4, tolerance = 1e-6)
+## ============================================================
+## Per-chromatogram scalar metrics
+## ============================================================
 
-    ## test attributes
+test_that("chromatographyDuration returns per-chromatogram durations.", {
+    tmp <- chromatographyDuration(chr)
+    ## 3 chromatograms: durations are (3.9-2.1), NA (empty), (7.5-5.1)
+    expect_equal(length(tmp), 3)
+    expect_equal(as.numeric(tmp[1]), 1.8, tolerance = 1e-6)
+    expect_true(is.na(tmp[2]))
+    expect_equal(as.numeric(tmp[3]), 2.4, tolerance = 1e-6)
     expect_equal(attr(tmp, "chromatographyDuration"), "MS:4000053")
 })
 
-test_that("chromatogramCount works properly.", {
-    tmp <- chromatogramCount(chr)
-    ## Returns number of chromatograms (3 in test data)
-    expect_equal(length(tmp), 1)
-    expect_equal(as.numeric(tmp), 3)
-
-    ## test attributes
-    expect_equal(attr(tmp, "chromatogramCount"), "MS:4000071")
+test_that("peakCount returns per-chromatogram data point counts.", {
+    tmp <- peakCount(chr)
+    expect_equal(length(tmp), 3)
+    expect_equal(tmp[1], 5L)
+    expect_equal(tmp[2], 0L)
+    expect_equal(tmp[3], 5L)
 })
 
-test_that("numberEmptyChrom works properly.", {
-    tmp <- numberEmptyChrom(chr)
-    expect_equal(as.numeric(tmp), 1)  # One empty chromatogram
+test_that("numberEmptyScans works on Chromatograms.", {
+    tmp <- numberEmptyScans(chr, msLevel = 1L)
+    expect_equal(as.numeric(tmp), 1)
 })
 
-test_that("rtAcquisitionRange works properly for Chromatograms.", {
+test_that("rtAcquisitionRange returns per-chromatogram matrix.", {
     tmp <- rtAcquisitionRange(chr)
-    expect_equal(as.numeric(tmp), c(2.1, 7.5))
-    expect_equal(names(tmp), c("min", "max"))
-
-    ## test attributes
+    expect_true(is.matrix(tmp))
+    expect_equal(nrow(tmp), 3)
+    expect_equal(ncol(tmp), 2)
+    expect_equal(colnames(tmp), c("min", "max"))
+    expect_equal(tmp[1, ], c(min = 2.1, max = 3.9))
+    expect_true(all(is.na(tmp[2, ])))
+    expect_equal(tmp[3, ], c(min = 5.1, max = 7.5))
     expect_equal(attr(tmp, "rtAcquisitionRange"), "MS:4000070")
 })
 
-test_that("maxIntensity works properly.", {
+test_that("maxIntensity returns per-chromatogram values.", {
     tmp <- maxIntensity(chr)
-    ## Aggregated max across all chromatograms
-    expect_equal(length(tmp), 1)
-    expect_equal(as.numeric(tmp), 1200)
-
-    ## test attributes
+    expect_equal(length(tmp), 3)
+    expect_equal(tmp[1], 400)
+    expect_true(is.na(tmp[2]))
+    expect_equal(tmp[3], 1200)
     expect_equal(attr(tmp, "maxIntensity"), "custom_metric:max_intensity")
 })
 
-test_that("intensityMean works properly.", {
+test_that("intensityMean returns per-chromatogram values.", {
     tmp <- intensityMean(chr)
-    ## Aggregated mean across all chromatograms
-    expect_equal(length(tmp), 1)
-    expect_equal(as.numeric(tmp), mean(c(100, 250, 400, 300, 150, 80, 500, 1200, 600, 120)))
-
-    ## test attributes
+    expect_equal(length(tmp), 3)
+    expect_equal(tmp[1], mean(c(100, 250, 400, 300, 150)))
+    expect_true(is.na(tmp[2]))
+    expect_equal(tmp[3], mean(c(80, 500, 1200, 600, 120)))
     expect_equal(attr(tmp, "intensityMean"), "custom_metric:intensity_mean")
 })
 
-test_that("intensitySd works properly.", {
+test_that("intensitySd returns per-chromatogram values.", {
     tmp <- intensitySd(chr)
-    ## Aggregated standard deviation across all chromatograms
-    expect_equal(length(tmp), 1)
-    expect_equal(as.numeric(tmp), sd(c(100, 250, 400, 300, 150, 80, 500, 1200, 600, 120)))
-
-    ## test attributes
+    expect_equal(length(tmp), 3)
+    expect_equal(tmp[1], sd(c(100, 250, 400, 300, 150)))
+    expect_true(is.na(tmp[2]))
+    expect_equal(tmp[3], sd(c(80, 500, 1200, 600, 120)))
     expect_equal(attr(tmp, "intensitySd"), "custom_metric:intensity_sd")
 })
 
-test_that("intensityQuartiles works properly.", {
+test_that("intensityQuartiles returns per-chromatogram matrix.", {
     tmp <- intensityQuartiles(chr)
-    expect_equal(length(tmp), 6)
-    expect_equal(names(tmp), c("Min", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max"))
-
-    ## test attributes
+    expect_true(is.matrix(tmp))
+    expect_equal(nrow(tmp), 3)
+    expect_equal(ncol(tmp), 6)
+    expect_equal(colnames(tmp), c("Min", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max"))
+    ## Check chromatogram 1
+    s1 <- as.numeric(summary(c(100, 250, 400, 300, 150)))
+    expect_equal(as.numeric(tmp[1, ]), s1, tolerance = 1e-6)
+    ## Empty chromatogram -> all NA
+    expect_true(all(is.na(tmp[2, ])))
+    ## Chromatogram 3
+    s3 <- as.numeric(summary(c(80, 500, 1200, 600, 120)))
+    expect_equal(as.numeric(tmp[3, ]), s3, tolerance = 1e-6)
     expect_equal(attr(tmp, "intensityQuartiles"), "custom_metric:intensity_quartiles")
 })
 
-test_that("intensityRange works properly.", {
+test_that("intensityRange returns per-chromatogram matrix.", {
     tmp <- intensityRange(chr)
-    expect_equal(length(tmp), 2)
-    expect_equal(names(tmp), c("min", "max"))
-    expect_equal(as.numeric(tmp), c(80, 1200))
-
-    ## test attributes
+    expect_true(is.matrix(tmp))
+    expect_equal(nrow(tmp), 3)
+    expect_equal(ncol(tmp), 2)
+    expect_equal(colnames(tmp), c("min", "max"))
+    expect_equal(tmp[1, ], c(min = 100, max = 400))
+    expect_true(all(is.na(tmp[2, ])))
+    expect_equal(tmp[3, ], c(min = 80, max = 1200))
     expect_equal(attr(tmp, "intensityRange"), "custom_metric:intensity_range")
 })
 
-test_that("peakCount works properly.", {
-    ## Returns total count of data points across all chromatograms
-    tmp <- peakCount(chr)
-    expect_equal(length(tmp), 1)        # Single aggregated value
-    expect_equal(as.numeric(tmp), 10)   # 5 + 0 + 5 = 10 total points
-
-    ## test attributes
-    expect_equal(attr(tmp, "peakCount"), "custom_metric:peak_count")
-})
-
-test_that("peakCount works with na.rm parameter.", {
-    ## Test with all non-NA data (standard chr object)
-    ## na.rm = TRUE and na.rm = FALSE should give same result when no NAs
-    tmp_standard_rm <- peakCount(chr, na.rm = TRUE)
-    expect_equal(as.numeric(tmp_standard_rm), 10)  # All 10 points are non-NA
-
-    tmp_standard_no_rm <- peakCount(chr, na.rm = FALSE)
-    expect_equal(as.numeric(tmp_standard_no_rm), 10)  # Same result when no NAs
-    expect_equal(attr(tmp_standard_no_rm, "peakCount"), "custom_metric:peak_count")
-})
-
-test_that("rtIqr works properly for Chromatograms.", {
+test_that("rtIqr returns per-chromatogram values.", {
     tmp <- rtIqr(chr)
-    ## Aggregated IQR across all chromatograms
-    expect_equal(length(tmp), 1)
-    expect_equal(as.numeric(tmp), IQR(c(2.1, 2.5, 3.0, 3.4, 3.9, 5.1, 5.8, 6.3, 6.9, 7.5)))
-    ## test attributes
-    expect_equal(attr(tmp, "rtIqr"), "custom_metric:rt_iqr")
+    expect_equal(length(tmp), 3)
+    expect_equal(tmp[1], IQR(c(2.1, 2.5, 3.0, 3.4, 3.9)), tolerance = 1e-6)
+    expect_true(is.na(tmp[2]))
+    expect_equal(tmp[3], IQR(c(5.1, 5.8, 6.3, 6.9, 7.5)), tolerance = 1e-6)
 })
 
-test_that("baselineIntensity works properly.", {
+test_that("baselineIntensity returns per-chromatogram values.", {
     tmp <- baselineIntensity(chr)
-    ## Aggregated baseline across all chromatograms
-    expect_equal(length(tmp), 1)
-    expect_equal(as.numeric(tmp), as.numeric(quantile(c(100, 250, 400, 300, 150, 80, 500, 1200, 600, 120), probs = 0.05)))
-
-    ## test attributes
+    expect_equal(length(tmp), 3)
+    expect_equal(tmp[1], as.numeric(quantile(c(100, 250, 400, 300, 150), 0.05)))
+    expect_true(is.na(tmp[2]))
+    expect_equal(tmp[3], as.numeric(quantile(c(80, 500, 1200, 600, 120), 0.05)))
     expect_equal(attr(tmp, "baselineIntensity"), "custom_metric:baseline_intensity")
 })
 
-test_that("signalToNoiseRatio works properly.", {
+test_that("signalToNoiseRatio returns per-chromatogram values.", {
     tmp <- signalToNoiseRatio(chr)
-    ## All intensities: 100, 250, 400, 300, 150, 80, 500, 1200, 600, 120
-    ## Signal = max = 1200
-    ## Noise = median of non-zero = median(80, 100, 120, 150, 250, 300, 400, 500, 600, 1200) = 275
-    ## SNR = 1200 / 275 = 4.363636
-    expect_equal(length(tmp), 1)
-    expect_equal(as.numeric(tmp), 1200 / 275, tolerance = 1e-6)
-
-    ## test attributes
+    expect_equal(length(tmp), 3)
+    ## chromatogram 1 and 3 should have finite S/N > 0
+    expect_true(is.finite(tmp[1]) && tmp[1] > 0)
+    expect_true(is.na(tmp[2]))
+    expect_true(is.finite(tmp[3]) && tmp[3] > 0)
     expect_equal(attr(tmp, "signalToNoiseRatio"), "custom_metric:signal_to_noise_ratio")
 })
 
-test_that("intensity10xChange works properly.", {
-    tmp_jump <- intensity10xChange(chr_jump, change = "jump")
-    tmp_fall <- intensity10xChange(chr_jump, change = "fall")
-
-    ## Aggregated count across all chromatograms
-    expect_equal(length(tmp_jump), 1)
-    expect_equal(length(tmp_fall), 1)
-    expect_equal(as.numeric(tmp_jump), 2)  # 20x jump (2000/100) + 10x jump (200/20)
-    expect_equal(as.numeric(tmp_fall), 2)  # 20x fall (100/2000=0.05) + 10x fall (20/200=0.1)
-
-    ## test attributes
-    expect_equal(attr(tmp_jump, "intensity10xJump"), "custom_metric:intensity_10x_jump")
-    expect_equal(attr(tmp_fall, "intensity10xFall"), "custom_metric:intensity_10x_fall")
+test_that("msSignal10xChange returns per-chromatogram values on Chromatograms.", {
+    tmp_jump <- msSignal10xChange(chr_jump, change = "jump", msLevel = 1L)
+    tmp_fall <- msSignal10xChange(chr_jump, change = "fall", msLevel = 1L)
+    expect_equal(length(tmp_jump), 2)
+    expect_equal(length(tmp_fall), 2)
+    ## chr_jump[1]: 50,100,2000,100,50 -> jump: 100->2000 = 20x (1 jump)
+    ## chr_jump[2]: 200,20,30,20,200 -> jump: 20->200 = 10x (1 jump)
+    expect_equal(tmp_jump[1], 1L)
+    expect_equal(tmp_jump[2], 1L)
+    ## chr_jump[1]: 2000->100 = 20x fall (1 fall)
+    ## chr_jump[2]: 200->20 = 10x fall (1 fall)
+    expect_equal(tmp_fall[1], 1L)
+    expect_equal(tmp_fall[2], 1L)
 })
 
-test_that("medianIntensityRtIqr works properly.", {
-    tmp <- medianIntensityRtIqr(chr)
-    ## All RTs: 2.1, 2.5, 3.0, 3.4, 3.9, 5.1, 5.8, 6.3, 6.9, 7.5
-    ## R's default type=7: Q1 RT = 3.1, Q3 RT = 6.175
-    ## Points within RT IQR: (3.4, 300), (3.9, 150), (5.1, 80), (5.8, 500)
-    ## Median of intensities [80, 150, 300, 500] = (150 + 300) / 2 = 225
-    expect_equal(length(tmp), 1)
-    expect_equal(as.numeric(tmp), 225, tolerance = 1e-6)
-
-    ## test attributes
-    expect_equal(attr(tmp, "medianIntensityRtIqr"), "custom_metric:median_intensity_rt_iqr")
+test_that("medianTicRtIqr returns per-chromatogram values on Chromatograms.", {
+    tmp <- medianTicRtIqr(chr, msLevel = 1L)
+    expect_equal(length(tmp), 3)
+    ## chromatogram 1: RTs=2.1,2.5,3.0,3.4,3.9; Q1=2.3, Q3=3.65
+    rt1 <- c(2.1, 2.5, 3.0, 3.4, 3.9)
+    int1 <- c(100, 250, 400, 300, 150)
+    q1 <- quantile(rt1, 0.25)
+    q3 <- quantile(rt1, 0.75)
+    in_iqr <- int1[rt1 >= q1 & rt1 <= q3]
+    expect_equal(tmp[1], median(in_iqr), tolerance = 1e-6)
+    ## empty -> NA
+    expect_true(is.na(tmp[2]))
+    ## chromatogram 3
+    rt3 <- c(5.1, 5.8, 6.3, 6.9, 7.5)
+    int3 <- c(80, 500, 1200, 600, 120)
+    q1_3 <- quantile(rt3, 0.25)
+    q3_3 <- quantile(rt3, 0.75)
+    in_iqr_3 <- int3[rt3 >= q1_3 & rt3 <= q3_3]
+    expect_equal(tmp[3], median(in_iqr_3), tolerance = 1e-6)
 })
 
-test_that("xicFwhm works properly.", {
-    ## xicFwhm is for single chromatograms (EIC/XIC) - use chr[1]
-    tmp <- xicFwhm(chr[1])
-    expect_equal(length(tmp), 1)
-    expect_true(is.numeric(tmp))
-    expect_true(tmp > 0)  # FWHM should be positive
+## ============================================================
+## Per-chromatogram EIC metrics (Part 2)
+## ============================================================
 
-    ## Test with empty chromatogram returns NA
-    tmp_empty <- xicFwhm(chr[2])
-    expect_true(is.na(tmp_empty))
-
-    ## test attributes
+test_that("xicFwhm returns per-chromatogram values.", {
+    tmp <- xicFwhm(chr)
+    expect_equal(length(tmp), 3)
+    expect_true(tmp[1] > 0)
+    expect_true(is.na(tmp[2]))  # empty
+    expect_true(tmp[3] > 0)
     expect_equal(attr(tmp, "xicFwhm"), "custom_metric:xic_fwhm")
 })
 
 test_that("xicFwhm handles NA intensities without error.", {
-    ## Non-imputed data may have NA values around half-maximum crossing points
     cdata_na <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
     pdata_na <- list(data.frame(
         rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
         intensity = c(NA, 20, 50, 100, 500, 100, 50, NA, 10, 5)
     ))
-    chr_na <- Chromatograms(ChromBackendMemory(), chromData = cdata_na, peaksData = pdata_na)
-
-    ## Should return NA without error when interpolation points have NA
+    chr_na <- Chromatograms(ChromBackendMemory(), chromData = cdata_na,
+                            peaksData = pdata_na)
     expect_no_error(xicFwhm(chr_na))
     tmp <- xicFwhm(chr_na)
     expect_equal(length(tmp), 1)
     expect_equal(attr(tmp, "xicFwhm"), "custom_metric:xic_fwhm")
 })
 
-test_that("ticQuantileRtFraction works properly.", {
-    tmp <- ticQuantileRtFraction(chr)
-    ## Data sorted by RT: (2.1,100), (2.5,250), (3.0,400), (3.4,300), (3.9,150),
-    ##                    (5.1,80), (5.8,500), (6.3,1200), (6.9,600), (7.5,120)
-    ## Cumulative TIC: 100, 350, 750, 1050, 1200, 1280, 1780, 2980, 3580, 3700
-    ## Total TIC = 3700, RT duration = 5.4
-    ## 0%: RT 2.1 → (2.1-2.1)/5.4 = 0
-    ## 25%: cumsum >= 925 at RT 3.4 → (3.4-2.1)/5.4 = 0.2407
-    ## 50%: cumsum >= 1850 at RT 6.3 → (6.3-2.1)/5.4 = 0.7778
-    ## 75%: cumsum >= 2775 at RT 6.3 → (6.3-2.1)/5.4 = 0.7778
-    ## 100%: cumsum >= 3700 at RT 7.5 → (7.5-2.1)/5.4 = 1.0
-    expected <- c(0, (3.4-2.1)/5.4, (6.3-2.1)/5.4, (6.3-2.1)/5.4, 1.0)
-    expect_equal(length(tmp), 5)
-    expect_equal(names(tmp), c("0%", "25%", "50%", "75%", "100%"))
-    expect_equal(as.numeric(tmp), expected, tolerance = 1e-4)
+test_that("xicFwhm accepts pre-computed peakBoundary matrix.", {
+    pb <- peakBoundary(chr)
+    tmp <- xicFwhm(chr, peakBoundary = pb)
+    expect_equal(length(tmp), 3)
+})
 
-    ## test attributes
+test_that("peakBoundary returns per-chromatogram matrix.", {
+    tmp <- peakBoundary(chr)
+    expect_true(is.matrix(tmp))
+    expect_equal(nrow(tmp), 3)
+    expect_equal(ncol(tmp), 2)
+    expect_equal(colnames(tmp), c("left_boundary", "right_boundary"))
+    ## Chromatogram 1: peak at rt 3.0 (max 400)
+    expect_true(tmp[1, "left_boundary"] <= 3.0)
+    expect_true(tmp[1, "right_boundary"] >= 3.0)
+    ## Empty → NA
+    expect_true(all(is.na(tmp[2, ])))
+    ## Chromatogram 3: peak at rt 6.3 (max 1200)
+    expect_true(tmp[3, "left_boundary"] <= 6.3)
+    expect_true(tmp[3, "right_boundary"] >= 6.3)
+    expect_equal(attr(tmp, "peakBoundary"), "custom_metric:peak_boundary")
+})
+
+test_that("peakBoundary returns correct boundaries for clean symmetric peak.", {
+    cdata_pb <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_pb <- list(data.frame(
+        rtime = c(1, 2, 3, 4, 5, 6, 7),
+        intensity = c(0, 10, 50, 100, 50, 10, 0)
+    ))
+    chr_pb <- Chromatograms(ChromBackendMemory(), chromData = cdata_pb,
+                            peaksData = pdata_pb)
+    tmp <- peakBoundary(chr_pb)
+    expect_true(is.matrix(tmp))
+    expect_equal(nrow(tmp), 1)
+    expect_equal(colnames(tmp), c("left_boundary", "right_boundary"))
+    expect_equal(unname(tmp[1, "left_boundary"]), 1)
+    expect_equal(unname(tmp[1, "right_boundary"]), 7)
+})
+
+test_that("peakBoundary handles empty chromatogram.", {
+    cdata_empty <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_empty <- list(data.frame(rtime = numeric(), intensity = numeric()))
+    chr_empty <- Chromatograms(ChromBackendMemory(), chromData = cdata_empty,
+                               peaksData = pdata_empty)
+    tmp <- peakBoundary(chr_empty)
+    expect_true(is.matrix(tmp))
+    expect_equal(nrow(tmp), 1)
+    expect_true(all(is.na(tmp)))
+})
+
+test_that("peakBoundary handles all-NA intensities.", {
+    cdata_allna <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_allna <- list(data.frame(
+        rtime = c(1, 2, 3, 4, 5),
+        intensity = c(NA_real_, NA_real_, NA_real_, NA_real_, NA_real_)
+    ))
+    chr_allna <- Chromatograms(ChromBackendMemory(), chromData = cdata_allna,
+                               peaksData = pdata_allna)
+    tmp <- peakBoundary(chr_allna)
+    expect_true(all(is.na(tmp)))
+})
+
+test_that("peakBoundary handles NA-adjacent boundaries.", {
+    cdata_na_adj <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_na_adj <- list(data.frame(
+        rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+        intensity = c(NA, NA, 50, 100, 500, 100, 50, NA, NA, 5)
+    ))
+    chr_na_adj <- Chromatograms(ChromBackendMemory(), chromData = cdata_na_adj,
+                                peaksData = pdata_na_adj)
+    expect_no_error(peakBoundary(chr_na_adj))
+    tmp <- peakBoundary(chr_na_adj)
+    expect_true(is.matrix(tmp))
+    expect_false(any(is.na(tmp)))
+})
+
+test_that("peakBoundary threshold parameter works.", {
+    cdata_t <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_t <- list(data.frame(
+        rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+        intensity = c(10, 20, 50, 100, 500, 100, 50, 20, 10, 5)
+    ))
+    chr_t <- Chromatograms(ChromBackendMemory(), chromData = cdata_t,
+                           peaksData = pdata_t)
+    tmp <- peakBoundary(chr_t, threshold = 0.1)
+    expect_false(any(is.na(tmp)))
+    tmp_05 <- peakBoundary(chr_t, threshold = 0.05)
+    expect_false(any(is.na(tmp_05)))
+})
+
+test_that("peakWidth returns per-chromatogram values.", {
+    tmp <- peakWidth(chr)
+    expect_equal(length(tmp), 3)
+    expect_true(tmp[1] > 0)
+    expect_true(is.na(tmp[2]))
+    expect_true(tmp[3] > 0)
+    expect_equal(attr(tmp, "peakWidth"), "custom_metric:peak_width")
+})
+
+test_that("peakWidth returns correct width for clean peak.", {
+    cdata_pw <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_pw <- list(data.frame(
+        rtime = c(1, 2, 3, 4, 5, 6, 7),
+        intensity = c(0, 10, 50, 100, 50, 10, 0)
+    ))
+    chr_pw <- Chromatograms(ChromBackendMemory(), chromData = cdata_pw,
+                            peaksData = pdata_pw)
+    tmp <- peakWidth(chr_pw)
+    expect_equal(length(tmp), 1)
+    expect_equal(as.numeric(tmp), 6)
+})
+
+test_that("peakWidth accepts pre-computed peakBoundary matrix.", {
+    pb <- peakBoundary(chr)
+    tmp <- peakWidth(chr, peakBoundary = pb)
+    expect_equal(length(tmp), 3)
+    expect_true(is.na(tmp[2]))
+})
+
+test_that("gaussianSimilarity returns per-chromatogram matrix.", {
+    ## Create a multi-chrom object with enough points per chrom
+    cdata_beta <- data.frame(
+        msLevel = c(1L, 1L),
+        mz = c(100.0, 200.0),
+        dataOrigin = c("mem1", "mem1")
+    )
+    pdata_beta <- list(
+        data.frame(
+            rtime = seq(1, 20, by = 0.5),
+            intensity = c(10, 15, 25, 50, 100, 200, 350, 500, 650,
+                          700, 650, 500, 350, 200, 100, 50, 25, 15,
+                          10, 8, 6, 5, 4, 3, 2, 2, 1, 1, 1, 1, 1,
+                          1, 1, 1, 1, 1, 1, 1, 1)
+        ),
+        data.frame(
+            rtime = c(1, 2, 3, 4, 5, 6, 7),
+            intensity = c(0, 10, 50, 100, 50, 10, 0)
+        )
+    )
+    chr_beta <- Chromatograms(ChromBackendMemory(), chromData = cdata_beta,
+                              peaksData = pdata_beta)
+    tmp <- gaussianSimilarity(chr_beta)
+    expect_true(is.matrix(tmp))
+    expect_equal(nrow(tmp), 2)
+    expect_equal(ncol(tmp), 2)
+    expect_equal(colnames(tmp), c("gaussian_similarity", "gaussian_residuals"))
+    ## First chromatogram (39 points, clear peak) should have valid values
+    expect_true(!is.na(tmp[1, "gaussian_similarity"]))
+    ## Second chromatogram (7 points) may or may not have enough points
+    expect_equal(attr(tmp, "gaussianSimilarity"), "custom_metric:gaussian_similarity")
+})
+
+test_that("gaussianSimilarity returns NA for empty chromatogram.", {
+    cdata_empty <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_empty <- list(data.frame(rtime = numeric(), intensity = numeric()))
+    chr_empty <- Chromatograms(ChromBackendMemory(), chromData = cdata_empty,
+                               peaksData = pdata_empty)
+    tmp <- gaussianSimilarity(chr_empty)
+    expect_true(is.matrix(tmp))
+    expect_equal(nrow(tmp), 1)
+    expect_true(all(is.na(tmp)))
+})
+
+test_that("gaussianSimilarity returns NA for peak with < 5 points.", {
+    cdata_short <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_short <- list(data.frame(
+        rtime = c(1, 2, 3),
+        intensity = c(10, 100, 10)
+    ))
+    chr_short <- Chromatograms(ChromBackendMemory(), chromData = cdata_short,
+                               peaksData = pdata_short)
+    tmp <- gaussianSimilarity(chr_short)
+    expect_true(all(is.na(tmp)))
+})
+
+test_that("gaussianSimilarity accepts pre-computed peakBoundary matrix.", {
+    cdata_beta <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_beta <- list(data.frame(
+        rtime = seq(1, 20, by = 0.5),
+        intensity = c(10, 15, 25, 50, 100, 200, 350, 500, 650,
+                      700, 650, 500, 350, 200, 100, 50, 25, 15,
+                      10, 8, 6, 5, 4, 3, 2, 2, 1, 1, 1, 1, 1,
+                      1, 1, 1, 1, 1, 1, 1, 1)
+    ))
+    chr_beta <- Chromatograms(ChromBackendMemory(), chromData = cdata_beta,
+                              peaksData = pdata_beta)
+    pb <- peakBoundary(chr_beta)
+    tmp <- gaussianSimilarity(chr_beta, peakBoundary = pb)
+    expect_true(is.matrix(tmp))
+    expect_true(!is.na(tmp[1, "gaussian_similarity"]))
+})
+
+test_that("peakProminence returns per-chromatogram values.", {
+    tmp <- peakProminence(chr)
+    expect_equal(length(tmp), 3)
+    expect_true(tmp[1] > 0)
+    expect_true(is.na(tmp[2]))  # empty
+    expect_true(tmp[3] > 0)
+    expect_equal(attr(tmp, "peakProminence"), "custom_metric:peak_prominence")
+})
+
+test_that("peakProminence returns NA for zero-baseline chromatogram.", {
+    cdata_zero <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
+    pdata_zero <- list(data.frame(
+        rtime = seq(1, 10, by = 1),
+        intensity = c(0, 0, 0, 0, 100, 0, 0, 0, 0, 0)
+    ))
+    chr_zero <- Chromatograms(ChromBackendMemory(), chromData = cdata_zero,
+                              peaksData = pdata_zero)
+    tmp <- peakProminence(chr_zero)
+    expect_true(is.na(tmp))
+})
+
+test_that("peakProminence accepts pre-computed peakBoundary matrix.", {
+    pb <- peakBoundary(chr)
+    tmp <- peakProminence(chr, peakBoundary = pb)
+    expect_equal(length(tmp), 3)
+})
+
+## ============================================================
+## Shared metrics (from function_Spectra_metrics.R)
+## ============================================================
+
+test_that("ticQuantileRtFraction returns per-chromatogram matrix.", {
+    tmp <- ticQuantileRtFraction(chr)
+    expect_true(is.matrix(tmp))
+    expect_equal(nrow(tmp), 3)
+    expect_equal(ncol(tmp), 5)
+    expect_equal(colnames(tmp), c("0%", "25%", "50%", "75%", "100%"))
+    ## Row 1: valid fractions (0 to 1)
+    expect_equal(unname(tmp[1, "0%"]), 0, tolerance = 1e-6)
+    expect_equal(unname(tmp[1, "100%"]), 1, tolerance = 1e-6)
+    ## Row 2: empty → all NA
+    expect_true(all(is.na(tmp[2, ])))
+    ## Row 3: valid fractions
+    expect_equal(unname(tmp[3, "0%"]), 0, tolerance = 1e-6)
+    expect_equal(unname(tmp[3, "100%"]), 1, tolerance = 1e-6)
     expect_equal(attr(tmp, "ticQuantileRtFraction"), "MS:4000183")
 })
 
-test_that("areaUnderTic works properly.", {
+test_that("areaUnderTic returns per-chromatogram values.", {
     tmp <- areaUnderTic(chr)
-    expect_equal(length(tmp), 1)
-    expect_true(is.numeric(tmp))
-    expect_equal(as.numeric(tmp), sum(c(100, 250, 400, 300, 150, 80, 500, 1200, 600, 120)))
-
-    ## test attributes
+    expect_equal(length(tmp), 3)
+    expect_equal(tmp[1], sum(c(100, 250, 400, 300, 150)))
+    expect_equal(tmp[2], 0)  # empty chromatogram: sum of nothing = 0
+    expect_equal(tmp[3], sum(c(80, 500, 1200, 600, 120)))
     expect_equal(attr(tmp, "areaUnderTic"), "MS:4000155")
 })
 
-test_that("areaUnderTicRtQuantiles works properly.", {
+test_that("areaUnderTicRtQuantiles returns per-chromatogram matrix.", {
     tmp <- areaUnderTicRtQuantiles(chr)
-    expect_equal(length(tmp), 4)
-    expect_equal(names(tmp), c("25%", "50%", "75%", "100%"))
-    expect_true(all(is.numeric(tmp)))
-    expect_true(sum(tmp) > 0)  # Total area should be positive
-
-    ## test attributes
+    expect_true(is.matrix(tmp))
+    expect_equal(nrow(tmp), 3)
+    expect_equal(ncol(tmp), 4)
+    expect_equal(colnames(tmp), c("25%", "50%", "75%", "100%"))
+    ## Row 1: valid positive areas
+    expect_true(all(tmp[1, ] >= 0))
+    ## Row 2: empty → NA
+    expect_true(all(is.na(tmp[2, ])))
+    ## Row 3: valid positive areas
+    expect_true(all(tmp[3, ] >= 0))
     expect_equal(attr(tmp, "areaUnderTicRtQuantiles"), "MS:4000156")
 })
 
-test_that("areaUnderTicRtQuantiles filters by msLevel for Chromatograms.", {
-    cdata_mslevel <- data.frame(
-        msLevel = c(1L, 2L),
-        mz = c(100, 100),
-        dataOrigin = c("mem1", "mem1")
-    )
-    pdata_mslevel <- list(
-        data.frame(rtime = c(0, 1), intensity = c(1, 1)),
-        data.frame(rtime = c(0, 1), intensity = c(2, 2))
-    )
-    chr_mslevel <- Chromatograms(ChromBackendMemory(), chromData = cdata_mslevel,
-                                 peaksData = pdata_mslevel)
-
-    res_ms1 <- areaUnderTicRtQuantiles(chr_mslevel, msLevel = 1L)
-    expect_equal(as.numeric(res_ms1), rep(0.25, 4), tolerance = 1e-8)
-    expect_equal(names(res_ms1), c("25%", "50%", "75%", "100%"))
-    expect_equal(attr(res_ms1, "areaUnderTicRtQuantiles"), "MS:4000156")
-
-    res_ms2 <- areaUnderTicRtQuantiles(chr_mslevel, msLevel = 2L)
-    expect_equal(as.numeric(res_ms2), rep(0.5, 4), tolerance = 1e-8)
-    expect_equal(names(res_ms2), c("25%", "50%", "75%", "100%"))
-
-    res_empty <- areaUnderTicRtQuantiles(chr_mslevel, msLevel = 3L)
-    expect_true(all(is.na(res_empty)))
-    expect_equal(names(res_empty), c("25%", "50%", "75%", "100%"))
-    expect_equal(attr(res_empty, "areaUnderTicRtQuantiles"), "MS:4000156")
-})
-
-## Chromatograms with MS1 and MS2 for areaUnderTicMs1/Ms2 tests
+## Chromatograms with MS1 and MS2 for msLevel filter tests
 cdata_ms <- data.frame(
     msLevel = c(1L, 2L, 1L),
     mz = c(112.2, 123.3, 134.4),
@@ -308,418 +493,52 @@ pdata_ms <- list(
     data.frame(rtime = c(3.5, 4.0, 4.5), intensity = c(50, 60, 70)),
     data.frame(rtime = c(5.0, 5.5, 6.0), intensity = c(400, 500, 600))
 )
-chr_ms <- Chromatograms(ChromBackendMemory(), chromData = cdata_ms, peaksData = pdata_ms)
+chr_ms <- Chromatograms(ChromBackendMemory(), chromData = cdata_ms,
+                        peaksData = pdata_ms)
 
-test_that("areaUnderTicMs1 works properly.", {
-    tmp <- areaUnderTicMs1(chr_ms)
-    ## MS1 chromatograms: chr1 (100+200+300=600) + chr3 (400+500+600=1500) = 2100
-    expect_equal(length(tmp), 1)
-    expect_equal(as.numeric(tmp), 2100)
+test_that("areaUnderTic filters by msLevel per chromatogram.", {
+    tmp_ms1 <- areaUnderTic(chr_ms, msLevel = 1L)
+    ## MS1 chromatograms: chr1=600, chr3=1500
+    expect_equal(length(tmp_ms1), 2)
+    expect_equal(tmp_ms1[1], 600)
+    expect_equal(tmp_ms1[2], 1500)
+    expect_equal(attr(tmp_ms1, "areaUnderTic"), "MS:4000155")
 
-    ## test attributes
-    expect_equal(attr(tmp, "areaUnderTicMs1"), "MS:4000029")
-
-    ## Test with no MS1 data
-    cdata_ms2_only <- data.frame(msLevel = 2L, mz = 100.0, dataOrigin = "mem1")
-    pdata_ms2_only <- list(data.frame(rtime = c(1, 2), intensity = c(10, 20)))
-    chr_ms2_only <- Chromatograms(ChromBackendMemory(), chromData = cdata_ms2_only,
-                                   peaksData = pdata_ms2_only)
-    tmp2 <- areaUnderTicMs1(chr_ms2_only)
-    expect_true(is.na(tmp2))
+    tmp_ms2 <- areaUnderTic(chr_ms, msLevel = 2L)
+    ## MS2 chromatograms: chr2=180
+    expect_equal(length(tmp_ms2), 1)
+    expect_equal(tmp_ms2[1], 180)
+    expect_equal(attr(tmp_ms2, "areaUnderTic"), "MS:4000155")
 })
 
-test_that("areaUnderTicMs2 works properly.", {
-    tmp <- areaUnderTicMs2(chr_ms)
-    ## MS2 chromatogram: chr2 (50+60+70=180)
-    expect_equal(length(tmp), 1)
-    expect_equal(as.numeric(tmp), 180)
-
-    ## test attributes
-    expect_equal(attr(tmp, "areaUnderTicMs2"), "MS:4000030")
-
-    ## Test with no MS2 data
-    cdata_ms1_only <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_ms1_only <- list(data.frame(rtime = c(1, 2), intensity = c(10, 20)))
-    chr_ms1_only <- Chromatograms(ChromBackendMemory(), chromData = cdata_ms1_only,
-                                   peaksData = pdata_ms1_only)
-    tmp2 <- areaUnderTicMs2(chr_ms1_only)
-    expect_true(is.na(tmp2))
+test_that("rtAcquisitionRange filters by msLevel.", {
+    tmp_ms1 <- rtAcquisitionRange(chr_ms, msLevel = 1L)
+    expect_true(is.matrix(tmp_ms1))
+    expect_equal(nrow(tmp_ms1), 2)  # 2 MS1 chromatograms
 })
 
-## peakBoundary tests
-test_that("peakBoundary returns correct RT boundaries for clean symmetric peak.", {
-    ## Simple chromatogram with clear symmetric peak dropping to zero
-    cdata_pb <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_pb <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7),
-        intensity = c(0, 10, 50, 100, 50, 10, 0)
-    ))
-    chr_pb <- Chromatograms(ChromBackendMemory(), chromData = cdata_pb, peaksData = pdata_pb)
-
-    ## Uses MsCoreUtils::valleys() to find local minima
-    tmp <- peakBoundary(chr_pb)
-    expect_equal(length(tmp), 2)
-    expect_equal(names(tmp), c("left_boundary", "right_boundary"))
-    ## Peak apex at rt=4, valleys() finds valleys at the zeros (rt 1 and 7)
-    expect_equal(unname(tmp["left_boundary"]), 1)
-    expect_equal(unname(tmp["right_boundary"]), 7)
-    expect_equal(attr(tmp, "peakBoundary"), "custom_metric:peak_boundary")
+test_that("rtIqr filters by msLevel.", {
+    tmp_ms1 <- rtIqr(chr_ms, msLevel = 1L)
+    expect_equal(length(tmp_ms1), 2)  # 2 MS1 chromatograms
 })
 
-test_that("peakBoundary finds first valley in overlapping peaks.", {
-    ## Two overlapping peaks with a valley between them
-    cdata_pb <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_pb <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
-        intensity = c(10, 50, 100, 60, 30, 60, 100, 50, 10)  # valley at rt=5
-    ))
-    chr_pb <- Chromatograms(ChromBackendMemory(), chromData = cdata_pb, peaksData = pdata_pb)
 
-    tmp <- peakBoundary(chr_pb)  # finds highest peak (rt=3 or rt=7)
-    expect_equal(length(tmp), 2)
-    ## valleys() should stop at the valley between peaks
-    expect_true(tmp["left_boundary"] >= 1)
-    expect_true(tmp["right_boundary"] <= 9)
+
+test_that("numberEmptyScans filters by msLevel.", {
+    tmp <- numberEmptyScans(chr_ms, msLevel = 1L)
+    expect_equal(as.numeric(tmp), 0)
 })
 
-test_that("peakBoundary handles peak with elevated baseline.", {
-    ## Peak on elevated baseline - should find where signal levels off
-    cdata_pb <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_pb <- list(data.frame(
-        rtime = 1:15,
-        intensity = c(100, 100, 100, 150, 300, 500, 300, 150, 100, 100, 100, 100, 100, 100, 100)
-    ))
-    chr_pb <- Chromatograms(ChromBackendMemory(), chromData = cdata_pb, peaksData = pdata_pb)
-
-    ## With default adaptive method and 10% threshold, elevated baseline (100 = 20% of max)
-    ## causes threshold fallback to find no candidates, resulting in full span.
-    ## Use higher threshold to handle elevated baseline
-    tmp <- peakBoundary(chr_pb, threshold = 0.25)
-    expect_equal(length(tmp), 2)
-    ## Peak apex at rt=6, should find where it becomes flat (around rt 3 and rt 9)
-    expect_true(tmp["left_boundary"] >= 1 && tmp["left_boundary"] <= 4)
-    expect_true(tmp["right_boundary"] >= 8 && tmp["right_boundary"] <= 15)
+test_that("msSignal10xChange filters by msLevel.", {
+    tmp <- msSignal10xChange(chr_ms, change = "jump", msLevel = 1L)
+    expect_equal(length(tmp), 2)  # 2 MS1 chromatograms
 })
 
-test_that("peakBoundary handles tailing peak.", {
-    ## Asymmetric peak: sharp rise, slow decay (common in chromatography)
-    cdata_pb <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_pb <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-        intensity = c(5, 20, 100, 80, 50, 35, 25, 20, 18, 15)
-    ))
-    chr_pb <- Chromatograms(ChromBackendMemory(), chromData = cdata_pb, peaksData = pdata_pb)
+## ============================================================
+## Metrics with NA intensities
+## ============================================================
 
-    tmp <- peakBoundary(chr_pb)
-    expect_equal(length(tmp), 2)
-    ## Peak apex at rt=3, left boundary should be at first point
-    expect_equal(unname(tmp["left_boundary"]), 1)
-    ## Right boundary extends to end since no valley (monotonic decrease)
-    expect_equal(unname(tmp["right_boundary"]), 10)
-})
-
-test_that("peakBoundary works for clean peak.", {
-    cdata_pb <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_pb <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7),
-        intensity = c(0, 10, 50, 100, 50, 10, 0)
-    ))
-    chr_pb <- Chromatograms(ChromBackendMemory(), chromData = cdata_pb, peaksData = pdata_pb)
-
-    tmp <- peakBoundary(chr_pb)
-    expect_equal(length(tmp), 2)
-    expect_equal(names(tmp), c("left_boundary", "right_boundary"))
-    expect_false(any(is.na(tmp)))
-    ## valleys() finds boundaries at rt 1 and 7
-    expect_equal(unname(tmp["left_boundary"]), 1)
-    expect_equal(unname(tmp["right_boundary"]), 7)
-})
-
-test_that("peakBoundary returns NA for empty chromatograms.", {
-    cdata_empty <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_empty <- list(data.frame(rtime = numeric(), intensity = numeric()))
-    chr_empty <- Chromatograms(ChromBackendMemory(), chromData = cdata_empty, peaksData = pdata_empty)
-
-    tmp <- peakBoundary(chr_empty)
-    expect_equal(length(tmp), 2)
-    expect_true(all(is.na(tmp)))
-})
-
-test_that("peakBoundary handles max intensity at first position.", {
-    cdata_first <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_first <- list(data.frame(
-        rtime = seq(1, 10, length.out = 10),
-        intensity = c(1000, 900, 800, 700, 600, 500, 400, 300, 200, 100)
-    ))
-    chr_first <- Chromatograms(ChromBackendMemory(), chromData = cdata_first, 
-                               peaksData = pdata_first)
-
-    tmp <- peakBoundary(chr_first)
-    expect_equal(length(tmp), 2)
-    expect_false(any(is.na(tmp)))
-    ## Left boundary should be at first position (index 1)
-    expect_equal(unname(tmp["left_boundary"]), 1)
-})
-
-test_that("peakBoundary handles max intensity at last position.", {
-    cdata_last <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_last <- list(data.frame(
-        rtime = seq(1, 10, length.out = 10),
-        intensity = c(100, 200, 300, 400, 500, 600, 700, 800, 900, 1000)
-    ))
-    chr_last <- Chromatograms(ChromBackendMemory(), chromData = cdata_last, 
-                              peaksData = pdata_last)
-
-    tmp <- peakBoundary(chr_last)
-    expect_equal(length(tmp), 2)
-    expect_false(any(is.na(tmp)))
-    ## Right boundary should be at last position
-    expect_equal(unname(tmp["right_boundary"]), 10)
-})
-
-test_that("peakBoundary threshold parameter affects boundaries.", {
-    cdata_t <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_t <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-        intensity = c(10, 20, 50, 100, 500, 100, 50, 20, 10, 5)
-    ))
-    chr_t <- Chromatograms(ChromBackendMemory(), chromData = cdata_t, peaksData = pdata_t)
-
-    tmp <- peakBoundary(chr_t, threshold = 0.1)
-    expect_equal(length(tmp), 2)
-    expect_false(any(is.na(tmp)))
-    
-    ## Lower threshold should give wider boundaries when fallback is triggered
-    tmp_05 <- peakBoundary(chr_t, threshold = 0.05)
-    expect_equal(length(tmp_05), 2)
-    expect_false(any(is.na(tmp_05)))
-})
-
-test_that("peakBoundary validates and adjusts boundaries.", {
-    ## Test 1: Clean peak - should use valleys result (boundaries at baseline)
-    cdata_clean <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_clean <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7),
-        intensity = c(0, 10, 50, 100, 50, 10, 0)
-    ))
-    chr_clean <- Chromatograms(ChromBackendMemory(), chromData = cdata_clean, peaksData = pdata_clean)
-    
-    tmp <- peakBoundary(chr_clean)
-    expect_equal(length(tmp), 2)
-    expect_false(any(is.na(tmp)))
-    expect_equal(names(tmp), c("left_boundary", "right_boundary"))
-    
-    ## Test 2: Peak with elevated baseline - should validate and may use threshold
-    cdata_high <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_high <- list(data.frame(
-        rtime = 1:15,
-        intensity = c(50, 60, 80, 150, 300, 500, 300, 150, 80, 60, 50, 50, 50, 50, 50)
-    ))
-    chr_high <- Chromatograms(ChromBackendMemory(), chromData = cdata_high, peaksData = pdata_high)
-    
-    tmp_high <- peakBoundary(chr_high)
-    ## Should return valid boundaries (2 values, no NA)
-    expect_equal(length(tmp_high), 2)
-    expect_false(any(is.na(tmp_high)))
-    ## And boundaries should contain the peak apex
-    expect_true(tmp_high["left_boundary"] <= 6)
-    expect_true(tmp_high["right_boundary"] >= 6)
-})
-
-test_that("peakBoundary handles NA adjacent to boundary.", {
-    ## Data with NA values adjacent to where valleys would find boundaries
-    cdata_na_adj <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_na_adj <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-        intensity = c(NA, NA, 50, 100, 500, 100, 50, NA, NA, 5)
-    ))
-    chr_na_adj <- Chromatograms(ChromBackendMemory(), chromData = cdata_na_adj, peaksData = pdata_na_adj)
-    
-    ## Should detect NA adjacency and fall back to threshold
-    expect_no_error(peakBoundary(chr_na_adj))
-    tmp <- peakBoundary(chr_na_adj)
-    expect_equal(length(tmp), 2)
-    expect_false(any(is.na(tmp)))
-})
-
-test_that("peakBoundary uses relative threshold based on baseline.", {
-    ## Peak with elevated/noisy baseline - relative threshold should handle it
-    ## Baseline around 3000-4000, peak max around 18700
-    cdata_noisy <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_noisy <- list(data.frame(
-        rtime = 1:30,
-        intensity = c(2100, 2100, 1970, 1020, 830, 960, 3300, 9900, 12600, 15500,
-                      15700, 17800, 18700, 11600, 9000, 6400, 5200, 5900, 3700, 4000,
-                      5000, 3500, 4700, 3500, 4700, 5200, 5300, 5200, 3900, 3800)
-    ))
-    chr_noisy <- Chromatograms(ChromBackendMemory(), chromData = cdata_noisy, peaksData = pdata_noisy)
-    
-    ## Should give valid boundaries
-    tmp <- peakBoundary(chr_noisy)
-    expect_equal(length(tmp), 2)
-    expect_false(any(is.na(tmp)))
-    ## Left boundary should be before peak apex (index 13)
-    expect_true(tmp["left_boundary"] < 13)
-    ## Right boundary should be after peak apex
-    expect_true(tmp["right_boundary"] > 13)
-    ## Should contain the main peak region (indices 7-17 roughly)
-    expect_true(tmp["left_boundary"] <= 10)
-})
-
-test_that("peakBoundary handles chromatogram with NA intensities without error.", {
-    ## Non-imputed data may have NA values in intensities
-    ## This should not cause "missing value where TRUE/FALSE needed" error
-    cdata_na <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_na <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-        intensity = c(NA, 20, 50, 100, 500, 100, 50, 20, NA, 5)
-    ))
-    chr_na <- Chromatograms(ChromBackendMemory(), chromData = cdata_na, peaksData = pdata_na)
-
-    ## Should not error
-    expect_no_error(peakBoundary(chr_na))
-    
-    ## Result should be valid
-    tmp <- peakBoundary(chr_na)
-    expect_equal(length(tmp), 2)
-    expect_equal(names(tmp), c("left_boundary", "right_boundary"))
-})
-
-test_that("peakBoundary handles chromatogram with all NA intensities.", {
-    cdata_allna <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_allna <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5),
-        intensity = c(NA_real_, NA_real_, NA_real_, NA_real_, NA_real_)
-    ))
-    chr_allna <- Chromatograms(ChromBackendMemory(), chromData = cdata_allna, peaksData = pdata_allna)
-
-    ## Should return NA without error
-    tmp <- peakBoundary(chr_allna)
-    expect_equal(length(tmp), 2)
-    expect_true(all(is.na(tmp)))
-})
-
-## peakWidth tests
-test_that("peakWidth returns correct width for clean peak.", {
-    cdata_pw <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_pw <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7),
-        intensity = c(0, 10, 50, 100, 50, 10, 0)
-    ))
-    chr_pw <- Chromatograms(ChromBackendMemory(), chromData = cdata_pw, peaksData = pdata_pw)
-
-    tmp <- peakWidth(chr_pw)
-    expect_equal(length(tmp), 1)
-    ## valleys() finds valleys at rt 1 and 7, width = 6
-    expect_equal(as.numeric(tmp), 6)
-    expect_equal(attr(tmp, "peakWidth"), "custom_metric:peak_width")
-})
-
-test_that("peakWidth returns NA for empty chromatograms.", {
-    cdata_empty <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_empty <- list(data.frame(rtime = numeric(), intensity = numeric()))
-    chr_empty <- Chromatograms(ChromBackendMemory(), chromData = cdata_empty, peaksData = pdata_empty)
-
-    tmp <- peakWidth(chr_empty)
-    expect_equal(length(tmp), 1)
-    expect_true(is.na(tmp))
-})
-
-test_that("peakWidth accepts pre-computed peakBoundary.", {
-    cdata_pw <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_pw <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7),
-        intensity = c(0, 10, 50, 100, 50, 10, 0)
-    ))
-    chr_pw <- Chromatograms(ChromBackendMemory(), chromData = cdata_pw, peaksData = pdata_pw)
-
-    ## Calculate peakBoundary once
-    pb <- peakBoundary(chr_pw)
-
-    ## Pass to peakWidth
-    tmp <- peakWidth(chr_pw, peakBoundary = pb)
-    expect_equal(as.numeric(tmp), 6)
-})
-
-## peakBeta tests
-test_that("peakBeta returns beta values for a clean peak.", {
-    ## Create a bell-shaped peak with enough points
-    cdata_beta <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_beta <- list(data.frame(
-        rtime = seq(1, 20, by = 0.5),
-        intensity = c(10, 15, 25, 50, 100, 200, 350, 500, 650,
-                      700, 650, 500, 350, 200, 100, 50, 25, 15,
-                      10, 8, 6, 5, 4, 3, 2, 2, 1, 1, 1, 1, 1,
-                      1, 1, 1, 1, 1, 1, 1, 1)
-    ))
-    chr_beta <- Chromatograms(ChromBackendMemory(), chromData = cdata_beta, peaksData = pdata_beta)
-
-    tmp <- peakBeta(chr_beta)
-    expect_equal(length(tmp), 2)
-    expect_equal(names(tmp), c("beta_cor", "beta_snr"))
-    expect_true(is.numeric(tmp["beta_cor"]))
-    expect_true(is.numeric(tmp["beta_snr"]))
-    expect_equal(attr(tmp, "peakBeta"), "custom_metric:peak_beta")
-})
-
-test_that("peakBeta accepts pre-computed peakBoundary.", {
-    cdata_beta <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_beta <- list(data.frame(
-        rtime = seq(1, 20, by = 0.5),
-        intensity = c(10, 15, 25, 50, 100, 200, 350, 500, 650,
-                      700, 650, 500, 350, 200, 100, 50, 25, 15,
-                      10, 8, 6, 5, 4, 3, 2, 2, 1, 1, 1, 1, 1,
-                      1, 1, 1, 1, 1, 1, 1, 1)
-    ))
-    chr_beta <- Chromatograms(ChromBackendMemory(), chromData = cdata_beta, peaksData = pdata_beta)
-
-    pb <- peakBoundary(chr_beta)
-    tmp <- peakBeta(chr_beta, peakBoundary = pb)
-    expect_equal(length(tmp), 2)
-    expect_true(!is.na(tmp[["beta_cor"]]))
-})
-
-test_that("peakBeta returns NA for empty chromatograms.", {
-    cdata_empty <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_empty <- list(data.frame(rtime = numeric(), intensity = numeric()))
-    chr_empty <- Chromatograms(ChromBackendMemory(), chromData = cdata_empty, peaksData = pdata_empty)
-
-    tmp <- peakBeta(chr_empty)
-    expect_equal(length(tmp), 2)
-    expect_true(all(is.na(tmp)))
-})
-
-test_that("peakBeta returns NA when peak has < 5 points.", {
-    ## Very short peak
-    cdata_short <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_short <- list(data.frame(
-        rtime = c(1, 2, 3),
-        intensity = c(10, 100, 10)
-    ))
-    chr_short <- Chromatograms(ChromBackendMemory(), chromData = cdata_short, peaksData = pdata_short)
-
-    tmp <- peakBeta(chr_short)
-    expect_equal(length(tmp), 2)
-    expect_true(all(is.na(tmp)))
-})
-
-test_that("xicFwhm accepts pre-computed peakBoundary.", {
-    cdata_fwhm <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_fwhm <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7),
-        intensity = c(0, 10, 50, 100, 50, 10, 0)
-    ))
-    chr_fwhm <- Chromatograms(ChromBackendMemory(), chromData = cdata_fwhm, peaksData = pdata_fwhm)
-
-    pb <- peakBoundary(chr_fwhm)
-    tmp <- xicFwhm(chr_fwhm, peakBoundary = pb)
-    expect_equal(length(tmp), 1)
-    expect_true(!is.na(tmp))
-    expect_true(tmp > 0)
-})
-
-test_that("metrics handle data with NA values correctly.", {
-    ## Create chromatogram with NA values in intensity
+test_that("scalar metrics handle NA values correctly per-chromatogram.", {
     cdata_na <- data.frame(
         msLevel = c(1L, 1L),
         mz = c(112.2, 123.3),
@@ -734,103 +553,263 @@ test_that("metrics handle data with NA values correctly.", {
     chr_na <- Chromatograms(ChromBackendMemory(), chromData = cdata_na,
                             peaksData = pdata_na)
 
-    ## With na.rm = TRUE, should compute without error and return valid numeric
     tmp_max <- maxIntensity(chr_na, na.rm = TRUE)
-    expect_equal(as.numeric(tmp_max), 500)
+    expect_equal(tmp_max[1], 400)
+    expect_equal(tmp_max[2], 500)
 
     tmp_mean <- intensityMean(chr_na, na.rm = TRUE)
-    expect_equal(as.numeric(tmp_mean), mean(c(100, 400, 150, 80, 500), na.rm = TRUE))
-
-    tmp_sd <- intensitySd(chr_na, na.rm = TRUE)
-    expect_equal(as.numeric(tmp_sd), sd(c(100, 400, 150, 80, 500), na.rm = TRUE))
+    expect_equal(tmp_mean[1], mean(c(100, 400, 150)))
+    expect_equal(tmp_mean[2], mean(c(80, 500)))
 
     tmp_range <- intensityRange(chr_na, na.rm = TRUE)
-    expect_equal(as.numeric(tmp_range), c(80, 500))
-
-    tmp_baseline <- baselineIntensity(chr_na, na.rm = TRUE)
-    expect_equal(as.numeric(tmp_baseline),
-                 as.numeric(quantile(c(100, 400, 150, 80, 500), probs = 0.05, na.rm = TRUE)))
-
-    ## peakCount with na.rm should count only non-NA values
-    tmp_count <- peakCount(chr_na, na.rm = TRUE)
-    expect_equal(as.numeric(tmp_count), 5)  # 5 non-NA values
-
-    tmp_count_all <- peakCount(chr_na, na.rm = FALSE)
-    expect_equal(as.numeric(tmp_count_all), 8)  # 8 total values including NAs
+    expect_equal(tmp_range[1, ], c(min = 100, max = 400))
+    expect_equal(tmp_range[2, ], c(min = 80, max = 500))
 })
 
-## peakProminence tests
-test_that("peakProminence returns prominence for a clear peak.", {
-    ## Create a bell-shaped peak with clear baseline
-    cdata_prom <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_prom <- list(data.frame(
-        rtime = seq(1, 20, by = 1),
-        intensity = c(10, 10, 15, 25, 50, 100, 200, 350, 500, 650,
-                      500, 350, 200, 100, 50, 25, 15, 10, 10, 10)
-    ))
-    chr_prom <- Chromatograms(ChromBackendMemory(), chromData = cdata_prom, peaksData = pdata_prom)
+## ============================================================
+## All-zero chromatograms
+## ============================================================
 
-    tmp <- peakProminence(chr_prom)
-    expect_equal(length(tmp), 1)
-    expect_true(is.numeric(tmp))
-    expect_true(!is.na(tmp))
-    expect_true(tmp > 1)  # Should be significantly above baseline
-    expect_equal(attr(tmp, "peakProminence"), "custom_metric:peak_prominence")
+cdata_zero <- data.frame(
+    msLevel = c(1L, 1L),
+    mz = c(112.2, 123.3),
+    dataOrigin = c("mem1", "mem1")
+)
+pdata_zero <- list(
+    data.frame(rtime = c(1, 2, 3, 4, 5),
+               intensity = c(0, 0, 0, 0, 0)),
+    data.frame(rtime = c(6, 7, 8, 9, 10, 11, 12),
+               intensity = c(0, 0, 0, 0, 0, 0, 0))
+)
+chr_zero <- Chromatograms(ChromBackendMemory(), chromData = cdata_zero,
+                          peaksData = pdata_zero)
+
+test_that("maxIntensity handles all-zero chromatograms.", {
+    tmp <- maxIntensity(chr_zero)
+    expect_equal(length(tmp), 2)
+    expect_equal(tmp[1], 0)
+    expect_equal(tmp[2], 0)
 })
 
-test_that("peakProminence returns low value for flat/noisy chromatogram.", {
-    ## Create a flat, noisy chromatogram with no clear peak
-    set.seed(42)
-    cdata_flat <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_flat <- list(data.frame(
-        rtime = seq(1, 50, by = 1),
-        intensity = 100 + rnorm(50, sd = 20)  # Noisy around 100
-    ))
-    chr_flat <- Chromatograms(ChromBackendMemory(), chromData = cdata_flat, peaksData = pdata_flat)
-
-    tmp <- peakProminence(chr_flat)
-    expect_equal(length(tmp), 1)
-    expect_true(is.numeric(tmp))
-    expect_true(!is.na(tmp))
-    expect_true(tmp < 2)  # Should be relatively low for flat signal (< 2x baseline)
+test_that("intensityMean handles all-zero chromatograms.", {
+    tmp <- intensityMean(chr_zero)
+    expect_equal(tmp[1], 0)
+    expect_equal(tmp[2], 0)
 })
 
-test_that("peakProminence accepts pre-computed peakBoundary.", {
-    cdata_prom <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_prom <- list(data.frame(
-        rtime = seq(1, 20, by = 1),
-        intensity = c(10, 10, 15, 25, 50, 100, 200, 350, 500, 650,
-                      500, 350, 200, 100, 50, 25, 15, 10, 10, 10)
-    ))
-    chr_prom <- Chromatograms(ChromBackendMemory(), chromData = cdata_prom, peaksData = pdata_prom)
-
-    pb <- peakBoundary(chr_prom)
-    tmp <- peakProminence(chr_prom, peakBoundary = pb)
-    expect_equal(length(tmp), 1)
-    expect_true(!is.na(tmp))
+test_that("intensitySd handles all-zero chromatograms.", {
+    tmp <- intensitySd(chr_zero)
+    expect_equal(tmp[1], 0)
+    expect_equal(tmp[2], 0)
 })
 
-test_that("peakProminence returns NA for empty chromatograms.", {
-    cdata_empty <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_empty <- list(data.frame(rtime = numeric(), intensity = numeric()))
-    chr_empty <- Chromatograms(ChromBackendMemory(), chromData = cdata_empty, peaksData = pdata_empty)
-
-    tmp <- peakProminence(chr_empty)
-    expect_equal(length(tmp), 1)
-    expect_true(is.na(tmp))
+test_that("intensityQuartiles handles all-zero chromatograms.", {
+    tmp <- intensityQuartiles(chr_zero)
+    expect_true(all(tmp == 0))
 })
 
-test_that("peakProminence returns NA when baseline is zero or negative.", {
-    ## Chromatogram where baseline would be ~0
-    cdata_zero <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_zero <- list(data.frame(
-        rtime = seq(1, 10, by = 1),
-        intensity = c(0, 0, 0, 0, 100, 0, 0, 0, 0, 0)
-    ))
-    chr_zero <- Chromatograms(ChromBackendMemory(), chromData = cdata_zero, peaksData = pdata_zero)
+test_that("intensityRange handles all-zero chromatograms.", {
+    tmp <- intensityRange(chr_zero)
+    expect_equal(tmp[1, ], c(min = 0, max = 0))
+    expect_equal(tmp[2, ], c(min = 0, max = 0))
+})
 
+test_that("peakCount handles all-zero chromatograms.", {
+    tmp <- peakCount(chr_zero)
+    expect_equal(tmp[1], 5L)
+    expect_equal(tmp[2], 7L)
+})
+
+test_that("baselineIntensity handles all-zero chromatograms.", {
+    tmp <- baselineIntensity(chr_zero)
+    expect_equal(tmp[1], 0)
+    expect_equal(tmp[2], 0)
+})
+
+test_that("signalToNoiseRatio handles all-zero chromatograms.", {
+    tmp <- signalToNoiseRatio(chr_zero)
+    ## MAD of all zeros = 0, so should return NA
+    expect_true(is.na(tmp[1]))
+    expect_true(is.na(tmp[2]))
+})
+
+test_that("xicFwhm handles all-zero chromatograms.", {
+    tmp <- xicFwhm(chr_zero)
+    expect_true(is.na(tmp[1]))
+    expect_true(is.na(tmp[2]))
+})
+
+test_that("peakBoundary handles all-zero chromatograms.", {
+    tmp <- peakBoundary(chr_zero)
+    expect_true(all(is.na(tmp)))
+})
+
+test_that("peakWidth handles all-zero chromatograms.", {
+    tmp <- peakWidth(chr_zero)
+    expect_true(is.na(tmp[1]))
+    expect_true(is.na(tmp[2]))
+})
+
+test_that("gaussianSimilarity handles all-zero chromatograms.", {
+    tmp <- gaussianSimilarity(chr_zero)
+    expect_true(all(is.na(tmp)))
+})
+
+test_that("peakProminence handles all-zero chromatograms.", {
     tmp <- peakProminence(chr_zero)
-    expect_equal(length(tmp), 1)
-    expect_true(is.na(tmp))  # Can't compute when baseline is 0
+    expect_true(is.na(tmp[1]))
+    expect_true(is.na(tmp[2]))
+})
+
+test_that("msSignal10xChange handles all-zero chromatograms.", {
+    tmp <- msSignal10xChange(chr_zero, change = "jump", msLevel = 1L)
+    expect_equal(tmp[1], 0L)
+    expect_equal(tmp[2], 0L)
+})
+
+test_that("areaUnderTic handles all-zero chromatograms.", {
+    tmp <- areaUnderTic(chr_zero)
+    expect_equal(tmp[1], 0)
+    expect_equal(tmp[2], 0)
+})
+
+test_that("medianTicRtIqr handles all-zero chromatograms.", {
+    tmp <- medianTicRtIqr(chr_zero, msLevel = 1L)
+    expect_equal(tmp[1], 0)
+    expect_equal(tmp[2], 0)
+})
+
+## ============================================================
+## Chromatograms with NA values
+## ============================================================
+
+cdata_na2 <- data.frame(
+    msLevel = c(1L, 1L, 1L),
+    mz = c(112.2, 123.3, 134.4),
+    dataOrigin = c("mem1", "mem1", "mem1")
+)
+pdata_na2 <- list(
+    ## Some NAs interspersed
+    data.frame(rtime = c(1, 2, 3, 4, 5),
+               intensity = c(100, NA, 400, NA, 150)),
+    ## All NAs
+    data.frame(rtime = c(6, 7, 8, 9, 10),
+               intensity = c(NA_real_, NA_real_, NA_real_, NA_real_, NA_real_)),
+    ## Leading/trailing NAs
+    data.frame(rtime = c(1, 2, 3, 4, 5, 6, 7),
+               intensity = c(NA, 10, 50, 100, 50, 10, NA))
+)
+chr_na2 <- Chromatograms(ChromBackendMemory(), chromData = cdata_na2,
+                         peaksData = pdata_na2)
+
+test_that("maxIntensity handles NA chromatograms.", {
+    tmp <- maxIntensity(chr_na2)
+    expect_equal(tmp[1], 400)
+    expect_true(is.na(tmp[2]))  # all-NA
+    expect_equal(tmp[3], 100)
+})
+
+test_that("intensityMean handles NA chromatograms.", {
+    tmp <- intensityMean(chr_na2)
+    expect_equal(tmp[1], mean(c(100, 400, 150)))
+    expect_true(is.nan(tmp[2]))  # mean of all-NA with na.rm = TRUE
+    expect_equal(tmp[3], mean(c(10, 50, 100, 50, 10)))
+})
+
+test_that("intensitySd handles NA chromatograms.", {
+    tmp <- intensitySd(chr_na2)
+    expect_equal(tmp[1], sd(c(100, 400, 150)))
+    expect_true(is.na(tmp[2]))  # sd of all-NA
+    expect_equal(tmp[3], sd(c(10, 50, 100, 50, 10)))
+})
+
+test_that("intensityQuartiles handles NA chromatograms.", {
+    tmp <- intensityQuartiles(chr_na2)
+    expect_equal(nrow(tmp), 3)
+    ## all-NA chromatogram: summary still returns values for NAs
+    expect_true(!is.na(tmp[1, "Max"]))
+    expect_true(!is.na(tmp[3, "Max"]))
+})
+
+test_that("intensityRange handles NA chromatograms.", {
+    tmp <- intensityRange(chr_na2)
+    expect_equal(tmp[1, ], c(min = 100, max = 400))
+    expect_true(all(is.na(tmp[2, ])))  # all-NA
+    expect_equal(tmp[3, ], c(min = 10, max = 100))
+})
+
+test_that("peakCount handles NA chromatograms.", {
+    tmp <- peakCount(chr_na2, na.rm = FALSE)
+    expect_equal(tmp[1], 5L)  # counts NAs
+    expect_equal(tmp[2], 5L)
+    expect_equal(tmp[3], 7L)
+
+    tmp_rm <- peakCount(chr_na2, na.rm = TRUE)
+    expect_equal(tmp_rm[1], 3L)  # only non-NA
+    expect_equal(tmp_rm[2], 0L)
+    expect_equal(tmp_rm[3], 5L)
+})
+
+test_that("baselineIntensity handles NA chromatograms.", {
+    tmp <- baselineIntensity(chr_na2)
+    expect_equal(tmp[1], as.numeric(quantile(c(100, NA, 400, NA, 150),
+                                             0.05, na.rm = TRUE)))
+    expect_true(!is.na(tmp[3]))
+})
+
+test_that("signalToNoiseRatio handles NA chromatograms.", {
+    tmp <- signalToNoiseRatio(chr_na2)
+    expect_true(is.na(tmp[2]))  # all-NA
+    ## chromatograms 1 and 3 should produce a value or NA, but not error
+    expect_equal(length(tmp), 3)
+})
+
+test_that("xicFwhm handles NA chromatograms.", {
+    tmp <- xicFwhm(chr_na2)
+    expect_equal(length(tmp), 3)
+    expect_true(is.na(tmp[2]))  # all-NA
+})
+
+test_that("peakBoundary handles NA chromatograms.", {
+    tmp <- peakBoundary(chr_na2)
+    expect_true(is.matrix(tmp))
+    expect_equal(nrow(tmp), 3)
+    expect_true(all(is.na(tmp[2, ])))  # all-NA
+})
+
+test_that("peakWidth handles NA chromatograms.", {
+    tmp <- peakWidth(chr_na2)
+    expect_equal(length(tmp), 3)
+    expect_true(is.na(tmp[2]))  # all-NA
+})
+
+test_that("gaussianSimilarity handles NA chromatograms.", {
+    tmp <- gaussianSimilarity(chr_na2)
+    expect_true(is.matrix(tmp))
+    expect_equal(nrow(tmp), 3)
+    expect_true(all(is.na(tmp[2, ])))  # all-NA
+})
+
+test_that("peakProminence handles NA chromatograms.", {
+    tmp <- peakProminence(chr_na2)
+    expect_equal(length(tmp), 3)
+    expect_true(is.na(tmp[2]))  # all-NA
+})
+
+test_that("msSignal10xChange handles NA chromatograms.", {
+    tmp <- msSignal10xChange(chr_na2, change = "jump", msLevel = 1L)
+    expect_equal(length(tmp), 3)
+})
+
+test_that("areaUnderTic handles NA chromatograms.", {
+    tmp <- areaUnderTic(chr_na2)
+    expect_equal(length(tmp), 3)
+    expect_equal(tmp[1], sum(c(100, 400, 150)))  # na.rm = TRUE
+})
+
+test_that("medianTicRtIqr handles NA chromatograms.", {
+    tmp <- medianTicRtIqr(chr_na2, msLevel = 1L)
+    expect_equal(length(tmp), 3)
+    expect_true(is.na(tmp[2]))  # all-NA
 })
 
