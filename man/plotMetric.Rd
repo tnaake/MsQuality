@@ -41,21 +41,17 @@ sd <- DataFrame(sample_id = c("QC1", "QC2"),
     sample_name = c("QC Pool", "QC Pool"), injection_idx = c(1, 3))
 sampleData(msexp) <- sd
 
-
 ## define file names containing spectra data for the samples and
 ## add them, along with other arbitrary files to the experiment
 sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
     MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
 
-
 library(Spectra)
 ## import the data and add it to the msexp object
 spectra(msexp) <- Spectra(sciex_file)
 
-
 ## define the quality metrics to be calculated
 metrics <- c("areaUnderTic", "chromatographyDuration", "msSignal10xChange")
-
 
 ## calculate the metrics
 ## additional parameters passed to the quality metrics functions

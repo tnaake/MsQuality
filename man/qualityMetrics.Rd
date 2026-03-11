@@ -40,7 +40,6 @@ spd$intensity <- list(
 spd$dataOrigin <- rep("sample_1", 3)
 sps <- Spectra(spd)
 
-
 qualityMetrics(object = sps)
 }
 \author{
