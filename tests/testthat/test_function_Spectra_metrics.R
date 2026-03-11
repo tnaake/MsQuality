@@ -31,8 +31,8 @@ test_that(".rtOrderSpectra works properly.", {
 
 ## START unit test chromatographyDuration ##
 test_that("chromatographyDuration works properly.", {
-    expect_error(chromatographyDuration(NULL))
-    expect_error(chromatographyDuration(NULL))
+    expect_error(chromatographyDuration(NULL), "object 'res' not found")
+    expect_error(chromatographyDuration(1:10), "object 'res' not found")
     tmp <- chromatographyDuration(sps_sciex)
     expect_equal(as.numeric(tmp), 259.482)
 
@@ -44,8 +44,8 @@ test_that("chromatographyDuration works properly.", {
 
 ## START unit test ticQuantileRtFraction ##
 test_that("ticQuantileRtFraction works properly.", {
-    expect_error(ticQuantileRtFraction(NULL))
-    expect_error(ticQuantileRtFraction(NULL))
+    expect_error(ticQuantileRtFraction(NULL), "object 'res' not found")
+    expect_error(ticQuantileRtFraction(1:10), "object 'res' not found")
     suppressWarnings(tmp <- ticQuantileRtFraction(sps_sciex))
     expect_equal(as.numeric(tmp),
         c(0.0, 0.2010891, 0.4257983, 0.7247362, 1), tolerance = 1e-02)
@@ -59,8 +59,8 @@ test_that("ticQuantileRtFraction works properly.", {
 
 ## START unit test rtOverMsQuarters ##
 test_that("rtOverMsQuarters works properly.", {
-    expect_error(rtOverMsQuarters(NULL))
-    expect_error(rtOverMsQuarters(NULL))
+    expect_error(rtOverMsQuarters(NULL), "object 'res' not found")
+    expect_error(rtOverMsQuarters(1:10), "object 'res' not found")
     expect_equal(as.numeric(rtOverMsQuarters(sps_sciex, msLevel = 1L)),
         c(0.2494778, 0.5000077, 0.7505222, 1), tolerance = 1e-06)
     expect_equal(names(rtOverMsQuarters(sps_sciex, msLevel = 1L)),
@@ -148,8 +148,8 @@ test_that("ticQuartileToQuartileLogRatio works properly.", {
 
 ## START unit test numberSpectra ##
 test_that("numberSpectra works properly.", {
-    expect_error(numberSpectra(NULL))
-    expect_error(numberSpectra(1:10))
+    expect_error(numberSpectra(NULL), "object 'res' not found")
+    expect_error(numberSpectra(1:10), "object 'res' not found")
     expect_equal(as.numeric(numberSpectra(sps_sciex, msLevel = 1L)), 1862)
     expect_equal(as.numeric(numberSpectra(sps_sciex, msLevel = 2L)), 0)
 
@@ -168,8 +168,8 @@ test_that("numberSpectra works properly.", {
 
 ## START unit test mzAcquisitionRange ##
 test_that("mzAcquisitionRange works properly.", {
-    expect_error(mzAcquisitionRange(NULL))
-    expect_error(mzAcquisitionRange(1:10))
+    expect_error(mzAcquisitionRange(NULL), "unable to find an inherited method")
+    expect_error(mzAcquisitionRange(1:10), "unable to find an inherited method")
     tmp <- mzAcquisitionRange(sps_sciex, msLevel = 1L)
     expect_equal(as.numeric(tmp), range(precursorMz(sps_sciex)))
     expect_equal(names(tmp), c("min", "max"))
@@ -191,8 +191,8 @@ test_that("mzAcquisitionRange works properly.", {
 
 ## START unit test rtAcquisitionRange ##
 test_that("rtAcquisitionRange works properly.", {
-    expect_error(rtAcquisitionRange(NULL))
-    expect_error(rtAcquisitionRange(1:10))
+    expect_error(rtAcquisitionRange(NULL), "object 'res' not found")
+    expect_error(rtAcquisitionRange(1:10), "object 'res' not found")
     tmp <- rtAcquisitionRange(sps_sciex, msLevel = 1L)
     expect_equal(as.numeric(tmp), c(0.275, 259.757))
     expect_equal(names(tmp), c("min", "max"))
@@ -214,8 +214,8 @@ test_that("rtAcquisitionRange works properly.", {
 
 ## START unit test msSignal10xChange ##
 test_that("msSignal10xChange works properly.", {
-    expect_error(msSignal10xChange(NULL))
-    expect_error(msSignal10xChange(1:10))
+    expect_error(msSignal10xChange(NULL), "object 'res' not found")
+    expect_error(msSignal10xChange(1:10), "object 'res' not found")
     expect_equal(as.numeric(suppressWarnings(
         msSignal10xChange(sps_sciex, change = "jump", msLevel = 1L))), 0)
     expect_equal(as.numeric(suppressWarnings(
@@ -245,14 +245,14 @@ test_that("msSignal10xChange works properly.", {
 
 ## START unit test numberEmptyScans ##
 test_that("numberEmptyScans works properly.", {
-    expect_error(numberEmptyScans(NULL))
-    expect_error(numberEmptyScans(1:10))
+    expect_error(numberEmptyScans(NULL), "object 'res' not found")
+    expect_error(numberEmptyScans(1:10), "object 'res' not found")
     expect_equal(as.numeric(numberEmptyScans(sps_sciex, msLevel = 1L)), 0)
     expect_equal(as.numeric(numberEmptyScans(sps_sciex, msLevel = 2L)), 0)
     expect_equal(as.numeric(numberEmptyScans(sps_sciex, msLevel = 3L)), 0)
 
     ## create one Spectra object with one missing entry
-    spd <- DataFrame(
+    spd <- S4Vectors::DataFrame(
         msLevel = c(2L, 2L), polarity = c(1L, 1L),
         id = c("unknown", "HMDB0000001"),
         name = c("unknown", "1-Methylhistidine"))
@@ -281,8 +281,8 @@ test_that("numberEmptyScans works properly.", {
 
 ## START unit test precursorIntensityQuartiles ##
 test_that("precursorIntensityQuartiles works properly.", {
-    expect_error(precursorIntensityQuartiles(NULL))
-    expect_error(precursorIntensityQuartiles(1:10))
+    expect_error(precursorIntensityQuartiles(NULL), "unable to find an inherited method")
+    expect_error(precursorIntensityQuartiles(1:10), "unable to find an inherited method")
     tmp <- precursorIntensityQuartiles(sps_sciex, msLevel = 1L,
         identificationLevel = "all")
     expect_equal(as.numeric(tmp), c(9934, 9999, 10067))
@@ -350,8 +350,8 @@ test_that("precursorIntensityQuartiles works properly.", {
 
 ## START unit test precursorIntensityMean ##
 test_that("precursorIntensityMean works properly.", {
-    expect_error(precursorIntensityMean(NULL))
-    expect_error(precursorIntensityMean(1:10))
+    expect_error(precursorIntensityMean(NULL), "unable to find an inherited method")
+    expect_error(precursorIntensityMean(1:10), "unable to find an inherited method")
     expect_equal(as.numeric(precursorIntensityMean(sps_sciex, msLevel = 1L,
         identificationLevel = "all")),
         9999.646, tolerance = 1e-06)
@@ -398,8 +398,8 @@ test_that("precursorIntensityMean works properly.", {
 
 ## START unit test precursorIntensitySd ##
 test_that("precursorIntensitySd works properly.", {
-    expect_error(precursorIntensitySd(NULL))
-    expect_error(precursorIntensitySd(1:10))
+    expect_error(precursorIntensitySd(NULL), "unable to find an inherited method")
+    expect_error(precursorIntensitySd(1:10), "unable to find an inherited method")
     expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 1L,
         identificationLevel = "all")), 101.0341, tolerance = 1e-06)
     expect_equal(as.numeric(precursorIntensitySd(sps_sciex, msLevel = 1L,
@@ -443,8 +443,8 @@ test_that("precursorIntensitySd works properly.", {
 
 ## START unit test medianPrecursorMz ##
 test_that("medianPrecursorMz works properly.", {
-    expect_error(medianPrecursorMz(NULL))
-    expect_error(medianPrecursorMz(1:10))
+    expect_error(medianPrecursorMz(NULL), "unable to find an inherited method")
+    expect_error(medianPrecursorMz(1:10), "unable to find an inherited method")
     expect_equal(
         as.numeric(medianPrecursorMz(sps_sciex, msLevel = 1L,
             identificationLevel = "all")),
@@ -484,8 +484,8 @@ test_that("medianPrecursorMz works properly.", {
 
 ## START unit test rtIqr ##
 test_that("rtIqr works properly.", {
-    expect_error(rtIqr(NULL))
-    expect_error(rtIqr(1:10))
+    expect_error(rtIqr(NULL), "object 'res' not found")
+    expect_error(rtIqr(1:10), "object 'res' not found")
     expect_equal(rtIqr(sps_sciex, msLevel = 1L), 129.875)
     expect_equal(rtIqr(sps_sciex, msLevel = 2L), NaN)
 
@@ -502,8 +502,8 @@ test_that("rtIqr works properly.", {
 
 ## START unit test rtIqrRate ##
 test_that("rtIqrRate works properly.", {
-    expect_error(rtIqrRate(NULL))
-    expect_error(rtIqrRate(1:10))
+    expect_error(rtIqrRate(NULL), "unable to find an inherited method")
+    expect_error(rtIqrRate(1:10), "unable to find an inherited method")
     expect_equal(
         as.numeric(rtIqrRate(sps_sciex, msLevel = 1L,
             identificationLevel = "all")),
@@ -531,8 +531,8 @@ test_that("rtIqrRate works properly.", {
 
 ## START unit test areaUnderTic ##
 test_that("areaUnderTic works properly.", {
-    expect_error(areaUnderTic(NULL))
-    expect_error(areaUnderTic(1:10))
+    expect_error(areaUnderTic(NULL), "object 'res' not found")
+    expect_error(areaUnderTic(1:10), "object 'res' not found")
     expect_equal(as.numeric(
         suppressWarnings(areaUnderTic(sps_sciex, msLevel = 1L))),
         1273927561)
@@ -551,8 +551,8 @@ test_that("areaUnderTic works properly.", {
 
 ## START unit test areaUnderTicRtQuantiles ##
 test_that("areaUnderTicRtQuantiles works properly.", {
-    expect_error(areaUnderTicRtQuantiles(NULL))
-    expect_error(areaUnderTicRtQuantiles(1:10))
+    expect_error(areaUnderTicRtQuantiles(NULL), "object 'res' not found")
+    expect_error(areaUnderTicRtQuantiles(1:10), "object 'res' not found")
     suppressWarnings(tmp <- areaUnderTicRtQuantiles(sps_sciex, msLevel = 1L))
     expect_equal(as.numeric(tmp), c(383935723, 368643879, 245834029, 274788917))
     expect_equal(names(tmp), c("25%", "50%", "75%", "100%"))
@@ -575,8 +575,8 @@ test_that("areaUnderTicRtQuantiles works properly.", {
 
 ## START unit test extentIdentifiedPrecursorIntensity ##
 test_that("extentIdentifiedPrecursorIntensity works properly.", {
-    expect_error(extentIdentifiedPrecursorIntensity(NULL))
-    expect_error(extentIdentifiedPrecursorIntensity(1:10))
+    expect_error(extentIdentifiedPrecursorIntensity(NULL), "unable to find an inherited method")
+    expect_error(extentIdentifiedPrecursorIntensity(1:10), "unable to find an inherited method")
     expect_equal(
         as.numeric(extentIdentifiedPrecursorIntensity(sps_sciex, msLevel = 1L,
             identificationLevel = "all")),
@@ -628,8 +628,8 @@ test_that("extentIdentifiedPrecursorIntensity works properly.", {
 
 ## START unit test medianTicRtIqr ##
 test_that("medianTicRtIqr works properly.", {
-    expect_error(medianTicRtIqr(NULL))
-    expect_error(medianTicRtIqr(1:10))
+    expect_error(medianTicRtIqr(NULL), "object 'res' not found")
+    expect_error(medianTicRtIqr(1:10), "object 'res' not found")
     expect_equal(suppressWarnings(medianTicRtIqr(sps_sciex, msLevel = 1L)),
         718615)
     expect_equal(medianTicRtIqr(sps_sciex, msLevel = 2L), NaN)
@@ -660,8 +660,8 @@ test_that("medianTicRtIqr works properly.", {
 
 ## START unit test medianTicOfRtRange ##
 test_that("medianTicOfRtRange works properly.", {
-    expect_error(medianTicOfRtRange(NULL))
-    expect_error(medianTicOfRtRange(1:10))
+    expect_error(medianTicOfRtRange(NULL), "unable to find an inherited method")
+    expect_error(medianTicOfRtRange(1:10), "unable to find an inherited method")
     expect_equal(as.numeric(
         suppressWarnings(medianTicOfRtRange(sps_sciex, msLevel = 1L))),
         804944)
@@ -694,8 +694,8 @@ test_that("medianTicOfRtRange works properly.", {
 
 ## START unit test precursorIntensityRange ##
 test_that("precursorIntensityRange works properly.", {
-    expect_error(precursorIntensityRange(NULL))
-    expect_error(precursorIntensityRange(1:10))
+    expect_error(precursorIntensityRange(NULL), "unable to find an inherited method")
+    expect_error(precursorIntensityRange(1:10), "unable to find an inherited method")
     tmp <- precursorIntensityRange(sps_sciex, msLevel = 1L)
     expect_equal(as.numeric(tmp), c(9679, 10286))
     expect_equal(names(tmp), c("min", "max"))
@@ -717,8 +717,8 @@ test_that("precursorIntensityRange works properly.", {
 
 ## START unit test ratioCharge1over2 ##
 test_that("ratioCharge1over2 works properly.", {
-    expect_error(ratioCharge1over2(NULL))
-    expect_error(ratioCharge1over2(1:10))
+    expect_error(ratioCharge1over2(NULL), "unable to find an inherited method")
+    expect_error(ratioCharge1over2(1:10), "unable to find an inherited method")
     expect_equal(as.numeric(ratioCharge1over2(sps_sciex,
         identificationLevel = "all")),
         0.7 / 0.15, tolerance = 3e-02)
@@ -755,8 +755,8 @@ test_that("ratioCharge1over2 works properly.", {
 
 ## START unit test ratioCharge3over2 ##
 test_that("ratioCharge3over2 works properly.", {
-    expect_error(ratioCharge3over2(NULL))
-    expect_error(ratioCharge3over2(1:10))
+    expect_error(ratioCharge3over2(NULL), "unable to find an inherited method")
+    expect_error(ratioCharge3over2(1:10), "unable to find an inherited method")
     expect_equal(as.numeric(ratioCharge3over2(sps_sciex,
             identificationLevel = "all")),
         0.1 / 0.15, tolerance = 2e-02)
@@ -793,8 +793,8 @@ test_that("ratioCharge3over2 works properly.", {
 
 ## START unit test ratioCharge4over2 ##
 test_that("ratioCharge4over2 works properly.", {
-    expect_error(ratioCharge4over2(NULL))
-    expect_error(ratioCharge4over2(1:10))
+    expect_error(ratioCharge4over2(NULL), "unable to find an inherited method")
+    expect_error(ratioCharge4over2(1:10), "unable to find an inherited method")
     expect_equal(as.numeric(ratioCharge4over2(sps_sciex,
             identificationLevel = "all")),
         0.05 / 0.15, tolerance = 3e-02)
@@ -832,8 +832,8 @@ test_that("ratioCharge4over2 works properly.", {
 
 ## START unit test meanCharge ##
 test_that("meanCharge works properly.", {
-    expect_error(meanCharge(NULL))
-    expect_error(meanCharge(1:10))
+    expect_error(meanCharge(NULL), "unable to find an inherited method")
+    expect_error(meanCharge(1:10), "unable to find an inherited method")
     expect_equal(as.numeric(meanCharge(sps_sciex, msLevel = 1,
             identificationLevel = "all")),
         1.520408, tolerance = 2e-02)
@@ -876,8 +876,8 @@ test_that("meanCharge works properly.", {
 
 ## START unit test medianCharge ##
 test_that("medianCharge works properly.", {
-    expect_error(medianCharge(NULL))
-    expect_error(medianCharge(1:10))
+    expect_error(medianCharge(NULL), "unable to find an inherited method")
+    expect_error(medianCharge(1:10), "unable to find an inherited method")
     expect_equal(as.numeric(medianCharge(sps_sciex, msLevel = 1,
             identificationLevel = "all")),
         1, tolerance = 2e-02)
