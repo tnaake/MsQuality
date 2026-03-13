@@ -286,3 +286,31 @@ test_that("calculateMetrics handles na.rm parameter without errors", {
     expect_equal(ncol(result), length(chrom_metrics))
     expect_equal(colnames(result), chrom_metrics)
 })
+
+test_that("calculateMetrics with signalToNoiseRatio does not conflict with method parameter", {
+    ## Regression test: signalToNoiseRatio uses MsCoreUtils::noise() internally
+    ## with method = "MAD". If ... is passed through, any 'method' parameter
+
+    ## from calculateMetrics would cause "formal argument matched by multiple
+    ## actual arguments" error.
+    chr <- test_chr
+    chrom_metrics <- c("signalToNoiseRatio", "maxIntensity")
+
+    ## Passing an unrelated 'method' parameter should not cause an error
+    expect_no_error({
+        result <- calculateMetrics(
+            object = chr,
+            metrics = chrom_metrics,
+            filterEmptyObject = FALSE,
+            method = "some_unrelated_value"
+        )
+    })
+
+    result <- calculateMetrics(
+        object = chr,
+        metrics = chrom_metrics,
+        filterEmptyObject = FALSE
+    )
+    expect_s3_class(result, "data.frame")
+    expect_true("signalToNoiseRatio" %in% colnames(result))
+})

@@ -396,7 +396,8 @@ baselineIntensity <- function(chromatograms, probs = 0.05, na.rm = TRUE, ...) {
 #' signal) or when the chromatogram is empty.
 #'
 #' @param chromatograms `Chromatograms` object
-#' @param ... further arguments passed to \code{MsCoreUtils::noise()}
+#' @param ... currently not used but included for consistency with other
+#'     metric functions
 #'
 #' @return `numeric` of length equal to `length(chromatograms)`, one
 #' signal-to-noise ratio per chromatogram
@@ -414,7 +415,7 @@ signalToNoiseRatio <- function(chromatograms, ...) {
         rts <- rts_list[[i]]
         ints <- ints_list[[i]]
         if (length(ints) == 0 || all(is.na(ints))) return(NA_real_)
-        noise_est <- noise(rts, ints, method = "MAD", ...)
+        noise_est <- noise(rts, ints, method = "MAD")
         noise_summary <- median(noise_est, na.rm = TRUE)
         if (is.na(noise_summary) || noise_summary == 0) return(NA_real_)
         max(ints, na.rm = TRUE) / noise_summary
