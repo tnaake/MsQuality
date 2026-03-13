@@ -9,7 +9,8 @@ signalToNoiseRatio(chromatograms, ...)
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
 
-\item{...}{further arguments passed to \code{MsCoreUtils::noise()}}
+\item{...}{currently not used but included for consistency with other
+metric functions}
 }
 \value{
 `numeric` of length equal to `length(chromatograms)`, one
