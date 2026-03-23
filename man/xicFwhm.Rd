@@ -4,10 +4,13 @@
 \alias{xicFwhm}
 \title{Full Width at Half Maximum (FWHM) per Chromatogram}
 \usage{
-xicFwhm(chromatograms, peakBoundary = NULL, ...)
+xicFwhm(chromatograms, msLevel = integer(), peakBoundary = NULL, ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
+
+\item{msLevel}{`integer` defining the MS level(s) to filter for.
+If empty (default), no filtering is performed.}
 
 \item{peakBoundary}{optional peak boundary: either a `matrix` with columns
 `left_boundary` and `right_boundary` (one row per chromatogram), or a
@@ -61,6 +64,7 @@ xicFwhm(chr)
 ## Use pre-computed peak boundaries for efficiency
 pb <- peakBoundary(chr)
 xicFwhm(chr, peakBoundary = pb)
+
 }
 \author{
 Philippine Louail

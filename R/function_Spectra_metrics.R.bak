@@ -789,7 +789,7 @@ rtAcquisitionRange <- function(object, msLevel = 1L, ...) {
 #' An attribute containing the PSI:MS term will only be returned if
 #' \code{msLevel} is 1.
 #'
-#' @param object \code{Spectra} or \code{Chromatograms} object
+#' @param spectra \code{Spectra} or \code{Chromatograms} object
 #' @param change \code{character(1)}, one of \code{"jump"} or \code{"fall"}
 #' @param msLevel \code{integer}
 #' @param minIntensity \code{numeric(1)} minimum intensity threshold for
@@ -827,9 +827,9 @@ rtAcquisitionRange <- function(object, msLevel = 1L, ...) {
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' msSignal10xChange(object = sps, change = "jump", msLevel = 2L)
-#' msSignal10xChange(object = sps, change = "fall", msLevel = 2L)
-msSignal10xChange <- function(object, change = "jump", msLevel = 1L,
+#' msSignal10xChange(spectra = sps, change = "jump", msLevel = 2L)
+#' msSignal10xChange(spectra = sps, change = "fall", msLevel = 2L)
+msSignal10xChange <- function(spectra, change = "jump", msLevel = 1L,
                               minIntensity = 0, ...) {
 
     if (length(change) != 1) {
@@ -838,16 +838,16 @@ msSignal10xChange <- function(object, change = "jump", msLevel = 1L,
         change <- match.arg(change, choices = c("jump", "fall"))
     }
 
-    if (is(object, "Spectra")) {
-        object <- filterMsLevel(object = object, msLevel)
+    if (is(spectra, "Spectra")) {
+        spectra <- filterMsLevel(object = spectra, msLevel)
 
-        if (length(object) == 0) {
+        if (length(spectra) == 0) {
             res <- NaN
         } else {
             ## order spectra according to increasing retention time
-            object <- .rtOrderSpectra(object)
+            spectra <- .rtOrderSpectra(spectra)
 
-            tic <- ionCount(object)
+            tic <- ionCount(spectra)
 
             precedingTic <- tic[seq_len(length(tic) - 1)]
             followingTic <- tic[seq_len(length(tic))[-1]]
@@ -861,10 +861,10 @@ msSignal10xChange <- function(object, change = "jump", msLevel = 1L,
             if (change == "fall")
                 res <- sum(ratioTic <= 0.1)
         }
-    } else if (is(object, "Chromatograms")) {
-        object <- filterChromData(object, variables = "msLevel",
+    } else if (is(spectra, "Chromatograms")) {
+        spectra <- filterChromData(spectra, variables = "msLevel",
                                    ranges = c(msLevel, msLevel))
-        ints_list <- intensity(object)
+        ints_list <- intensity(spectra)
         res <- vapply(ints_list, function(ints) {
             if (length(ints) < 2) return(0L)
             ints <- ints[!is.na(ints) & ints > minIntensity]
@@ -873,7 +873,7 @@ msSignal10xChange <- function(object, change = "jump", msLevel = 1L,
             if (change == "jump") sum(ratios >= 10) else sum(ratios <= 0.1)
         }, integer(1))
     } else {
-        stop("'object' is not of class 'Spectra' or 'Chromatograms'")
+        stop("'spectra' is not of class 'Spectra' or 'Chromatograms'")
     }
 
     ## add attributes and return
@@ -945,7 +945,7 @@ msSignal10xChange <- function(object, change = "jump", msLevel = 1L,
 #' An attribute containing the PSI:MS term will only be returned if
 #' \code{msLevel} is either 1, 2, or 3.
 #'
-#' @param object \code{Spectra} or \code{Chromatograms} object
+#' @param spectra \code{Spectra} object
 #' @param msLevel \code{integer}
 #' @param ... not used here
 #'
@@ -977,35 +977,35 @@ msSignal10xChange <- function(object, change = "jump", msLevel = 1L,
 #'     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' sps <- Spectra(spd)
-#' numberEmptyScans(object = sps, msLevel = 1L)
-#' numberEmptyScans(object = sps, msLevel = 2L)
-numberEmptyScans <- function(object, msLevel = 1L, ...) {
+#' numberEmptyScans(spectra = sps, msLevel = 1L)
+#' numberEmptyScans(spectra = sps, msLevel = 2L)
+numberEmptyScans <- function(spectra, msLevel = 1L, ...) {
 
     if (length(msLevel) != 1)
         stop("'msLevel' has to be of length 1")
 
-    if (is(object, "Spectra")) {
-        object <- filterMsLevel(object = object, msLevel)
+    if (is(spectra, "Spectra")) {
+        spectra <- filterMsLevel(object = spectra, msLevel)
 
         ## three cases to take into account: 1) entry is NULL, 2) entry is NA,
         ## or 3) entry is of length 0; in all three cases set to TRUE, otherwise
         ## to FALSE
-        res <- intensity(object) |>
+        res <- intensity(spectra) |>
             lapply(FUN = function(i)
                 ifelse(is.null(i), TRUE, is.na(i) | length(i) == 0 | sum(i) == 0)) |>
             unlist() |>
             sum()
-    } else if (is(object, "Chromatograms")) {
-        object <- filterChromData(object, variables = "msLevel",
+    } else if (is(spectra, "Chromatograms")) {
+        spectra <- filterChromData(spectra, variables = "msLevel",
                                    ranges = c(msLevel, msLevel))
-        ints_list <- intensity(object)
+        ints_list <- intensity(spectra)
         empty <- vapply(ints_list, function(ints) {
             is.null(ints) || length(ints) == 0 ||
                 all(is.na(ints)) || sum(ints, na.rm = TRUE) == 0
         }, logical(1))
         res <- sum(empty)
     } else {
-        stop("'object' is not of class 'Spectra' or 'Chromatograms'")
+        stop("'spectra' is not of class 'Spectra' or 'Chromatograms'")
     }
 
     ## add attributes and return
@@ -1746,7 +1746,7 @@ rtIqrRate <- function(spectra, msLevel = 1L,
 
         ## divide the number of eluted features between the 25% and 75% quantile
         ## by the IQR to get the elution rate per second
-        res <- nFeatures / rtIqr(object = spectra, msLevel = msLevel)
+        res <- nFeatures / rtIqr(spectra, msLevel = msLevel)
     }
 
     ## add attributes and return
@@ -2182,7 +2182,7 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L,
 #' \code{Spectra} object should be prepared accordingly, i.e. being subsetted to
 #' spectra with identification data.
 #'
-#' @param object \code{Spectra} or \code{Chromatograms} object
+#' @param spectra \code{Spectra} object
 #' @param msLevel \code{integer}
 #' @param identificationLevel \code{character(1)}, one of \code{"all"},
 #' \code{"identified"}, or \code{"unidentified"}
@@ -2218,27 +2218,27 @@ extentIdentifiedPrecursorIntensity <- function(spectra, msLevel = 1L,
 #'     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 #' spd$rtime <- c(9.44, 9.44, 15.84)
 #' sps <- Spectra(spd)
-#' medianTicRtIqr(object = sps, msLevel = 2L)
-medianTicRtIqr <- function(object, msLevel = 1L,
+#' medianTicRtIqr(spectra = sps, msLevel = 2L)
+medianTicRtIqr <- function(spectra, msLevel = 1L,
         identificationLevel = c("all", "identified", "unidentified"), ...) {
 
     identificationLevel <- match.arg(identificationLevel)
 
-    if (is(object, "Spectra")) {
-        object <- filterMsLevel(object = object, msLevel)
+    if (is(spectra, "Spectra")) {
+        spectra <- filterMsLevel(object = spectra, msLevel)
 
-        if (length(object) == 0) {
+        if (length(spectra) == 0) {
             res <- NaN
         } else {
 
             ## order spectra according to increasing retention time
-            object <- .rtOrderSpectra(object)
+            spectra <- .rtOrderSpectra(spectra)
 
             ## get the Q1 to Q3 of identifications
             ## (half of peptides that are identitied)
-            ind <- rep(seq_len(4), length.out = length(object))
+            ind <- rep(seq_len(4), length.out = length(spectra))
             ind <- sort(ind)
-            Q1ToQ3 <- object[ind %in% c(2, 3), ]
+            Q1ToQ3 <- spectra[ind %in% c(2, 3), ]
 
             ## take the ionCount of the Q1 to Q3 of identifications
             ticQ1ToQ3 <- ionCount(Q1ToQ3)
@@ -2246,11 +2246,11 @@ medianTicRtIqr <- function(object, msLevel = 1L,
             ## take the median value of the TIC within this interval and return it
             res <- median(ticQ1ToQ3, na.rm = TRUE)
         }
-    } else if (is(object, "Chromatograms")) {
-        object <- filterChromData(object, variables = "msLevel",
+    } else if (is(spectra, "Chromatograms")) {
+        spectra <- filterChromData(spectra, variables = "msLevel",
                                    ranges = c(msLevel, msLevel))
-        rts_list <- rtime(object)
-        ints_list <- intensity(object)
+        rts_list <- rtime(spectra)
+        ints_list <- intensity(spectra)
         res <- vapply(seq_along(rts_list), function(i) {
             rts <- rts_list[[i]]
             ints <- ints_list[[i]]
@@ -2261,7 +2261,7 @@ medianTicRtIqr <- function(object, msLevel = 1L,
             median(ints[mask], na.rm = TRUE)
         }, numeric(1))
     } else {
-        stop("'object' is not of class 'Spectra' or 'Chromatograms'")
+        stop("'spectra' is not of class 'Spectra' or 'Chromatograms'")
     }
 
     ## add attributes and return

@@ -4,10 +4,19 @@
 \alias{peakProminence}
 \title{Peak Prominence (Peak-to-Baseline Ratio) per Chromatogram}
 \usage{
-peakProminence(chromatograms, peakBoundary = NULL, baselineQuantile = 0.1, ...)
+peakProminence(
+  chromatograms,
+  msLevel = integer(),
+  peakBoundary = NULL,
+  baselineQuantile = 0.1,
+  ...
+)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
+
+\item{msLevel}{`integer` defining the MS level(s) to filter for.
+If empty (default), no filtering is performed.}
 
 \item{peakBoundary}{optional peak boundary: either a `matrix` with columns
 `left_boundary` and `right_boundary` (one row per chromatogram), or a
@@ -61,6 +70,7 @@ pdata <- list(
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 peakProminence(chr)
+
 }
 \author{
 Philippine Louail

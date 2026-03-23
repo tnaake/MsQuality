@@ -34,7 +34,7 @@ Depends:
     R (>= 4.2.0)
 Imports:
     BiocParallel (>= 1.32.0),
-    Chromatograms (>= 1.1.1),
+    Chromatograms (>= 1.1.5),
     ggplot2 (>= 3.3.5),
     htmlwidgets (>= 1.5.3),
     methods (>= 4.2.0),

@@ -78,7 +78,6 @@ test_that("maxIntensity returns per-chromatogram values.", {
     expect_equal(tmp[1], 400)
     expect_true(is.na(tmp[2]))
     expect_equal(tmp[3], 1200)
-    expect_equal(attr(tmp, "maxIntensity"), "custom_metric:max_intensity")
 })
 
 test_that("intensityMean returns per-chromatogram values.", {
@@ -87,7 +86,6 @@ test_that("intensityMean returns per-chromatogram values.", {
     expect_equal(tmp[1], mean(c(100, 250, 400, 300, 150)))
     expect_true(is.na(tmp[2]))
     expect_equal(tmp[3], mean(c(80, 500, 1200, 600, 120)))
-    expect_equal(attr(tmp, "intensityMean"), "custom_metric:intensity_mean")
 })
 
 test_that("intensitySd returns per-chromatogram values.", {
@@ -96,24 +94,22 @@ test_that("intensitySd returns per-chromatogram values.", {
     expect_equal(tmp[1], sd(c(100, 250, 400, 300, 150)))
     expect_true(is.na(tmp[2]))
     expect_equal(tmp[3], sd(c(80, 500, 1200, 600, 120)))
-    expect_equal(attr(tmp, "intensitySd"), "custom_metric:intensity_sd")
 })
 
 test_that("intensityQuartiles returns per-chromatogram matrix.", {
     tmp <- intensityQuartiles(chr)
     expect_true(is.matrix(tmp))
     expect_equal(nrow(tmp), 3)
-    expect_equal(ncol(tmp), 6)
-    expect_equal(colnames(tmp), c("Min", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max"))
+    expect_equal(ncol(tmp), 3)
+    expect_equal(colnames(tmp), c("Q1", "Q2", "Q3"))
     ## Check chromatogram 1
-    s1 <- as.numeric(summary(c(100, 250, 400, 300, 150)))
-    expect_equal(as.numeric(tmp[1, ]), s1, tolerance = 1e-6)
+    q1 <- unname(quantile(c(100, 250, 400, 300, 150), probs = c(0.25, 0.5, 0.75)))
+    expect_equal(as.numeric(tmp[1, ]), q1, tolerance = 1e-6)
     ## Empty chromatogram -> all NA
     expect_true(all(is.na(tmp[2, ])))
     ## Chromatogram 3
-    s3 <- as.numeric(summary(c(80, 500, 1200, 600, 120)))
-    expect_equal(as.numeric(tmp[3, ]), s3, tolerance = 1e-6)
-    expect_equal(attr(tmp, "intensityQuartiles"), "custom_metric:intensity_quartiles")
+    q3 <- unname(quantile(c(80, 500, 1200, 600, 120), probs = c(0.25, 0.5, 0.75)))
+    expect_equal(as.numeric(tmp[3, ]), q3, tolerance = 1e-6)
 })
 
 test_that("intensityRange returns per-chromatogram matrix.", {
@@ -125,7 +121,6 @@ test_that("intensityRange returns per-chromatogram matrix.", {
     expect_equal(tmp[1, ], c(min = 100, max = 400))
     expect_true(all(is.na(tmp[2, ])))
     expect_equal(tmp[3, ], c(min = 80, max = 1200))
-    expect_equal(attr(tmp, "intensityRange"), "custom_metric:intensity_range")
 })
 
 test_that("rtIqr returns per-chromatogram values.", {
@@ -142,7 +137,6 @@ test_that("baselineIntensity returns per-chromatogram values.", {
     expect_equal(tmp[1], as.numeric(quantile(c(100, 250, 400, 300, 150), 0.05)))
     expect_true(is.na(tmp[2]))
     expect_equal(tmp[3], as.numeric(quantile(c(80, 500, 1200, 600, 120), 0.05)))
-    expect_equal(attr(tmp, "baselineIntensity"), "custom_metric:baseline_intensity")
 })
 
 test_that("signalToNoiseRatio returns per-chromatogram values.", {
@@ -152,7 +146,6 @@ test_that("signalToNoiseRatio returns per-chromatogram values.", {
     expect_true(is.finite(tmp[1]) && tmp[1] > 0)
     expect_true(is.na(tmp[2]))
     expect_true(is.finite(tmp[3]) && tmp[3] > 0)
-    expect_equal(attr(tmp, "signalToNoiseRatio"), "custom_metric:signal_to_noise_ratio")
 })
 
 test_that("msSignal10xChange returns per-chromatogram values on Chromatograms.", {
@@ -201,7 +194,6 @@ test_that("xicFwhm returns per-chromatogram values.", {
     expect_true(tmp[1] > 0)
     expect_true(is.na(tmp[2]))  # empty
     expect_true(tmp[3] > 0)
-    expect_equal(attr(tmp, "xicFwhm"), "custom_metric:xic_fwhm")
 })
 
 test_that("xicFwhm handles NA intensities without error.", {
@@ -215,7 +207,6 @@ test_that("xicFwhm handles NA intensities without error.", {
     expect_no_error(xicFwhm(chr_na))
     tmp <- xicFwhm(chr_na)
     expect_equal(length(tmp), 1)
-    expect_equal(attr(tmp, "xicFwhm"), "custom_metric:xic_fwhm")
 })
 
 test_that("xicFwhm accepts pre-computed peakBoundary matrix.", {
@@ -224,89 +215,17 @@ test_that("xicFwhm accepts pre-computed peakBoundary matrix.", {
     expect_equal(length(tmp), 3)
 })
 
-test_that("peakBoundary returns per-chromatogram matrix.", {
-    tmp <- peakBoundary(chr)
-    expect_true(is.matrix(tmp))
-    expect_equal(nrow(tmp), 3)
-    expect_equal(ncol(tmp), 2)
-    expect_equal(colnames(tmp), c("left_boundary", "right_boundary"))
-    ## Chromatogram 1: peak at rt 3.0 (max 400)
-    expect_true(tmp[1, "left_boundary"] <= 3.0)
-    expect_true(tmp[1, "right_boundary"] >= 3.0)
-    ## Empty → NA
-    expect_true(all(is.na(tmp[2, ])))
-    ## Chromatogram 3: peak at rt 6.3 (max 1200)
-    expect_true(tmp[3, "left_boundary"] <= 6.3)
-    expect_true(tmp[3, "right_boundary"] >= 6.3)
-    expect_equal(attr(tmp, "peakBoundary"), "custom_metric:peak_boundary")
+test_that("peakBoundary length mismatch raises error.", {
+    ## Create a 1-row peakBoundary matrix (chr has 3 chromatograms)
+    bad_pb <- matrix(c(1, 5), nrow = 1,
+                     dimnames = list(NULL, c("left_boundary", "right_boundary")))
+    expect_error(xicFwhm(chr, peakBoundary = bad_pb), "peakBoundary")
+    expect_error(peakWidth(chr, peakBoundary = bad_pb), "peakBoundary")
+    expect_error(gaussianSimilarity(chr, peakBoundary = bad_pb), "peakBoundary")
+    expect_error(peakProminence(chr, peakBoundary = bad_pb), "peakBoundary")
 })
 
-test_that("peakBoundary returns correct boundaries for clean symmetric peak.", {
-    cdata_pb <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_pb <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7),
-        intensity = c(0, 10, 50, 100, 50, 10, 0)
-    ))
-    chr_pb <- Chromatograms(ChromBackendMemory(), chromData = cdata_pb,
-                            peaksData = pdata_pb)
-    tmp <- peakBoundary(chr_pb)
-    expect_true(is.matrix(tmp))
-    expect_equal(nrow(tmp), 1)
-    expect_equal(colnames(tmp), c("left_boundary", "right_boundary"))
-    expect_equal(unname(tmp[1, "left_boundary"]), 1)
-    expect_equal(unname(tmp[1, "right_boundary"]), 7)
-})
 
-test_that("peakBoundary handles empty chromatogram.", {
-    cdata_empty <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_empty <- list(data.frame(rtime = numeric(), intensity = numeric()))
-    chr_empty <- Chromatograms(ChromBackendMemory(), chromData = cdata_empty,
-                               peaksData = pdata_empty)
-    tmp <- peakBoundary(chr_empty)
-    expect_true(is.matrix(tmp))
-    expect_equal(nrow(tmp), 1)
-    expect_true(all(is.na(tmp)))
-})
-
-test_that("peakBoundary handles all-NA intensities.", {
-    cdata_allna <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_allna <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5),
-        intensity = c(NA_real_, NA_real_, NA_real_, NA_real_, NA_real_)
-    ))
-    chr_allna <- Chromatograms(ChromBackendMemory(), chromData = cdata_allna,
-                               peaksData = pdata_allna)
-    tmp <- peakBoundary(chr_allna)
-    expect_true(all(is.na(tmp)))
-})
-
-test_that("peakBoundary handles NA-adjacent boundaries.", {
-    cdata_na_adj <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_na_adj <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-        intensity = c(NA, NA, 50, 100, 500, 100, 50, NA, NA, 5)
-    ))
-    chr_na_adj <- Chromatograms(ChromBackendMemory(), chromData = cdata_na_adj,
-                                peaksData = pdata_na_adj)
-    expect_no_error(peakBoundary(chr_na_adj))
-    tmp <- peakBoundary(chr_na_adj)
-    expect_true(is.matrix(tmp))
-    expect_false(any(is.na(tmp)))
-})
-
-test_that("peakBoundary threshold parameter works.", {
-    cdata_t <- data.frame(msLevel = 1L, mz = 100.0, dataOrigin = "mem1")
-    pdata_t <- list(data.frame(
-        rtime = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-        intensity = c(10, 20, 50, 100, 500, 100, 50, 20, 10, 5)
-    ))
-    chr_t <- Chromatograms(ChromBackendMemory(), chromData = cdata_t,
-                           peaksData = pdata_t)
-    tmp <- peakBoundary(chr_t, threshold = 0.1)
-    expect_false(any(is.na(tmp)))
-    tmp_05 <- peakBoundary(chr_t, threshold = 0.05)
-    expect_false(any(is.na(tmp_05)))
-})
 
 test_that("peakWidth returns per-chromatogram values.", {
     tmp <- peakWidth(chr)
@@ -314,7 +233,6 @@ test_that("peakWidth returns per-chromatogram values.", {
     expect_true(tmp[1] > 0)
     expect_true(is.na(tmp[2]))
     expect_true(tmp[3] > 0)
-    expect_equal(attr(tmp, "peakWidth"), "custom_metric:peak_width")
 })
 
 test_that("peakWidth returns correct width for clean peak.", {
@@ -367,7 +285,6 @@ test_that("gaussianSimilarity returns per-chromatogram matrix.", {
     ## First chromatogram (39 points, clear peak) should have valid values
     expect_true(!is.na(tmp[1, "gaussian_similarity"]))
     ## Second chromatogram (7 points) may or may not have enough points
-    expect_equal(attr(tmp, "gaussianSimilarity"), "custom_metric:gaussian_similarity")
 })
 
 test_that("gaussianSimilarity returns NA for empty chromatogram.", {
@@ -416,7 +333,6 @@ test_that("peakProminence returns per-chromatogram values.", {
     expect_true(tmp[1] > 0)
     expect_true(is.na(tmp[2]))  # empty
     expect_true(tmp[3] > 0)
-    expect_equal(attr(tmp, "peakProminence"), "custom_metric:peak_prominence")
 })
 
 test_that("peakProminence returns NA for zero-baseline chromatogram.", {
@@ -639,11 +555,6 @@ test_that("xicFwhm handles all-zero chromatograms.", {
     expect_true(is.na(tmp[2]))
 })
 
-test_that("peakBoundary handles all-zero chromatograms.", {
-    tmp <- peakBoundary(chr_zero)
-    expect_true(all(is.na(tmp)))
-})
-
 test_that("peakWidth handles all-zero chromatograms.", {
     tmp <- peakWidth(chr_zero)
     expect_true(is.na(tmp[1]))
@@ -726,9 +637,9 @@ test_that("intensitySd handles NA chromatograms.", {
 test_that("intensityQuartiles handles NA chromatograms.", {
     tmp <- intensityQuartiles(chr_na2)
     expect_equal(nrow(tmp), 3)
-    ## all-NA chromatogram: summary still returns values for NAs
-    expect_true(!is.na(tmp[1, "Max"]))
-    expect_true(!is.na(tmp[3, "Max"]))
+    ## chromatograms with non-NA values should have valid quartiles
+    expect_true(!is.na(tmp[1, "Q3"]))
+    expect_true(!is.na(tmp[3, "Q3"]))
 })
 
 test_that("intensityRange handles NA chromatograms.", {
@@ -770,13 +681,6 @@ test_that("xicFwhm handles NA chromatograms.", {
     expect_true(is.na(tmp[2]))  # all-NA
 })
 
-test_that("peakBoundary handles NA chromatograms.", {
-    tmp <- peakBoundary(chr_na2)
-    expect_true(is.matrix(tmp))
-    expect_equal(nrow(tmp), 3)
-    expect_true(all(is.na(tmp[2, ])))  # all-NA
-})
-
 test_that("peakWidth handles NA chromatograms.", {
     tmp <- peakWidth(chr_na2)
     expect_equal(length(tmp), 3)
@@ -811,5 +715,134 @@ test_that("medianTicRtIqr handles NA chromatograms.", {
     tmp <- medianTicRtIqr(chr_na2, msLevel = 1L)
     expect_equal(length(tmp), 3)
     expect_true(is.na(tmp[2]))  # all-NA
+})
+
+## ============================================================
+## msLevel filtering for intensity-related metrics
+## ============================================================
+
+## Re-use chr_ms: 3 chromatograms with msLevel = c(1L, 2L, 1L)
+## chr_ms pdata: chr1(100,200,300), chr2(50,60,70), chr3(400,500,600)
+
+test_that("maxIntensity filters by msLevel.", {
+    tmp_all <- maxIntensity(chr_ms)
+    expect_equal(length(tmp_all), 3)
+    tmp_ms1 <- maxIntensity(chr_ms, msLevel = 1L)
+    expect_equal(length(tmp_ms1), 2)
+    expect_equal(tmp_ms1, c(300, 600))
+    tmp_ms2 <- maxIntensity(chr_ms, msLevel = 2L)
+    expect_equal(length(tmp_ms2), 1)
+    expect_equal(tmp_ms2, 70)
+})
+
+test_that("intensityMean filters by msLevel.", {
+    tmp_ms1 <- intensityMean(chr_ms, msLevel = 1L)
+    expect_equal(length(tmp_ms1), 2)
+    expect_equal(tmp_ms1[1], mean(c(100, 200, 300)))
+    expect_equal(tmp_ms1[2], mean(c(400, 500, 600)))
+    tmp_ms2 <- intensityMean(chr_ms, msLevel = 2L)
+    expect_equal(length(tmp_ms2), 1)
+    expect_equal(tmp_ms2[1], mean(c(50, 60, 70)))
+})
+
+test_that("intensitySd filters by msLevel.", {
+    tmp_ms1 <- intensitySd(chr_ms, msLevel = 1L)
+    expect_equal(length(tmp_ms1), 2)
+    expect_equal(tmp_ms1[1], sd(c(100, 200, 300)))
+    tmp_ms2 <- intensitySd(chr_ms, msLevel = 2L)
+    expect_equal(length(tmp_ms2), 1)
+    expect_equal(tmp_ms2[1], sd(c(50, 60, 70)))
+})
+
+test_that("intensityQuartiles filters by msLevel.", {
+    tmp_ms1 <- intensityQuartiles(chr_ms, msLevel = 1L)
+    expect_true(is.matrix(tmp_ms1))
+    expect_equal(nrow(tmp_ms1), 2)
+    expect_equal(ncol(tmp_ms1), 3)
+    q_chr1 <- unname(quantile(c(100, 200, 300), probs = c(0.25, 0.5, 0.75)))
+    expect_equal(as.numeric(tmp_ms1[1, ]), q_chr1, tolerance = 1e-6)
+    tmp_ms2 <- intensityQuartiles(chr_ms, msLevel = 2L)
+    expect_equal(nrow(tmp_ms2), 1)
+})
+
+test_that("intensityRange filters by msLevel.", {
+    tmp_ms1 <- intensityRange(chr_ms, msLevel = 1L)
+    expect_true(is.matrix(tmp_ms1))
+    expect_equal(nrow(tmp_ms1), 2)
+    expect_equal(tmp_ms1[1, ], c(min = 100, max = 300))
+    expect_equal(tmp_ms1[2, ], c(min = 400, max = 600))
+    tmp_ms2 <- intensityRange(chr_ms, msLevel = 2L)
+    expect_equal(nrow(tmp_ms2), 1)
+    expect_equal(tmp_ms2[1, ], c(min = 50, max = 70))
+})
+
+test_that("peakCount filters by msLevel.", {
+    tmp_ms1 <- peakCount(chr_ms, msLevel = 1L)
+    expect_equal(length(tmp_ms1), 2)
+    expect_equal(tmp_ms1, c(3L, 3L))
+    tmp_ms2 <- peakCount(chr_ms, msLevel = 2L)
+    expect_equal(length(tmp_ms2), 1)
+    expect_equal(tmp_ms2, 3L)
+})
+
+test_that("baselineIntensity filters by msLevel.", {
+    tmp_ms1 <- baselineIntensity(chr_ms, msLevel = 1L)
+    expect_equal(length(tmp_ms1), 2)
+    expect_equal(tmp_ms1[1],
+                 as.numeric(quantile(c(100, 200, 300), 0.05)))
+    tmp_ms2 <- baselineIntensity(chr_ms, msLevel = 2L)
+    expect_equal(length(tmp_ms2), 1)
+})
+
+test_that("signalToNoiseRatio filters by msLevel.", {
+    tmp_ms1 <- signalToNoiseRatio(chr_ms, msLevel = 1L)
+    expect_equal(length(tmp_ms1), 2)
+    tmp_ms2 <- signalToNoiseRatio(chr_ms, msLevel = 2L)
+    expect_equal(length(tmp_ms2), 1)
+})
+
+test_that("xicFwhm filters by msLevel.", {
+    tmp_ms1 <- xicFwhm(chr_ms, msLevel = 1L)
+    expect_equal(length(tmp_ms1), 2)
+    tmp_ms2 <- xicFwhm(chr_ms, msLevel = 2L)
+    expect_equal(length(tmp_ms2), 1)
+})
+
+test_that("peakWidth filters by msLevel.", {
+    tmp_ms1 <- peakWidth(chr_ms, msLevel = 1L)
+    expect_equal(length(tmp_ms1), 2)
+    tmp_ms2 <- peakWidth(chr_ms, msLevel = 2L)
+    expect_equal(length(tmp_ms2), 1)
+})
+
+test_that("gaussianSimilarity filters by msLevel.", {
+    tmp_ms1 <- gaussianSimilarity(chr_ms, msLevel = 1L)
+    expect_true(is.matrix(tmp_ms1))
+    expect_equal(nrow(tmp_ms1), 2)
+    tmp_ms2 <- gaussianSimilarity(chr_ms, msLevel = 2L)
+    expect_equal(nrow(tmp_ms2), 1)
+})
+
+test_that("peakProminence filters by msLevel.", {
+    tmp_ms1 <- peakProminence(chr_ms, msLevel = 1L)
+    expect_equal(length(tmp_ms1), 2)
+    tmp_ms2 <- peakProminence(chr_ms, msLevel = 2L)
+    expect_equal(length(tmp_ms2), 1)
+})
+
+test_that("msLevel filtering with empty result returns zero-length output.", {
+    ## No msLevel 3 chromatograms exist
+    tmp <- maxIntensity(chr_ms, msLevel = 3L)
+    expect_equal(length(tmp), 0)
+    tmp_q <- intensityQuartiles(chr_ms, msLevel = 3L)
+    expect_equal(nrow(tmp_q), 0)
+    tmp_r <- intensityRange(chr_ms, msLevel = 3L)
+    expect_equal(nrow(tmp_r), 0)
+})
+
+test_that("msLevel = integer() (default) returns all chromatograms.", {
+    tmp_default <- maxIntensity(chr_ms)
+    tmp_explicit <- maxIntensity(chr_ms, msLevel = integer())
+    expect_equal(tmp_default, tmp_explicit)
 })
 

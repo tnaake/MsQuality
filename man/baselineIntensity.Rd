@@ -2,12 +2,21 @@
 % Please edit documentation in R/function_Chromatograms_metrics.R
 \name{baselineIntensity}
 \alias{baselineIntensity}
-\title{Baseline Intensity across chromatograms}
+\title{Baseline Intensity per chromatogram}
 \usage{
-baselineIntensity(chromatograms, probs = 0.05, na.rm = TRUE, ...)
+baselineIntensity(
+  chromatograms,
+  msLevel = integer(),
+  probs = 0.05,
+  na.rm = TRUE,
+  ...
+)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
+
+\item{msLevel}{`integer` defining the MS level(s) to filter for.
+If empty (default), no filtering is performed.}
 
 \item{probs}{`numeric(1)` quantile probability (default 0.05)}
 
@@ -20,14 +29,15 @@ baselineIntensity(chromatograms, probs = 0.05, na.rm = TRUE, ...)
 intensity per chromatogram
 }
 \description{
-The function `baselineIntensity` estimates the baseline intensity as the
-5th percentile of intensity values across all chromatograms. \cr
+The function `baselineIntensity` estimates the baseline intensity for
+each chromatogram using a low quantile of the intensity distribution.
+By default the 5th percentile is used, but this can be changed via the
+\code{probs} parameter. \cr
 
 The metric is calculated as follows: \cr
-(1) the intensity values from all chromatograms are extracted and
-unlisted into a single numeric vector, \cr
-(2) the quantile at the specified probability (default 5th percentile)
-is calculated and returned.
+(1) for each chromatogram, the intensity values are extracted, \cr
+(2) the quantile at probability \code{probs} (default 0.05, i.e. the
+5th percentile) is calculated and returned.
 }
 \details{
 In chromatograms with many zero-intensity points the chosen quantile may

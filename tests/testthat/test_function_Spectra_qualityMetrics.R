@@ -61,7 +61,7 @@ qm_chr <-  c("chromatographyDuration", "peakCount",
             "msSignal10xChange",
             "numberEmptyScans",
             "medianTicRtIqr",
-            "xicFwhm", "peakBoundary", "peakWidth", "gaussianSimilarity",
+            "xicFwhm", "peakWidth", "gaussianSimilarity",
             "peakProminence",
             "ticQuantileRtFraction", "areaUnderTic", "areaUnderTicRtQuantiles")
 

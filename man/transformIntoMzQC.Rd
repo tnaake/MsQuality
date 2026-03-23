@@ -18,10 +18,11 @@ The function \code{transformIntoMzQC} transfers the metrics stored in
 \code{spectra_metrics} into a list of \code{MzQCmzQC} objects. Each list
 entry will refer to the corresponding entry in \code{spectra_metrics}.
 As such, each entry contains information from a single \code{dataOrigin}
-of a \code{Spectra} object.
+of a \code{Spectra} or \code{Chromatograms} object.
 
 The function \code{transformIntoMzQC} is a helper function within
-\code{calculateMetricsFromSpectra}.
+\code{calculateMetricsFromSpectra} and
+\code{calculateMetricsFromChromatograms}.
 }
 \details{
 The \code{MzQCmzQC} object will only contain those quality metrics

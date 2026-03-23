@@ -4,26 +4,28 @@
 \alias{intensityQuartiles}
 \title{Intensity Quartiles per chromatogram}
 \usage{
-intensityQuartiles(chromatograms, ...)
+intensityQuartiles(chromatograms, msLevel = integer(), ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
 
-\item{...}{further arguments passed to `summary`}
+\item{msLevel}{`integer` defining the MS level(s) to filter for.
+If empty (default), no filtering is performed.}
+
+\item{...}{further arguments passed to `quantile`}
 }
 \value{
-`matrix` with `nrow` equal to `length(chromatograms)` and 6 columns
-  (Min, 1st Qu., Median, Mean, 3rd Qu., Max)
+`matrix` with `nrow` equal to `length(chromatograms)` and 3 columns
+  (Q1, Q2, Q3)
 }
 \description{
-The function `intensityQuartiles` calculates the minimum, 1st quartile,
-median, 3rd quartile, and maximum of intensity values within each
-chromatogram. \cr
+The function `intensityQuartiles` calculates the first, second, and third
+quartile (Q1, Q2, Q3) of intensity values within each chromatogram. \cr
 
 The metric is calculated as follows: \cr
 (1) for each chromatogram, the intensity values are extracted, \cr
-(2) the summary statistics (Min, 1st Qu., Median, Mean, 3rd Qu., Max)
-are calculated and returned as a row of the result matrix.
+(2) the quartiles Q1 (25th), Q2 (50th, median), and Q3 (75th) are
+calculated and returned as a row of the result matrix.
 }
 \examples{
 library(Chromatograms)
@@ -39,7 +41,7 @@ pdata <- list(
                intensity = c(80, 500, 1200, 600, 120))
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-## Returns a 2x6 matrix with summary statistics per chromatogram
+## Returns a 2x3 matrix with Q1, Q2, Q3 per chromatogram
 intensityQuartiles(chr)
 }
 \author{

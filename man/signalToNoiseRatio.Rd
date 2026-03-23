@@ -4,10 +4,13 @@
 \alias{signalToNoiseRatio}
 \title{Signal-to-Noise Ratio per chromatogram}
 \usage{
-signalToNoiseRatio(chromatograms, ...)
+signalToNoiseRatio(chromatograms, msLevel = integer(), ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
+
+\item{msLevel}{`integer` defining the MS level(s) to filter for.
+If empty (default), no filtering is performed.}
 
 \item{...}{currently not used but included for consistency with other
 metric functions}

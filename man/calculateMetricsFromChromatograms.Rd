@@ -29,8 +29,9 @@ belong to one sample. Defaults to \code{f = dataOrigin(chromatograms)}.
 Chromatograms from the same original data file are processed together
 (and in parallel for different files).}
 
-\item{format}{\code{character(1)} output format. Only \code{"data.frame"}
-is currently supported.}
+\item{format}{\code{character(1)} specifying if metrics are returned
+as a \code{data.frame} (\code{format = "data.frame"}) or as a list of
+\code{MzQCmzQC} objects (\code{format = "mzQC"})}
 
 \item{...}{arguments passed to the quality metrics functions defined in
 \code{metrics}}
@@ -39,8 +40,12 @@ is currently supported.}
 See [bpparam()] for details on parallel processing with \code{BiocParallel}.}
 }
 \value{
-A \code{data.frame} containing in the columns the metrics for the different
-chromatograms of identical \code{dataOrigin{chromatograms}} (in rows).
+In case of \code{format = "data.frame"}, a \code{data.frame} containing in
+the columns the metrics for the different chromatograms of identical
+\code{dataOrigin{chromatograms}} (in rows).
+In case of \code{format = "mzQC"}, a \code{list} of \code{MzQCmzQC} objects
+containing the metrics for the different chromatograms of identical
+\code{dataOrigin{chromatograms}}
 }
 \description{
 The function \code{calculateMetricsFromChromatograms} calculates quality
@@ -59,6 +64,7 @@ parameter \code{BPPARAM}.
 
 Setting the argument \code{filterEmptyObject} to \code{TRUE} will
 remove zero-length entries, zero-intensity entries, and entries with
+intensities that are \code{Inf} from the \code{Chromatograms} object.
 }
 \examples{
 library(Chromatograms)

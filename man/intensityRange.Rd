@@ -4,10 +4,13 @@
 \alias{intensityRange}
 \title{Intensity Range per chromatogram}
 \usage{
-intensityRange(chromatograms, na.rm = TRUE, ...)
+intensityRange(chromatograms, msLevel = integer(), na.rm = TRUE, ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
+
+\item{msLevel}{`integer` defining the MS level(s) to filter for.
+If empty (default), no filtering is performed.}
 
 \item{na.rm}{`logical(1)` whether to remove `NA` values (default `TRUE`)}
 

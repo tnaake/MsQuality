@@ -4,10 +4,13 @@
 \alias{peakCount}
 \title{Peak Count (Number of data points) per chromatogram}
 \usage{
-peakCount(chromatograms, na.rm = FALSE, ...)
+peakCount(chromatograms, msLevel = integer(), na.rm = FALSE, ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
+
+\item{msLevel}{`integer` defining the MS level(s) to filter for.
+If empty (default), no filtering is performed.}
 
 \item{na.rm}{`logical(1)` indicating whether `NA` values should be
 removed before counting (default `FALSE`)}

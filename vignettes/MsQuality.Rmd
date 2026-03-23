@@ -187,13 +187,15 @@ There are several options available to create a `Spectra` object. One way, as
 outlined in the vignette of the `r BiocStyle::Biocpkg("Spectra")` package is
 by specifying the location of mass spectrometry raw files in `mzML`, `mzXML` or
 `CDF` format and using the `MsBackendMzR` backend. Here we load the example
-files from the `sciex` data set of the `msdata` package and create a `Spectra`
-object from the two provided `mzML` files. The example is taken from the
+files from the `sciex` data set provided through `MsDataHub` and create a
+`Spectra` object from two `mzML` files. The example is taken from the
 `Spectra` vignette.
 
-```{r spectra_sciex, echo = TRUE}
+```{r spectra_sciex, eval = FALSE, echo = TRUE}
+library(MsDataHub)
 ## this example is taken from the Spectra vignette
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+fls <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+         MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
 sps_sciex <- Spectra(fls, backend = MsBackendMzR())
 ```
 
@@ -218,52 +220,36 @@ experimentFiles(lmse) <- MsExperimentFiles(mzML_files = fls)
 spectra(lmse) <- sps_sciex
 ## use linkSampleData to establish and define relationships between sample
 ## annotations and MS data
-lmse <- linkSampleData(lmse, with = "experimentFiles.mzML_file",
+lmse <- linkSampleData(lmse, with = "experimentFiles.mzML_files",
     sampleIndex = c(1, 2), withIndex = c(1, 2))
 ```
 
 ## Chromatograms example
 
 The package also supports calculation of metrics directly on `Chromatograms`
-objects. Below is a minimal example that creates chromatograms from a
-`Spectra` object and calculates the metrics. The chunk is set to
-`eval = FALSE` to avoid running file I/O during automated vignette builds.
+objects. Below is a minimal example that creates a `Chromatograms` object
+from manually defined chromatographic data and calculates the metrics.
+The chunk is set to `eval = FALSE` to avoid running during automated
+vignette builds.
 
 ```{r chromatograms_example, eval = FALSE, echo = TRUE}
-## create Chromatograms (summed TIC) from the Spectra object
-chr <- Chromatograms(sps_sciex, summarize.method = "sum")
+## create a Chromatograms object from manually defined chromatographic data
+cdata <- data.frame(
+    msLevel = c(1L, 1L),
+    mz = c(112.2, 123.3),
+    dataOrigin = c("sample_1", "sample_1")
+)
+pdata <- list(
+    data.frame(rtime = c(1.0, 1.5, 2.0, 2.5, 3.0),
+               intensity = c(100, 250, 400, 300, 150)),
+    data.frame(rtime = c(1.2, 1.8, 2.4, 3.0),
+               intensity = c(50, 150, 300, 200))
+)
+chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 
 ## calculate metrics on the Chromatograms object (disabled during build)
 metrics_chr <- calculateMetrics(object = chr, metrics = qualityMetrics(chr))
 metrics_chr
-```
-
-## Chromatograms (manual / in-memory) example
-
-Below is an example that shows how to create a simple `Chromatograms` object
-from manually created retention time / intensity tables and calculate
-metrics on it. This is useful for unit tests or small toy examples.
-
-```{r chromatograms_manual_example, eval = FALSE, echo = TRUE}
-## create chromatogram metadata for two chromatograms
-cdata <- data.frame(
-    msLevel = c(1L, 1L),
-    mz = c(112.2, 123.3),
-    dataOrigin = c("sample_manual_1", "sample_manual_2")
-)
-
-## create per-chromatogram time/intensity tables
-pdata <- list(
-    data.frame(rtime = c(1.0, 1.5, 2.0, 2.5, 3.0), intensity = c(100, 250, 400, 300, 150)),
-    data.frame(rtime = c(1.2, 1.8, 2.4, 3.0), intensity = c(50, 150, 300, 200))
-)
-
-## construct Chromatograms object from the metadata and pdata lists
-chr_mem <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
-
-## compute metrics (disabled during build)
-metrics_chr_mem <- calculateMetrics(object = chr_mem, metrics = qualityMetrics(chr_mem))
-metrics_chr_mem
 ```
 
 ## Create `Spectra` and `MsExperiment` objects from (feature-extracted) intensity tables
@@ -319,29 +305,29 @@ qualityMetrics(chr)
 
 ## List of included metrics
 
-    The following list gives a brief explanation on the included metrics. Further
+The following list gives a brief explanation on the included metrics. Further
 information may be found at the
 [HUPO-PSI mzQC project page](https://github.com/HUPO-PSI/mzQC)  or in the
 respective help file for the quality metric (accessible by e.g. entering
 `?chromatographyDuration` to the R console).
 We also give here explanation on how the metric is calculated in `MsQuality`.
 
-    Many metrics in `MsQuality` are implemented to work with all three object
-    types (`Spectra`, `Chromatograms`, and `MsExperiment`). However, some
-    metrics only make sense for a particular representation: metrics that
-    operate on per-scan information (for example, those that use per-scan TIC
-    or peaks) are defined for `Spectra`, while metrics based on chromatographic
-    traces (for example, TIC-integrals or peak-based summaries from extracted
-    chromatograms) are defined for `Chromatograms`.
+Many metrics in `MsQuality` are implemented to work with all three object
+types (`Spectra`, `Chromatograms`, and `MsExperiment`). However, some
+metrics only make sense for a particular representation: metrics that
+operate on per-scan information (for example, those that use per-scan TIC
+or peaks) are defined for `Spectra`, while metrics based on chromatographic
+traces (for example, TIC-integrals or peak-based summaries from extracted
+chromatograms) are defined for `Chromatograms`.
 
-    To get the authoritative list of metrics available for a specific object
-    instance, run `qualityMetrics(object)` (e.g. `qualityMetrics(someSpectra)`
-    or `qualityMetrics(someChromatograms)`). For details about a specific
-    metric (calculation, accepted arguments and attached PSI:MS accession),
-    consult the metric's help page (for example, `?chromatographyDuration`).
+To get the authoritative list of metrics available for a specific object
+instance, run `qualityMetrics(object)` (e.g. `qualityMetrics(someSpectra)`
+or `qualityMetrics(someChromatograms)`). For details about a specific
+metric (calculation, accepted arguments and attached PSI:MS accession),
+consult the metric's help page (for example, `?chromatographyDuration`).
 
-    In short: use `qualityMetrics()` for the object-specific metric list and
-    the `?metricName` help pages for per-metric details.
+In short: use `qualityMetrics()` for the object-specific metric list and
+the `?metricName` help pages for per-metric details.
 
 - *chromatographyDuration*, **chromatography duration** (MS:4000053),
   "The retention time duration of the chromatography in seconds." [PSI:MS];
@@ -427,7 +413,7 @@ We also give here explanation on how the metric is calculated in `MsQuality`.
     (3) the ratios between the 25\%, 50\%, 75\%, and 100\% quantile to the
         25\% quantile of the values of (2) are calculated.
     (4) The `log` values of the ratios are returned.
-- *numberSpectra*, **number of MS1 spectra** MS:4000059),
+- *numberSpectra*, **number of MS1 spectra** (MS:4000059),
   "The number of MS1 events in the run." [PSI:MS], `msLevel = 1L`;
   An unusual low number may indicate incomplete sampling/scan rate of the MS
   instrument, low sample volume and/or failed injection of a sample.
@@ -668,7 +654,7 @@ We also give here explanation on how the metric is calculated in `MsQuality`.
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensities of the precursor ions are obtained,
     (3) the 5\% and 95\% quantile of these intensities are obtained
-        (1NA1 values are removed),
+        (`NA` values are removed),
     (4) the ratio between the 95\% and the 5\% intensity quantile is calculated
         and returned.
 - *medianTicRtIqr*, **median of TIC values in the RT range in which the middle
@@ -814,7 +800,7 @@ We also give here explanation on how the metric is calculated in `MsQuality`.
         obtained,
     (3) the standard deviation of precursor intensity values is obtained
         (`NA` values are removed) and returned.
-- *precursorIntensitySD*,
+- *precursorIntensitySd*,
   **unidentified MS2 precursor intensity distribution sigma** (MS:4000166),
   "From the distribution of unidentified MS2 precursor intensities, the sigma
   value. The used type of identification should be noted in the metadata or
@@ -986,31 +972,41 @@ We also give here explanation on how the metric is calculated in `MsQuality`.
         TIC exceeds (for the first time) the respective quantile of the
         cumulative TIC is calculated and returned.
 
+### Metrics shared between `Spectra` and `Chromatograms`
+
+Several metrics work on both `Spectra` and `Chromatograms` objects. When
+called with a `Chromatograms` object, they operate on the chromatographic
+data directly:
+
+- *chromatographyDuration* (MS:4000053): Duration of the chromatographic run
+- *rtAcquisitionRange* (MS:4000070): Retention time acquisition range
+- *numberEmptyScans* (MS:4000099): Number of empty scans/chromatograms
+- *areaUnderTic* (MS:4000155): Total area under the TIC
+- *areaUnderTicRtQuantiles* (MS:4000156): Area under TIC per RT quartile
+- *ticQuantileRtFraction* (MS:4000183): RT fraction when TIC quantiles accumulate
+- *msSignal10xChange*: Count of 10x intensity jumps/falls
+- *medianTicRtIqr*: Median TIC in the RT interquartile range
+- *rtIqr*: Retention time interquartile range
+
 ### Chromatograms-specific metrics
 
-In addition to the metrics above (which operate on `Spectra` and `MsExperiment`
-objects), `MsQuality` includes metrics specifically designed for `Chromatograms`
-objects. These metrics assess chromatographic quality and include:
+In addition, `MsQuality` includes metrics specifically designed for
+`Chromatograms` objects. These metrics assess chromatographic peak shape and
+intensity distributions:
 
-- *chromatographyDuration* (MS:4000053): Duration of chromatographic run (same generic as for `Spectra`)
 - *peakCount*: Number of detected peaks per chromatogram
-- *rtAcquisitionRange* (MS:4000070): RT range across chromatograms (same generic as for `Spectra`)
-- *maxIntensity*, *intensityMean*, *intensitySd*: Intensity statistics
+- *maxIntensity*: Maximum intensity per chromatogram
+- *intensityMean*, *intensitySd*: Intensity mean and standard deviation
 - *intensityQuartiles*, *intensityRange*: Intensity distributions
-- *numberEmptyScans*: Count of empty chromatograms
+- *baselineIntensity*: Baseline intensity estimate (low quantile)
+- *signalToNoiseRatio*: Signal-to-noise ratio (MAD-based noise estimate)
 - *xicFwhm*: Full Width at Half Maximum (FWHM) per chromatogram
-- *peakBoundary*: Left/right peak boundaries using valley detection
 - *peakWidth*: Peak width based on valley boundaries
 - *gaussianSimilarity*: Peak shape quality (correlation to beta distribution, residual SD)
 - *peakProminence*: Peak prominence relative to baseline
-- *ticQuantileRtFraction* (MS:4000183): RT fraction when TIC quantiles accumulate
-- *areaUnderTic* (MS:4000155): Total area under TIC
-- *areaUnderTicRtQuantiles* (MS:4000156): Area under TIC per RT quartile
-- *msSignal10xChange*: Count of 10x intensity jumps/falls
-- *medianTicRtIqr*: Median TIC in RT IQR
-- *baselineIntensity*: 5th percentile (baseline estimate)
-- *signalToNoiseRatio*: Classical S/N ratio (MAD-based noise estimate)
-- *rtIqr*: RT interquartile range
+
+Note that `peakBoundary`, used by several peak-shape metrics, is provided by
+the `Chromatograms` package (see `?Chromatograms::peakBoundary`).
 
 For complete documentation of each metric, including calculation details and
 PSI-MS accessions, see the respective help pages (e.g., `?chromatographyDuration`,
@@ -1111,11 +1107,6 @@ argument to `TRUE` within the `calculateMetrics` function.
 ## subset the MsExperiment objects
 msexp_rplc_subset <- msexp_rplc[1:20]
 msexp_hilic_subset <- msexp_hilic[1:20]
-
-## define metrics
-metrics_sps <- c("chromatographyDuration", "ticQuantileRtFraction", "rtOverMsQuarters",
-    "ticQuartileToQuartileLogRatio", "numberSpectra", "medianPrecursorMz",
-    "rtIqr", "rtIqrRate", "areaUnderTic")
 
 ## for RPLC-derived MsExperiment
 metrics_rplc_msexp <- calculateMetrics(object = msexp_rplc_subset,

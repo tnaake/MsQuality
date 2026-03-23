@@ -126,6 +126,7 @@ calculateMetricsFromOneSampleChromatograms <- function(
 #'
 #' Setting the argument \code{filterEmptyObject} to \code{TRUE} will
 #' remove zero-length entries, zero-intensity entries, and entries with
+#' intensities that are \code{Inf} from the \code{Chromatograms} object.
 #'
 #' @param chromatograms \code{Chromatograms} object
 #' @param metrics \code{character} specifying the quality metrics to be
@@ -137,16 +138,21 @@ calculateMetricsFromOneSampleChromatograms <- function(
 #' belong to one sample. Defaults to \code{f = dataOrigin(chromatograms)}.
 #' Chromatograms from the same original data file are processed together
 #' (and in parallel for different files).
-#' @param format \code{character(1)} output format. Only \code{"data.frame"}
-#'     is currently supported.
+#' @param format \code{character(1)} specifying if metrics are returned
+#' as a \code{data.frame} (\code{format = "data.frame"}) or as a list of
+#' \code{MzQCmzQC} objects (\code{format = "mzQC"})
 #' @param BPPARAM Parallel processing setup. Defaults to \code{BPPARAM = bpparam()}.
 #'     See [bpparam()] for details on parallel processing with \code{BiocParallel}.
 #' @param ... arguments passed to the quality metrics functions defined in
 #' \code{metrics}
 #'
 #' @return
-#' A \code{data.frame} containing in the columns the metrics for the different
-#' chromatograms of identical \code{dataOrigin{chromatograms}} (in rows).
+#' In case of \code{format = "data.frame"}, a \code{data.frame} containing in
+#' the columns the metrics for the different chromatograms of identical
+#' \code{dataOrigin{chromatograms}} (in rows).
+#' In case of \code{format = "mzQC"}, a \code{list} of \code{MzQCmzQC} objects
+#' containing the metrics for the different chromatograms of identical
+#' \code{dataOrigin{chromatograms}}
 #'
 #' @author Philippine Louail
 #'
@@ -187,8 +193,6 @@ calculateMetricsFromChromatograms <- function(
     if (length(filterEmptyObject) != 1 | !is.logical(filterEmptyObject))
         stop("'filterEmptyObject' has to be either TRUE or FALSE")
     format <- match.arg(format)
-    if (format != "data.frame")
-        stop("Only format = 'data.frame' is supported currently")
 
     if (!is(chromatograms, "Chromatograms"))
         stop("chromatograms is not of class 'Chromatograms'")
@@ -230,6 +234,39 @@ calculateMetricsFromChromatograms <- function(
         })
         obj <- do.call(rbind, sample_dfs)
     }
+
+    if (format == "mzQC") {
+        ## Convert per-sample Chromatograms metrics (named lists of
+        ## vectors/matrices) into the named-numeric-vector format that
+        ## transformIntoMzQC expects.
+        chromatograms_metrics_flat <- lapply(
+            chromatograms_metrics, function(sample_res) {
+                vals <- c()
+                all_attrs <- list()
+                for (nm in names(sample_res)) {
+                    val <- sample_res[[nm]]
+                    metric_attr <- attr(val, nm)
+                    if (is.matrix(val)) {
+                        for (cn in colnames(val)) {
+                            col_nm <- paste0(nm, ".", cn)
+                            col_vals <- val[, cn]
+                            names(col_vals) <- rep(col_nm, length(col_vals))
+                            vals <- c(vals, col_vals)
+                        }
+                    } else {
+                        names(val) <- rep(nm, length(val))
+                        vals <- c(vals, val)
+                    }
+                    if (!is.null(metric_attr))
+                        all_attrs[[nm]] <- metric_attr
+                }
+                attributes(vals) <- c(attributes(vals), all_attrs)
+                vals
+            })
+        names(chromatograms_metrics_flat) <- names(chromatograms_metrics)
+        obj <- transformIntoMzQC(chromatograms_metrics_flat)
+    }
+
     obj
 }
 

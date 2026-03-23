@@ -4,10 +4,13 @@
 \alias{peakWidth}
 \title{Peak Width per Chromatogram}
 \usage{
-peakWidth(chromatograms, peakBoundary = NULL, ...)
+peakWidth(chromatograms, msLevel = integer(), peakBoundary = NULL, ...)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
+
+\item{msLevel}{`integer` defining the MS level(s) to filter for.
+If empty (default), no filtering is performed.}
 
 \item{peakBoundary}{optional peak boundary: either a `matrix` with columns
 `left_boundary` and `right_boundary` (one row per chromatogram, as returned

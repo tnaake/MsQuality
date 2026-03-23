@@ -77,7 +77,7 @@ qualityMetrics <- function(object) {
             "maxIntensity", "intensityQuartiles", "intensityMean",
             "intensitySd", "intensityRange", "rtIqr", "baselineIntensity",
             "signalToNoiseRatio", "msSignal10xChange", "numberEmptyScans",
-            "medianTicRtIqr", "xicFwhm", "peakBoundary", "peakWidth",
+            "medianTicRtIqr", "xicFwhm", "peakWidth",
             "gaussianSimilarity", "peakProminence", "ticQuantileRtFraction",
             "areaUnderTic", "areaUnderTicRtQuantiles"
         )

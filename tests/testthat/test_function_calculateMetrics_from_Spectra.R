@@ -1,11 +1,6 @@
 ################################################################################
 ###################### format = 'data.frame' (default) #########################
 ################################################################################
-library("Spectra")
-library("MsExperiment")
-library("Chromatograms")
-library("MsQuality")
-
 ## define file names containing spectra data for the samples
 sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
     MsDataHub::X20171016_POOL_POS_3_105.134.mzML())

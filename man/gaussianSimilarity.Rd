@@ -4,10 +4,18 @@
 \alias{gaussianSimilarity}
 \title{Gaussian Similarity (Peak Shape Quality) per Chromatogram}
 \usage{
-gaussianSimilarity(chromatograms, peakBoundary = NULL, ...)
+gaussianSimilarity(
+  chromatograms,
+  msLevel = integer(),
+  peakBoundary = NULL,
+  ...
+)
 }
 \arguments{
 \item{chromatograms}{`Chromatograms` object}
+
+\item{msLevel}{`integer` defining the MS level(s) to filter for.
+If empty (default), no filtering is performed.}
 
 \item{peakBoundary}{optional peak boundary: either a `matrix` with columns
 `left_boundary` and `right_boundary` (one row per chromatogram), or a
@@ -68,6 +76,7 @@ pdata <- list(
 )
 chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
 gaussianSimilarity(chr)
+
 }
 \references{
 Kumler W, Hazelton B J and Ingalls A E (2023) "Picky with peakpicking:

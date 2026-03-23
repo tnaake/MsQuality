@@ -5,16 +5,10 @@
 \title{MS1 signal jump (10x) count (MS:4000097) or MS1 signal fall (10x)
 count (MS:4000098)}
 \usage{
-msSignal10xChange(
-  spectra,
-  change = "jump",
-  msLevel = 1L,
-  minIntensity = 0,
-  ...
-)
+msSignal10xChange(object, change = "jump", msLevel = 1L, minIntensity = 0, ...)
 }
 \arguments{
-\item{spectra}{\code{Spectra} or \code{Chromatograms} object}
+\item{object}{\code{Spectra} or \code{Chromatograms} object}
 
 \item{change}{\code{character(1)}, one of \code{"jump"} or \code{"fall"}}
 
@@ -108,8 +102,8 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-msSignal10xChange(spectra = sps, change = "jump", msLevel = 2L)
-msSignal10xChange(spectra = sps, change = "fall", msLevel = 2L)
+msSignal10xChange(object = sps, change = "jump", msLevel = 2L)
+msSignal10xChange(object = sps, change = "fall", msLevel = 2L)
 }
 \author{
 Thomas Naake

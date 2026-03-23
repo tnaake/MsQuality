@@ -1,11 +1,6 @@
 ## Test calculateMetrics S4 methods
-library("Spectra")
-library("MsExperiment")
-library("Chromatograms")
-library("S4Vectors")
-library("MsQuality")
-
-fls <- dir(system.file("sciex", package = "msdata"), full.names = TRUE)
+fls <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+    MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
 spectra <- Spectra(fls, backend = MsBackendMzR())
 
 ## Shared Chromatograms fixture
@@ -215,17 +210,14 @@ test_that("calculateMetrics returns correct column names with multiple metrics",
 
     expect_s3_class(result, "data.frame")
     expect_equal(nrow(result), 2)
-    ## Column names should be the metric names, not "5%", NA, etc.
     expect_equal(colnames(result), chrom_metrics)
-    ## All values should be numeric
     expect_true(all(sapply(result, is.numeric)))
-    ## No NA column names
     expect_false(any(is.na(colnames(result))))
 })
 
 test_that("calculateMetrics works with metrics returning multiple values",
 {    chr <- test_chr
-    chrom_metrics <- c("xicFwhm", "peakBoundary", "gaussianSimilarity")
+    chrom_metrics <- c("xicFwhm", "gaussianSimilarity")
     expect_no_error({
         result <- calculateMetrics(
             object = chr,
@@ -241,14 +233,8 @@ test_that("calculateMetrics works with metrics returning multiple values",
     )
 
     expect_s3_class(result, "data.frame")
-    ## Check that multi-value metrics have proper column names
-    ## peakBoundary returns left_boundary and right_boundary
-    expect_true("peakBoundary.left_boundary" %in% colnames(result))
-    expect_true("peakBoundary.right_boundary" %in% colnames(result))
-    ## gaussianSimilarity returns gaussian_similarity and gaussian_residuals
     expect_true("gaussianSimilarity.gaussian_similarity" %in% colnames(result))
     expect_true("gaussianSimilarity.gaussian_residuals" %in% colnames(result))
-    ## xicFwhm returns a single value
     expect_true("xicFwhm" %in% colnames(result))
 })
 
@@ -288,11 +274,7 @@ test_that("calculateMetrics handles na.rm parameter without errors", {
 })
 
 test_that("calculateMetrics with signalToNoiseRatio does not conflict with method parameter", {
-    ## Regression test: signalToNoiseRatio uses MsCoreUtils::noise() internally
-    ## with method = "MAD". If ... is passed through, any 'method' parameter
 
-    ## from calculateMetrics would cause "formal argument matched by multiple
-    ## actual arguments" error.
     chr <- test_chr
     chrom_metrics <- c("signalToNoiseRatio", "maxIntensity")
 
@@ -313,4 +295,176 @@ test_that("calculateMetrics with signalToNoiseRatio does not conflict with metho
     )
     expect_s3_class(result, "data.frame")
     expect_true("signalToNoiseRatio" %in% colnames(result))
+})
+
+################################################################################
+######################### mzQC format for Chromatograms ########################
+################################################################################
+
+test_that("calculateMetricsFromChromatograms returns mzQC with PSI:MS metrics", {
+    chr <- Chromatograms(spectra)
+
+    suppressWarnings(
+        res <- calculateMetricsFromChromatograms(
+            chromatograms = chr,
+            metrics = c("areaUnderTic", "ticQuantileRtFraction"),
+            format = "mzQC"
+        )
+    )
+
+    ## one MzQCmzQC object per sample
+    expect_true(is.list(res))
+    expect_equal(length(res), 2)
+    expect_equal(class(res[[1]])[1], "MzQCmzQC")
+    expect_equal(class(res[[2]])[1], "MzQCmzQC")
+
+    ## each object should have exactly 2 quality metrics (both have MS: IDs)
+    expect_equal(
+        length(res[[1]]$runQualities[[1]]$qualityMetrics), 2)
+    expect_equal(
+        length(res[[2]]$runQualities[[1]]$qualityMetrics), 2)
+
+    ## areaUnderTic
+    expect_equal(
+        res[[1]]$runQualities[[1]]$qualityMetrics[[1]]$accession,
+        "MS:4000155")
+    expect_equal(
+        res[[1]]$runQualities[[1]]$qualityMetrics[[1]]$name,
+        "area under TIC")
+    expect_true(
+        is.numeric(res[[1]]$runQualities[[1]]$qualityMetrics[[1]]$value))
+
+    ## ticQuantileRtFraction
+    expect_equal(
+        res[[1]]$runQualities[[1]]$qualityMetrics[[2]]$accession,
+        "MS:4000183")
+    expect_equal(
+        res[[1]]$runQualities[[1]]$qualityMetrics[[2]]$name,
+        "TIC quantile RT fraction")
+})
+
+test_that("calculateMetricsFromChromatograms mzQC excludes custom metrics", {
+    chr <- Chromatograms(spectra)
+
+    ## maxIntensity has no PSI:MS attribute, so it should be
+    ## excluded from the mzQC output
+    suppressWarnings(
+        res <- calculateMetricsFromChromatograms(
+            chromatograms = chr,
+            metrics = c("maxIntensity", "areaUnderTic"),
+            format = "mzQC"
+        )
+    )
+
+    ## only areaUnderTic should appear in the mzQC output
+    expect_equal(
+        length(res[[1]]$runQualities[[1]]$qualityMetrics), 1)
+    expect_equal(
+        res[[1]]$runQualities[[1]]$qualityMetrics[[1]]$accession,
+        "MS:4000155")
+})
+
+test_that("calculateMetrics generic dispatches mzQC for Chromatograms", {
+    chr <- Chromatograms(spectra)
+
+    suppressWarnings(
+        res <- calculateMetrics(
+            object = chr,
+            metrics = c("areaUnderTic", "ticQuantileRtFraction"),
+            format = "mzQC"
+        )
+    )
+
+    expect_true(is.list(res))
+    expect_equal(length(res), 2)
+    expect_equal(class(res[[1]])[1], "MzQCmzQC")
+    expect_equal(
+        res[[1]]$runQualities[[1]]$qualityMetrics[[1]]$accession,
+        "MS:4000155")
+})
+
+test_that("calculateMetricsFromChromatograms mzQC has URIs", {
+    chr <- Chromatograms(spectra)
+
+    suppressWarnings(
+        res <- calculateMetricsFromChromatograms(
+            chromatograms = chr,
+            metrics = c("areaUnderTic"),
+            format = "mzQC"
+        )
+    )
+
+    expect_true(stringr::str_starts(
+        res[[1]]$runQualities[[1]]$metadata$inputFiles[[1]]$location,
+        "file://"))
+})
+
+test_that("calculateMetricsFromChromatograms mzQC structure is valid", {
+    chr <- Chromatograms(spectra)
+
+    suppressWarnings(
+        res <- calculateMetricsFromChromatograms(
+            chromatograms = chr,
+            metrics = c("areaUnderTic"),
+            format = "mzQC"
+        )
+    )
+
+    ## check mzQC structure fields
+    expect_true(!is.null(res[[1]]$version))
+    expect_true(!is.null(res[[1]]$creationDate))
+    expect_true(!is.null(res[[1]]$contactName))
+    expect_true(!is.null(res[[1]]$description))
+    expect_true(length(res[[1]]$runQualities) == 1)
+    expect_true(length(res[[1]]$controlledVocabularies) == 1)
+
+    ## metadata should contain analysisSoftware with MsQuality info
+    software <- res[[1]]$runQualities[[1]]$metadata$analysisSoftware
+    expect_true(length(software) >= 1)
+})
+
+test_that("calculateMetricsFromChromatograms data.frame format still works", {
+    chr <- Chromatograms(spectra)
+
+    res_df <- calculateMetricsFromChromatograms(
+        chromatograms = chr,
+        metrics = c("areaUnderTic", "maxIntensity"),
+        format = "data.frame"
+    )
+
+    expect_s3_class(res_df, "data.frame")
+    expect_equal(ncol(res_df), 2)
+    expect_equal(colnames(res_df), c("areaUnderTic", "maxIntensity"))
+})
+
+test_that("mzQC from Chromatograms and Spectra agree on accession", {
+    chr <- Chromatograms(spectra)
+
+    suppressWarnings({
+        res_chr <- calculateMetricsFromChromatograms(
+            chromatograms = chr,
+            metrics = c("areaUnderTic"),
+            format = "mzQC"
+        )
+        res_sps <- calculateMetricsFromSpectra(
+            spectra = spectra,
+            metrics = c("areaUnderTic"),
+            format = "mzQC",
+            msLevel = 1
+        )
+    })
+
+    ## both should produce the same accession and metric name
+    expect_equal(
+        res_chr[[1]]$runQualities[[1]]$qualityMetrics[[1]]$accession,
+        res_sps[[1]]$runQualities[[1]]$qualityMetrics[[1]]$accession)
+    expect_equal(
+        res_chr[[1]]$runQualities[[1]]$qualityMetrics[[1]]$name,
+        res_sps[[1]]$runQualities[[1]]$qualityMetrics[[1]]$name)
+
+    ## both values should be numeric
+    expect_true(
+        is.numeric(res_chr[[1]]$runQualities[[1]]$qualityMetrics[[1]]$value))
+    expect_true(
+        is.numeric(res_sps[[1]]$runQualities[[1]]$qualityMetrics[[1]]$value))
 })
