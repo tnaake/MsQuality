@@ -2,19 +2,25 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{areaUnderTicRtQuantiles}
 \alias{areaUnderTicRtQuantiles}
+\alias{areaUnderTicRtQuantiles,Spectra-method}
 \title{area under TIC RT quantiles (MS:4000156)}
 \usage{
-areaUnderTicRtQuantiles(spectra, msLevel = 1L, ...)
+areaUnderTicRtQuantiles(object, msLevel = 1L, ...)
 }
 \arguments{
-\item{spectra}{\code{Spectra} object}
+\item{object}{\code{Spectra} or \code{Chromatograms} object}
 
-\item{msLevel}{\code{integer}}
+\item{msLevel}{\code{integer}; optional MS level filter (defaults to 1L for
+\code{Spectra}; if supplied for \code{Chromatograms}, data are filtered
+via \code{msLevel} before computing the metric)}
 
 \item{...}{not used here}
 }
 \value{
-\code{.numeric(4)}
+For \code{Spectra}: a named \code{numeric(4)} with areas per
+    quartile (\code{"25\%"}, \code{"50\%"}, \code{"75\%"}, \code{"100\%"}).
+    For \code{Chromatograms}: a \code{matrix} with \code{nrow} equal to
+    \code{length(object)} and 4 columns.
 }
 \description{
 MS:4000156 \cr
@@ -63,7 +69,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-areaUnderTicRtQuantiles(spectra = sps, msLevel = 2L)
+areaUnderTicRtQuantiles(object = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake

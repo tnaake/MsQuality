@@ -7,7 +7,7 @@
 calculateMetricsFromSpectra(
   spectra,
   metrics,
-  filterEmptySpectra = FALSE,
+  filterEmptyObject = FALSE,
   f = dataOrigin(spectra),
   format = c("data.frame", "mzQC"),
   ...,
@@ -20,7 +20,7 @@ calculateMetricsFromSpectra(
 \item{metrics}{\code{character} specifying the quality metrics to be
 calculated on \code{spectra}}
 
-\item{filterEmptySpectra}{\code{logical(1)} specifying if empty entries and
+\item{filterEmptyObject}{\code{logical(1)} specifying if empty entries and
 entries with intensity zero of the \code{Spectra} object will be removed}
 
 \item{f}{\code{character} defining which spectra in \code{spectra} belong to
@@ -68,7 +68,7 @@ Samples will be processed in parallel
 using the default parallel processing setup ([bpparam()]) or with the
 parallel processing setup defined with parameter \code{BPPARAM}.
 
-Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
+Setting the argument \code{filterEmptyObject} to \code{TRUE} will remove
 zero-length entries, zero-intensity entries, and entries with
 intensities that are \code{Inf} from the \code{Spectra} object.
 }

@@ -2,28 +2,32 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{rtIqr}
 \alias{rtIqr}
+\alias{rtIqr,Spectra-method}
+\alias{rtIqr,Chromatograms-method}
 \title{interquartile RT period for identified quantification data points
 (MS:4000153)}
 \usage{
 rtIqr(
-  spectra,
+  object,
   msLevel = 1L,
   identificationLevel = c("all", "identified", "unidentified"),
   ...
 )
 }
 \arguments{
-\item{spectra}{\code{Spectra} object}
+\item{object}{\code{Spectra} or \code{Chromatograms} object}
 
-\item{msLevel}{\code{integer}}
+\item{msLevel}{\code{integer} (only used for \code{Spectra})}
 
 \item{identificationLevel}{\code{character(1)}, one of \code{"all"},
-\code{"identified"}, or \code{"unidentified"}}
+\code{"identified"}, or \code{"unidentified"} (only used for \code{Spectra})}
 
 \item{...}{not used here}
 }
 \value{
-\code{numeric(1)}
+For \code{Spectra}: \code{numeric(1)}.
+    For \code{Chromatograms}: \code{numeric} of length equal to
+    \code{length(object)}, one RT IQR per chromatogram.
 }
 \description{
 MS:4000153 \cr
@@ -64,6 +68,9 @@ the calculation needs to be done according to *MS:4000153*, the
 The stored retention time information in \code{spectra} might have a
 different unit than seconds. \code{rtIqr} will return the IQR based on the
 values stored in \code{spectra} and will not convert these values to seconds.
+
+For \code{Chromatograms} objects, the function calculates the IQR of retention
+times across all chromatograms.
 }
 \examples{
 library(S4Vectors)
@@ -86,7 +93,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-rtIqr(spectra = sps, msLevel = 2L)
+rtIqr(object = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake

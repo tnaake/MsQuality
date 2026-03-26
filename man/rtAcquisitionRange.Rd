@@ -4,10 +4,10 @@
 \alias{rtAcquisitionRange}
 \title{retention time acquisition range (MS:4000070)}
 \usage{
-rtAcquisitionRange(spectra, msLevel = 1L, ...)
+rtAcquisitionRange(object, msLevel = 1L, ...)
 }
 \arguments{
-\item{spectra}{\code{Spectra} object}
+\item{object}{\code{Spectra} or \code{Chromatograms} object}
 
 \item{msLevel}{\code{integer}}
 
@@ -58,7 +58,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-rtAcquisitionRange(spectra = sps, msLevel = 2L)
+rtAcquisitionRange(object = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake

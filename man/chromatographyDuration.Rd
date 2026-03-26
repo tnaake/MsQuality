@@ -4,15 +4,17 @@
 \alias{chromatographyDuration}
 \title{chromatography duration (MS:4000053)}
 \usage{
-chromatographyDuration(spectra, ...)
+chromatographyDuration(object, ...)
 }
 \arguments{
-\item{spectra}{\code{Spectra} object}
+\item{object}{\code{Spectra} or \code{Chromatograms} object}
 
 \item{...}{not used here}
 }
 \value{
-\code{numeric(1)}
+For \code{Spectra}: \code{numeric(1)}.
+    For \code{Chromatograms}: \code{numeric} of length equal to
+    \code{length(object)}, one duration per chromatogram.
 }
 \description{
 MS:4000053
@@ -58,7 +60,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-chromatographyDuration(spectra = sps)
+chromatographyDuration(object = sps)
 }
 \author{
 Thomas Naake

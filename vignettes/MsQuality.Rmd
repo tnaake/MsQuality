@@ -5,8 +5,8 @@ author:
    mail: thomas.naake@embl.de, thomasnaake@googlemail.com, johannes.rainer@eurac.edu
    affiliation: European Molecular Biology Laboratory, Meyerhofstrasse 1, 69117 Heidelberg/ EURAC Research, Viale Druso 1, 39100 Bolzano
 package: MsQuality
-      
-output:         
+
+output:
     BiocStyle::html_document:
         toc_float: true
 bibliography: MsQuality-citations.bib
@@ -71,30 +71,33 @@ accessible from .raw or .mzML files, e.g. pump pressure mean, or rely
 on alignment results, e.g. retention time mean shift, signal-to-noise ratio,
 precursor errors (ppm).
 
-The `MsQuality` package is built upon the `Spectra` and the `MsExperiment`
-package.
+The `MsQuality` package is built upon the `Spectra`, the `MsExperiment`, and
+the `Chromatograms` packages.
+Metrics can be calculated on `Spectra`, `MsExperiment`, and `Chromatograms`
+objects.
 Metrics will be calculated based on the information stored in a
-`Spectra` object and the respective `dataOrigin` entries are used to
-distinguish between the mass spectral data of multiple samples.
+`Spectra` or `Chromatograms` object and the respective `dataOrigin`
+entries are used to distinguish between the mass spectral data of
+multiple samples.
 The `MsExperiment` serves as a container to
 store the mass spectral data of multiple samples. `MsQuality` enables the user
 to calculate quality metrics both on `Spectra` and `MsExperiment` objects.
 
 `MsQuality` can be used for any type of experiment that can be represented as
-a `Spectra` or `MsExperiment` object. This includes simple LC-MS data, DIA or
+a `Spectra`, `MsExperiment`, or `Chromatograms` object. This includes simple LC-MS data, DIA or
 DDA-based data, ion mobility data or MS data in general. The tool can thus
 be used for any type of targeted or untargeted metabolomics or proteomics
 workflow. Also, we are not limited to data files in mzML format, but, through
 `Spectra` and related `MsBackend` packages, data can be imported from a large
 variety of formats, including some raw vendor formats.
 
-In this vignette, we will (i) create some exemplary `Spectra` and `MsExperiment`
-objects, (ii) calculate the quality metrics on these
+In this vignette, we will (i) create some exemplary `Spectra`, `MsExperiment`,
+and `Chromatograms` objects, (ii) calculate the quality metrics on these
 data sets, and (iii) visualize some of the metrics.
 
 ## Alternative software for data quality assessment
 
-Other `R` packages are available in Bioconductor that are able to assess 
+Other `R` packages are available in Bioconductor that are able to assess
 the quality of mass spectrometry data:
 
 [`artMS`](https://bioconductor.org/packages/release/bioc/html/artMS.html)
@@ -117,7 +120,7 @@ peptide, e.g. retention time and peak area.
 [`MQmetrics`](https://bioconductor.org/packages/release/bioc/html/MQmetrics.html)
 provides a pipeline to analyze the quality of proteomics data sets from
 MaxQuant files and focuses on proteomics-/MaxQuant-specific metrics, e.g.
-proteins identified, peptides identified, or proteins versus 
+proteins identified, peptides identified, or proteins versus
 peptide/protein ratio.
 
 [`MatrixQCvis`](https://bioconductor.org/packages/release/bioc/html/MatrixQCvis.html)
@@ -164,14 +167,18 @@ typos or develop ideas of improving `MsQuality` feel free to raise an issue
 via [GitHub](https://github.com/tnaake/MsQuality) or send a mail to the
 developer.
 
-# Create `Spectra` and `MsExperiment` objects 
+# Create `Spectra`, `MsExperiment`, and `Chromatograms` objects
 
-Load the `Spectra` package.
+Load the required packages.
 
 ```{r load_Spectra}
 library("Spectra")
 library("MsExperiment")
+library("Chromatograms")
 library("MsQuality")
+library("BiocParallel")
+
+register(SerialParam())
 ```
 
 ## Create `Spectra` and `MsExperiment` objects from mzML files
@@ -180,17 +187,16 @@ There are several options available to create a `Spectra` object. One way, as
 outlined in the vignette of the `r BiocStyle::Biocpkg("Spectra")` package is
 by specifying the location of mass spectrometry raw files in `mzML`, `mzXML` or
 `CDF` format and using the `MsBackendMzR` backend. Here we load the example
-files from the `sciex` data set of the `MsDataHub` package and create a `Spectra`
-object from the two provided `mzML` files. The example is taken from the
+files from the `sciex` data set provided through `MsDataHub` and create a
+`Spectra` object from two `mzML` files. The example is taken from the
 `Spectra` vignette.
 
 ```{r spectra_sciex, eval = FALSE, echo = TRUE}
-## define file names containing spectra data for the samples
-sciex_file <- unname(c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
-    MsDataHub::X20171016_POOL_POS_3_105.134.mzML()))
-
-## import the data and assign it to the spectra object
-sps_sciex <- Spectra(MsBackendMzR(), files = sciex_file)
+library(MsDataHub)
+## this example is taken from the Spectra vignette
+fls <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
+         MsDataHub::X20171016_POOL_POS_3_105.134.mzML())
+sps_sciex <- Spectra(fls, backend = MsBackendMzR())
 ```
 
 The data set consists of a single sample measured in two different
@@ -208,16 +214,42 @@ sd <- DataFrame(sample_id = c("QC1", "QC2"),
     sample_name = c("QC Pool", "QC Pool"),
     injection_idx = c(1, 3))
 sampleData(lmse) <- sd
-
 ## add mzML files to the experiment
 experimentFiles(lmse) <- MsExperimentFiles(mzML_files = fls)
 ## add the Spectra object to the experiment
 spectra(lmse) <- sps_sciex
-
 ## use linkSampleData to establish and define relationships between sample
 ## annotations and MS data
-lmse <- linkSampleData(lmse, with = "experimentFiles.mzML_file",
+lmse <- linkSampleData(lmse, with = "experimentFiles.mzML_files",
     sampleIndex = c(1, 2), withIndex = c(1, 2))
+```
+
+## Chromatograms example
+
+The package also supports calculation of metrics directly on `Chromatograms`
+objects. Below is a minimal example that creates a `Chromatograms` object
+from manually defined chromatographic data and calculates the metrics.
+The chunk is set to `eval = FALSE` to avoid running during automated
+vignette builds.
+
+```{r chromatograms_example, eval = FALSE, echo = TRUE}
+## create a Chromatograms object from manually defined chromatographic data
+cdata <- data.frame(
+    msLevel = c(1L, 1L),
+    mz = c(112.2, 123.3),
+    dataOrigin = c("sample_1", "sample_1")
+)
+pdata <- list(
+    data.frame(rtime = c(1.0, 1.5, 2.0, 2.5, 3.0),
+               intensity = c(100, 250, 400, 300, 150)),
+    data.frame(rtime = c(1.2, 1.8, 2.4, 3.0),
+               intensity = c(50, 150, 300, 200))
+)
+chr <- Chromatograms(ChromBackendMemory(), chromData = cdata, peaksData = pdata)
+
+## calculate metrics on the Chromatograms object (disabled during build)
+metrics_chr <- calculateMetrics(object = chr, metrics = qualityMetrics(chr))
+metrics_chr
 ```
 
 ## Create `Spectra` and `MsExperiment` objects from (feature-extracted) intensity tables
@@ -255,15 +287,20 @@ sps_comb <- c(sps_rplc, sps_hilic)
 
 The most important function to assess the data quality and to calculate the
 metrics is the `calculateMetrics` function. The function takes
-a `Spectra` or `MsExperiment` object as input, a character vector of metrics
+a `Spectra`, `Chromatograms`, or `MsExperiment` object as input, a character vector of metrics
 to be calculated, and, optionally a list of parameters passed to the
 quality metrics functions.
 
-# Calculating the quality metrics on `Spectra` and `MsExperiment` objects
+# Calculating the quality metrics on `Spectra`, `MsExperiment`, and `Chromatograms` objects
 
-Currently, the following metrics are included:
+Currently, the following metrics are included for `Spectra` and `MsExperiment` objects:
 ```{r}
 qualityMetrics(sps_comb)
+```
+
+And for `Chromatograms` objects (using the example from above):
+```{r, eval = FALSE}
+qualityMetrics(chr)
 ```
 
 ## List of included metrics
@@ -274,24 +311,39 @@ information may be found at the
 respective help file for the quality metric (accessible by e.g. entering
 `?chromatographyDuration` to the R console).
 We also give here explanation on how the metric is calculated in `MsQuality`.
-Currently, all quality metrics can be calculated for both `Spectra` and
-`MsExperiment` objects.
+
+Many metrics in `MsQuality` are implemented to work with all three object
+types (`Spectra`, `Chromatograms`, and `MsExperiment`). However, some
+metrics only make sense for a particular representation: metrics that
+operate on per-scan information (for example, those that use per-scan TIC
+or peaks) are defined for `Spectra`, while metrics based on chromatographic
+traces (for example, TIC-integrals or peak-based summaries from extracted
+chromatograms) are defined for `Chromatograms`.
+
+To get the authoritative list of metrics available for a specific object
+instance, run `qualityMetrics(object)` (e.g. `qualityMetrics(someSpectra)`
+or `qualityMetrics(someChromatograms)`). For details about a specific
+metric (calculation, accepted arguments and attached PSI:MS accession),
+consult the metric's help page (for example, `?chromatographyDuration`).
+
+In short: use `qualityMetrics()` for the object-specific metric list and
+the `?metricName` help pages for per-metric details.
 
 - *chromatographyDuration*, **chromatography duration** (MS:4000053),
   "The retention time duration of the chromatography in seconds." [PSI:MS];
   Longer duration may indicate a better chromatographic separation of compounds
   which depends, however, also on the sampling/scan rate of the MS instrument.
-  
+
   The metric is calculated as follows:
     (1) the retention time associated to the `Spectra` object is obtained,
     (2) the maximum and the minimum of the retention time is obtained,
-    (3) the difference between the maximum and the minimum is calculated andreturned.
-- *rtOverMsQuarters*, **MS1 quarter RT fraction** (MS:4000055), 
-  "The interval used for acquisition of the first, second, third, and fourth 
-  quarter of all MS1 events divided by retention time duration." [PSI:MS], 
+    (3) the difference between the maximum and the minimum is calculated and returned.
+- *rtOverMsQuarters*, **MS1 quarter RT fraction** (MS:4000055),
+  "The interval used for acquisition of the first, second, third, and fourth
+  quarter of all MS1 events divided by retention time duration." [PSI:MS],
   `msLevel = 1L`;
-  The metric informs about the dynamic range of the acquisition along the 
-  chromatographic separation. For MS1 scans, the values are expected to be in 
+  The metric informs about the dynamic range of the acquisition along the
+  chromatographic separation. For MS1 scans, the values are expected to be in
   a similar range across samples of the same type.
 
   The metric is calculated as follows:
@@ -361,7 +413,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
     (3) the ratios between the 25\%, 50\%, 75\%, and 100\% quantile to the
         25\% quantile of the values of (2) are calculated.
     (4) The `log` values of the ratios are returned.
-- *numberSpectra*, **number of MS1 spectra** MS:4000059),
+- *numberSpectra*, **number of MS1 spectra** (MS:4000059),
   "The number of MS1 events in the run." [PSI:MS], `msLevel = 1L`;
   An unusual low number may indicate incomplete sampling/scan rate of the MS
   instrument, low sample volume and/or failed injection of a sample.
@@ -374,7 +426,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   "The number of MS2 events in the run." [PSI:MS], `msLevel = 2L`;
   An unusual low number may indicate incomplete sampling/scan rate of the MS
   instrument, low sample volume and/or failed injection of a sample.
-  
+
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the number of the spectra are obtained (`length` of `Spectra`) and
@@ -414,7 +466,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
     (2) the intensity of the precursor ions within the `Spectra` object are
         obtained,
     (3) the intensity values of the features are obtained via the ion count,
-    (4) the signal jumps/declines of the intensity values with the two 
+    (4) the signal jumps/declines of the intensity values with the two
         subsequent intensity values is calculated,
     (5) the signal jumps by a factor of ten or more are counted and returned.
 - *msSignal10xChange*, **MS1 signal fall (10x) count** (MS:4000098),
@@ -465,7 +517,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
     (2) the intensities per entry are obtained,
     (3) the number of intensity entries that are `NULL`, `NA`, or
         that have a sum of `0` are obtained and returned.
-- *precursorIntensityQuartiles*, 
+- *precursorIntensityQuartiles*,
   **MS2 precursor intensity distribution Q1, Q2, Q3** (MS:4000116),
   "From the distribution of MS2 precursor intensities, the quartiles
   Q1, Q2, Q3." [PSI:MS], `identificationLevel = "all"`;
@@ -487,12 +539,12 @@ Currently, all quality metrics can be calculated for both `Spectra` and
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are
         obtained,
-    (3) the mean of the precursor intensity values is obtained 
+    (3) the mean of the precursor intensity values is obtained
         (`NA` values are removed) and returned.
 - *precursorIntensitySd*, **MS2 precursor intensity distribution sigma**
   (MS:4000118), "From the distribution of MS2 precursor intensities, the sigma
   value." [PSI:MS], `identificationLevel = "all"`;
-  The intensity distribution of the precursors informs about the dynamic range of 
+  The intensity distribution of the precursors informs about the dynamic range of
   the acquisition.
 
   The metric is calculated as follows:
@@ -585,7 +637,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
     (3) the 0\%, 25\%, 50\%, 75\%, and 100\% quantiles of the retention time
         values are obtained,
     (4) the ion count of the intervals between the 0\%/25\%, 25\%/50\%,
-        50\%/75\%, and 75\%/100\% are obtained,
+        50\%/75\%, and 75\%/100\% are obtained, \
     (5) the ion counts of the intervals are summed (TIC) and the values returned.
 - *extentIdentifiedPrecursorIntensity*,
   **extent of identified MS2 precursor intensity** (MS:4000157),
@@ -602,7 +654,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensities of the precursor ions are obtained,
     (3) the 5\% and 95\% quantile of these intensities are obtained
-        (1NA1 values are removed),
+        (`NA` values are removed),
     (4) the ratio between the 95\% and the 5\% intensity quantile is calculated
         and returned.
 - *medianTicRtIqr*, **median of TIC values in the RT range in which the middle
@@ -662,7 +714,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
         obtained,
     (3) the minimum and maximum precursor intensity values are obtained and
         returned.
-- *precursorIntensityQuartiles*, 
+- *precursorIntensityQuartiles*,
   **identified MS2 precursor intensity distribution Q1, Q2, Q3** (MS:4000161),
   "From the distribution of identified MS2 precursor intensities, the quartiles
   Q1, Q2, Q3. The used type of identification should be noted in the metadata
@@ -675,8 +727,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,
-    (2) the intensity of the precursor ions within the `Spectra` object are
-    obtained,
+    (2) the intensity of the precursor ions within the `Spectra` object are obtained,
     (3) the 25\%, 50\%, and 75\% quantile of the precursor intensity values are
         obtained (`NA` values are removed) and returned.
 - *precursorIntensityQuartiles*,
@@ -704,7 +755,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   type of identification should be noted in the metadata or analysis methods
   section of the recording file for the respective run. In case of multiple
   acceptance criteria (FDR) available in proteomics, PSM-level FDR should be
-  used for better comparability." 
+  used for better comparability."
   [PSI:MS], `identificationLevel = "identified"`;
   The metric informs about the dynamic range of the acquisition in relation to
   identifiability.
@@ -725,7 +776,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   `identificationLevel = "unidentified"`;
   The metric informs about the dynamic range of the acquisition in relation
   to identifiability.
- 
+
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the intensity of the precursor ions within the `Spectra` object are
@@ -749,7 +800,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
         obtained,
     (3) the standard deviation of precursor intensity values is obtained
         (`NA` values are removed) and returned.
-- *precursorIntensitySD*,
+- *precursorIntensitySd*,
   **unidentified MS2 precursor intensity distribution sigma** (MS:4000166),
   "From the distribution of unidentified MS2 precursor intensities, the sigma
   value. The used type of identification should be noted in the metadata or
@@ -796,7 +847,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
       precursors with charge 2+ and the ratio is returned.
 - *ratioCharge3over2*,
   **ratio of 3+ over 2+ of all MS2 known precursor charges** (MS:4000169),
-  "The ratio of 3+ over 2+ MS2 precursor charge count of all spectra." [PSI:MS], 
+  "The ratio of 3+ over 2+ MS2 precursor charge count of all spectra." [PSI:MS],
   `identificationLevel = "all"`;
   Higher ratios of 3+/2+ MS2 precursor charge count may indicate e.g.
   preference for longer peptides.
@@ -811,7 +862,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   "The ratio of 3+ over 2+ MS2 precursor charge count of identified spectra.
   The used type of identification should be noted in the metadata or analysis
   methods section of the recording file for the respective run. In case of
-  multiple acceptance criteria (FDR) available in proteomics, PSM-level 
+  multiple acceptance criteria (FDR) available in proteomics, PSM-level
   FDR should be used for better comparability." [PSI:MS],
   `identificationLevel = "identified"`;
   Higher ratios of 3+/2+ MS2 precursor charge count may indicate e.g.
@@ -856,6 +907,7 @@ Currently, all quality metrics can be calculated for both `Spectra` and
   Higher charges may indicate inefficient ionization or e.g. preference for
   longer peptides.
 
+
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the precursor charge is obtained,
@@ -863,12 +915,12 @@ Currently, all quality metrics can be calculated for both `Spectra` and
 - *meanCharge*, **mean MS2 precursor charge in identified spectra** (MS:4000174),
   "Mean MS2 precursor charge in identified spectra. The used type of
   identification should be noted in the metadata or analysis methods section
-  of the recording file for the respective run. In case of multiple acceptance 
+  of the recording file for the respective run. In case of multiple acceptance
   criteria (FDR) available in proteomics, PSM-level FDR should be used for
   better comparability." [PSI:MS], `identificationLevel = "identified"`;
   Higher charges may indicate inefficient ionization or e.g. preference for
   longer peptides in relation to identifiability.
- 
+
   The metric is calculated as follows:
     (1) the `Spectra` object is filtered according to the MS level,
     (2) the precursor charge is obtained,
@@ -920,32 +972,73 @@ Currently, all quality metrics can be calculated for both `Spectra` and
         TIC exceeds (for the first time) the respective quantile of the
         cumulative TIC is calculated and returned.
 
+### Metrics shared between `Spectra` and `Chromatograms`
+
+Several metrics work on both `Spectra` and `Chromatograms` objects. When
+called with a `Chromatograms` object, they operate on the chromatographic
+data directly:
+
+- *chromatographyDuration* (MS:4000053): Duration of the chromatographic run
+- *rtAcquisitionRange* (MS:4000070): Retention time acquisition range
+- *numberEmptyScans* (MS:4000099): Number of empty scans/chromatograms
+- *areaUnderTic* (MS:4000155): Total area under the TIC
+- *areaUnderTicRtQuantiles* (MS:4000156): Area under TIC per RT quartile
+- *ticQuantileRtFraction* (MS:4000183): RT fraction when TIC quantiles accumulate
+- *msSignal10xChange*: Count of 10x intensity jumps/falls
+- *medianTicRtIqr*: Median TIC in the RT interquartile range
+- *rtIqr*: Retention time interquartile range
+
+### Chromatograms-specific metrics
+
+In addition, `MsQuality` includes metrics specifically designed for
+`Chromatograms` objects. These metrics assess chromatographic peak shape and
+intensity distributions:
+
+- *peakCount*: Number of detected peaks per chromatogram
+- *maxIntensity*: Maximum intensity per chromatogram
+- *intensityMean*, *intensitySd*: Intensity mean and standard deviation
+- *intensityQuartiles*, *intensityRange*: Intensity distributions
+- *baselineIntensity*: Baseline intensity estimate (low quantile)
+- *signalToNoiseRatio*: Signal-to-noise ratio (MAD-based noise estimate)
+- *xicFwhm*: Full Width at Half Maximum (FWHM) per chromatogram
+- *peakWidth*: Peak width based on valley boundaries
+- *gaussianSimilarity*: Peak shape quality (correlation to beta distribution, residual SD)
+- *peakProminence*: Peak prominence relative to baseline
+
+Note that `peakBoundary`, used by several peak-shape metrics, is provided by
+the `Chromatograms` package (see `?Chromatograms::peakBoundary`).
+
+For complete documentation of each metric, including calculation details and
+PSI-MS accessions, see the respective help pages (e.g., `?chromatographyDuration`,
+`?xicFwhm`).
+
 ## Obtain the metrics in `data.frame`-format
 
 The most important function to assess the data quality and to calculate the
 metrics is the `calculateMetrics` function. The function takes
-a `Spectra` or `MsExperiment` object as input, a character vector of metrics
-to be calculated, a Boolean value to the `filterEmptySpectra` argument,
+a `Spectra`, `MsExperiment`, or `Chromatograms` object as input, a character vector of metrics
+to be calculated, a Boolean value to the `filterEmptyObject` argument,
 and, optionally a list of parameters passed to the quality metrics functions.
 
-The `filterEmptySpectra` argument specifies if zero-intensity, `Inf`-intensity 
-or zero-length entries should be removed (`filterEmptySpectra = TRUE`). 
-By default, the entries are taken as they are (`filterEmptySpectra = FALSE`).
-The argument can be set to `TRUE` to compute metrics that are close to the
+The `filterEmptyObject` argument specifies if zero-intensity, `Inf`-intensity
+or zero-length entries should be removed (`filterEmptyObject = TRUE`).
+By default, the entries are taken as they are (`filterEmptyObject = FALSE`).
+For `Spectra` objects, the argument can be set to `TRUE` to compute metrics that are close to the
 implementation of the `QuaMeter` software. Prior to calculating the metrics,
 the implementation of `QuaMeter` skips all spectra with `defaultArrayLength=0`
-(in .mzML files) at any MS level.
+(in .mzML files) at any MS level. For `Chromatograms` objects, it removes
+empty chromatograms and zero/infinite intensity entries.
 
-When passing a `Spectra`/`MsExperiment` object to the function, a `data.frame`
-returned by `calculateMetrics` with the metrics specified by the argument
-`metrics`. By default, `qualityMetrics(object)` is taken to specify
-the calculation of quality metrics. `calculateMetrics` also accepts a list
+When passing a `Spectra`, `Chromatograms`, or `MsExperiment` object to the
+function, a `data.frame` is returned by `calculateMetrics` with the metrics
+specified by the argument `metrics`. By default, `qualityMetrics(object)` is
+taken to specify the calculation of quality metrics. `calculateMetrics` also accepts a list
 of parameters passed to the individual quality metrics functions. For
 each quality metrics functions, the relevant parameters are selected based on
 the accepted arguments.
 
 Additional arguments can be given to the quality metrics functions.
-For example, the function `ticQuartileToQuartileLogRatio` function has the
+For example, for `Spectra`/`MsExperiment` objects, the function `ticQuartileToQuartileLogRatio` has the
 arguments `relativeTo`, `mode`, and `msLevel`. `relativeTo` specifies to which
 quantile the log TIC quantile is relatively related to (either to the 1st
 quantile or the respective previous one). `mode` (either `"TIC_change"` or
@@ -972,11 +1065,11 @@ sps_comb_subset <- sps_comb[grep("Sample.1_", sps_comb$dataOrigin), ]
 
 ## for RPLC and HILIC
 metrics_sps_Q1 <- calculateMetrics(object = sps_comb_subset,
-    metrics = qualityMetrics(sps_comb_subset), filterEmptySpectra = FALSE,
+    metrics = qualityMetrics(sps_comb_subset), filterEmptyObject = FALSE,
     relativeTo = "Q1", msLevel = 1L)
 metrics_sps_Q1
 metrics_sps_previous <- calculateMetrics(object = sps_comb_subset,
-    metrics = qualityMetrics(sps_comb_subset), filterEmptySpectra = FALSE,
+    metrics = qualityMetrics(sps_comb_subset), filterEmptyObject = FALSE,
     relativeTo = "previous", msLevel = 1L)
 metrics_sps_previous
 ```
@@ -984,7 +1077,8 @@ metrics_sps_previous
 Alternatively, an `MsExperiment` object might be passed to
 `calculateMetrics`. The function will iterate over the samples (referring
 to rows in `sampleData(msexp))`) and calculate the quality metrics on the
-corresponding `Spectra`s.
+corresponding `Spectra`s. Similarly, a `Chromatograms` object can be passed
+to calculate chromatogram-specific quality metrics (see examples above).
 
 ## Obtain the metrics in `mzQC`-format
 
@@ -993,7 +1087,8 @@ are returned by the the function `calculateMetrics`. Alternatively, the
 function also allows the user to export the metrics in a format defined by
 the `rmzqc` package by setting the argument `format` to `"mzQC"` (default:
 `format = "data.frame"`). In that case, only the metrics that comply to the
-`mzQC` specification will be written to the returned object. 
+`mzQC` specification will be written to the returned object. Note that this
+feature is currently primarily supported for `Spectra` and `MsExperiment` objects.
 The object can be exported and validated using the functionality of the `rmzqc`
 package (see the documentation of `rmzqc` for further information).
 
@@ -1005,7 +1100,7 @@ the visualization and interpretability, we will only calculate the metrics
 from the first 20 of these samples.
 
 In this example here, we will remove zero-length and zero-intensity entries
-prior to calculating the metrics. To do this, we set the `filterEmptySpectra`
+prior to calculating the metrics. To do this, we set the `filterEmptyObject`
 argument to `TRUE` within the `calculateMetrics` function.
 
 ```{r metrics_rplc_hilic_lee2019}
@@ -1013,19 +1108,14 @@ argument to `TRUE` within the `calculateMetrics` function.
 msexp_rplc_subset <- msexp_rplc[1:20]
 msexp_hilic_subset <- msexp_hilic[1:20]
 
-## define metrics
-metrics_sps <- c("chromatographyDuration", "ticQuantileRtFraction", "rtOverMsQuarters",
-    "ticQuartileToQuartileLogRatio", "numberSpectra", "medianPrecursorMz",
-    "rtIqr", "rtIqrRate", "areaUnderTic")
-
 ## for RPLC-derived MsExperiment
 metrics_rplc_msexp <- calculateMetrics(object = msexp_rplc_subset,
-    metrics = qualityMetrics(msexp_rplc_subset), filterEmptySpectra = TRUE,
+    metrics = qualityMetrics(msexp_rplc_subset), filterEmptyObject = TRUE,
     relativeTo = "Q1", msLevel = 1L)
 
 ## for HILIC-derived MsExperiment
 metrics_hilic_msexp <- calculateMetrics(object = msexp_hilic_subset,
-    metrics = qualityMetrics(msexp_hilic_subset), filterEmptySpectra = TRUE,
+    metrics = qualityMetrics(msexp_hilic_subset), filterEmptyObject = TRUE,
     relativeTo = "Q1", msLevel = 1L)
 ```
 
@@ -1049,7 +1139,9 @@ The `MsQuality` package offers the possibility to graphically display the
 metrics using the `plotMetric` and `shinyMsQuality` functions. The
 `plotMetric` function will create one plot based on a single metric.
 `shinyMsQuality`, on the other hand, opens a shiny application that allows
-to browse through all the metrics stored in the object.
+to browse through all the metrics stored in the object. These visualization
+functions work with metrics calculated from `Spectra`, `MsExperiment`, or
+`Chromatograms` objects.
 
 As a way of example, we will plot here the number of features. A high number
 of missing features might indicate low data quality, however, also different

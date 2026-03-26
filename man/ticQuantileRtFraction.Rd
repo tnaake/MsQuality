@@ -2,10 +2,12 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{ticQuantileRtFraction}
 \alias{ticQuantileRtFraction}
+\alias{ticQuantileRtFraction,Spectra-method}
+\alias{ticQuantileRtFraction,Chromatograms-method}
 \title{TIC quantile RT fraction (MS:4000183)}
 \usage{
 ticQuantileRtFraction(
-  spectra,
+  object,
   probs = seq(0, 1, 0.25),
   msLevel = 1L,
   relative = TRUE,
@@ -13,7 +15,7 @@ ticQuantileRtFraction(
 )
 }
 \arguments{
-\item{spectra}{\code{Spectra} object}
+\item{object}{\code{Spectra} or \code{Chromatograms} object}
 
 \item{probs}{\code{numeric} defining the quantiles. See \code{probs = seq(0, 1, 0.25)}.}
 
@@ -22,12 +24,15 @@ ticQuantileRtFraction(
 \item{relative}{\code{logical}, if set to \code{TRUE} the relative retention time
 will be returned instead of the abolute retention time}
 
-\item{...}{not used here}
+\item{...}{additional arguments passed to internal helpers}
 }
 \value{
-\code{numeric} of length equal to length \code{probs} with the relative
-   duration (duration divided by the total run time) after which the TIC
-   exceeds the respective quantile of the TIC.
+For \code{Spectra}: \code{numeric} of length equal to
+   \code{length(probs)} with the relative duration (duration divided by
+   the total run time) after which the TIC exceeds the respective
+   quantile of the TIC.
+   For \code{Chromatograms}: a \code{matrix} with \code{nrow} equal to
+   \code{length(object)} and \code{ncol} equal to \code{length(probs)}.
 }
 \description{
 MS:4000183
@@ -90,7 +95,7 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-ticQuantileRtFraction(spectra = sps, msLevel = 2L)
+ticQuantileRtFraction(object = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake, Johannes Rainer

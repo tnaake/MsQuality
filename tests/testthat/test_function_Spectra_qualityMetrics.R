@@ -1,6 +1,7 @@
 ## create toy example data set (Spectra)
 library(MsDataHub)
 library(Spectra)
+library(Chromatograms)
 library(MsExperiment)
 library(S4Vectors)
 ## define file names containing spectra data for the samples
@@ -9,7 +10,7 @@ sciex_file <- c(MsDataHub::X20171016_POOL_POS_1_105.134.mzML(),
 
 ## import the data and assign it to the spectra object
 spectra <- Spectra(files = sciex_file)
-
+chr <- Chromatograms(spectra, "sum")
 ## create toy example data set (MsExperiment)
 msexp <- MsExperiment()
 sd <- DataFrame(sample_id = c("QC1", "QC2"),
@@ -52,9 +53,31 @@ qm_mse <- c("chromatographyDuration", "ticQuantileRtFraction",
     "precursorIntensityMean", "precursorIntensitySd", "msSignal10xChange",
     "ratioCharge1over2", "ratioCharge3over2", "ratioCharge4over2",
     "meanCharge", "medianCharge")
+qm_chr <-  c("chromatographyDuration", "peakCount",
+            "rtAcquisitionRange", "maxIntensity",
+            "intensityQuartiles", "intensityMean", "intensitySd",
+            "intensityRange", "rtIqr",
+            "baselineIntensity", "signalToNoiseRatio",
+            "msSignal10xChange",
+            "numberEmptyScans",
+            "medianTicRtIqr",
+            "xicFwhm", "peakWidth", "gaussianSimilarity",
+            "peakProminence",
+            "ticQuantileRtFraction", "areaUnderTic", "areaUnderTicRtQuantiles")
 
-test_that("qualityMetrics", {
+test_that("qualityMetrics for Spectra", {
     expect_equal(qualityMetrics(spectra), qm_spectra)
     expect_equal(qualityMetrics(spectra), qm_mse)
     expect_error(qualityMetrics(NULL), "object '.metrics' not found")
+})
+
+test_that("qualityMetrics for Chromatograms", {
+    chr <- Chromatograms(spectra)
+    expect_equal(qualityMetrics(chr), qm_chr)
+})
+
+test_that("qualityMetrics for MsExperiment", {
+    expect_equal(qualityMetrics(msexp), qm_mse)
+    expect_is(msexp, "MsExperiment")
+    expect_equal(length(spectra(msexp)), 1862)
 })

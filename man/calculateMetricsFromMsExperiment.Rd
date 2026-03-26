@@ -7,7 +7,7 @@
 calculateMetricsFromMsExperiment(
   msexp,
   metrics = qualityMetrics(msexp),
-  filterEmptySpectra = FALSE,
+  filterEmptyObject = FALSE,
   ...,
   BPPARAM = bpparam()
 )
@@ -18,7 +18,7 @@ calculateMetricsFromMsExperiment(
 \item{metrics}{\code{character} specifying the quality metrics to be
 calculated on \code{msexp}}
 
-\item{filterEmptySpectra}{\code{logical(1)} specifying if empty entries and
+\item{filterEmptyObject}{\code{logical(1)} specifying if empty entries and
 entries with intensity zero of the \code{Spectra} object will be removed}
 
 \item{...}{arguments passed to the quality metrics functions defined in
@@ -42,7 +42,7 @@ passed to the quality metric functions can be specified by the \code{params}
 argument. \code{params} can contain named entries which are matched against
 the formal arguments of the quality metric functions.
 
-Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
+Setting the argument \code{filterEmptyObject} to \code{TRUE} will remove
 zero-length entries, zero-intensity entries, and entries with
 intensities that are \code{Inf} from the \code{Spectra} object.
 }

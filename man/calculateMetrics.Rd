@@ -2,22 +2,22 @@
 % Please edit documentation in R/function_calculateMetrics_from_Spectra.R
 \name{calculateMetrics}
 \alias{calculateMetrics}
-\title{Calculate QC metrics from a Spectra or MsExperiment object}
+\title{Calculate QC metrics from a Spectra, MsExperiment, or Chromatograms object}
 \usage{
 calculateMetrics(
   object,
   metrics = qualityMetrics(object),
-  filterEmptySpectra = FALSE,
+  filterEmptyObject = FALSE,
   ...
 )
 }
 \arguments{
-\item{object}{\code{Spectra} or \code{MsExperiment} object}
+\item{object}{\code{Spectra}, \code{MsExperiment}, or \code{Chromatograms} object}
 
 \item{metrics}{\code{character} specifying the quality metrics to be
 calculated on \code{object}}
 
-\item{filterEmptySpectra}{\code{logical(1)} specifying if empty entries and
+\item{filterEmptyObject}{\code{logical(1)} specifying if empty entries and
 entries with intensity zero of the \code{Spectra} object will be removed}
 
 \item{...}{arguments passed to the quality metrics functions defined in
@@ -25,13 +25,13 @@ entries with intensity zero of the \code{Spectra} object will be removed}
 }
 \value{
 \code{data.frame} containing in the columns the metrics for the
-different spectra and in rows the samples
+different spectra/chromatograms and in rows the samples
 }
 \description{
-Calculate QC metrics from a \code{Spectra} or \code{MsExperiment} object.
-\code{calculateMetrics} is a wrapper for the functions
-\code{calculateMetricsFromSpectra} and
-\code{calculateMetricsFromMsExperiment}.
+Calculate QC metrics from a \code{Spectra}, \code{MsExperiment}, or
+\code{Chromatograms} object.
+\code{calculateMetrics} is a generic function that dispatches to the
+appropriate method based on the class of the input object.
 }
 \details{
 The metrics are defined by the argument \code{metrics}. Further arguments
@@ -39,9 +39,12 @@ passed to the quality metric functions can be specified by the \code{params}
 argument. \code{params} can contain named entries which are matched against
 the formal arguments of the quality metric functions.
 
-Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
+Setting the argument \code{filterEmptyObject} to \code{TRUE} will remove
 zero-length entries, zero-intensity entries, and entries with
 intensities that are \code{Inf} from the \code{Spectra} object.
+
+For \code{Chromatograms} objects, the argument \code{filterEmptyObject}
+is interpreted as \code{filterEmptyChromatograms}.
 }
 \examples{
 library(MsDataHub)

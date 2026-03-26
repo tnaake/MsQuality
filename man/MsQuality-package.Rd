@@ -27,3 +27,4 @@ Maintainer: \packageMaintainer{MsQuality}
 \dontrun{calculateMetrics(object = spectra)}
 \dontrun{calculateMetrics(object = mse)}
 }
+

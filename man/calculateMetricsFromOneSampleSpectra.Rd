@@ -8,7 +8,7 @@ data from one sample}
 calculateMetricsFromOneSampleSpectra(
   spectra,
   metrics = qualityMetrics(spectra),
-  filterEmptySpectra = FALSE,
+  filterEmptyObject = FALSE,
   f = spectra$dataOrigin,
   ...
 )
@@ -19,7 +19,7 @@ calculateMetricsFromOneSampleSpectra(
 \item{metrics}{\code{character} specifying the quality metrics to be
 calculated on \code{spectra}}
 
-\item{filterEmptySpectra}{\code{logical(1)} specifying if empty entries and
+\item{filterEmptyObject}{\code{logical(1)} specifying if empty entries and
 entries with intensity zero or \code{Inf} of the \code{Spectra} object
 will be removed}
 
@@ -45,7 +45,7 @@ The \code{Spectra} object will only contain spectral data from one
 data origin (e.g. \code{spectra$dataOrigin} is of length 1). The grouping
 is specified by the argument \code{f}.
 
-Setting the argument \code{filterEmptySpectra} to \code{TRUE} will remove
+Setting the argument \code{filterEmptyObject} to \code{TRUE} will remove
 zero-length entries, zero-intensity entries, and entries with
 intensities that are \code{Inf} from the \code{Spectra} object.
 }

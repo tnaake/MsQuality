@@ -7,13 +7,14 @@
 #' quality metrics depending on \code{object}.
 #'
 #' @details
-#' \code{object} is a \code{Spectra} or \code{MsExperiment}.
+#' \code{object} is a \code{Spectra}, \code{MsExperiment}, or \code{Chromatograms}.
 #'
-#' @param object object of type \code{Spectra} or \code{MsExperiment}
+#' @param object object of type \code{Spectra}, \code{MsExperiment}, or
+#' \code{Chromatograms}
 #'
 #' @return \code{character}
 #'
-#' @author Thomas Naake
+#' @author Thomas Naake, Philippine Louail
 #'
 #' @importFrom Spectra Spectra
 #' @importFrom MsExperiment MsExperiment
@@ -69,6 +70,17 @@ qualityMetrics <- function(object) {
             "ratioCharge3over2", "ratioCharge4over2", "meanCharge",
             "medianCharge"
       )
+
+    if (is(object, "Chromatograms"))
+        .metrics <- c(
+            "chromatographyDuration", "peakCount", "rtAcquisitionRange",
+            "maxIntensity", "intensityQuartiles", "intensityMean",
+            "intensitySd", "intensityRange", "rtIqr", "baselineIntensity",
+            "signalToNoiseRatio", "msSignal10xChange", "numberEmptyScans",
+            "medianTicRtIqr", "xicFwhm", "peakWidth",
+            "gaussianSimilarity", "peakProminence", "ticQuantileRtFraction",
+            "areaUnderTic", "areaUnderTicRtQuantiles"
+        )
 
     .metrics
 }

@@ -38,8 +38,8 @@ intensity distribution of the identified precursors informs about the dynamic
 range of the acquisition in relation to identifiability." [PSI:MS] \cr
 
 MS:4000164 \cr
-"From the distribution of unidentified MS2 precursor intensities, the mean.
-The intensity distribution of the unidentified precursors informs about the
+"From the distribution of unidentified MS2 precursor intensities, the mean. The
+intensity distribution of the unidentified precursors informs about the
 dynamic range of the acquisition in relation to identifiability."
 [PSI:MS] \cr
 

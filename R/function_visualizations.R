@@ -260,6 +260,7 @@ plotMetricTibble <- function(qc, metric) {
 #' ## relativeTo is an argument of msSignal10xChange)
 #' qc <- calculateMetricsFromMsExperiment(msexp = msexp, metrics = metrics,
 #'     msLevel = 1, relativeTo = "Q1", change = "jump")
+#' qc <- as.matrix(qc)
 #' rownames(qc) <- c("Sample 1", "Sample 2")
 #'
 #' if (interactive())

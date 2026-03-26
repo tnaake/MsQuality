@@ -5,14 +5,19 @@
 \title{MS1 signal jump (10x) count (MS:4000097) or MS1 signal fall (10x)
 count (MS:4000098)}
 \usage{
-msSignal10xChange(spectra, change = "jump", msLevel = 1L, ...)
+msSignal10xChange(object, change = "jump", msLevel = 1L, minIntensity = 0, ...)
 }
 \arguments{
-\item{spectra}{\code{Spectra} object}
+\item{object}{\code{Spectra} or \code{Chromatograms} object}
 
 \item{change}{\code{character(1)}, one of \code{"jump"} or \code{"fall"}}
 
 \item{msLevel}{\code{integer}}
+
+\item{minIntensity}{\code{numeric(1)} minimum intensity threshold for
+\code{Chromatograms} input. Data points with intensity below this
+value are removed before computing ratios (default \code{0}, i.e.
+only zero and negative values are removed).}
 
 \item{...}{not used here}
 }
@@ -64,12 +69,17 @@ synonym: "IS-1B"  RELATED [] \cr
 The function \code{msSignal10xChange} uses the function \code{ionCount} as an
 equivalent to the TIC.
 
+For \code{Chromatograms} objects the metric operates on raw point-by-point
+intensities rather than aggregated TIC values. This makes it sensitive to
+noise: small oscillations near zero can produce many spurious 10-fold
+jumps or falls. The \code{minIntensity} parameter (default \code{0})
+allows filtering out low-intensity points before computing ratios.
+Increasing \code{minIntensity} to the expected noise floor (e.g. the
+baseline intensity) is recommended for noisy chromatograms. Pre-smoothing
+the chromatogram before calling this function is another option.
+
 An attribute containing the PSI:MS term will only be returned if
 \code{msLevel} is 1.
-
-The metric is sensitive to noise. Small oscillations near zero could
-generate many 10x jumps. Consider to add optional smoothing or filtering of
-low-intensity signals.
 }
 \examples{
 library(S4Vectors)
@@ -92,8 +102,8 @@ spd$intensity <- list(
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 spd$rtime <- c(9.44, 9.44, 15.84)
 sps <- Spectra(spd)
-msSignal10xChange(spectra = sps, change = "jump", msLevel = 2L)
-msSignal10xChange(spectra = sps, change = "fall", msLevel = 2L)
+msSignal10xChange(object = sps, change = "jump", msLevel = 2L)
+msSignal10xChange(object = sps, change = "fall", msLevel = 2L)
 }
 \author{
 Thomas Naake

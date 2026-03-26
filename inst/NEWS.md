@@ -1,5 +1,21 @@
 # MsQuality 1.11
 
+## 1.11.3 (2026-03-10)
+
+- Implementation of per-chromatogram metrics for `Chromatograms` objects:
+  `maxIntensity`, `intensityMean`, `intensitySd`, `intensityQuartiles`,
+  `intensityRange`, `peakCount`, `baselineIntensity`, `signalToNoiseRatio`,
+  `xicFwhm`, `peakBoundary`, `peakWidth`, `gaussianSimilarity`,
+  `peakProminence`
+- Shared functions (`chromatographyDuration`, `rtAcquisitionRange`, `rtIqr`,
+  `areaUnderTic`, `areaUnderTicRtQuantiles`, `ticQuantileRtFraction`,
+  `msSignal10xChange`, `medianTicRtIqr`, `numberEmptyScans`,
+  `calculateMetrics`) now support both `Spectra` and `Chromatograms`
+- `msSignal10xChange` gains `minIntensity` parameter for noise robustness.
+- Renamed argument `filterEmptySpectra` to `filterEmptyObject`
+- Fixed `calculateMetrics()` `data.frame` output
+- Fixed `shinyMsQuality()` documentation example
+
 ## Changes in version 1.11.2 (2026-03-02)
 
 - replace msdata by MsDataHub package (issue #19)
@@ -120,7 +136,7 @@
 - remove `MsExperiment` objects since this is still in BioC review and solely
   rely on `Spectra` objects
 - adjust documentation for the implemented changes (removal of `MsExperiment`)
-  
+
 ## Changes in version 0.99.1 (2021-11-23)
 - simplify `calculateMetricsFromSpectra`:
   - the function does not any longer match the arguments by the formal

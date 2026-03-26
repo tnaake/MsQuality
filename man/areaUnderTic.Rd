@@ -2,27 +2,35 @@
 % Please edit documentation in R/function_Spectra_metrics.R
 \name{areaUnderTic}
 \alias{areaUnderTic}
+\alias{areaUnderTic,Chromatograms-method}
+\alias{areaUnderTic,Spectra-method}
 \title{area under TIC (MS:4000155)}
 \usage{
-areaUnderTic(spectra, msLevel = 1L, ...)
+areaUnderTic(object, msLevel = 1L, na.rm = TRUE, ...)
 }
 \arguments{
-\item{spectra}{\code{Spectra} object}
+\item{object}{\code{Spectra} or \code{Chromatograms} object}
 
 \item{msLevel}{\code{integer}}
 
-\item{...}{not used here}
+\item{na.rm}{\code{logical(1)} whether to remove \code{NA} values before
+computing the sum (default \code{TRUE})}
+
+\item{...}{additional arguments passed to internal helpers}
 }
 \value{
-\code{numeric(1)}
+For \code{Spectra}: \code{numeric(1)}.
+    For \code{Chromatograms}: \code{numeric} of length equal to
+    \code{length(object)}, one area per chromatogram.
 }
 \description{
 MS:4000155 \cr
 "The area under the total ion chromatogram." [PSI:MS] \cr
 
 The metric is calculated as follows: \cr
-(1) the \code{Spectra} object is filtered according to the MS level, \cr
-(2) the sum of the ion counts are obtained and returned.
+(1) the input object is filtered according to the MS level, \cr
+(2) the sum of the ion counts are obtained and returned
+(\code{NA} values are removed by default, controlled by \code{na.rm}).
 }
 \details{
 MS:4000155 \cr
@@ -52,7 +60,7 @@ spd$intensity <- list(
     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
     c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 sps <- Spectra(spd)
-areaUnderTic(spectra = sps, msLevel = 2L)
+areaUnderTic(object = sps, msLevel = 2L)
 }
 \author{
 Thomas Naake

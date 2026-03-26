@@ -1,7 +1,6 @@
 
 .Rhistory
-.Rhistory
-.Rhistory
 vignettes/.Rhistory
-.Rhistory
-.Rhistory
+*.html
+*.log
+tests/testthat/_problems/

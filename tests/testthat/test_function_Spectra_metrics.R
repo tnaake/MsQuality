@@ -31,8 +31,8 @@ test_that(".rtOrderSpectra works properly.", {
 
 ## START unit test chromatographyDuration ##
 test_that("chromatographyDuration works properly.", {
-    expect_error(chromatographyDuration(NULL), "unable to find an inherited method")
-    expect_error(chromatographyDuration(NULL), "unable to find an inherited method")
+    expect_error(chromatographyDuration(NULL), "not of class")
+    expect_error(chromatographyDuration(1:10), "not of class")
     tmp <- chromatographyDuration(sps_sciex)
     expect_equal(as.numeric(tmp), 259.482)
 
@@ -44,8 +44,8 @@ test_that("chromatographyDuration works properly.", {
 
 ## START unit test ticQuantileRtFraction ##
 test_that("ticQuantileRtFraction works properly.", {
-    expect_error(ticQuantileRtFraction(NULL), "unable to find an inherited method")
-    expect_error(ticQuantileRtFraction(NULL), "unable to find an inherited method")
+    expect_error(ticQuantileRtFraction(NULL), "not of class")
+    expect_error(ticQuantileRtFraction(1:10), "not of class")
     suppressWarnings(tmp <- ticQuantileRtFraction(sps_sciex))
     expect_equal(as.numeric(tmp),
         c(0.0, 0.2010891, 0.4257983, 0.7247362, 1), tolerance = 1e-02)
@@ -59,8 +59,8 @@ test_that("ticQuantileRtFraction works properly.", {
 
 ## START unit test rtOverMsQuarters ##
 test_that("rtOverMsQuarters works properly.", {
-    expect_error(rtOverMsQuarters(NULL), "unable to find an inherited method")
-    expect_error(rtOverMsQuarters(NULL), "unable to find an inherited method")
+    expect_error(rtOverMsQuarters(NULL), "not of class")
+    expect_error(rtOverMsQuarters(1:10), "not of class")
     expect_equal(as.numeric(rtOverMsQuarters(sps_sciex, msLevel = 1L)),
         c(0.2494778, 0.5000077, 0.7505222, 1), tolerance = 1e-06)
     expect_equal(names(rtOverMsQuarters(sps_sciex, msLevel = 1L)),
@@ -91,10 +91,8 @@ test_that("rtOverMsQuarters works properly.", {
 
 ## START unit test ticQuartileToQuartileLogRatio ##
 test_that("ticQuartileToQuartileLogRatio works properly.", {
-    expect_error(ticQuartileToQuartileLogRatio(NULL, relativeTo = "Q1"),
-        "unable to find an inherited method")
-    expect_error(ticQuartileToQuartileLogRatio(NULL, relativeTo = "previous"),
-        "unable to find an inherited method")
+    expect_error(ticQuartileToQuartileLogRatio(NULL, relativeTo = "Q1"))
+    expect_error(ticQuartileToQuartileLogRatio(NULL, relativeTo = "previous"))
 
     ## mode = "TIC_change"
     tmp <- suppressWarnings(ticQuartileToQuartileLogRatio(sps_sciex,
@@ -150,8 +148,8 @@ test_that("ticQuartileToQuartileLogRatio works properly.", {
 
 ## START unit test numberSpectra ##
 test_that("numberSpectra works properly.", {
-    expect_error(numberSpectra(NULL), "unable to find an inherited method")
-    expect_error(numberSpectra(1:10), "unable to find an inherited method")
+    expect_error(numberSpectra(NULL), "not of class")
+    expect_error(numberSpectra(1:10), "not of class")
     expect_equal(as.numeric(numberSpectra(sps_sciex, msLevel = 1L)), 1862)
     expect_equal(as.numeric(numberSpectra(sps_sciex, msLevel = 2L)), 0)
 
@@ -193,8 +191,8 @@ test_that("mzAcquisitionRange works properly.", {
 
 ## START unit test rtAcquisitionRange ##
 test_that("rtAcquisitionRange works properly.", {
-    expect_error(rtAcquisitionRange(NULL), "unable to find an inherited method")
-    expect_error(rtAcquisitionRange(1:10), "unable to find an inherited method")
+    expect_error(rtAcquisitionRange(NULL), "not of class")
+    expect_error(rtAcquisitionRange(1:10), "not of class")
     tmp <- rtAcquisitionRange(sps_sciex, msLevel = 1L)
     expect_equal(as.numeric(tmp), c(0.275, 259.757))
     expect_equal(names(tmp), c("min", "max"))
@@ -216,8 +214,8 @@ test_that("rtAcquisitionRange works properly.", {
 
 ## START unit test msSignal10xChange ##
 test_that("msSignal10xChange works properly.", {
-    expect_error(msSignal10xChange(NULL), "unable to find an inherited method")
-    expect_error(msSignal10xChange(1:10), "unable to find an inherited method")
+    expect_error(msSignal10xChange(NULL), "not of class")
+    expect_error(msSignal10xChange(1:10), "not of class")
     expect_equal(as.numeric(suppressWarnings(
         msSignal10xChange(sps_sciex, change = "jump", msLevel = 1L))), 0)
     expect_equal(as.numeric(suppressWarnings(
@@ -247,14 +245,14 @@ test_that("msSignal10xChange works properly.", {
 
 ## START unit test numberEmptyScans ##
 test_that("numberEmptyScans works properly.", {
-    expect_error(numberEmptyScans(NULL), "unable to find an inherited method")
-    expect_error(numberEmptyScans(1:10), "unable to find an inherited method")
+    expect_error(numberEmptyScans(NULL), "not of class")
+    expect_error(numberEmptyScans(1:10), "not of class")
     expect_equal(as.numeric(numberEmptyScans(sps_sciex, msLevel = 1L)), 0)
     expect_equal(as.numeric(numberEmptyScans(sps_sciex, msLevel = 2L)), 0)
     expect_equal(as.numeric(numberEmptyScans(sps_sciex, msLevel = 3L)), 0)
 
     ## create one Spectra object with one missing entry
-    spd <- DataFrame(
+    spd <- S4Vectors::DataFrame(
         msLevel = c(2L, 2L), polarity = c(1L, 1L),
         id = c("unknown", "HMDB0000001"),
         name = c("unknown", "1-Methylhistidine"))
@@ -486,8 +484,8 @@ test_that("medianPrecursorMz works properly.", {
 
 ## START unit test rtIqr ##
 test_that("rtIqr works properly.", {
-    expect_error(rtIqr(NULL), "unable to find an inherited method")
-    expect_error(rtIqr(1:10), "unable to find an inherited method")
+    expect_error(rtIqr(NULL), "not of class")
+    expect_error(rtIqr(1:10), "not of class")
     expect_equal(rtIqr(sps_sciex, msLevel = 1L), 129.875)
     expect_equal(rtIqr(sps_sciex, msLevel = 2L), NaN)
 
@@ -533,8 +531,8 @@ test_that("rtIqrRate works properly.", {
 
 ## START unit test areaUnderTic ##
 test_that("areaUnderTic works properly.", {
-    expect_error(areaUnderTic(NULL), "unable to find an inherited method")
-    expect_error(areaUnderTic(1:10), "unable to find an inherited method")
+    expect_error(areaUnderTic(NULL), "not of class")
+    expect_error(areaUnderTic(1:10), "not of class")
     expect_equal(as.numeric(
         suppressWarnings(areaUnderTic(sps_sciex, msLevel = 1L))),
         1273927561)
@@ -553,8 +551,8 @@ test_that("areaUnderTic works properly.", {
 
 ## START unit test areaUnderTicRtQuantiles ##
 test_that("areaUnderTicRtQuantiles works properly.", {
-    expect_error(areaUnderTicRtQuantiles(NULL), "unable to find an inherited method")
-    expect_error(areaUnderTicRtQuantiles(1:10), "unable to find an inherited method")
+    expect_error(areaUnderTicRtQuantiles(NULL), "not of class")
+    expect_error(areaUnderTicRtQuantiles(1:10), "not of class")
     suppressWarnings(tmp <- areaUnderTicRtQuantiles(sps_sciex, msLevel = 1L))
     expect_equal(as.numeric(tmp), c(383935723, 368643879, 245834029, 274788917))
     expect_equal(names(tmp), c("25%", "50%", "75%", "100%"))
@@ -577,10 +575,8 @@ test_that("areaUnderTicRtQuantiles works properly.", {
 
 ## START unit test extentIdentifiedPrecursorIntensity ##
 test_that("extentIdentifiedPrecursorIntensity works properly.", {
-    expect_error(extentIdentifiedPrecursorIntensity(NULL),
-        "unable to find an inherited method")
-    expect_error(extentIdentifiedPrecursorIntensity(1:10),
-        "unable to find an inherited method")
+    expect_error(extentIdentifiedPrecursorIntensity(NULL), "unable to find an inherited method")
+    expect_error(extentIdentifiedPrecursorIntensity(1:10), "unable to find an inherited method")
     expect_equal(
         as.numeric(extentIdentifiedPrecursorIntensity(sps_sciex, msLevel = 1L,
             identificationLevel = "all")),
@@ -632,8 +628,8 @@ test_that("extentIdentifiedPrecursorIntensity works properly.", {
 
 ## START unit test medianTicRtIqr ##
 test_that("medianTicRtIqr works properly.", {
-    expect_error(medianTicRtIqr(NULL), "unable to find an inherited method")
-    expect_error(medianTicRtIqr(1:10), "unable to find an inherited method")
+    expect_error(medianTicRtIqr(NULL), "not of class")
+    expect_error(medianTicRtIqr(1:10), "not of class")
     expect_equal(suppressWarnings(medianTicRtIqr(sps_sciex, msLevel = 1L)),
         718615)
     expect_equal(medianTicRtIqr(sps_sciex, msLevel = 2L), NaN)
