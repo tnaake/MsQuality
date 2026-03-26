@@ -25,7 +25,7 @@ returned. '><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MsQuality</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.3</span>
       </span>
     </div>
 
@@ -63,15 +63,15 @@ returned. <br></p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rtAcquisitionRange</span><span class="op">(</span><span class="va">spectra</span>, msLevel <span class="op">=</span> <span class="fl">1L</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rtAcquisitionRange</span><span class="op">(</span><span class="va">object</span>, msLevel <span class="op">=</span> <span class="fl">1L</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-spectra">spectra<a class="anchor" aria-label="anchor" href="#arg-spectra"></a></dt>
-<dd><p><code>Spectra</code> object</p></dd>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
+<dd><p><code>Spectra</code> or <code>Chromatograms</code> object</p></dd>
 
 
 <dt id="arg-mslevel">msLevel<a class="anchor" aria-label="anchor" href="#arg-mslevel"></a></dt>
@@ -123,7 +123,7 @@ relationship: has_value_concept STATO:0000035 ! range <br></p>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.459</span>, <span class="fl">2.585</span>, <span class="fl">2.446</span>, <span class="fl">0.508</span>, <span class="fl">8.968</span>, <span class="fl">0.524</span>, <span class="fl">0.974</span>, <span class="fl">100.0</span>, <span class="fl">40.994</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spd</span><span class="op">$</span><span class="va">rtime</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9.44</span>, <span class="fl">9.44</span>, <span class="fl">15.84</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">sps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="va">spd</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">rtAcquisitionRange</span><span class="op">(</span>spectra <span class="op">=</span> <span class="va">sps</span>, msLevel <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">rtAcquisitionRange</span><span class="op">(</span>object <span class="op">=</span> <span class="va">sps</span>, msLevel <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   min   max </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  9.44 15.84 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"rtAcquisitionRange")</span>
@@ -138,7 +138,7 @@ relationship: has_value_concept STATO:0000035 ! range <br></p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Thomas Naake, Johannes Rainer.</p>
+  <p></p><p>Developed by Thomas Naake, Johannes Rainer, Philippine Louail.</p>
 </div>
 
 <div class="pkgdown">

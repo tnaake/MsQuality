@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MsQuality</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.3</span>
       </span>
     </div>
 
@@ -65,13 +65,25 @@
         </td>
         <td><p>area under TIC RT quantiles (MS:4000156)</p></td>
       </tr><tr><td>
+          <p><code><a href="baselineIntensity.html">baselineIntensity()</a></code> </p>
+        </td>
+        <td><p>Baseline Intensity per chromatogram</p></td>
+      </tr><tr><td>
           <p><code><a href="calculateMetrics.html">calculateMetrics()</a></code> </p>
         </td>
-        <td><p>Calculate QC metrics from a Spectra or MsExperiment object</p></td>
+        <td><p>Calculate QC metrics from a Spectra, MsExperiment, or Chromatograms object</p></td>
+      </tr><tr><td>
+          <p><code><a href="calculateMetricsFromChromatograms.html">calculateMetricsFromChromatograms()</a></code> </p>
+        </td>
+        <td><p>Calculate QC metrics from a Chromatograms object</p></td>
       </tr><tr><td>
           <p><code><a href="calculateMetricsFromMsExperiment.html">calculateMetricsFromMsExperiment()</a></code> </p>
         </td>
         <td><p>Calculate QC metrics from a MsExperiment object</p></td>
+      </tr><tr><td>
+          <p><code><a href="calculateMetricsFromOneSampleChromatograms.html">calculateMetricsFromOneSampleChromatograms()</a></code> </p>
+        </td>
+        <td><p>Calculate QC metrics from a Chromatograms object containing only chromatographic data from one sample</p></td>
       </tr><tr><td>
           <p><code><a href="calculateMetricsFromOneSampleSpectra.html">calculateMetricsFromOneSampleSpectra()</a></code> </p>
         </td>
@@ -92,6 +104,30 @@
           <p><code><a href="extentIdentifiedPrecursorIntensity.html">extentIdentifiedPrecursorIntensity()</a></code> </p>
         </td>
         <td><p>extent of identified MS2 precursor intensity (MS:4000157)</p></td>
+      </tr><tr><td>
+          <p><code><a href="gaussianSimilarity.html">gaussianSimilarity()</a></code> </p>
+        </td>
+        <td><p>Gaussian Similarity (Peak Shape Quality) per Chromatogram</p></td>
+      </tr><tr><td>
+          <p><code><a href="intensityMean.html">intensityMean()</a></code> </p>
+        </td>
+        <td><p>Intensity statistics (Mean) per chromatogram</p></td>
+      </tr><tr><td>
+          <p><code><a href="intensityQuartiles.html">intensityQuartiles()</a></code> </p>
+        </td>
+        <td><p>Intensity Quartiles per chromatogram</p></td>
+      </tr><tr><td>
+          <p><code><a href="intensityRange.html">intensityRange()</a></code> </p>
+        </td>
+        <td><p>Intensity Range per chromatogram</p></td>
+      </tr><tr><td>
+          <p><code><a href="intensitySd.html">intensitySd()</a></code> </p>
+        </td>
+        <td><p>Intensity statistics (Standard Deviation) per chromatogram</p></td>
+      </tr><tr><td>
+          <p><code><a href="maxIntensity.html">maxIntensity()</a></code> </p>
+        </td>
+        <td><p>Maximum intensity per chromatogram</p></td>
       </tr><tr><td>
           <p><code><a href="meanCharge.html">meanCharge()</a></code> </p>
         </td>
@@ -128,6 +164,18 @@
           <p><code><a href="numberSpectra.html">numberSpectra()</a></code> </p>
         </td>
         <td><p>number of MS1 spectra (MS:4000059) or number of MS2 spectra (MS:4000060)</p></td>
+      </tr><tr><td>
+          <p><code><a href="peakCount.html">peakCount()</a></code> </p>
+        </td>
+        <td><p>Peak Count (Number of data points) per chromatogram</p></td>
+      </tr><tr><td>
+          <p><code><a href="peakProminence.html">peakProminence()</a></code> </p>
+        </td>
+        <td><p>Peak Prominence (Peak-to-Baseline Ratio) per Chromatogram</p></td>
+      </tr><tr><td>
+          <p><code><a href="peakWidth.html">peakWidth()</a></code> </p>
+        </td>
+        <td><p>Peak Width per Chromatogram</p></td>
       </tr><tr><td>
           <p><code><a href="plotMetric.html">plotMetric()</a></code> </p>
         </td>
@@ -189,6 +237,10 @@
         </td>
         <td><p>Shiny application to visualize quality metrics</p></td>
       </tr><tr><td>
+          <p><code><a href="signalToNoiseRatio.html">signalToNoiseRatio()</a></code> </p>
+        </td>
+        <td><p>Signal-to-Noise Ratio per chromatogram</p></td>
+      </tr><tr><td>
           <p><code><a href="ticQuantileRtFraction.html">ticQuantileRtFraction()</a></code> </p>
         </td>
         <td><p>TIC quantile RT fraction (MS:4000183)</p></td>
@@ -200,6 +252,10 @@
           <p><code><a href="transformIntoMzQC.html">transformIntoMzQC()</a></code> </p>
         </td>
         <td><p>Transform the metrics into a list of <code>MzQCmzQC</code> objects</p></td>
+      </tr><tr><td>
+          <p><code><a href="xicFwhm.html">xicFwhm()</a></code> </p>
+        </td>
+        <td><p>Full Width at Half Maximum (FWHM) per Chromatogram</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -209,7 +265,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Thomas Naake, Johannes Rainer.</p>
+  <p></p><p>Developed by Thomas Naake, Johannes Rainer, Philippine Louail.</p>
 </div>
 
 <div class="pkgdown">

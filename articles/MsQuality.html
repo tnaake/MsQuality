@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MsQuality</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.3</span>
       </span>
     </div>
 
@@ -130,27 +130,30 @@ readily accessible from .raw or .mzML files, e.g. pump pressure mean, or
 rely on alignment results, e.g. retention time mean shift,
 signal-to-noise ratio, precursor errors (ppm).</p>
 <p>The <code>MsQuality</code> package is built upon the
-<code>Spectra</code> and the <code>MsExperiment</code> package. Metrics
-will be calculated based on the information stored in a
-<code>Spectra</code> object and the respective <code>dataOrigin</code>
-entries are used to distinguish between the mass spectral data of
-multiple samples. The <code>MsExperiment</code> serves as a container to
-store the mass spectral data of multiple samples. <code>MsQuality</code>
-enables the user to calculate quality metrics both on
-<code>Spectra</code> and <code>MsExperiment</code> objects.</p>
+<code>Spectra</code>, the <code>MsExperiment</code>, and the
+<code>Chromatograms</code> packages. Metrics can be calculated on
+<code>Spectra</code>, <code>MsExperiment</code>, and
+<code>Chromatograms</code> objects. Metrics will be calculated based on
+the information stored in a <code>Spectra</code> or
+<code>Chromatograms</code> object and the respective
+<code>dataOrigin</code> entries are used to distinguish between the mass
+spectral data of multiple samples. The <code>MsExperiment</code> serves
+as a container to store the mass spectral data of multiple samples.
+<code>MsQuality</code> enables the user to calculate quality metrics
+both on <code>Spectra</code> and <code>MsExperiment</code> objects.</p>
 <p><code>MsQuality</code> can be used for any type of experiment that
-can be represented as a <code>Spectra</code> or
-<code>MsExperiment</code> object. This includes simple LC-MS data, DIA
-or DDA-based data, ion mobility data or MS data in general. The tool can
-thus be used for any type of targeted or untargeted metabolomics or
+can be represented as a <code>Spectra</code>, <code>MsExperiment</code>,
+or <code>Chromatograms</code> object. This includes simple LC-MS data,
+DIA or DDA-based data, ion mobility data or MS data in general. The tool
+can thus be used for any type of targeted or untargeted metabolomics or
 proteomics workflow. Also, we are not limited to data files in mzML
 format, but, through <code>Spectra</code> and related
 <code>MsBackend</code> packages, data can be imported from a large
 variety of formats, including some raw vendor formats.</p>
 <p>In this vignette, we will (i) create some exemplary
-<code>Spectra</code> and <code>MsExperiment</code> objects, (ii)
-calculate the quality metrics on these data sets, and (iii) visualize
-some of the metrics.</p>
+<code>Spectra</code>, <code>MsExperiment</code>, and
+<code>Chromatograms</code> objects, (ii) calculate the quality metrics
+on these data sets, and (iii) visualize some of the metrics.</p>
 <div class="section level3">
 <h3 id="alternative-software-for-data-quality-assessment">Alternative software for data quality assessment<a class="anchor" aria-label="anchor" href="#alternative-software-for-data-quality-assessment"></a>
 </h3>
@@ -224,10 +227,10 @@ discover any bugs, typos or develop ideas of improving
 the developer.</p>
 </div>
 <div class="section level2">
-<h2 id="create-spectra-and-msexperiment-objects">Create <code>Spectra</code> and <code>MsExperiment</code>
-objects<a class="anchor" aria-label="anchor" href="#create-spectra-and-msexperiment-objects"></a>
+<h2 id="create-spectra-msexperiment-and-chromatograms-objects">Create <code>Spectra</code>, <code>MsExperiment</code>, and
+<code>Chromatograms</code> objects<a class="anchor" aria-label="anchor" href="#create-spectra-msexperiment-and-chromatograms-objects"></a>
 </h2>
-<p>Load the <code>Spectra</code> package.</p>
+<p>Load the required packages.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/RforMassSpectrometry/Spectra" class="external-link">"Spectra"</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/RforMassSpectrometry/MsExperiment" class="external-link">"MsExperiment"</a></span><span class="op">)</span></span></code></pre></div>
@@ -238,7 +241,17 @@ objects<a class="anchor" aria-label="anchor" href="#create-spectra-and-msexperim
 <span><span class="co">## </span></span>
 <span><span class="co">##     smooth</span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://www.github.com/tnaake/MsQuality/" class="external-link">"MsQuality"</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/RforMassSpectrometry/Chromatograms" class="external-link">"Chromatograms"</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'Chromatograms'</span></span></code></pre>
+<pre><code><span><span class="co">## The following object is masked from 'package:Spectra':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     reset</span></span></code></pre>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://www.github.com/tnaake/MsQuality/" class="external-link">"MsQuality"</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/Bioconductor/BiocParallel" class="external-link">"BiocParallel"</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">register</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="create-spectra-and-msexperiment-objects-from-mzml-files">Create <code>Spectra</code> and <code>MsExperiment</code> objects
 from mzML files<a class="anchor" aria-label="anchor" href="#create-spectra-and-msexperiment-objects-from-mzml-files"></a>
@@ -248,17 +261,16 @@ object. One way, as outlined in the vignette of the <em><a href="https://biocond
 package is by specifying the location of mass spectrometry raw files in
 <code>mzML</code>, <code>mzXML</code> or <code>CDF</code> format and
 using the <code>MsBackendMzR</code> backend. Here we load the example
-files from the <code>sciex</code> data set of the <code>MsDataHub</code>
-package and create a <code>Spectra</code> object from the two provided
+files from the <code>sciex</code> data set provided through
+<code>MsDataHub</code> and create a <code>Spectra</code> object from two
 <code>mzML</code> files. The example is taken from the
 <code>Spectra</code> vignette.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## define file names containing spectra data for the samples</span></span>
-<span><span class="va">sciex_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">MsDataHub</span><span class="fu">::</span><span class="fu"><a href="https://rformassspectrometry.github.io/MsDataHub/reference/sciex.html" class="external-link">X20171016_POOL_POS_1_105.134.mzML</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>    <span class="fu">MsDataHub</span><span class="fu">::</span><span class="fu"><a href="https://rformassspectrometry.github.io/MsDataHub/reference/sciex.html" class="external-link">X20171016_POOL_POS_3_105.134.mzML</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## import the data and assign it to the spectra object</span></span>
-<span><span class="va">sps_sciex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/MsBackend.html" class="external-link">MsBackendMzR</a></span><span class="op">(</span><span class="op">)</span>, files <span class="op">=</span> <span class="va">sciex_file</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rformassspectrometry.github.io/MsDataHub" class="external-link">MsDataHub</a></span><span class="op">)</span></span>
+<span><span class="co">## this example is taken from the Spectra vignette</span></span>
+<span><span class="va">fls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">MsDataHub</span><span class="fu">::</span><span class="fu"><a href="https://rformassspectrometry.github.io/MsDataHub/reference/sciex.html" class="external-link">X20171016_POOL_POS_1_105.134.mzML</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>         <span class="fu">MsDataHub</span><span class="fu">::</span><span class="fu"><a href="https://rformassspectrometry.github.io/MsDataHub/reference/sciex.html" class="external-link">X20171016_POOL_POS_3_105.134.mzML</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">sps_sciex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="va">fls</span>, backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/MsBackend.html" class="external-link">MsBackendMzR</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The data set consists of a single sample measured in two different
 injections to the same LC-MS setup. An empty instance of an
 <code>MsExperiment</code> object is created and populated with
@@ -268,23 +280,49 @@ information on the samples by assigning data on the samples
 (<code>spectra</code>). In a last step, using
 <code>linkSampleData</code>, the relationships between the samples and
 the spectral information are defined.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## this example is taken from the Spectra vignette</span></span>
 <span><span class="va">lmse</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/MsExperiment/man/MsExperiment.html" class="external-link">MsExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">sd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/DataFrame-class.html" class="external-link">DataFrame</a></span><span class="op">(</span>sample_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"QC1"</span>, <span class="st">"QC2"</span><span class="op">)</span>,</span>
 <span>    sample_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"QC Pool"</span>, <span class="st">"QC Pool"</span><span class="op">)</span>,</span>
 <span>    injection_idx <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/MsExperiment/man/MsExperiment.html" class="external-link">sampleData</a></span><span class="op">(</span><span class="va">lmse</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">sd</span></span>
-<span></span>
 <span><span class="co">## add mzML files to the experiment</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/MsExperiment/man/MsExperiment.html" class="external-link">experimentFiles</a></span><span class="op">(</span><span class="va">lmse</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/MsExperiment/man/MsExperimentFiles.html" class="external-link">MsExperimentFiles</a></span><span class="op">(</span>mzML_files <span class="op">=</span> <span class="va">fls</span><span class="op">)</span></span>
 <span><span class="co">## add the Spectra object to the experiment</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectra</a></span><span class="op">(</span><span class="va">lmse</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">sps_sciex</span></span>
-<span></span>
 <span><span class="co">## use linkSampleData to establish and define relationships between sample</span></span>
 <span><span class="co">## annotations and MS data</span></span>
-<span><span class="va">lmse</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/MsExperiment/man/MsExperiment.html" class="external-link">linkSampleData</a></span><span class="op">(</span><span class="va">lmse</span>, with <span class="op">=</span> <span class="st">"experimentFiles.mzML_file"</span>,</span>
+<span><span class="va">lmse</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/MsExperiment/man/MsExperiment.html" class="external-link">linkSampleData</a></span><span class="op">(</span><span class="va">lmse</span>, with <span class="op">=</span> <span class="st">"experimentFiles.mzML_files"</span>,</span>
 <span>    sampleIndex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, withIndex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="chromatograms-example">Chromatograms example<a class="anchor" aria-label="anchor" href="#chromatograms-example"></a>
+</h3>
+<p>The package also supports calculation of metrics directly on
+<code>Chromatograms</code> objects. Below is a minimal example that
+creates a <code>Chromatograms</code> object from manually defined
+chromatographic data and calculates the metrics. The chunk is set to
+<code>eval = FALSE</code> to avoid running during automated vignette
+builds.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## create a Chromatograms object from manually defined chromatographic data</span></span>
+<span><span class="va">cdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    msLevel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">1L</span><span class="op">)</span>,</span>
+<span>    mz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">112.2</span>, <span class="fl">123.3</span><span class="op">)</span>,</span>
+<span>    dataOrigin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample_1"</span>, <span class="st">"sample_1"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">pdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>rtime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.0</span>, <span class="fl">1.5</span>, <span class="fl">2.0</span>, <span class="fl">2.5</span>, <span class="fl">3.0</span><span class="op">)</span>,</span>
+<span>               intensity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">250</span>, <span class="fl">400</span>, <span class="fl">300</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>rtime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">1.8</span>, <span class="fl">2.4</span>, <span class="fl">3.0</span><span class="op">)</span>,</span>
+<span>               intensity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">150</span>, <span class="fl">300</span>, <span class="fl">200</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">chr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Chromatograms/man/Chromatograms.html" class="external-link">Chromatograms</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Chromatograms/man/ChromBackendMemory.html" class="external-link">ChromBackendMemory</a></span><span class="op">(</span><span class="op">)</span>, chromData <span class="op">=</span> <span class="va">cdata</span>, peaksData <span class="op">=</span> <span class="va">pdata</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## calculate metrics on the Chromatograms object (disabled during build)</span></span>
+<span><span class="va">metrics_chr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculateMetrics.html">calculateMetrics</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">chr</span>, metrics <span class="op">=</span> <span class="fu"><a href="../reference/qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">chr</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">metrics_chr</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="create-spectra-and-msexperiment-objects-from-feature-extracted-intensity-tables">Create <code>Spectra</code> and <code>MsExperiment</code> objects
@@ -306,29 +344,30 @@ created a list containing <code>Spectra</code> objects for each samples
 <code>MsExperiment</code> objects containing the data of all samples
 (objects <code>msexp_rplc</code> and <code>msexp_hilic</code>). We will
 load here these objects:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Lee2019"</span>, package <span class="op">=</span> <span class="st">"MsQuality"</span><span class="op">)</span></span></code></pre></div>
 <p>The final data set contains 541 paired samples (i.e. 541 samples
 derived from RPLC and 541 samples derived from HILIC).</p>
 <p>We will combine the <code>sps_rplc</code> and <code>sps_hilic</code>
 objects in the following and calculate on this combined document the
 metrics.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sps_comb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">sps_rplc</span>, <span class="va">sps_hilic</span><span class="op">)</span></span></code></pre></div>
 <p>The most important function to assess the data quality and to
 calculate the metrics is the <code>calculateMetrics</code> function. The
-function takes a <code>Spectra</code> or <code>MsExperiment</code>
-object as input, a character vector of metrics to be calculated, and,
-optionally a list of parameters passed to the quality metrics
-functions.</p>
+function takes a <code>Spectra</code>, <code>Chromatograms</code>, or
+<code>MsExperiment</code> object as input, a character vector of metrics
+to be calculated, and, optionally a list of parameters passed to the
+quality metrics functions.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="calculating-the-quality-metrics-on-spectra-and-msexperiment-objects">Calculating the quality metrics on <code>Spectra</code> and
-<code>MsExperiment</code> objects<a class="anchor" aria-label="anchor" href="#calculating-the-quality-metrics-on-spectra-and-msexperiment-objects"></a>
+<h2 id="calculating-the-quality-metrics-on-spectra-msexperiment-and-chromatograms-objects">Calculating the quality metrics on <code>Spectra</code>,
+<code>MsExperiment</code>, and <code>Chromatograms</code> objects<a class="anchor" aria-label="anchor" href="#calculating-the-quality-metrics-on-spectra-msexperiment-and-chromatograms-objects"></a>
 </h2>
-<p>Currently, the following metrics are included:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<p>Currently, the following metrics are included for
+<code>Spectra</code> and <code>MsExperiment</code> objects:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">sps_comb</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##  [1] "chromatographyDuration"             "ticQuantileRtFraction"             </span></span>
 <span><span class="co">##  [3] "rtOverMsQuarters"                   "ticQuartileToQuartileLogRatio"     </span></span>
@@ -343,6 +382,10 @@ functions.</p>
 <span><span class="co">## [21] "msSignal10xChange"                  "ratioCharge1over2"                 </span></span>
 <span><span class="co">## [23] "ratioCharge3over2"                  "ratioCharge4over2"                 </span></span>
 <span><span class="co">## [25] "meanCharge"                         "medianCharge"</span></span></code></pre>
+<p>And for <code>Chromatograms</code> objects (using the example from
+above):</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">chr</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="list-of-included-metrics">List of included metrics<a class="anchor" aria-label="anchor" href="#list-of-included-metrics"></a>
 </h3>
@@ -351,8 +394,26 @@ Further information may be found at the <a href="https://github.com/HUPO-PSI/mzQ
 or in the respective help file for the quality metric (accessible by
 e.g. entering <code><a href="../reference/chromatographyDuration.html">?chromatographyDuration</a></code> to the R console). We
 also give here explanation on how the metric is calculated in
-<code>MsQuality</code>. Currently, all quality metrics can be calculated
-for both <code>Spectra</code> and <code>MsExperiment</code> objects.</p>
+<code>MsQuality</code>.</p>
+<p>Many metrics in <code>MsQuality</code> are implemented to work with
+all three object types (<code>Spectra</code>,
+<code>Chromatograms</code>, and <code>MsExperiment</code>). However,
+some metrics only make sense for a particular representation: metrics
+that operate on per-scan information (for example, those that use
+per-scan TIC or peaks) are defined for <code>Spectra</code>, while
+metrics based on chromatographic traces (for example, TIC-integrals or
+peak-based summaries from extracted chromatograms) are defined for
+<code>Chromatograms</code>.</p>
+<p>To get the authoritative list of metrics available for a specific
+object instance, run <code>qualityMetrics(object)</code>
+(e.g. <code>qualityMetrics(someSpectra)</code> or
+<code>qualityMetrics(someChromatograms)</code>). For details about a
+specific metric (calculation, accepted arguments and attached PSI:MS
+accession), consult the metric’s help page (for example,
+<code><a href="../reference/chromatographyDuration.html">?chromatographyDuration</a></code>).</p>
+<p>In short: use <code><a href="../reference/qualityMetrics.html">qualityMetrics()</a></code> for the object-specific
+metric list and the <code>?metricName</code> help pages for per-metric
+details.</p>
 <ul>
 <li>
 <p><em>chromatographyDuration</em>, <strong>chromatography
@@ -365,8 +426,8 @@ also on the sampling/scan rate of the MS instrument.</p>
 <li>the retention time associated to the <code>Spectra</code> object is
 obtained,</li>
 <li>the maximum and the minimum of the retention time is obtained,</li>
-<li>the difference between the maximum and the minimum is calculated
-andreturned.</li>
+<li>the difference between the maximum and the minimum is calculated and
+returned.</li>
 </ol>
 </li>
 <li>
@@ -466,7 +527,7 @@ quantile of the values of (2) are calculated.</li>
 </li>
 <li>
 <p><em>numberSpectra</em>, <strong>number of MS1 spectra</strong>
-MS:4000059), “The number of MS1 events in the run.” [PSI:MS],
+(MS:4000059), “The number of MS1 events in the run.” [PSI:MS],
 <code>msLevel = 1L</code>; An unusual low number may indicate incomplete
 sampling/scan rate of the MS instrument, low sample volume and/or failed
 injection of a sample.</p>
@@ -771,7 +832,8 @@ retention time,</li>
 <li>the 0%, 25%, 50%, 75%, and 100% quantiles of the retention time
 values are obtained,</li>
 <li>the ion count of the intervals between the 0%/25%, 25%/50%, 50%/75%,
-and 75%/100% are obtained,</li>
+and 75%/100% are obtained,<br>
+</li>
 <li>the ion counts of the intervals are summed (TIC) and the values
 returned.</li>
 </ol>
@@ -792,8 +854,8 @@ about the dynamic range of the acquisition.</p>
 <li>the <code>Spectra</code> object is filtered according to the MS
 level,</li>
 <li>the intensities of the precursor ions are obtained,</li>
-<li>the 5% and 95% quantile of these intensities are obtained (1NA1
-values are removed),</li>
+<li>the 5% and 95% quantile of these intensities are obtained
+(<code>NA</code> values are removed),</li>
 <li>the ratio between the 95% and the 5% intensity quantile is
 calculated and returned.</li>
 </ol>
@@ -980,7 +1042,7 @@ object are obtained,</li>
 </ol>
 </li>
 <li>
-<p><em>precursorIntensitySD</em>, <strong>unidentified MS2 precursor
+<p><em>precursorIntensitySd</em>, <strong>unidentified MS2 precursor
 intensity distribution sigma</strong> (MS:4000166), “From the
 distribution of unidentified MS2 precursor intensities, the sigma value.
 The used type of identification should be noted in the metadata or
@@ -1204,39 +1266,118 @@ TIC is calculated and returned.</li>
 </ol>
 </li>
 </ul>
+<div class="section level4">
+<h4 id="metrics-shared-between-spectra-and-chromatograms">Metrics shared between <code>Spectra</code> and
+<code>Chromatograms</code><a class="anchor" aria-label="anchor" href="#metrics-shared-between-spectra-and-chromatograms"></a>
+</h4>
+<p>Several metrics work on both <code>Spectra</code> and
+<code>Chromatograms</code> objects. When called with a
+<code>Chromatograms</code> object, they operate on the chromatographic
+data directly:</p>
+<ul>
+<li>
+<em>chromatographyDuration</em> (MS:4000053): Duration of the
+chromatographic run</li>
+<li>
+<em>rtAcquisitionRange</em> (MS:4000070): Retention time acquisition
+range</li>
+<li>
+<em>numberEmptyScans</em> (MS:4000099): Number of empty
+scans/chromatograms</li>
+<li>
+<em>areaUnderTic</em> (MS:4000155): Total area under the TIC</li>
+<li>
+<em>areaUnderTicRtQuantiles</em> (MS:4000156): Area under TIC per RT
+quartile</li>
+<li>
+<em>ticQuantileRtFraction</em> (MS:4000183): RT fraction when TIC
+quantiles accumulate</li>
+<li>
+<em>msSignal10xChange</em>: Count of 10x intensity jumps/falls</li>
+<li>
+<em>medianTicRtIqr</em>: Median TIC in the RT interquartile
+range</li>
+<li>
+<em>rtIqr</em>: Retention time interquartile range</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="chromatograms-specific-metrics">Chromatograms-specific metrics<a class="anchor" aria-label="anchor" href="#chromatograms-specific-metrics"></a>
+</h4>
+<p>In addition, <code>MsQuality</code> includes metrics specifically
+designed for <code>Chromatograms</code> objects. These metrics assess
+chromatographic peak shape and intensity distributions:</p>
+<ul>
+<li>
+<em>peakCount</em>: Number of detected peaks per chromatogram</li>
+<li>
+<em>maxIntensity</em>: Maximum intensity per chromatogram</li>
+<li>
+<em>intensityMean</em>, <em>intensitySd</em>: Intensity mean and
+standard deviation</li>
+<li>
+<em>intensityQuartiles</em>, <em>intensityRange</em>: Intensity
+distributions</li>
+<li>
+<em>baselineIntensity</em>: Baseline intensity estimate (low
+quantile)</li>
+<li>
+<em>signalToNoiseRatio</em>: Signal-to-noise ratio (MAD-based noise
+estimate)</li>
+<li>
+<em>xicFwhm</em>: Full Width at Half Maximum (FWHM) per
+chromatogram</li>
+<li>
+<em>peakWidth</em>: Peak width based on valley boundaries</li>
+<li>
+<em>gaussianSimilarity</em>: Peak shape quality (correlation to beta
+distribution, residual SD)</li>
+<li>
+<em>peakProminence</em>: Peak prominence relative to baseline</li>
+</ul>
+<p>Note that <code>peakBoundary</code>, used by several peak-shape
+metrics, is provided by the <code>Chromatograms</code> package (see
+<code><a href="https://rdrr.io/pkg/Chromatograms/man/peaksData.html" class="external-link">?Chromatograms::peakBoundary</a></code>).</p>
+<p>For complete documentation of each metric, including calculation
+details and PSI-MS accessions, see the respective help pages (e.g.,
+<code><a href="../reference/chromatographyDuration.html">?chromatographyDuration</a></code>, <code><a href="../reference/xicFwhm.html">?xicFwhm</a></code>).</p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="obtain-the-metrics-in-data-frame-format">Obtain the metrics in <code>data.frame</code>-format<a class="anchor" aria-label="anchor" href="#obtain-the-metrics-in-data-frame-format"></a>
 </h3>
 <p>The most important function to assess the data quality and to
 calculate the metrics is the <code>calculateMetrics</code> function. The
-function takes a <code>Spectra</code> or <code>MsExperiment</code>
-object as input, a character vector of metrics to be calculated, a
-Boolean value to the <code>filterEmptySpectra</code> argument, and,
-optionally a list of parameters passed to the quality metrics
-functions.</p>
-<p>The <code>filterEmptySpectra</code> argument specifies if
+function takes a <code>Spectra</code>, <code>MsExperiment</code>, or
+<code>Chromatograms</code> object as input, a character vector of
+metrics to be calculated, a Boolean value to the
+<code>filterEmptyObject</code> argument, and, optionally a list of
+parameters passed to the quality metrics functions.</p>
+<p>The <code>filterEmptyObject</code> argument specifies if
 zero-intensity, <code>Inf</code>-intensity or zero-length entries should
-be removed (<code>filterEmptySpectra = TRUE</code>). By default, the
-entries are taken as they are (<code>filterEmptySpectra = FALSE</code>).
-The argument can be set to <code>TRUE</code> to compute metrics that are
-close to the implementation of the <code>QuaMeter</code> software. Prior
-to calculating the metrics, the implementation of <code>QuaMeter</code>
+be removed (<code>filterEmptyObject = TRUE</code>). By default, the
+entries are taken as they are (<code>filterEmptyObject = FALSE</code>).
+For <code>Spectra</code> objects, the argument can be set to
+<code>TRUE</code> to compute metrics that are close to the
+implementation of the <code>QuaMeter</code> software. Prior to
+calculating the metrics, the implementation of <code>QuaMeter</code>
 skips all spectra with <code>defaultArrayLength=0</code> (in .mzML
-files) at any MS level.</p>
-<p>When passing a <code>Spectra</code>/<code>MsExperiment</code> object
-to the function, a <code>data.frame</code> returned by
-<code>calculateMetrics</code> with the metrics specified by the argument
-<code>metrics</code>. By default, <code>qualityMetrics(object)</code> is
-taken to specify the calculation of quality metrics.
-<code>calculateMetrics</code> also accepts a list of parameters passed
-to the individual quality metrics functions. For each quality metrics
-functions, the relevant parameters are selected based on the accepted
-arguments.</p>
+files) at any MS level. For <code>Chromatograms</code> objects, it
+removes empty chromatograms and zero/infinite intensity entries.</p>
+<p>When passing a <code>Spectra</code>, <code>Chromatograms</code>, or
+<code>MsExperiment</code> object to the function, a
+<code>data.frame</code> is returned by <code>calculateMetrics</code>
+with the metrics specified by the argument <code>metrics</code>. By
+default, <code>qualityMetrics(object)</code> is taken to specify the
+calculation of quality metrics. <code>calculateMetrics</code> also
+accepts a list of parameters passed to the individual quality metrics
+functions. For each quality metrics functions, the relevant parameters
+are selected based on the accepted arguments.</p>
 <p>Additional arguments can be given to the quality metrics functions.
-For example, the function <code>ticQuartileToQuartileLogRatio</code>
-function has the arguments <code>relativeTo</code>, <code>mode</code>,
-and <code>msLevel</code>. <code>relativeTo</code> specifies to which
+For example, for <code>Spectra</code>/<code>MsExperiment</code> objects,
+the function <code>ticQuartileToQuartileLogRatio</code> has the
+arguments <code>relativeTo</code>, <code>mode</code>, and
+<code>msLevel</code>. <code>relativeTo</code> specifies to which
 quantile the log TIC quantile is relatively related to (either to the
 1st quantile or the respective previous one). <code>mode</code> (either
 <code>"TIC_change"</code> or <code>"TIC"</code>) specifies if the
@@ -1261,15 +1402,18 @@ and additionally pass the parameter <code>relativeTo = "Q1"</code> and
 <code>relativeTo = "previous"</code>. For computational reasons, we will
 restrict the calculation of the metrics to the first sample and to RPLC
 samples.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## subset the Spectra objects</span></span>
 <span><span class="va">sps_comb_subset</span> <span class="op">&lt;-</span> <span class="va">sps_comb</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"Sample.1_"</span>, <span class="va">sps_comb</span><span class="op">$</span><span class="va">dataOrigin</span><span class="op">)</span>, <span class="op">]</span></span>
 <span></span>
 <span><span class="co">## for RPLC and HILIC</span></span>
 <span><span class="va">metrics_sps_Q1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculateMetrics.html">calculateMetrics</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">sps_comb_subset</span>,</span>
-<span>    metrics <span class="op">=</span> <span class="fu"><a href="../reference/qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">sps_comb_subset</span><span class="op">)</span>, filterEmptySpectra <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>    relativeTo <span class="op">=</span> <span class="st">"Q1"</span>, msLevel <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span>
-<span><span class="va">metrics_sps_Q1</span></span></code></pre></div>
+<span>    metrics <span class="op">=</span> <span class="fu"><a href="../reference/qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">sps_comb_subset</span><span class="op">)</span>, filterEmptyObject <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    relativeTo <span class="op">=</span> <span class="st">"Q1"</span>, msLevel <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span></code></pre>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">metrics_sps_Q1</span></span></code></pre></div>
 <pre><code><span><span class="co">##                chromatographyDuration ticQuantileRtFraction.0%</span></span>
 <span><span class="co">## Sample.1_RPLC                  18.214                        0</span></span>
 <span><span class="co">## Sample.1_HILIC                 16.000                        0</span></span>
@@ -1329,64 +1473,14 @@ samples.</p>
 <span><span class="co">## Sample.1_HILIC               NaN               NaN               NaN        NaN</span></span>
 <span><span class="co">##                medianCharge</span></span>
 <span><span class="co">## Sample.1_RPLC            NA</span></span>
-<span><span class="co">## Sample.1_HILIC           NA</span></span>
-<span><span class="co">## attr(,"chromatographyDuration")</span></span>
-<span><span class="co">## [1] "MS:4000053"</span></span>
-<span><span class="co">## attr(,"names1")</span></span>
-<span><span class="co">## [1] "Q1"</span></span>
-<span><span class="co">## attr(,"names2")</span></span>
-<span><span class="co">## [1] "Q2"</span></span>
-<span><span class="co">## attr(,"names3")</span></span>
-<span><span class="co">## [1] "Q3"</span></span>
-<span><span class="co">## attr(,"names4")</span></span>
-<span><span class="co">## [1] "100%"</span></span>
-<span><span class="co">## attr(,"names5")</span></span>
-<span><span class="co">## [1] "100%"</span></span>
-<span><span class="co">## attr(,"ticQuantileRtFraction")</span></span>
-<span><span class="co">## [1] "MS:4000183"</span></span>
-<span><span class="co">## attr(,"rtOverMsQuarters")</span></span>
-<span><span class="co">## [1] "MS:4000055"</span></span>
-<span><span class="co">## attr(,"numberSpectra")</span></span>
-<span><span class="co">## [1] "MS:4000059"</span></span>
-<span><span class="co">## attr(,"numberEmptyScans")</span></span>
-<span><span class="co">## [1] "MS:4000099"</span></span>
-<span><span class="co">## attr(,"areaUnderTic")</span></span>
-<span><span class="co">## [1] "MS:4000155"</span></span>
-<span><span class="co">## attr(,"areaUnderTicRtQuantiles")</span></span>
-<span><span class="co">## [1] "MS:4000156"</span></span>
-<span><span class="co">## attr(,"mzAcquisitionRange")</span></span>
-<span><span class="co">## [1] "MS:4000069"</span></span>
-<span><span class="co">## attr(,"rtAcquisitionRange")</span></span>
-<span><span class="co">## [1] "MS:4000070"</span></span>
-<span><span class="co">## attr(,"precursorIntensityRange")</span></span>
-<span><span class="co">## [1] "MS:4000160"</span></span>
-<span><span class="co">## attr(,"precursorIntensityQuartiles")</span></span>
-<span><span class="co">## [1] "MS:4000116"</span></span>
-<span><span class="co">## attr(,"precursorIntensityMean")</span></span>
-<span><span class="co">## [1] "MS:4000117"</span></span>
-<span><span class="co">## attr(,"precursorIntensitySd")</span></span>
-<span><span class="co">## [1] "MS:4000118"</span></span>
-<span><span class="co">## attr(,"msSignal10xChange")</span></span>
-<span><span class="co">## [1] "MS:4000097"</span></span>
-<span><span class="co">## attr(,"ratioCharge1over2")</span></span>
-<span><span class="co">## [1] "MS:4000167"</span></span>
-<span><span class="co">## attr(,"ratioCharge3over2")</span></span>
-<span><span class="co">## [1] "MS:4000169"</span></span>
-<span><span class="co">## attr(,"ratioCharge4over2")</span></span>
-<span><span class="co">## [1] "MS:4000171"</span></span>
-<span><span class="co">## attr(,"meanCharge")</span></span>
-<span><span class="co">## [1] "MS:4000173"</span></span>
-<span><span class="co">## attr(,"medianCharge")</span></span>
-<span><span class="co">## [1] "MS:4000175"</span></span>
-<span><span class="co">## attr(,"relativeTo")</span></span>
-<span><span class="co">## [1] "Q1"</span></span>
-<span><span class="co">## attr(,"msLevel")</span></span>
-<span><span class="co">## [1] 1</span></span></code></pre>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<span><span class="co">## Sample.1_HILIC           NA</span></span></code></pre>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metrics_sps_previous</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculateMetrics.html">calculateMetrics</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">sps_comb_subset</span>,</span>
-<span>    metrics <span class="op">=</span> <span class="fu"><a href="../reference/qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">sps_comb_subset</span><span class="op">)</span>, filterEmptySpectra <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>    relativeTo <span class="op">=</span> <span class="st">"previous"</span>, msLevel <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span>
-<span><span class="va">metrics_sps_previous</span></span></code></pre></div>
+<span>    metrics <span class="op">=</span> <span class="fu"><a href="../reference/qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">sps_comb_subset</span><span class="op">)</span>, filterEmptyObject <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    relativeTo <span class="op">=</span> <span class="st">"previous"</span>, msLevel <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span></code></pre>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">metrics_sps_previous</span></span></code></pre></div>
 <pre><code><span><span class="co">##                chromatographyDuration ticQuantileRtFraction.0%</span></span>
 <span><span class="co">## Sample.1_RPLC                  18.214                        0</span></span>
 <span><span class="co">## Sample.1_HILIC                 16.000                        0</span></span>
@@ -1446,66 +1540,14 @@ samples.</p>
 <span><span class="co">## Sample.1_HILIC               NaN               NaN               NaN        NaN</span></span>
 <span><span class="co">##                medianCharge</span></span>
 <span><span class="co">## Sample.1_RPLC            NA</span></span>
-<span><span class="co">## Sample.1_HILIC           NA</span></span>
-<span><span class="co">## attr(,"chromatographyDuration")</span></span>
-<span><span class="co">## [1] "MS:4000053"</span></span>
-<span><span class="co">## attr(,"names1")</span></span>
-<span><span class="co">## [1] "Q1"</span></span>
-<span><span class="co">## attr(,"names2")</span></span>
-<span><span class="co">## [1] "Q2"</span></span>
-<span><span class="co">## attr(,"names3")</span></span>
-<span><span class="co">## [1] "Q3"</span></span>
-<span><span class="co">## attr(,"names4")</span></span>
-<span><span class="co">## [1] "100%"</span></span>
-<span><span class="co">## attr(,"names5")</span></span>
-<span><span class="co">## [1] "100%"</span></span>
-<span><span class="co">## attr(,"ticQuantileRtFraction")</span></span>
-<span><span class="co">## [1] "MS:4000183"</span></span>
-<span><span class="co">## attr(,"rtOverMsQuarters")</span></span>
-<span><span class="co">## [1] "MS:4000055"</span></span>
-<span><span class="co">## attr(,"ticQuartileToQuartileLogRatio")</span></span>
-<span><span class="co">## [1] "MS:4000057"</span></span>
-<span><span class="co">## attr(,"numberSpectra")</span></span>
-<span><span class="co">## [1] "MS:4000059"</span></span>
-<span><span class="co">## attr(,"numberEmptyScans")</span></span>
-<span><span class="co">## [1] "MS:4000099"</span></span>
-<span><span class="co">## attr(,"areaUnderTic")</span></span>
-<span><span class="co">## [1] "MS:4000155"</span></span>
-<span><span class="co">## attr(,"areaUnderTicRtQuantiles")</span></span>
-<span><span class="co">## [1] "MS:4000156"</span></span>
-<span><span class="co">## attr(,"mzAcquisitionRange")</span></span>
-<span><span class="co">## [1] "MS:4000069"</span></span>
-<span><span class="co">## attr(,"rtAcquisitionRange")</span></span>
-<span><span class="co">## [1] "MS:4000070"</span></span>
-<span><span class="co">## attr(,"precursorIntensityRange")</span></span>
-<span><span class="co">## [1] "MS:4000160"</span></span>
-<span><span class="co">## attr(,"precursorIntensityQuartiles")</span></span>
-<span><span class="co">## [1] "MS:4000116"</span></span>
-<span><span class="co">## attr(,"precursorIntensityMean")</span></span>
-<span><span class="co">## [1] "MS:4000117"</span></span>
-<span><span class="co">## attr(,"precursorIntensitySd")</span></span>
-<span><span class="co">## [1] "MS:4000118"</span></span>
-<span><span class="co">## attr(,"msSignal10xChange")</span></span>
-<span><span class="co">## [1] "MS:4000097"</span></span>
-<span><span class="co">## attr(,"ratioCharge1over2")</span></span>
-<span><span class="co">## [1] "MS:4000167"</span></span>
-<span><span class="co">## attr(,"ratioCharge3over2")</span></span>
-<span><span class="co">## [1] "MS:4000169"</span></span>
-<span><span class="co">## attr(,"ratioCharge4over2")</span></span>
-<span><span class="co">## [1] "MS:4000171"</span></span>
-<span><span class="co">## attr(,"meanCharge")</span></span>
-<span><span class="co">## [1] "MS:4000173"</span></span>
-<span><span class="co">## attr(,"medianCharge")</span></span>
-<span><span class="co">## [1] "MS:4000175"</span></span>
-<span><span class="co">## attr(,"relativeTo")</span></span>
-<span><span class="co">## [1] "previous"</span></span>
-<span><span class="co">## attr(,"msLevel")</span></span>
-<span><span class="co">## [1] 1</span></span></code></pre>
+<span><span class="co">## Sample.1_HILIC           NA</span></span></code></pre>
 <p>Alternatively, an <code>MsExperiment</code> object might be passed to
 <code>calculateMetrics</code>. The function will iterate over the
 samples (referring to rows in <code>sampleData(msexp))</code>) and
 calculate the quality metrics on the corresponding
-<code>Spectra</code>s.</p>
+<code>Spectra</code>s. Similarly, a <code>Chromatograms</code> object
+can be passed to calculate chromatogram-specific quality metrics (see
+examples above).</p>
 </div>
 <div class="section level3">
 <h3 id="obtain-the-metrics-in-mzqc-format">Obtain the metrics in <code>mzQC</code>-format<a class="anchor" aria-label="anchor" href="#obtain-the-metrics-in-mzqc-format"></a>
@@ -1517,10 +1559,11 @@ the user to export the metrics in a format defined by the
 <code>rmzqc</code> package by setting the argument <code>format</code>
 to <code>"mzQC"</code> (default: <code>format = "data.frame"</code>). In
 that case, only the metrics that comply to the <code>mzQC</code>
-specification will be written to the returned object. The object can be
-exported and validated using the functionality of the <code>rmzqc</code>
-package (see the documentation of <code>rmzqc</code> for further
-information).</p>
+specification will be written to the returned object. Note that this
+feature is currently primarily supported for <code>Spectra</code> and
+<code>MsExperiment</code> objects. The object can be exported and
+validated using the functionality of the <code>rmzqc</code> package (see
+the documentation of <code>rmzqc</code> for further information).</p>
 </div>
 <div class="section level3">
 <h3 id="remove-empty-spectra-prior-to-the-calculation">Remove empty spectra prior to the calculation<a class="anchor" aria-label="anchor" href="#remove-empty-spectra-prior-to-the-calculation"></a>
@@ -1531,27 +1574,62 @@ visualization and interpretability, we will only calculate the metrics
 from the first 20 of these samples.</p>
 <p>In this example here, we will remove zero-length and zero-intensity
 entries prior to calculating the metrics. To do this, we set the
-<code>filterEmptySpectra</code> argument to <code>TRUE</code> within the
+<code>filterEmptyObject</code> argument to <code>TRUE</code> within the
 <code>calculateMetrics</code> function.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## subset the MsExperiment objects</span></span>
 <span><span class="va">msexp_rplc_subset</span> <span class="op">&lt;-</span> <span class="va">msexp_rplc</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span><span class="op">]</span></span>
 <span><span class="va">msexp_hilic_subset</span> <span class="op">&lt;-</span> <span class="va">msexp_hilic</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">## define metrics</span></span>
-<span><span class="va">metrics_sps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"chromatographyDuration"</span>, <span class="st">"ticQuantileRtFraction"</span>, <span class="st">"rtOverMsQuarters"</span>,</span>
-<span>    <span class="st">"ticQuartileToQuartileLogRatio"</span>, <span class="st">"numberSpectra"</span>, <span class="st">"medianPrecursorMz"</span>,</span>
-<span>    <span class="st">"rtIqr"</span>, <span class="st">"rtIqrRate"</span>, <span class="st">"areaUnderTic"</span><span class="op">)</span></span>
-<span></span>
 <span><span class="co">## for RPLC-derived MsExperiment</span></span>
 <span><span class="va">metrics_rplc_msexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculateMetrics.html">calculateMetrics</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">msexp_rplc_subset</span>,</span>
-<span>    metrics <span class="op">=</span> <span class="fu"><a href="../reference/qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">msexp_rplc_subset</span><span class="op">)</span>, filterEmptySpectra <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    relativeTo <span class="op">=</span> <span class="st">"Q1"</span>, msLevel <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## for HILIC-derived MsExperiment</span></span>
-<span><span class="va">metrics_hilic_msexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculateMetrics.html">calculateMetrics</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">msexp_hilic_subset</span>,</span>
-<span>    metrics <span class="op">=</span> <span class="fu"><a href="../reference/qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">msexp_hilic_subset</span><span class="op">)</span>, filterEmptySpectra <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    metrics <span class="op">=</span> <span class="fu"><a href="../reference/qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">msexp_rplc_subset</span><span class="op">)</span>, filterEmptyObject <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    relativeTo <span class="op">=</span> <span class="st">"Q1"</span>, msLevel <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span></code></pre>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## for HILIC-derived MsExperiment</span></span>
+<span><span class="va">metrics_hilic_msexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculateMetrics.html">calculateMetrics</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">msexp_hilic_subset</span>,</span>
+<span>    metrics <span class="op">=</span> <span class="fu"><a href="../reference/qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">msexp_hilic_subset</span><span class="op">)</span>, filterEmptyObject <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    relativeTo <span class="op">=</span> <span class="st">"Q1"</span>, msLevel <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span>
+<span><span class="co">## Warning in log(ratioQuantileTIC): NaNs produced</span></span></code></pre>
 <p>When passing an <code>MsExperiment</code> object to
 <code>calculateMetrics</code> a <code>data.frame</code> object is
 returned with the samples (derived from the rownames of
@@ -1584,27 +1662,29 @@ graphically display the metrics using the <code>plotMetric</code> and
 function will create one plot based on a single metric.
 <code>shinyMsQuality</code>, on the other hand, opens a shiny
 application that allows to browse through all the metrics stored in the
-object.</p>
+object. These visualization functions work with metrics calculated from
+<code>Spectra</code>, <code>MsExperiment</code>, or
+<code>Chromatograms</code> objects.</p>
 <p>As a way of example, we will plot here the number of features. A high
 number of missing features might indicate low data quality, however,
 also different sample types might exhibit contrasting number of detected
 features. As a general rule, only samples of the same type should be
 compared to adjust for sample type-specific effects.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metrics_msexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">metrics_rplc_msexp</span>, <span class="va">metrics_hilic_msexp</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotMetric.html">plotMetric</a></span><span class="op">(</span>qc <span class="op">=</span> <span class="va">metrics_msexp</span>, metric <span class="op">=</span> <span class="st">"numberSpectra"</span><span class="op">)</span></span></code></pre></div>
 <div class="plotly html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:700px;height:432.632880098888px;"></div>
-<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"data":[{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[190,187,174,185,195,188,157,190,190,195,190,195,183,192,183,195,183,180,177,184,165,155,157,172,192,173,132,174,176,191,160,179,153,180,99,189,96,117,162,150],"text":["rowname: Sample.1_RPLC<br />value: 190","rowname: Sample.2_RPLC<br />value: 187","rowname: Sample.3_RPLC<br />value: 174","rowname: Sample.4_RPLC<br />value: 185","rowname: Sample.5_RPLC<br />value: 195","rowname: Sample.7_RPLC<br />value: 188","rowname: Sample.8_RPLC<br />value: 157","rowname: Sample.10_RPLC<br />value: 190","rowname: Sample.11_RPLC<br />value: 190","rowname: Sample.12_RPLC<br />value: 195","rowname: Sample.14_RPLC<br />value: 190","rowname: Sample.15_RPLC<br />value: 195","rowname: Sample.16_RPLC<br />value: 183","rowname: Sample.17_RPLC<br />value: 192","rowname: Sample.18_RPLC<br />value: 183","rowname: Sample.19_RPLC<br />value: 195","rowname: Sample.20_RPLC<br />value: 183","rowname: Sample.21_RPLC<br />value: 180","rowname: Sample.22_RPLC<br />value: 177","rowname: Sample.23_RPLC<br />value: 184","rowname: Sample.1_HILIC<br />value: 165","rowname: Sample.2_HILIC<br />value: 155","rowname: Sample.3_HILIC<br />value: 157","rowname: Sample.4_HILIC<br />value: 172","rowname: Sample.5_HILIC<br />value: 192","rowname: Sample.7_HILIC<br />value: 173","rowname: Sample.8_HILIC<br />value: 132","rowname: Sample.10_HILIC<br />value: 174","rowname: Sample.11_HILIC<br />value: 176","rowname: Sample.12_HILIC<br />value: 191","rowname: Sample.14_HILIC<br />value: 160","rowname: Sample.15_HILIC<br />value: 179","rowname: Sample.16_HILIC<br />value: 153","rowname: Sample.17_HILIC<br />value: 180","rowname: Sample.18_HILIC<br />value:  99","rowname: Sample.19_HILIC<br />value: 189","rowname: Sample.20_HILIC<br />value:  96","rowname: Sample.21_HILIC<br />value: 117","rowname: Sample.22_HILIC<br />value: 162","rowname: Sample.23_HILIC<br />value: 150"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(228,26,28,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(228,26,28,1)"}},"hoveron":"points","name":"numberSpectra","legendgroup":"numberSpectra","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":40.840182648401829,"r":7.3059360730593621,"b":125.19717725197175,"l":43.105022831050235},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"numberSpectra","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.40000000000000002,40.600000000000001],"tickmode":"array","ticktext":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"categoryorder":"array","categoryarray":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.283520132835198},"tickangle":-90,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"sample","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[91.049999999999997,199.94999999999999],"tickmode":"array","ticktext":["100","125","150","175"],"tickvals":[100,125,150,175],"categoryorder":"array","categoryarray":["100","125","150","175"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"value","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"rgba(255,255,255,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","layer":"below","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"name","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"f632ada463b":{"x":{},"y":{},"colour":{},"type":"scatter"}},"cur_data":"f632ada463b","visdat":{"f632ada463b":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p>Similarly, we are able to display the area under the TIC for the
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"data":[{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[190,187,174,185,195,188,157,190,190,195,190,195,183,192,183,195,183,180,177,184,165,155,157,172,192,173,132,174,176,191,160,179,153,180,99,189,96,117,162,150],"text":["rowname: Sample.1_RPLC<br />value: 190","rowname: Sample.2_RPLC<br />value: 187","rowname: Sample.3_RPLC<br />value: 174","rowname: Sample.4_RPLC<br />value: 185","rowname: Sample.5_RPLC<br />value: 195","rowname: Sample.7_RPLC<br />value: 188","rowname: Sample.8_RPLC<br />value: 157","rowname: Sample.10_RPLC<br />value: 190","rowname: Sample.11_RPLC<br />value: 190","rowname: Sample.12_RPLC<br />value: 195","rowname: Sample.14_RPLC<br />value: 190","rowname: Sample.15_RPLC<br />value: 195","rowname: Sample.16_RPLC<br />value: 183","rowname: Sample.17_RPLC<br />value: 192","rowname: Sample.18_RPLC<br />value: 183","rowname: Sample.19_RPLC<br />value: 195","rowname: Sample.20_RPLC<br />value: 183","rowname: Sample.21_RPLC<br />value: 180","rowname: Sample.22_RPLC<br />value: 177","rowname: Sample.23_RPLC<br />value: 184","rowname: Sample.1_HILIC<br />value: 165","rowname: Sample.2_HILIC<br />value: 155","rowname: Sample.3_HILIC<br />value: 157","rowname: Sample.4_HILIC<br />value: 172","rowname: Sample.5_HILIC<br />value: 192","rowname: Sample.7_HILIC<br />value: 173","rowname: Sample.8_HILIC<br />value: 132","rowname: Sample.10_HILIC<br />value: 174","rowname: Sample.11_HILIC<br />value: 176","rowname: Sample.12_HILIC<br />value: 191","rowname: Sample.14_HILIC<br />value: 160","rowname: Sample.15_HILIC<br />value: 179","rowname: Sample.16_HILIC<br />value: 153","rowname: Sample.17_HILIC<br />value: 180","rowname: Sample.18_HILIC<br />value:  99","rowname: Sample.19_HILIC<br />value: 189","rowname: Sample.20_HILIC<br />value:  96","rowname: Sample.21_HILIC<br />value: 117","rowname: Sample.22_HILIC<br />value: 162","rowname: Sample.23_HILIC<br />value: 150"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(228,26,28,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(228,26,28,1)"}},"hoveron":"points","name":"numberSpectra","legendgroup":"numberSpectra","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":40.840182648401829,"r":7.3059360730593621,"b":125.19717725197175,"l":43.105022831050235},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"numberSpectra","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.40000000000000002,40.600000000000001],"tickmode":"array","ticktext":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"categoryorder":"array","categoryarray":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.283520132835198},"tickangle":-90,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"sample","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[91.049999999999997,199.94999999999999],"tickmode":"array","ticktext":["100","125","150","175"],"tickvals":[100,125,150,175],"categoryorder":"array","categoryarray":["100","125","150","175"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"value","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"rgba(255,255,255,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","layer":"below","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"name","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"58bf35663fc9":{"x":{},"y":{},"colour":{},"type":"scatter"}},"cur_data":"58bf35663fc9","visdat":{"58bf35663fc9":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p>Similarly, we are able to display the area under the TIC for the
 retention time quantiles. This plot gives information on the perceived
 signal (TIC) for the differnt retention time quantiles and could
 indicate drifts or interruptions of sensitivity during the run.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotMetric.html">plotMetric</a></span><span class="op">(</span>qc <span class="op">=</span> <span class="va">metrics_msexp</span>, metric <span class="op">=</span> <span class="st">"ticQuartileToQuartileLogRatio"</span><span class="op">)</span></span></code></pre></div>
 <div class="plotly html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:700px;height:432.632880098888px;"></div>
-<script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"data":[{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[null,-6.247847415939181,null,-5.2131404597468967,-4.8189305255858423,-7.8755700833394746,-5.0346787478350885,null,null,-7.6561514260073897,-7.4593845701252368,-7.5256935216518626,-6.580914449316742,null,-8.6969814566978805,null,-4.6441652702008565,null,-6.2206957660759947,null,null,-4.5894835136640397,-9.6572149221986443,null,-6.5658029807260272,-6.3882805958497846,-4.8439058320621369,-4.816047130432378,null,null,-4.0471782006449688,null,-5.8730296615302056,-8.7942147376256123,-4.9904150526104418,-7.4015692099381489,-3.8818310959632596,-7.2903214507605476,null,-4.847856197124675],"text":["rowname: Sample.1_RPLC<br />value:       NaN","rowname: Sample.2_RPLC<br />value: -6.247847","rowname: Sample.3_RPLC<br />value:       NaN","rowname: Sample.4_RPLC<br />value: -5.213140","rowname: Sample.5_RPLC<br />value: -4.818931","rowname: Sample.7_RPLC<br />value: -7.875570","rowname: Sample.8_RPLC<br />value: -5.034679","rowname: Sample.10_RPLC<br />value:       NaN","rowname: Sample.11_RPLC<br />value:       NaN","rowname: Sample.12_RPLC<br />value: -7.656151","rowname: Sample.14_RPLC<br />value: -7.459385","rowname: Sample.15_RPLC<br />value: -7.525694","rowname: Sample.16_RPLC<br />value: -6.580914","rowname: Sample.17_RPLC<br />value:       NaN","rowname: Sample.18_RPLC<br />value: -8.696981","rowname: Sample.19_RPLC<br />value:       NaN","rowname: Sample.20_RPLC<br />value: -4.644165","rowname: Sample.21_RPLC<br />value:       NaN","rowname: Sample.22_RPLC<br />value: -6.220696","rowname: Sample.23_RPLC<br />value:       NaN","rowname: Sample.1_HILIC<br />value:      -Inf","rowname: Sample.2_HILIC<br />value: -4.589484","rowname: Sample.3_HILIC<br />value: -9.657215","rowname: Sample.4_HILIC<br />value:      -Inf","rowname: Sample.5_HILIC<br />value: -6.565803","rowname: Sample.7_HILIC<br />value: -6.388281","rowname: Sample.8_HILIC<br />value: -4.843906","rowname: Sample.10_HILIC<br />value: -4.816047","rowname: Sample.11_HILIC<br />value:      -Inf","rowname: Sample.12_HILIC<br />value:       NaN","rowname: Sample.14_HILIC<br />value: -4.047178","rowname: Sample.15_HILIC<br />value:      -Inf","rowname: Sample.16_HILIC<br />value: -5.873030","rowname: Sample.17_HILIC<br />value: -8.794215","rowname: Sample.18_HILIC<br />value: -4.990415","rowname: Sample.19_HILIC<br />value: -7.401569","rowname: Sample.20_HILIC<br />value: -3.881831","rowname: Sample.21_HILIC<br />value: -7.290321","rowname: Sample.22_HILIC<br />value:      -Inf","rowname: Sample.23_HILIC<br />value: -4.847856"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(228,26,28,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(228,26,28,1)"}},"hoveron":"points","name":".Q2/Q1","legendgroup":".Q2/Q1","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"text":["rowname: Sample.1_RPLC<br />value:       NaN","rowname: Sample.2_RPLC<br />value:       NaN","rowname: Sample.3_RPLC<br />value:       NaN","rowname: Sample.4_RPLC<br />value:       NaN","rowname: Sample.5_RPLC<br />value:       NaN","rowname: Sample.7_RPLC<br />value:       NaN","rowname: Sample.8_RPLC<br />value:       NaN","rowname: Sample.10_RPLC<br />value:       NaN","rowname: Sample.11_RPLC<br />value:       NaN","rowname: Sample.12_RPLC<br />value:       NaN","rowname: Sample.14_RPLC<br />value:       NaN","rowname: Sample.15_RPLC<br />value:       NaN","rowname: Sample.16_RPLC<br />value:       NaN","rowname: Sample.17_RPLC<br />value:       NaN","rowname: Sample.18_RPLC<br />value:       NaN","rowname: Sample.19_RPLC<br />value:       NaN","rowname: Sample.20_RPLC<br />value:       NaN","rowname: Sample.21_RPLC<br />value:       NaN","rowname: Sample.22_RPLC<br />value:       NaN","rowname: Sample.23_RPLC<br />value:       NaN","rowname: Sample.1_HILIC<br />value:       NaN","rowname: Sample.2_HILIC<br />value:       NaN","rowname: Sample.3_HILIC<br />value:       NaN","rowname: Sample.4_HILIC<br />value:       NaN","rowname: Sample.5_HILIC<br />value:       NaN","rowname: Sample.7_HILIC<br />value:       NaN","rowname: Sample.8_HILIC<br />value:       NaN","rowname: Sample.10_HILIC<br />value:       NaN","rowname: Sample.11_HILIC<br />value:       NaN","rowname: Sample.12_HILIC<br />value:       NaN","rowname: Sample.14_HILIC<br />value:       NaN","rowname: Sample.15_HILIC<br />value:       NaN","rowname: Sample.16_HILIC<br />value:       NaN","rowname: Sample.17_HILIC<br />value:       NaN","rowname: Sample.18_HILIC<br />value:       NaN","rowname: Sample.19_HILIC<br />value:       NaN","rowname: Sample.20_HILIC<br />value:       NaN","rowname: Sample.21_HILIC<br />value:       NaN","rowname: Sample.22_HILIC<br />value:       NaN","rowname: Sample.23_HILIC<br />value:       NaN"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(55,126,184,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(55,126,184,1)"}},"hoveron":"points","name":".Q3/Q1","legendgroup":".Q3/Q1","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"text":["rowname: Sample.1_RPLC<br />value:       NaN","rowname: Sample.2_RPLC<br />value:       NaN","rowname: Sample.3_RPLC<br />value:       NaN","rowname: Sample.4_RPLC<br />value:       NaN","rowname: Sample.5_RPLC<br />value:       NaN","rowname: Sample.7_RPLC<br />value:       NaN","rowname: Sample.8_RPLC<br />value:       NaN","rowname: Sample.10_RPLC<br />value:       NaN","rowname: Sample.11_RPLC<br />value:       NaN","rowname: Sample.12_RPLC<br />value:       NaN","rowname: Sample.14_RPLC<br />value:       NaN","rowname: Sample.15_RPLC<br />value:       NaN","rowname: Sample.16_RPLC<br />value:       NaN","rowname: Sample.17_RPLC<br />value:       NaN","rowname: Sample.18_RPLC<br />value:       NaN","rowname: Sample.19_RPLC<br />value:       NaN","rowname: Sample.20_RPLC<br />value:       NaN","rowname: Sample.21_RPLC<br />value:       NaN","rowname: Sample.22_RPLC<br />value:       NaN","rowname: Sample.23_RPLC<br />value:       NaN","rowname: Sample.1_HILIC<br />value:       NaN","rowname: Sample.2_HILIC<br />value:       NaN","rowname: Sample.3_HILIC<br />value:       NaN","rowname: Sample.4_HILIC<br />value:       NaN","rowname: Sample.5_HILIC<br />value:       NaN","rowname: Sample.7_HILIC<br />value:       NaN","rowname: Sample.8_HILIC<br />value:       NaN","rowname: Sample.10_HILIC<br />value:       NaN","rowname: Sample.11_HILIC<br />value:       NaN","rowname: Sample.12_HILIC<br />value:       NaN","rowname: Sample.14_HILIC<br />value:       NaN","rowname: Sample.15_HILIC<br />value:       NaN","rowname: Sample.16_HILIC<br />value:       NaN","rowname: Sample.17_HILIC<br />value:       NaN","rowname: Sample.18_HILIC<br />value:       NaN","rowname: Sample.19_HILIC<br />value:       NaN","rowname: Sample.20_HILIC<br />value:       NaN","rowname: Sample.21_HILIC<br />value:       NaN","rowname: Sample.22_HILIC<br />value:       NaN","rowname: Sample.23_HILIC<br />value:       NaN"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(77,175,74,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(77,175,74,1)"}},"hoveron":"points","name":".Q4/Q1","legendgroup":".Q4/Q1","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":40.840182648401829,"r":7.3059360730593621,"b":125.19717725197175,"l":37.260273972602747},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"ticQuartileToQuartileLogRatio","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.40000000000000002,40.600000000000001],"tickmode":"array","ticktext":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"categoryorder":"array","categoryarray":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.283520132835198},"tickangle":-90,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"sample","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-9.9459841135104128,-3.5930619046514902],"tickmode":"array","ticktext":["-8","-6","-4"],"tickvals":[-8,-6,-4],"categoryorder":"array","categoryarray":["-8","-6","-4"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"value","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"rgba(255,255,255,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","layer":"below","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"name","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"f634a80e729":{"x":{},"y":{},"colour":{},"type":"scatter"}},"cur_data":"f634a80e729","visdat":{"f634a80e729":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p>Alternatively, to browse through all metrics that were calculated in
+<script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"data":[{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[null,-6.247847415939181,null,-5.2131404597468967,-4.8189305255858423,-7.8755700833394746,-5.0346787478350885,null,null,-7.6561514260073897,-7.4593845701252368,-7.5256935216518626,-6.580914449316742,null,-8.6969814566978805,null,-4.6441652702008565,null,-6.2206957660759947,null,null,-4.5894835136640397,-9.6572149221986443,null,-6.5658029807260272,-6.3882805958497846,-4.8439058320621369,-4.816047130432378,null,null,-4.0471782006449688,null,-5.8730296615302056,-8.7942147376256123,-4.9904150526104418,-7.4015692099381489,-3.8818310959632596,-7.2903214507605476,null,-4.847856197124675],"text":["rowname: Sample.1_RPLC<br />value:       NaN","rowname: Sample.2_RPLC<br />value: -6.247847","rowname: Sample.3_RPLC<br />value:       NaN","rowname: Sample.4_RPLC<br />value: -5.213140","rowname: Sample.5_RPLC<br />value: -4.818931","rowname: Sample.7_RPLC<br />value: -7.875570","rowname: Sample.8_RPLC<br />value: -5.034679","rowname: Sample.10_RPLC<br />value:       NaN","rowname: Sample.11_RPLC<br />value:       NaN","rowname: Sample.12_RPLC<br />value: -7.656151","rowname: Sample.14_RPLC<br />value: -7.459385","rowname: Sample.15_RPLC<br />value: -7.525694","rowname: Sample.16_RPLC<br />value: -6.580914","rowname: Sample.17_RPLC<br />value:       NaN","rowname: Sample.18_RPLC<br />value: -8.696981","rowname: Sample.19_RPLC<br />value:       NaN","rowname: Sample.20_RPLC<br />value: -4.644165","rowname: Sample.21_RPLC<br />value:       NaN","rowname: Sample.22_RPLC<br />value: -6.220696","rowname: Sample.23_RPLC<br />value:       NaN","rowname: Sample.1_HILIC<br />value:      -Inf","rowname: Sample.2_HILIC<br />value: -4.589484","rowname: Sample.3_HILIC<br />value: -9.657215","rowname: Sample.4_HILIC<br />value:      -Inf","rowname: Sample.5_HILIC<br />value: -6.565803","rowname: Sample.7_HILIC<br />value: -6.388281","rowname: Sample.8_HILIC<br />value: -4.843906","rowname: Sample.10_HILIC<br />value: -4.816047","rowname: Sample.11_HILIC<br />value:      -Inf","rowname: Sample.12_HILIC<br />value:       NaN","rowname: Sample.14_HILIC<br />value: -4.047178","rowname: Sample.15_HILIC<br />value:      -Inf","rowname: Sample.16_HILIC<br />value: -5.873030","rowname: Sample.17_HILIC<br />value: -8.794215","rowname: Sample.18_HILIC<br />value: -4.990415","rowname: Sample.19_HILIC<br />value: -7.401569","rowname: Sample.20_HILIC<br />value: -3.881831","rowname: Sample.21_HILIC<br />value: -7.290321","rowname: Sample.22_HILIC<br />value:      -Inf","rowname: Sample.23_HILIC<br />value: -4.847856"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(228,26,28,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(228,26,28,1)"}},"hoveron":"points","name":".Q2/Q1","legendgroup":".Q2/Q1","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"text":["rowname: Sample.1_RPLC<br />value:       NaN","rowname: Sample.2_RPLC<br />value:       NaN","rowname: Sample.3_RPLC<br />value:       NaN","rowname: Sample.4_RPLC<br />value:       NaN","rowname: Sample.5_RPLC<br />value:       NaN","rowname: Sample.7_RPLC<br />value:       NaN","rowname: Sample.8_RPLC<br />value:       NaN","rowname: Sample.10_RPLC<br />value:       NaN","rowname: Sample.11_RPLC<br />value:       NaN","rowname: Sample.12_RPLC<br />value:       NaN","rowname: Sample.14_RPLC<br />value:       NaN","rowname: Sample.15_RPLC<br />value:       NaN","rowname: Sample.16_RPLC<br />value:       NaN","rowname: Sample.17_RPLC<br />value:       NaN","rowname: Sample.18_RPLC<br />value:       NaN","rowname: Sample.19_RPLC<br />value:       NaN","rowname: Sample.20_RPLC<br />value:       NaN","rowname: Sample.21_RPLC<br />value:       NaN","rowname: Sample.22_RPLC<br />value:       NaN","rowname: Sample.23_RPLC<br />value:       NaN","rowname: Sample.1_HILIC<br />value:       NaN","rowname: Sample.2_HILIC<br />value:       NaN","rowname: Sample.3_HILIC<br />value:       NaN","rowname: Sample.4_HILIC<br />value:       NaN","rowname: Sample.5_HILIC<br />value:       NaN","rowname: Sample.7_HILIC<br />value:       NaN","rowname: Sample.8_HILIC<br />value:       NaN","rowname: Sample.10_HILIC<br />value:       NaN","rowname: Sample.11_HILIC<br />value:       NaN","rowname: Sample.12_HILIC<br />value:       NaN","rowname: Sample.14_HILIC<br />value:       NaN","rowname: Sample.15_HILIC<br />value:       NaN","rowname: Sample.16_HILIC<br />value:       NaN","rowname: Sample.17_HILIC<br />value:       NaN","rowname: Sample.18_HILIC<br />value:       NaN","rowname: Sample.19_HILIC<br />value:       NaN","rowname: Sample.20_HILIC<br />value:       NaN","rowname: Sample.21_HILIC<br />value:       NaN","rowname: Sample.22_HILIC<br />value:       NaN","rowname: Sample.23_HILIC<br />value:       NaN"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(55,126,184,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(55,126,184,1)"}},"hoveron":"points","name":".Q3/Q1","legendgroup":".Q3/Q1","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"y":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"text":["rowname: Sample.1_RPLC<br />value:       NaN","rowname: Sample.2_RPLC<br />value:       NaN","rowname: Sample.3_RPLC<br />value:       NaN","rowname: Sample.4_RPLC<br />value:       NaN","rowname: Sample.5_RPLC<br />value:       NaN","rowname: Sample.7_RPLC<br />value:       NaN","rowname: Sample.8_RPLC<br />value:       NaN","rowname: Sample.10_RPLC<br />value:       NaN","rowname: Sample.11_RPLC<br />value:       NaN","rowname: Sample.12_RPLC<br />value:       NaN","rowname: Sample.14_RPLC<br />value:       NaN","rowname: Sample.15_RPLC<br />value:       NaN","rowname: Sample.16_RPLC<br />value:       NaN","rowname: Sample.17_RPLC<br />value:       NaN","rowname: Sample.18_RPLC<br />value:       NaN","rowname: Sample.19_RPLC<br />value:       NaN","rowname: Sample.20_RPLC<br />value:       NaN","rowname: Sample.21_RPLC<br />value:       NaN","rowname: Sample.22_RPLC<br />value:       NaN","rowname: Sample.23_RPLC<br />value:       NaN","rowname: Sample.1_HILIC<br />value:       NaN","rowname: Sample.2_HILIC<br />value:       NaN","rowname: Sample.3_HILIC<br />value:       NaN","rowname: Sample.4_HILIC<br />value:       NaN","rowname: Sample.5_HILIC<br />value:       NaN","rowname: Sample.7_HILIC<br />value:       NaN","rowname: Sample.8_HILIC<br />value:       NaN","rowname: Sample.10_HILIC<br />value:       NaN","rowname: Sample.11_HILIC<br />value:       NaN","rowname: Sample.12_HILIC<br />value:       NaN","rowname: Sample.14_HILIC<br />value:       NaN","rowname: Sample.15_HILIC<br />value:       NaN","rowname: Sample.16_HILIC<br />value:       NaN","rowname: Sample.17_HILIC<br />value:       NaN","rowname: Sample.18_HILIC<br />value:       NaN","rowname: Sample.19_HILIC<br />value:       NaN","rowname: Sample.20_HILIC<br />value:       NaN","rowname: Sample.21_HILIC<br />value:       NaN","rowname: Sample.22_HILIC<br />value:       NaN","rowname: Sample.23_HILIC<br />value:       NaN"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(77,175,74,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(77,175,74,1)"}},"hoveron":"points","name":".Q4/Q1","legendgroup":".Q4/Q1","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":40.840182648401829,"r":7.3059360730593621,"b":125.19717725197175,"l":37.260273972602747},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"ticQuartileToQuartileLogRatio","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.40000000000000002,40.600000000000001],"tickmode":"array","ticktext":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"categoryorder":"array","categoryarray":["Sample.1_RPLC","Sample.2_RPLC","Sample.3_RPLC","Sample.4_RPLC","Sample.5_RPLC","Sample.7_RPLC","Sample.8_RPLC","Sample.10_RPLC","Sample.11_RPLC","Sample.12_RPLC","Sample.14_RPLC","Sample.15_RPLC","Sample.16_RPLC","Sample.17_RPLC","Sample.18_RPLC","Sample.19_RPLC","Sample.20_RPLC","Sample.21_RPLC","Sample.22_RPLC","Sample.23_RPLC","Sample.1_HILIC","Sample.2_HILIC","Sample.3_HILIC","Sample.4_HILIC","Sample.5_HILIC","Sample.7_HILIC","Sample.8_HILIC","Sample.10_HILIC","Sample.11_HILIC","Sample.12_HILIC","Sample.14_HILIC","Sample.15_HILIC","Sample.16_HILIC","Sample.17_HILIC","Sample.18_HILIC","Sample.19_HILIC","Sample.20_HILIC","Sample.21_HILIC","Sample.22_HILIC","Sample.23_HILIC"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.283520132835198},"tickangle":-90,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"sample","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-9.9459841135104128,-3.5930619046514902],"tickmode":"array","ticktext":["-8","-6","-4"],"tickvals":[-8,-6,-4],"categoryorder":"array","categoryarray":["-8","-6","-4"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"value","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"rgba(255,255,255,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","layer":"below","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"name","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"58bf4bff4f47":{"x":{},"y":{},"colour":{},"type":"scatter"}},"cur_data":"58bf4bff4f47","visdat":{"58bf4bff4f47":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p>Alternatively, to browse through all metrics that were calculated in
 an interactive way, we can use the <code>shinyMsQuality</code>
 function.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/shinyMsQuality.html">shinyMsQuality</a></span><span class="op">(</span>qc <span class="op">=</span> <span class="va">metrics_msexp</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -1615,7 +1695,7 @@ function.</p>
 </h3>
 <p>All software and respective versions to build this vignette are
 listed here:</p>
-<pre><code><span><span class="co">## R Under development (unstable) (2026-03-01 r89508)</span></span>
+<pre><code><span><span class="co">## R Under development (unstable) (2026-03-22 r89674)</span></span>
 <span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
 <span><span class="co">## Running under: Ubuntu 24.04.4 LTS</span></span>
 <span><span class="co">## </span></span>
@@ -1639,30 +1719,30 @@ listed here:</p>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] MsExperiment_1.13.1 ProtGenerics_1.43.0 Spectra_1.21.1     </span></span>
-<span><span class="co">##  [4] BiocParallel_1.45.0 S4Vectors_0.49.0    BiocGenerics_0.57.0</span></span>
-<span><span class="co">##  [7] generics_0.1.4      MsQuality_1.11.2    knitr_1.51         </span></span>
-<span><span class="co">## [10] BiocStyle_2.39.0   </span></span>
+<span><span class="co">##  [1] Chromatograms_1.1.5 MsExperiment_1.13.1 ProtGenerics_1.43.0</span></span>
+<span><span class="co">##  [4] Spectra_1.21.5      BiocParallel_1.45.0 S4Vectors_0.49.0   </span></span>
+<span><span class="co">##  [7] BiocGenerics_0.57.0 generics_0.1.4      MsQuality_1.11.3   </span></span>
+<span><span class="co">## [10] knitr_1.51          BiocStyle_2.39.0   </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##   [1] DBI_1.3.0                   httr2_1.2.2                </span></span>
 <span><span class="co">##   [3] testthat_3.3.2              rlang_1.1.7                </span></span>
 <span><span class="co">##   [5] magrittr_2.0.4              shinydashboard_0.7.3       </span></span>
-<span><span class="co">##   [7] clue_0.3-67                 otel_0.2.0                 </span></span>
+<span><span class="co">##   [7] clue_0.3-68                 otel_0.2.0                 </span></span>
 <span><span class="co">##   [9] matrixStats_1.5.0           compiler_4.6.0             </span></span>
-<span><span class="co">##  [11] RSQLite_2.4.6               png_0.1-8                  </span></span>
-<span><span class="co">##  [13] systemfonts_1.3.1           vctrs_0.7.1                </span></span>
+<span><span class="co">##  [11] RSQLite_2.4.6               png_0.1-9                  </span></span>
+<span><span class="co">##  [13] systemfonts_1.3.2           vctrs_0.7.2                </span></span>
 <span><span class="co">##  [15] reshape2_1.4.5              stringr_1.6.0              </span></span>
 <span><span class="co">##  [17] pkgconfig_2.0.3             MetaboCoreUtils_1.19.2     </span></span>
 <span><span class="co">##  [19] crayon_1.5.3                fastmap_1.2.0              </span></span>
 <span><span class="co">##  [21] dbplyr_2.5.2                XVector_0.51.0             </span></span>
 <span><span class="co">##  [23] labeling_0.4.3              promises_1.5.0             </span></span>
-<span><span class="co">##  [25] rmarkdown_2.30              ragg_1.5.0                 </span></span>
+<span><span class="co">##  [25] rmarkdown_2.31              ragg_1.5.2                 </span></span>
 <span><span class="co">##  [27] purrr_1.2.1                 bit_4.6.0                  </span></span>
-<span><span class="co">##  [29] xfun_0.56                   MultiAssayExperiment_1.37.2</span></span>
-<span><span class="co">##  [31] MsDataHub_1.11.1            cachem_1.1.0               </span></span>
+<span><span class="co">##  [29] xfun_0.57                   MultiAssayExperiment_1.37.3</span></span>
+<span><span class="co">##  [31] MsDataHub_1.11.2            cachem_1.1.0               </span></span>
 <span><span class="co">##  [33] jsonlite_2.0.0              blob_1.3.0                 </span></span>
-<span><span class="co">##  [35] later_1.4.7                 DelayedArray_0.37.0        </span></span>
+<span><span class="co">##  [35] later_1.4.8                 DelayedArray_0.37.0        </span></span>
 <span><span class="co">##  [37] parallel_4.6.0              cluster_2.1.8.2            </span></span>
 <span><span class="co">##  [39] R6_2.6.1                    RColorBrewer_1.1-3         </span></span>
 <span><span class="co">##  [41] bslib_0.10.0                stringi_1.8.7              </span></span>
@@ -1670,7 +1750,7 @@ listed here:</p>
 <span><span class="co">##  [45] jquerylib_0.1.4             Rcpp_1.1.1                 </span></span>
 <span><span class="co">##  [47] Seqinfo_1.1.0               bookdown_0.46              </span></span>
 <span><span class="co">##  [49] SummarizedExperiment_1.41.1 IRanges_2.45.0             </span></span>
-<span><span class="co">##  [51] httpuv_1.6.16               Matrix_1.7-4               </span></span>
+<span><span class="co">##  [51] httpuv_1.6.17               Matrix_1.7-5               </span></span>
 <span><span class="co">##  [53] igraph_2.2.2                tidyselect_1.2.1           </span></span>
 <span><span class="co">##  [55] abind_1.4-8                 yaml_2.3.12                </span></span>
 <span><span class="co">##  [57] codetools_0.2-20            curl_7.0.0                 </span></span>
@@ -1680,7 +1760,7 @@ listed here:</p>
 <span><span class="co">##  [65] Biobase_2.71.0              KEGGREST_1.51.1            </span></span>
 <span><span class="co">##  [67] evaluate_1.0.5              ontologyIndex_2.12         </span></span>
 <span><span class="co">##  [69] desc_1.4.3                  BiocFileCache_3.1.0        </span></span>
-<span><span class="co">##  [71] ExperimentHub_3.1.0         Biostrings_2.79.4          </span></span>
+<span><span class="co">##  [71] ExperimentHub_3.1.0         Biostrings_2.79.5          </span></span>
 <span><span class="co">##  [73] pillar_1.11.1               BiocManager_1.30.27        </span></span>
 <span><span class="co">##  [75] filelock_1.0.3              MatrixGenerics_1.23.0      </span></span>
 <span><span class="co">##  [77] plotly_4.12.0               BiocVersion_3.23.1         </span></span>
@@ -1688,16 +1768,16 @@ listed here:</p>
 <span><span class="co">##  [81] R6P_0.4.0                   xtable_1.8-8               </span></span>
 <span><span class="co">##  [83] glue_1.8.0                  lazyeval_0.2.2             </span></span>
 <span><span class="co">##  [85] tools_4.6.0                 AnnotationHub_4.1.0        </span></span>
-<span><span class="co">##  [87] data.table_1.18.2.1         QFeatures_1.21.0           </span></span>
-<span><span class="co">##  [89] fs_1.6.6                    grid_4.6.0                 </span></span>
+<span><span class="co">##  [87] data.table_1.18.2.1         QFeatures_1.21.1           </span></span>
+<span><span class="co">##  [89] fs_2.0.1                    grid_4.6.0                 </span></span>
 <span><span class="co">##  [91] jsonvalidate_1.5.0          tidyr_1.3.2                </span></span>
-<span><span class="co">##  [93] crosstalk_1.2.2             MsCoreUtils_1.23.2         </span></span>
+<span><span class="co">##  [93] crosstalk_1.2.2             MsCoreUtils_1.23.6         </span></span>
 <span><span class="co">##  [95] AnnotationDbi_1.73.0        cli_3.6.5                  </span></span>
-<span><span class="co">##  [97] rappdirs_0.3.4              textshaping_1.0.4          </span></span>
+<span><span class="co">##  [97] rappdirs_0.3.4              textshaping_1.0.5          </span></span>
 <span><span class="co">##  [99] viridisLite_0.4.3           S4Arrays_1.11.1            </span></span>
 <span><span class="co">## [101] dplyr_1.2.0                 AnnotationFilter_1.35.0    </span></span>
 <span><span class="co">## [103] gtable_0.3.6                sass_0.4.10                </span></span>
-<span><span class="co">## [105] digest_0.6.39               SparseArray_1.11.10        </span></span>
+<span><span class="co">## [105] digest_0.6.39               SparseArray_1.11.11        </span></span>
 <span><span class="co">## [107] farver_2.1.2                htmlwidgets_1.6.4          </span></span>
 <span><span class="co">## [109] memoise_2.0.1               htmltools_0.5.9            </span></span>
 <span><span class="co">## [111] pkgdown_2.2.0.9000          lifecycle_1.0.5            </span></span>
@@ -1730,7 +1810,7 @@ Metabolite Dynamics.”</span> <em>Metabolomics</em>, 103. <a href="https://doi.
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Thomas Naake, Johannes Rainer.</p>
+<p>Developed by Thomas Naake, Johannes Rainer, Philippine Louail.</p>
 </div>
 
 <div class="pkgdown">

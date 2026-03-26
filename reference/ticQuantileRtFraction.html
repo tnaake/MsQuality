@@ -37,7 +37,7 @@ cumulative TIC is calculated and returned. '><!-- mathjax --><script src="https:
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MsQuality</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.3</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@ cumulative TIC is calculated and returned. <br></p>
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ticQuantileRtFraction</span><span class="op">(</span></span>
-<span>  <span class="va">spectra</span>,</span>
+<span>  <span class="va">object</span>,</span>
 <span>  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0.25</span><span class="op">)</span>,</span>
 <span>  msLevel <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  relative <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -100,8 +100,8 @@ cumulative TIC is calculated and returned. <br></p>
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-spectra">spectra<a class="anchor" aria-label="anchor" href="#arg-spectra"></a></dt>
-<dd><p><code>Spectra</code> object</p></dd>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
+<dd><p><code>Spectra</code> or <code>Chromatograms</code> object</p></dd>
 
 
 <dt id="arg-probs">probs<a class="anchor" aria-label="anchor" href="#arg-probs"></a></dt>
@@ -118,14 +118,17 @@ will be returned instead of the abolute retention time</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>not used here</p></dd>
+<dd><p>additional arguments passed to internal helpers</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>numeric</code> of length equal to length <code>probs</code> with the relative
-   duration (duration divided by the total run time) after which the TIC
-   exceeds the respective quantile of the TIC.</p>
+    <p>For <code>Spectra</code>: <code>numeric</code> of length equal to
+   <code>length(probs)</code> with the relative duration (duration divided by
+   the total run time) after which the TIC exceeds the respective
+   quantile of the TIC.
+   For <code>Chromatograms</code>: a <code>matrix</code> with <code>nrow</code> equal to
+   <code>length(object)</code> and <code>ncol</code> equal to <code>length(probs)</code>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -170,7 +173,7 @@ relationship: has_value_type xsd:float <br>#'</p>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.459</span>, <span class="fl">2.585</span>, <span class="fl">2.446</span>, <span class="fl">0.508</span>, <span class="fl">8.968</span>, <span class="fl">0.524</span>, <span class="fl">0.974</span>, <span class="fl">100.0</span>, <span class="fl">40.994</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spd</span><span class="op">$</span><span class="va">rtime</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9.44</span>, <span class="fl">9.44</span>, <span class="fl">15.84</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">sps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="va">spd</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">ticQuantileRtFraction</span><span class="op">(</span>spectra <span class="op">=</span> <span class="va">sps</span>, msLevel <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">ticQuantileRtFraction</span><span class="op">(</span>object <span class="op">=</span> <span class="va">sps</span>, msLevel <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   0%  25%  50%  75% 100% </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    0    0    0    1    1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"ticQuantileRtFraction")</span>
@@ -185,7 +188,7 @@ relationship: has_value_type xsd:float <br>#'</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Thomas Naake, Johannes Rainer.</p>
+  <p></p><p>Developed by Thomas Naake, Johannes Rainer, Philippine Louail.</p>
 </div>
 
 <div class="pkgdown">

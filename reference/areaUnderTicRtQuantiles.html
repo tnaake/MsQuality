@@ -27,7 +27,7 @@ values are obtained,
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MsQuality</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.3</span>
       </span>
     </div>
 
@@ -67,19 +67,21 @@ values are obtained, <br>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">areaUnderTicRtQuantiles</span><span class="op">(</span><span class="va">spectra</span>, msLevel <span class="op">=</span> <span class="fl">1L</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">areaUnderTicRtQuantiles</span><span class="op">(</span><span class="va">object</span>, msLevel <span class="op">=</span> <span class="fl">1L</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-spectra">spectra<a class="anchor" aria-label="anchor" href="#arg-spectra"></a></dt>
-<dd><p><code>Spectra</code> object</p></dd>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
+<dd><p><code>Spectra</code> or <code>Chromatograms</code> object</p></dd>
 
 
 <dt id="arg-mslevel">msLevel<a class="anchor" aria-label="anchor" href="#arg-mslevel"></a></dt>
-<dd><p><code>integer</code></p></dd>
+<dd><p><code>integer</code>; optional MS level filter (defaults to 1L for
+<code>Spectra</code>; if supplied for <code>Chromatograms</code>, data are filtered
+via <code>msLevel</code> before computing the metric)</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -88,7 +90,10 @@ values are obtained, <br>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>.numeric(4)</code></p>
+    <p>For <code>Spectra</code>: a named <code>numeric(4)</code> with areas per
+    quartile (<code>"25%"</code>, <code>"50%"</code>, <code>"75%"</code>, <code>"100%"</code>).
+    For <code>Chromatograms</code>: a <code>matrix</code> with <code>nrow</code> equal to
+    <code>length(object)</code> and 4 columns.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -130,7 +135,7 @@ is_a: MS:4000017 ! chromatogram metric <br></p>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.459</span>, <span class="fl">2.585</span>, <span class="fl">2.446</span>, <span class="fl">0.508</span>, <span class="fl">8.968</span>, <span class="fl">0.524</span>, <span class="fl">0.974</span>, <span class="fl">100.0</span>, <span class="fl">40.994</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spd</span><span class="op">$</span><span class="va">rtime</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9.44</span>, <span class="fl">9.44</span>, <span class="fl">15.84</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">sps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="va">spd</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">areaUnderTicRtQuantiles</span><span class="op">(</span>spectra <span class="op">=</span> <span class="va">sps</span>, msLevel <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">areaUnderTicRtQuantiles</span><span class="op">(</span>object <span class="op">=</span> <span class="va">sps</span>, msLevel <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     25%     50%     75%    100% </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   0.000   0.000   0.000 157.458 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"areaUnderTicRtQuantiles")</span>
@@ -145,7 +150,7 @@ is_a: MS:4000017 ! chromatogram metric <br></p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Thomas Naake, Johannes Rainer.</p>
+  <p></p><p>Developed by Thomas Naake, Johannes Rainer, Philippine Louail.</p>
 </div>
 
 <div class="pkgdown">

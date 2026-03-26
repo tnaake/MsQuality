@@ -24,7 +24,7 @@ Two format options are available:
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MsQuality</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.3</span>
       </span>
     </div>
 
@@ -64,7 +64,7 @@ e.g. <code>dataOrigin</code> information.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calculateMetricsFromSpectra</span><span class="op">(</span></span>
 <span>  <span class="va">spectra</span>,</span>
 <span>  <span class="va">metrics</span>,</span>
-<span>  filterEmptySpectra <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  filterEmptyObject <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  f <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">dataOrigin</a></span><span class="op">(</span><span class="va">spectra</span><span class="op">)</span>,</span>
 <span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"data.frame"</span>, <span class="st">"mzQC"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span>,</span>
@@ -85,7 +85,7 @@ e.g. <code>dataOrigin</code> information.</p>
 calculated on <code>spectra</code></p></dd>
 
 
-<dt id="arg-filteremptyspectra">filterEmptySpectra<a class="anchor" aria-label="anchor" href="#arg-filteremptyspectra"></a></dt>
+<dt id="arg-filteremptyobject">filterEmptyObject<a class="anchor" aria-label="anchor" href="#arg-filteremptyobject"></a></dt>
 <dd><p><code>logical(1)</code> specifying if empty entries and
 entries with intensity zero of the <code>Spectra</code> object will be removed</p></dd>
 
@@ -131,7 +131,7 @@ the formal arguments of the quality metric functions.</p>
 <p>Samples will be processed in parallel
 using the default parallel processing setup ([bpparam()]) or with the
 parallel processing setup defined with parameter <code>BPPARAM</code>.</p>
-<p>Setting the argument <code>filterEmptySpectra</code> to <code>TRUE</code> will remove
+<p>Setting the argument <code>filterEmptyObject</code> to <code>TRUE</code> will remove
 zero-length entries, zero-intensity entries, and entries with
 intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
     </div>
@@ -167,58 +167,34 @@ intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
 <span class="r-in"><span><span class="co">## format = "data.frame"</span></span></span>
 <span class="r-in"><span><span class="fu">calculateMetricsFromSpectra</span><span class="op">(</span>spectra <span class="op">=</span> <span class="va">spectra</span>, metrics <span class="op">=</span> <span class="va">metrics</span>,</span></span>
 <span class="r-in"><span>    format <span class="op">=</span> <span class="st">"data.frame"</span>, msLevel <span class="op">=</span> <span class="fl">1</span>, change <span class="op">=</span> <span class="st">"jump"</span>, relativeTo <span class="op">=</span> <span class="st">"Q1"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      areaUnderTic</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/7d762bd1b52_7859    650969677</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/7d73e5872c4_7860    622957884</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      chromatographyDuration</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/7d762bd1b52_7859                259.477</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/7d73e5872c4_7860                259.477</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      msSignal10xChange</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/7d762bd1b52_7859                 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/7d73e5872c4_7860                 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"areaUnderTic")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "MS:4000155"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"chromatographyDuration")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "MS:4000053"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"msSignal10xChange")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "MS:4000097"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"msLevel")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"change")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "jump"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"relativeTo")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Q1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                       areaUnderTic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/4f107b8a3066_7859    650969677</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/4f105de1e379_7860    622957884</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                       chromatographyDuration</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/4f107b8a3066_7859                259.477</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/4f105de1e379_7860                259.477</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                       msSignal10xChange</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/4f107b8a3066_7859                 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/4f105de1e379_7860                 0</span>
 <span class="r-in"><span><span class="fu">calculateMetricsFromSpectra</span><span class="op">(</span>spectra <span class="op">=</span> <span class="va">spectra</span>, metrics <span class="op">=</span> <span class="va">metrics</span>,</span></span>
 <span class="r-in"><span>    format <span class="op">=</span> <span class="st">"data.frame"</span>, msLevel <span class="op">=</span> <span class="fl">1</span>, change <span class="op">=</span> <span class="st">"fall"</span>,</span></span>
 <span class="r-in"><span>    relativeTo <span class="op">=</span> <span class="st">"previous"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      areaUnderTic</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/7d762bd1b52_7859    650969677</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/7d73e5872c4_7860    622957884</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      chromatographyDuration</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/7d762bd1b52_7859                259.477</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/7d73e5872c4_7860                259.477</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      msSignal10xChange</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/7d762bd1b52_7859                 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/7d73e5872c4_7860                 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"areaUnderTic")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "MS:4000155"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"chromatographyDuration")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "MS:4000053"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"msSignal10xChange")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "MS:4000098"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"msLevel")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"change")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "fall"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"relativeTo")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "previous"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                       areaUnderTic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/4f107b8a3066_7859    650969677</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/4f105de1e379_7860    622957884</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                       chromatographyDuration</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/4f107b8a3066_7859                259.477</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/4f105de1e379_7860                259.477</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                       msSignal10xChange</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/4f107b8a3066_7859                 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /github/home/.cache/R/ExperimentHub/4f105de1e379_7860                 0</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## format = "mzQC"</span></span></span>
 <span class="r-in"><span><span class="fu">calculateMetricsFromSpectra</span><span class="op">(</span>spectra <span class="op">=</span> <span class="va">spectra</span>, metrics <span class="op">=</span> <span class="va">metrics</span>,</span></span>
 <span class="r-in"><span>    format <span class="op">=</span> <span class="st">"mzQC"</span>, msLevel <span class="op">=</span> <span class="fl">1</span>, change <span class="op">=</span> <span class="st">"jump"</span>, relativeTo <span class="op">=</span> <span class="st">"Q1"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Downloading obo from 'https://github.com/HUPO-PSI/psi-ms-CV/releases/download/v4.1.237/psi-ms.obo' ...</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>File '/github/home/.cache/R/ExperimentHub/7d762bd1b52_7859' has an unknown suffix. Falling back to 'MS:1000560 ! mass spectrometer file format'.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>File '/github/home/.cache/R/ExperimentHub/7d73e5872c4_7860' has an unknown suffix. Falling back to 'MS:1000560 ! mass spectrometer file format'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Downloading obo from 'https://github.com/HUPO-PSI/psi-ms-CV/releases/download/v4.1.244/psi-ms.obo' ...</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>File '/github/home/.cache/R/ExperimentHub/4f107b8a3066_7859' has an unknown suffix. Falling back to 'MS:1000560 ! mass spectrometer file format'.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>File '/github/home/.cache/R/ExperimentHub/4f105de1e379_7860' has an unknown suffix. Falling back to 'MS:1000560 ! mass spectrometer file format'.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;MzQCmzQC&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Public:</span>
@@ -227,7 +203,7 @@ intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     contactName: root</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     controlledVocabularies: list</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     creationDate: MzQCDateTime, R6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 7d762bd1b52_7859</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 4f107b8a3066_7859</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fromData: function (data, context = "MzQCmzQC") </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     initialize: function (version = NA_character_, creationDate = MzQCDateTime$new(), </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     isValid: function (context = "MzQCmzQC") </span>
@@ -245,7 +221,7 @@ intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     contactName: root</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     controlledVocabularies: list</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     creationDate: MzQCDateTime, R6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 7d73e5872c4_7860</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 4f105de1e379_7860</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fromData: function (data, context = "MzQCmzQC") </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     initialize: function (version = NA_character_, creationDate = MzQCDateTime$new(), </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     isValid: function (context = "MzQCmzQC") </span>
@@ -257,8 +233,8 @@ intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu">calculateMetricsFromSpectra</span><span class="op">(</span>spectra <span class="op">=</span> <span class="va">spectra</span>, metrics <span class="op">=</span> <span class="va">metrics</span>,</span></span>
 <span class="r-in"><span>    format <span class="op">=</span> <span class="st">"mzQC"</span>, msLevel <span class="op">=</span> <span class="fl">1</span>, change <span class="op">=</span> <span class="st">"fall"</span>, relativeTo <span class="op">=</span> <span class="st">"previous"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>File '/github/home/.cache/R/ExperimentHub/7d762bd1b52_7859' has an unknown suffix. Falling back to 'MS:1000560 ! mass spectrometer file format'.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>File '/github/home/.cache/R/ExperimentHub/7d73e5872c4_7860' has an unknown suffix. Falling back to 'MS:1000560 ! mass spectrometer file format'.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>File '/github/home/.cache/R/ExperimentHub/4f107b8a3066_7859' has an unknown suffix. Falling back to 'MS:1000560 ! mass spectrometer file format'.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>File '/github/home/.cache/R/ExperimentHub/4f105de1e379_7860' has an unknown suffix. Falling back to 'MS:1000560 ! mass spectrometer file format'.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;MzQCmzQC&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Public:</span>
@@ -267,7 +243,7 @@ intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     contactName: root</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     controlledVocabularies: list</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     creationDate: MzQCDateTime, R6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 7d762bd1b52_7859</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 4f107b8a3066_7859</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fromData: function (data, context = "MzQCmzQC") </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     initialize: function (version = NA_character_, creationDate = MzQCDateTime$new(), </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     isValid: function (context = "MzQCmzQC") </span>
@@ -285,7 +261,7 @@ intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     contactName: root</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     controlledVocabularies: list</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     creationDate: MzQCDateTime, R6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 7d73e5872c4_7860</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 4f105de1e379_7860</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fromData: function (data, context = "MzQCmzQC") </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     initialize: function (version = NA_character_, creationDate = MzQCDateTime$new(), </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     isValid: function (context = "MzQCmzQC") </span>
@@ -306,7 +282,7 @@ intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Thomas Naake, Johannes Rainer.</p>
+  <p></p><p>Developed by Thomas Naake, Johannes Rainer, Philippine Louail.</p>
 </div>
 
 <div class="pkgdown">

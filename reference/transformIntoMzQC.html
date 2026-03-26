@@ -3,9 +3,10 @@
 spectra_metrics into a list of MzQCmzQC objects. Each list
 entry will refer to the corresponding entry in spectra_metrics.
 As such, each entry contains information from a single dataOrigin
-of a Spectra object.
+of a Spectra or Chromatograms object.
 The function transformIntoMzQC is a helper function within
-calculateMetricsFromSpectra."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+calculateMetricsFromSpectra and
+calculateMetricsFromChromatograms."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
@@ -23,7 +24,7 @@ calculateMetricsFromSpectra."><!-- mathjax --><script src="https://cdnjs.cloudfl
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MsQuality</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.3</span>
       </span>
     </div>
 
@@ -53,9 +54,10 @@ calculateMetricsFromSpectra."><!-- mathjax --><script src="https://cdnjs.cloudfl
 <code>spectra_metrics</code> into a list of <code>MzQCmzQC</code> objects. Each list
 entry will refer to the corresponding entry in <code>spectra_metrics</code>.
 As such, each entry contains information from a single <code>dataOrigin</code>
-of a <code>Spectra</code> object.</p>
+of a <code>Spectra</code> or <code>Chromatograms</code> object.</p>
 <p>The function <code>transformIntoMzQC</code> is a helper function within
-<code>calculateMetricsFromSpectra</code>.</p>
+<code>calculateMetricsFromSpectra</code> and
+<code>calculateMetricsFromChromatograms</code>.</p>
     </div>
 
     <div id="ref-usage">
@@ -95,6 +97,9 @@ of <code>MsQuality</code> ("MS:") and the version is taken from
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rformassspectrometry.github.io/MsDataHub" class="external-link">MsDataHub</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/Spectra" class="external-link">Spectra</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.github.com/tnaake/MsQuality/" class="external-link">MsQuality</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">register</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## define file names containing spectra data for the samples</span></span></span>
 <span class="r-in"><span><span class="va">sciex_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">MsDataHub</span><span class="fu">::</span><span class="fu"><a href="https://rformassspectrometry.github.io/MsDataHub/reference/sciex.html" class="external-link">X20171016_POOL_POS_1_105.134.mzML</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
@@ -114,15 +119,15 @@ of <code>MsQuality</code> ("MS:") and the version is taken from
 <span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">dataOrigin</a></span><span class="op">(</span><span class="va">spectra</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">f_unique</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spectra_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html" class="external-link">bplapply</a></span><span class="op">(</span><span class="va">f_unique</span>, <span class="kw">function</span><span class="op">(</span><span class="va">f_unique_i</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>     <span class="fu">MsQuality</span><span class="fu">:::</span><span class="fu"><a href="calculateMetricsFromOneSampleSpectra.html">calculateMetricsFromOneSampleSpectra</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>     <span class="fu"><a href="calculateMetricsFromOneSampleSpectra.html">calculateMetricsFromOneSampleSpectra</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>         spectra <span class="op">=</span> <span class="va">spectra</span><span class="op">[</span><span class="va">f</span> <span class="op">==</span> <span class="va">f_unique_i</span><span class="op">]</span>, metrics <span class="op">=</span> <span class="va">metrics</span><span class="op">)</span></span></span>
 <span class="r-in"><span>     <span class="op">}</span>, BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">bpparam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">spectra_metrics</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">f_unique</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## transform into mzQC objects</span></span></span>
-<span class="r-in"><span><span class="fu">MsQuality</span><span class="fu">:::</span><span class="fu">transformIntoMzQC</span><span class="op">(</span><span class="va">spectra_metrics</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>File '/github/home/.cache/R/ExperimentHub/7d762bd1b52_7859' has an unknown suffix. Falling back to 'MS:1000560 ! mass spectrometer file format'.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>File '/github/home/.cache/R/ExperimentHub/7d73e5872c4_7860' has an unknown suffix. Falling back to 'MS:1000560 ! mass spectrometer file format'.</span>
+<span class="r-in"><span><span class="co">## transform to mzQC format</span></span></span>
+<span class="r-in"><span><span class="fu">transformIntoMzQC</span><span class="op">(</span><span class="va">spectra_metrics</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>File '/github/home/.cache/R/ExperimentHub/4f107b8a3066_7859' has an unknown suffix. Falling back to 'MS:1000560 ! mass spectrometer file format'.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>File '/github/home/.cache/R/ExperimentHub/4f105de1e379_7860' has an unknown suffix. Falling back to 'MS:1000560 ! mass spectrometer file format'.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;MzQCmzQC&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Public:</span>
@@ -131,7 +136,7 @@ of <code>MsQuality</code> ("MS:") and the version is taken from
 <span class="r-out co"><span class="r-pr">#&gt;</span>     contactName: root</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     controlledVocabularies: list</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     creationDate: MzQCDateTime, R6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 7d762bd1b52_7859</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 4f107b8a3066_7859</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fromData: function (data, context = "MzQCmzQC") </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     initialize: function (version = NA_character_, creationDate = MzQCDateTime$new(), </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     isValid: function (context = "MzQCmzQC") </span>
@@ -149,7 +154,7 @@ of <code>MsQuality</code> ("MS:") and the version is taken from
 <span class="r-out co"><span class="r-pr">#&gt;</span>     contactName: root</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     controlledVocabularies: list</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     creationDate: MzQCDateTime, R6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 7d73e5872c4_7860</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     description: A mzQC document on the sample 4f105de1e379_7860</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fromData: function (data, context = "MzQCmzQC") </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     initialize: function (version = NA_character_, creationDate = MzQCDateTime$new(), </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     isValid: function (context = "MzQCmzQC") </span>
@@ -159,7 +164,6 @@ of <code>MsQuality</code> ("MS:") and the version is taken from
 <span class="r-out co"><span class="r-pr">#&gt;</span>     toJSON: function (...) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     version: 0.7.0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -170,7 +174,7 @@ of <code>MsQuality</code> ("MS:") and the version is taken from
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Thomas Naake, Johannes Rainer.</p>
+  <p></p><p>Developed by Thomas Naake, Johannes Rainer, Philippine Louail.</p>
 </div>
 
 <div class="pkgdown">

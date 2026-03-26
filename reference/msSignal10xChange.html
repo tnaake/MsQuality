@@ -35,7 +35,7 @@ are counted and returned. '><!-- mathjax --><script src="https://cdnjs.cloudflar
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MsQuality</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.3</span>
       </span>
     </div>
 
@@ -83,15 +83,15 @@ are counted and returned. <br></p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">msSignal10xChange</span><span class="op">(</span><span class="va">spectra</span>, change <span class="op">=</span> <span class="st">"jump"</span>, msLevel <span class="op">=</span> <span class="fl">1L</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">msSignal10xChange</span><span class="op">(</span><span class="va">object</span>, change <span class="op">=</span> <span class="st">"jump"</span>, msLevel <span class="op">=</span> <span class="fl">1L</span>, minIntensity <span class="op">=</span> <span class="fl">0</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-spectra">spectra<a class="anchor" aria-label="anchor" href="#arg-spectra"></a></dt>
-<dd><p><code>Spectra</code> object</p></dd>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
+<dd><p><code>Spectra</code> or <code>Chromatograms</code> object</p></dd>
 
 
 <dt id="arg-change">change<a class="anchor" aria-label="anchor" href="#arg-change"></a></dt>
@@ -100,6 +100,13 @@ are counted and returned. <br></p>
 
 <dt id="arg-mslevel">msLevel<a class="anchor" aria-label="anchor" href="#arg-mslevel"></a></dt>
 <dd><p><code>integer</code></p></dd>
+
+
+<dt id="arg-minintensity">minIntensity<a class="anchor" aria-label="anchor" href="#arg-minintensity"></a></dt>
+<dd><p><code>numeric(1)</code> minimum intensity threshold for
+<code>Chromatograms</code> input. Data points with intensity below this
+value are removed before computing ratios (default <code>0</code>, i.e.
+only zero and negative values are removed).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -130,11 +137,16 @@ term <br>
 synonym: "IS-1B"  RELATED [] <br></p>
 <p>The function <code>msSignal10xChange</code> uses the function <code>ionCount</code> as an
 equivalent to the TIC.</p>
+<p>For <code>Chromatograms</code> objects the metric operates on raw point-by-point
+intensities rather than aggregated TIC values. This makes it sensitive to
+noise: small oscillations near zero can produce many spurious 10-fold
+jumps or falls. The <code>minIntensity</code> parameter (default <code>0</code>)
+allows filtering out low-intensity points before computing ratios.
+Increasing <code>minIntensity</code> to the expected noise floor (e.g. the
+baseline intensity) is recommended for noisy chromatograms. Pre-smoothing
+the chromatogram before calling this function is another option.</p>
 <p>An attribute containing the PSI:MS term will only be returned if
 <code>msLevel</code> is 1.</p>
-<p>The metric is sensitive to noise. Small oscillations near zero could
-generate many 10x jumps. Consider to add optional smoothing or filtering of
-low-intensity signals.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -163,9 +175,9 @@ low-intensity signals.</p>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.459</span>, <span class="fl">2.585</span>, <span class="fl">2.446</span>, <span class="fl">0.508</span>, <span class="fl">8.968</span>, <span class="fl">0.524</span>, <span class="fl">0.974</span>, <span class="fl">100.0</span>, <span class="fl">40.994</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spd</span><span class="op">$</span><span class="va">rtime</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9.44</span>, <span class="fl">9.44</span>, <span class="fl">15.84</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">sps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="va">spd</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">msSignal10xChange</span><span class="op">(</span>spectra <span class="op">=</span> <span class="va">sps</span>, change <span class="op">=</span> <span class="st">"jump"</span>, msLevel <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">msSignal10xChange</span><span class="op">(</span>object <span class="op">=</span> <span class="va">sps</span>, change <span class="op">=</span> <span class="st">"jump"</span>, msLevel <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
-<span class="r-in"><span><span class="fu">msSignal10xChange</span><span class="op">(</span>spectra <span class="op">=</span> <span class="va">sps</span>, change <span class="op">=</span> <span class="st">"fall"</span>, msLevel <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">msSignal10xChange</span><span class="op">(</span>object <span class="op">=</span> <span class="va">sps</span>, change <span class="op">=</span> <span class="st">"fall"</span>, msLevel <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 </code></pre></div>
     </div>
@@ -177,7 +189,7 @@ low-intensity signals.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Thomas Naake, Johannes Rainer.</p>
+  <p></p><p>Developed by Thomas Naake, Johannes Rainer, Philippine Louail.</p>
 </div>
 
 <div class="pkgdown">

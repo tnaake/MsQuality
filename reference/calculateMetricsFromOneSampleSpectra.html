@@ -18,7 +18,7 @@ metrics from a Spectra containing spectral data from one sample."><!-- mathjax -
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MsQuality</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.3</span>
       </span>
     </div>
 
@@ -52,7 +52,7 @@ metrics from a <code>Spectra</code> containing spectral data from one sample.</p
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calculateMetricsFromOneSampleSpectra</span><span class="op">(</span></span>
 <span>  <span class="va">spectra</span>,</span>
 <span>  metrics <span class="op">=</span> <span class="fu"><a href="qualityMetrics.html">qualityMetrics</a></span><span class="op">(</span><span class="va">spectra</span><span class="op">)</span>,</span>
-<span>  filterEmptySpectra <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  filterEmptyObject <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  f <span class="op">=</span> <span class="va">spectra</span><span class="op">$</span><span class="va">dataOrigin</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -71,7 +71,7 @@ metrics from a <code>Spectra</code> containing spectral data from one sample.</p
 calculated on <code>spectra</code></p></dd>
 
 
-<dt id="arg-filteremptyspectra">filterEmptySpectra<a class="anchor" aria-label="anchor" href="#arg-filteremptyspectra"></a></dt>
+<dt id="arg-filteremptyobject">filterEmptyObject<a class="anchor" aria-label="anchor" href="#arg-filteremptyobject"></a></dt>
 <dd><p><code>logical(1)</code> specifying if empty entries and
 entries with intensity zero or <code>Inf</code> of the <code>Spectra</code> object
 will be removed</p></dd>
@@ -99,7 +99,7 @@ the formal arguments of the quality metric functions.</p>
 <p>The <code>Spectra</code> object will only contain spectral data from one
 data origin (e.g. <code>spectra$dataOrigin</code> is of length 1). The grouping
 is specified by the argument <code>f</code>.</p>
-<p>Setting the argument <code>filterEmptySpectra</code> to <code>TRUE</code> will remove
+<p>Setting the argument <code>filterEmptyObject</code> to <code>TRUE</code> will remove
 zero-length entries, zero-intensity entries, and entries with
 intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
     </div>
@@ -170,7 +170,7 @@ intensities that are <code>Inf</code> from the <code>Spectra</code> object.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Thomas Naake, Johannes Rainer.</p>
+  <p></p><p>Developed by Thomas Naake, Johannes Rainer, Philippine Louail.</p>
 </div>
 
 <div class="pkgdown">
