@@ -208,6 +208,7 @@ jobs:
           ## Pass #2 at installing dependencies
           message(paste('****', Sys.time(), 'pass number 2 at installing dependencies: any remaining dependencies ****'))
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = TRUE, upgrade = TRUE, force = TRUE)
+          remotes::install_github("r-lib/rlang")
           BiocManager::install(c("ncdf4", "Rhdf5lib"), force = TRUE)
           BiocManager::install(c("ExperimentHub"), force = TRUE)
           BiocManager::install(c("Rcpp"), force = TRUE)
