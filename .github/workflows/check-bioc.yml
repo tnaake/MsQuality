@@ -154,7 +154,6 @@ jobs:
       - name: Install Linux system dependencies
         if: matrix.config.os == 'ubuntu-latest'
         run: |
-          Rscript -e 'remove.packages("rlang", lib=.libPaths()[1])'
           sysreqs=$(Rscript -e 'cat("apt-get update -y && apt-get install -y", paste(gsub("apt-get install -y ", "", remotes::system_requirements("ubuntu", "22.04")), collapse = " "))')
           echo $sysreqs
           sudo -s eval "$sysreqs"
@@ -219,6 +218,7 @@ jobs:
         run: |
           ## Pass #2 at installing dependencies
           message(paste('****', Sys.time(), 'pass number 2 at installing dependencies: any remaining dependencies ****'))
+          Rscript -e 'remove.packages("rlang", lib=.libPaths()[1])'
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = TRUE, upgrade = TRUE, force = TRUE)
         shell: Rscript {0}
 
