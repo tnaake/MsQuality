@@ -128,7 +128,7 @@ jobs:
       - name: Create R_LIBS_USER on Linux
         if: runner.os == 'Linux'
         run: |
-          R_LIBS_USER: ${{ github.workspace }}/R/library
+          R_LIBS_USER=${{ github.workspace }}/R/library
           echo "R_LIBS_USER=$R_LIBS_USER" >> "$GITHUB_ENV"
           mkdir -p $R_LIBS_USER
 
