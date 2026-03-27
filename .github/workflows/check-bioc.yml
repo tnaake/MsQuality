@@ -192,6 +192,7 @@ jobs:
 
           ## For running the checks
           message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))
+          options(repos = BiocManager::repositories())
           install.packages("rcmdcheck", repos = BiocManager::repositories())
           BiocManager::install("BiocCheck", ask = FALSE, update = TRUE)
           BiocManager::install("MsExperiment", ask = FALSE, update = TRUE)
