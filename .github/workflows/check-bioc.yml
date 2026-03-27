@@ -40,7 +40,7 @@ env:
   has_RUnit: 'false'
   cache-version: 'cache-v1'
   run_docker: 'false'
-  bioc_version: 'bioc-devel'
+  bioc_version: '3.23'
   ## Valid options are:
   ##    "bioc-release"
   ##    "bioc-devel"
@@ -128,7 +128,7 @@ jobs:
       - name: Create R_LIBS_USER on Linux
         if: runner.os == 'Linux'
         run: |
-          R_LIBS_USER=${{ github.workspace }}/R/library
+          R_LIBS_USER=/__w/_temp/Library
           echo "R_LIBS_USER=$R_LIBS_USER" >> "$GITHUB_ENV"
           mkdir -p $R_LIBS_USER
 
@@ -151,12 +151,13 @@ jobs:
 
       ## This will work again once https://github.com/r-lib/remotes/commit/0e4e23051041d9f1b15a5ab796defec31af6190d
       ## makes it to the CRAN version of remotes
-      - name: Install Linux system dependencies
-        if: matrix.config.os == 'ubuntu-latest'
-        run: |
-          sysreqs=$(Rscript -e 'cat("apt-get update -y && apt-get install -y", paste(gsub("apt-get install -y ", "", remotes::system_requirements("ubuntu", "22.04")), collapse = " "))')
-          echo $sysreqs
-          sudo -s eval "$sysreqs"
+
+      # - name: Install Linux system dependencies
+      #   if: runner.os == 'Linux'
+      #   run: |
+      #     sysreqs=$(Rscript -e 'cat("apt-get update -y && apt-get install -y", paste(gsub("apt-get install -y ", "", remotes::system_requirements("ubuntu", "24.04")), collapse = " "))')
+      #     echo $sysreqs
+      #     sudo -s eval "$sysreqs"
 
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macOS-latest'
@@ -218,7 +219,6 @@ jobs:
         run: |
           ## Pass #2 at installing dependencies
           message(paste('****', Sys.time(), 'pass number 2 at installing dependencies: any remaining dependencies ****'))
-          remove.packages("rlang", lib=.libPaths()[1])
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = TRUE, upgrade = TRUE, force = TRUE)
         shell: Rscript {0}
 
@@ -238,7 +238,7 @@ jobs:
       - name: Install pkgdown
         if: github.ref == 'refs/heads/devel' && env.run_pkgdown == 'true' && runner.os == 'Linux'
         run: |
-          remotes::install_github("r-lib/pkgdown")
+          remotes::install_cran("pkgdown")
         shell: Rscript {0}
 
       - name: Session info
